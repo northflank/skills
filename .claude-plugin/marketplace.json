@@ -1,0 +1,17 @@
+{
+  "name": "northflank",
+  "owner": {
+    "name": "Northflank"
+  },
+  "metadata": {
+    "name": "northflank",
+    "description": "Deploys, manages, and automates workloads on Northflank, including services, jobs, addons, preview environments, release workflows, sandboxes, GPU workloads, domains, secrets, and templates"
+  },
+  "plugins": [
+    {
+      "name": "northflank",
+      "source": "./",
+      "description": "Deploys, manages, and automates workloads on Northflank, including services, jobs, addons, preview environments, release workflows, sandboxes, GPU workloads, domains, secrets, and templates"
+    }
+  ]
+}
