@@ -6,5 +6,6 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 
 - [Billing](billing/_index.md) — 2 endpoints
 - [Cloud Providers](cloud-providers/_index.md) — 12 endpoints
-- [Org Roles](org-roles/_index.md) — 9 endpoints
+- [Org Members](org-members/_index.md) — 1 endpoints
+- [Org Roles](org-roles/_index.md) — 11 endpoints
 - [Teams](teams/_index.md) — 4 endpoints

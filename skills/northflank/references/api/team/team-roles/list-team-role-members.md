@@ -1,15 +1,16 @@
-# List team members
+# List team role members
 
-Source: https://northflank.com/docs/v1/api/team/team-members/list-team-members.md
+Source: https://northflank.com/docs/v1/api/team/team-roles/list-team-role-members.md
 
-Gets a list of members belonging to a team.
+Gets a list of members assigned to a platform role in a team.
 
-Required permission: Account > Admin > Members > Read
+Required permission: Account > Admin > Roles > Read
 
 **Path parameters:**
 
 {object}
 - `teamId`: (string) (required) ID of the team
+- `roleId`: (string) (required) ID of the team role
 
 **Query parameters:**
 
@@ -17,6 +18,7 @@ Required permission: Account > Admin > Members > Read
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
 - `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `userIds`: (undefined) Filter members by user ID. Specify the parameter multiple times to filter by multiple user IDs.
 
 **Response body:**
 
@@ -37,11 +39,11 @@ Required permission: Account > Admin > Members > Read
 
 ### API reference
 
-GET /v1/teams/{teamId}/members
+GET /v1/teams/{teamId}/roles/{roleId}/members
 
 #### Example Response
 
-200 OK: A list of members in the team.
+200 OK: A list of members in the team role.
 
 ```json
 {
@@ -69,17 +71,21 @@ GET /v1/teams/{teamId}/members
 
 ### CLI reference
 
-$ northflank list team-members
+$ northflank list team-role-members
 
 Options:
 
 - `--teamId <teamId>`: ID of the team
+
+- `--roleId <roleId>`: ID of the team role
 
 - `--per_page <per_page>`: The number of results to display per request. Maximum of 100 results per page.
 
 - `--page <page>`: The page number to access.
 
 - `--cursor <cursor>`: The cursor returned from the previous page of results, used to request the next page.
+
+- `--userIds <userIds>`: Filter members by user ID. Specify the parameter multiple times to filter by multiple user IDs.
 
 - `--verbose `: Verbose output
 
@@ -89,7 +95,7 @@ Options:
 
 #### Example Response
 
- A list of members in the team.
+ A list of members in the team role.
 
 ```json
 {
@@ -114,20 +120,22 @@ Options:
 #### Example request
 
 ```javascript
-await apiClient.list.teamMembers({
+await apiClient.list.teamRoleMembers({
   parameters: {
-    "teamId": "my-team"
+    "teamId": "my-team",
+    "roleId": "developer"
   },
   options: {
     "per_page": 50,
-    "page": 1
+    "page": 1,
+    "userIds": "john-doe"
   }
 });
 ```
 
 #### Example Response
 
- A list of members in the team.
+ A list of members in the team role.
 
 ```json
 {

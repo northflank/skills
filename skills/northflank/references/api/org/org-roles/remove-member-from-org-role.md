@@ -10,7 +10,7 @@ Required permission: Organisation > Admin > Roles > Manage
 
 {object}
 - `roleId`: (string) (required) ID of the org role
-- `memberId`: (string) (required) ID of the org member (user ID)
+- `memberId`: (string) (required) ID of the org member.
 
 **Response body:**
 
@@ -39,7 +39,7 @@ Options:
 
 - `--roleId <roleId>`: ID of the org role
 
-- `--memberId <memberId>`: ID of the org member (user ID)
+- `--memberId <memberId>`: ID of the org member.
 
 - `--verbose `: Verbose output
 
@@ -65,7 +65,7 @@ Options:
 await apiClient.delete.orgRoleMember({
   parameters: {
     "roleId": "developer",
-    "memberId": "abc123def456abc123def456"
+    "memberId": "john-doe"
   }
 });
 ```

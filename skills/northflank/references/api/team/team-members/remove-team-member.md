@@ -10,7 +10,7 @@ Required permission: Account > Admin > Members > Manage
 
 {object}
 - `teamId`: (string) (required) ID of the team
-- `memberId`: (string) (required) ID of the team member (user ID)
+- `memberId`: (string) (required) ID of the team member.
 
 **Response body:**
 
@@ -39,7 +39,7 @@ Options:
 
 - `--teamId <teamId>`: ID of the team
 
-- `--memberId <memberId>`: ID of the team member (user ID)
+- `--memberId <memberId>`: ID of the team member.
 
 - `--verbose `: Verbose output
 
@@ -65,7 +65,7 @@ Options:
 await apiClient.delete.teamMember({
   parameters: {
     "teamId": "my-team",
-    "memberId": "abc123def456abc123def456"
+    "memberId": "john-doe"
   }
 });
 ```

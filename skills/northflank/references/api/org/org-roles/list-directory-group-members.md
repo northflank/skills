@@ -1,15 +1,15 @@
-# List team members
+# List directory group members
 
-Source: https://northflank.com/docs/v1/api/team/team-members/list-team-members.md
+Source: https://northflank.com/docs/v1/api/org/org-roles/list-directory-group-members.md
 
-Gets a list of members belonging to a team.
+Lists the users who are members of the org via a specific Directory Sync group.
 
-Required permission: Account > Admin > Members > Read
+Required permission: Organisation > Admin > Members > Read
 
 **Path parameters:**
 
 {object}
-- `teamId`: (string) (required) ID of the team
+- `groupId`: (string) (required) ID of the directory group
 
 **Query parameters:**
 
@@ -23,13 +23,9 @@ Required permission: Account > Admin > Members > Read
 {object}
 - `data`: {object}
   - `members`: [array of] {object}
-     - `id`: (string) (required) ID (username) of the team member. For users who are not finalized this ID may change on finalisation.
+     - `id`: (string) (required) ID (username) of the directory member.
      - `name`: (string) Display name from the member profile.
-     - `emails`: [array of] {object}
-         - `address`: (string) (required) (format: email)
-         - `verified`: (boolean) (required)
-     - `joinedAt`: (string) The time the member joined the team. (format: date-time)
-     - `finalized`: (boolean) Whether the account has been fully set up by the user.
+     - `emails`: [array of] (string) (format: email)
 - `pagination`: {object}
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
@@ -37,11 +33,11 @@ Required permission: Account > Admin > Members > Read
 
 ### API reference
 
-GET /v1/teams/{teamId}/members
+GET /v1/directory-groups/{groupId}/members
 
 #### Example Response
 
-200 OK: A list of members in the team.
+200 OK: A list of members in the directory group.
 
 ```json
 {
@@ -49,14 +45,7 @@ GET /v1/teams/{teamId}/members
     "members": [
       {
         "id": "john-doe",
-        "name": "John Doe",
-        "emails": [
-          {
-            "address": "john@example.com",
-            "verified": true
-          }
-        ],
-        "joinedAt": "2021-01-20T11:19:53.175Z"
+        "name": "John Doe"
       }
     ]
   },
@@ -69,11 +58,11 @@ GET /v1/teams/{teamId}/members
 
 ### CLI reference
 
-$ northflank list team-members
+$ northflank list org-directory-group-members
 
 Options:
 
-- `--teamId <teamId>`: ID of the team
+- `--groupId <groupId>`: ID of the directory group
 
 - `--per_page <per_page>`: The number of results to display per request. Maximum of 100 results per page.
 
@@ -89,21 +78,14 @@ Options:
 
 #### Example Response
 
- A list of members in the team.
+ A list of members in the directory group.
 
 ```json
 {
   "members": [
     {
       "id": "john-doe",
-      "name": "John Doe",
-      "emails": [
-        {
-          "address": "john@example.com",
-          "verified": true
-        }
-      ],
-      "joinedAt": "2021-01-20T11:19:53.175Z"
+      "name": "John Doe"
     }
   ]
 }
@@ -114,9 +96,9 @@ Options:
 #### Example request
 
 ```javascript
-await apiClient.list.teamMembers({
+await apiClient.list.orgDirectoryGroupMembers({
   parameters: {
-    "teamId": "my-team"
+    "groupId": "directory_group_1234567890ABCDEFGHIJKLMNOP"
   },
   options: {
     "per_page": 50,
@@ -127,7 +109,7 @@ await apiClient.list.teamMembers({
 
 #### Example Response
 
- A list of members in the team.
+ A list of members in the directory group.
 
 ```json
 {
@@ -135,14 +117,7 @@ await apiClient.list.teamMembers({
     "members": [
       {
         "id": "john-doe",
-        "name": "John Doe",
-        "emails": [
-          {
-            "address": "john@example.com",
-            "verified": true
-          }
-        ],
-        "joinedAt": "2021-01-20T11:19:53.175Z"
+        "name": "John Doe"
       }
     ]
   },

@@ -18,5 +18,5 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 - [Secrets](secrets/_index.md) — 6 endpoints
 - [Tags](tags/_index.md) — 6 endpoints
 - [Team Members](team-members/_index.md) — 3 endpoints
-- [Team Roles](team-roles/_index.md) — 8 endpoints
+- [Team Roles](team-roles/_index.md) — 9 endpoints
 - [Templates](templates/_index.md) — 9 endpoints

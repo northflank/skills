@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 /*
- * Build generated Northflank reference files from the public docs index.
+ * Build generated Northflank reference files from the public docs index
+ * and the live Northflank public API.
  *
  * This script owns only generated reference material:
  *   - northflank/references/guides/**
  *   - northflank/references/api/**
+ *   - northflank/references/plans.md   (live compute/GPU plans + regions)
  *
  * Editorial files such as SKILL.md, api-overview.md, cli.md, and js-client/*
  * stay hand-maintained.
@@ -16,6 +18,7 @@ const posixPath = path.posix;
 
 const DEFAULT_LLMS_URL = "https://northflank.com/docs/llms.txt";
 const DOCS_BASE_URL = "https://northflank.com/docs";
+const NF_API_BASE = "https://api.northflank.com/v1";
 const HTTP_USER_AGENT = "northflank-reference-builder/1.0";
 const DOC_URL_PATTERN = /https:\/\/northflank\.com\/docs\/[^\s)>\]]+\.md/g;
 const HTTP_PATH_PATTERN = /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+([/][v]1\/\S+)\s*$/gm;
@@ -100,6 +103,7 @@ class NorthflankReferenceBuilder {
 
     await this.buildGuideReferences(applicationDocs);
     await this.buildApiReferences(apiDocs);
+    await this.buildPlansReference();
 
     if (this.stats.skippedMissing.length > 0) {
       console.log(`Skipped missing pages: ${this.stats.skippedMissing.length}`);
@@ -762,6 +766,134 @@ class NorthflankReferenceBuilder {
     }
 
     await this.writeApiIndexes(API_DIR, API_DIR);
+  }
+
+  async buildPlansReference() {
+    const plansUrl = `${NF_API_BASE}/plans`;
+    const regionsUrl = `${NF_API_BASE}/regions`;
+
+    let plansData;
+    let regionsData;
+
+    try {
+      const plansText = await this.readRemoteText(plansUrl, path.join(this.cacheDir, "api", "plans.json"));
+      plansData = JSON.parse(plansText).data?.plans || [];
+    } catch (error) {
+      console.error(`Skipping plans reference — failed to fetch ${plansUrl}: ${error.message}`);
+      return;
+    }
+
+    try {
+      const regionsText = await this.readRemoteText(regionsUrl, path.join(this.cacheDir, "api", "regions.json"));
+      regionsData = JSON.parse(regionsText).data?.regions || [];
+    } catch (error) {
+      console.error(`Skipping plans reference — failed to fetch ${regionsUrl}: ${error.message}`);
+      return;
+    }
+
+    const markdown = this.formatPlansMarkdown(plansData, regionsData);
+    await this.writeFile(path.join(REFERENCES_DIR, "plans.md"), markdown);
+    console.log(`Wrote plans reference: ${plansData.length} compute plans, ${regionsData.length} regions`);
+  }
+
+  formatPlansMarkdown(plans, regions) {
+    const formatRam = (mb) => (mb >= 1024 ? `${(mb / 1024).toString()} GB` : `${mb} MB`);
+    const formatMoney = (n) => (n == null ? "—" : `$${n}`);
+
+    const sortedPlans = [...plans].sort(
+      (a, b) => (a.cpuResource - b.cpuResource) || (a.ramResource - b.ramResource) || a.id.localeCompare(b.id),
+    );
+
+    const computeRows = sortedPlans.map((plan) => {
+      const buildable = (plan.type || []).includes("build") ? "✓" : "—";
+      return `| \`${plan.id}\` | ${plan.cpuResource} | ${formatRam(plan.ramResource)} | ${formatMoney(plan.amountPerMonth)} | ${formatMoney(plan.amountPerHour)} | ${buildable} |`;
+    });
+
+    const gpuMap = new Map();
+    for (const region of regions) {
+      for (const gpu of region.gpuDevices || []) {
+        if (!gpuMap.has(gpu.id)) {
+          gpuMap.set(gpu.id, {
+            id: gpu.id,
+            name: gpu.name,
+            manufacturer: gpu.manufacturer,
+            memoryMiB: gpu.memoryInfo?.sizeInMiB,
+            counts: gpu.countOptions || [],
+            priceCents: gpu.pricing?.onDemand,
+            regions: [],
+          });
+        }
+        gpuMap.get(gpu.id).regions.push(region.id);
+      }
+    }
+
+    const gpuModels = [...gpuMap.values()].sort((a, b) => (a.priceCents || 0) - (b.priceCents || 0));
+
+    const gpuRows = gpuModels.map((gpu) => {
+      const vram = gpu.memoryMiB ? `${Math.round(gpu.memoryMiB / 1024)} GB` : "—";
+      const counts = gpu.counts.length ? gpu.counts.join(", ") : "—";
+      const price = gpu.priceCents != null ? `$${(gpu.priceCents / 100).toFixed(2)}` : "—";
+      return `| ${gpu.manufacturer} ${gpu.name} | \`${gpu.id}\` | ${vram} | ${counts} | ${price} | ${gpu.regions.join(", ")} |`;
+    });
+
+    const enumeratedSlugs = [];
+    for (const gpu of [...gpuModels].sort((a, b) => a.id.localeCompare(b.id))) {
+      for (const count of gpu.counts) {
+        const vram = gpu.memoryMiB ? `${Math.round(gpu.memoryMiB / 1024)} GB` : "?";
+        enumeratedSlugs.push(`- \`nf-gpu-${gpu.id}-${count}g\` — ${count}× ${gpu.manufacturer} ${gpu.name} (${vram})`);
+      }
+    }
+
+    const sortedRegions = [...regions].sort(
+      (a, b) => a.regionName.localeCompare(b.regionName) || a.id.localeCompare(b.id),
+    );
+
+    const regionRows = sortedRegions.map((region) => {
+      const gpus = (region.gpuDevices || []).map((g) => g.name).join(", ") || "—";
+      const provider = region.provider ? `\`${region.provider.id}/${region.provider.region}\`` : "—";
+      return `| \`${region.id}\` | ${region.name} | ${region.regionName} | ${provider} | ${gpus} |`;
+    });
+
+    const lines = [
+      "# Northflank Plans & Regions",
+      "",
+      `Generated from \`GET ${NF_API_BASE}/plans\` and \`GET ${NF_API_BASE}/regions\`. Both endpoints are public (no auth) — **query them directly if a SKU below looks stale or is missing**. Maintainers can refresh this file with \`node scripts/generate_references.js --force\`.`,
+      "",
+      "## Compute plans",
+      "",
+      "Used as `billing.deploymentPlan` (and `billing.buildPlan` for plans flagged build-capable).",
+      "",
+      "| Plan ID | vCPU | RAM | $/mo | $/hr | Build |",
+      "|---|---|---|---|---|---|",
+      ...computeRows,
+      "",
+      "## GPU plans",
+      "",
+      "GPU services use a paired plan slug: `nf-gpu-<gpuType>-<count>g`. Set `deployment.gpu` (or `billing.gpu`) with matching `gpuType` and `gpuCount`.",
+      "",
+      "### GPU models (managed cloud)",
+      "",
+      "Pricing is per GPU per hour, on top of the bundled CPU/RAM in the `nf-gpu-*` plan.",
+      "",
+      "| Model | `gpuType` | VRAM | Counts per instance | $/hr per GPU | Available regions |",
+      "|---|---|---|---|---|---|",
+      ...gpuRows,
+      "",
+      "### Enumerated GPU plan slugs",
+      "",
+      ...enumeratedSlugs,
+      "",
+      "## Regions",
+      "",
+      "Northflank's managed cloud runs on Google Cloud. GPU availability varies — only regions with GPU devices are selectable for GPU-enabled projects.",
+      "",
+      "| ID | Name | Group | GCP region | GPU models |",
+      "|---|---|---|---|---|",
+      ...regionRows,
+      "",
+    ];
+
+    return lines.join("\n");
   }
 
   async writeApiIndexes(directory, root) {

@@ -1,15 +1,10 @@
-# List team members
+# List org members
 
-Source: https://northflank.com/docs/v1/api/team/team-members/list-team-members.md
+Source: https://northflank.com/docs/v1/api/org/org-members/list-org-members.md
 
-Gets a list of members belonging to a team.
+Gets a list of members belonging to the authenticated org.
 
-Required permission: Account > Admin > Members > Read
-
-**Path parameters:**
-
-{object}
-- `teamId`: (string) (required) ID of the team
+Required permission: Organisation > Admin > Members > Read
 
 **Query parameters:**
 
@@ -23,13 +18,13 @@ Required permission: Account > Admin > Members > Read
 {object}
 - `data`: {object}
   - `members`: [array of] {object}
-     - `id`: (string) (required) ID (username) of the team member. For users who are not finalized this ID may change on finalisation.
+     - `id`: (string) (required) ID (username) of the org member. For users who are not finalized this ID may change on finalisation. (pattern: ^[A-Za-z0-9-]+$)
      - `name`: (string) Display name from the member profile.
      - `emails`: [array of] {object}
-         - `address`: (string) (required) (format: email)
-         - `verified`: (boolean) (required)
-     - `joinedAt`: (string) The time the member joined the team. (format: date-time)
-     - `finalized`: (boolean) Whether the account has been fully set up by the user.
+         - `address`: (string)
+         - `verified`: (boolean)
+     - `joinedAt`: (string) The time the member joined the org. (format: date-time)
+     - `finalized`: (boolean) (required) Whether the account has been fully set up by the user.
 - `pagination`: {object}
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
@@ -37,11 +32,11 @@ Required permission: Account > Admin > Members > Read
 
 ### API reference
 
-GET /v1/teams/{teamId}/members
+GET /v1/org-members
 
 #### Example Response
 
-200 OK: A list of members in the team.
+200 OK: A list of members in the org.
 
 ```json
 {
@@ -69,11 +64,9 @@ GET /v1/teams/{teamId}/members
 
 ### CLI reference
 
-$ northflank list team-members
+$ northflank list org-members
 
 Options:
-
-- `--teamId <teamId>`: ID of the team
 
 - `--per_page <per_page>`: The number of results to display per request. Maximum of 100 results per page.
 
@@ -89,7 +82,7 @@ Options:
 
 #### Example Response
 
- A list of members in the team.
+ A list of members in the org.
 
 ```json
 {
@@ -114,10 +107,7 @@ Options:
 #### Example request
 
 ```javascript
-await apiClient.list.teamMembers({
-  parameters: {
-    "teamId": "my-team"
-  },
+await apiClient.list.orgMembers({
   options: {
     "per_page": 50,
     "page": 1
@@ -127,7 +117,7 @@ await apiClient.list.teamMembers({
 
 #### Example Response
 
- A list of members in the team.
+ A list of members in the org.
 
 ```json
 {

@@ -14,7 +14,7 @@ Required permission: Organisation > Admin > Roles > Manage
 **Request body:**
 
 {object}
-- `userId`: (string) (required) ID of the user to add to this role.
+- `userId`: (string) (required) ID of the user to add to this role. (pattern: ^[A-Za-z0-9-]+$)
 
 **Response body:**
 
@@ -33,13 +33,13 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"userId":"5e6ea4090a1a280001b2d4e3"}' \
+  --data '{"userId":"john-doe"}' \
   https://api.northflank.com/v1/org-roles/{roleId}/members
 ```
 
 ```javascript
 const payload = {
-  "userId": "5e6ea4090a1a280001b2d4e3"
+  "userId": "john-doe"
 }
 
 const response = await fetch('https://api.northflank.com/v1/org-roles/{roleId}/members', {
@@ -60,7 +60,7 @@ import requests
 
 url = "https://api.northflank.com/v1/org-roles/{roleId}/members"
 
-payload = {"userId":"5e6ea4090a1a280001b2d4e3"}
+payload = {"userId":"john-doe"}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -81,7 +81,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/org-roles/{roleId}/members"
 
-  var jsonStr = []byte(`{"userId":"5e6ea4090a1a280001b2d4e3"}`)
+  var jsonStr = []byte(`{"userId":"john-doe"}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -130,7 +130,7 @@ Options:
 
 ```json
 {
-  "userId": "5e6ea4090a1a280001b2d4e3"
+  "userId": "john-doe"
 }
 ```
 
@@ -154,7 +154,7 @@ await apiClient.create.orgRoleMember({
     "roleId": "developer"
   },
   data: {
-    "userId": "5e6ea4090a1a280001b2d4e3"
+    "userId": "john-doe"
   }
 });
 ```

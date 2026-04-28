@@ -11,7 +11,7 @@ Required permission: Account > Admin > Roles > Manage
 {object}
 - `teamId`: (string) (required) ID of the team
 - `roleId`: (string) (required) ID of the team role
-- `memberId`: (string) (required) ID of the team member (user ID)
+- `memberId`: (string) (required) ID of the team member.
 
 **Response body:**
 
@@ -42,7 +42,7 @@ Options:
 
 - `--roleId <roleId>`: ID of the team role
 
-- `--memberId <memberId>`: ID of the team member (user ID)
+- `--memberId <memberId>`: ID of the team member.
 
 - `--verbose `: Verbose output
 
@@ -69,7 +69,7 @@ await apiClient.delete.teamRoleMember({
   parameters: {
     "teamId": "my-team",
     "roleId": "developer",
-    "memberId": "abc123def456abc123def456"
+    "memberId": "john-doe"
   }
 });
 ```

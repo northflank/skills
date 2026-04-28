@@ -2,7 +2,7 @@
 
 Source: https://northflank.com/docs/v1/api/team/team-members/invite-team-member.md
 
-Sends an invitation email to add a user to a team.
+Invites a user to a team.
 
 Required permission: Account > Admin > Members > Manage
 
@@ -15,7 +15,7 @@ Required permission: Account > Admin > Members > Manage
 
 {object}
 - `email`: (string) (required) Email of the user to invite. (pattern: ^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$)
-- `roles`: [array of] (string)
+- `roles`: [array of] (string) (pattern: ^[A-Za-z0-9-]+$)
 
 **Response body:**
 

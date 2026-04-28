@@ -175,7 +175,7 @@ const result = await apiClient.create.service.deployment({
 const serviceId = result.data.id; // 'my-api'
 ```
 
-Plan sizes: `nf-compute-10` (0.1 vCPU/256MB), `nf-compute-50` (0.5/1GB), `nf-compute-100` (1/2GB), `nf-compute-200` (2/4GB).
+Common plan sizes: `nf-compute-10` (0.1 vCPU/256MB), `nf-compute-50` (0.5/1GB), `nf-compute-100-2` (1/2GB), `nf-compute-200` (2/4GB). See [Compute & GPU Plans](#compute--gpu-plans) for the full table, GPU SKUs, and how to query the live list.
 
 ### Create a combined service (build + deploy from Git)
 
@@ -402,6 +402,51 @@ const remaining = rawResponse.headers.get('x-ratelimit-remaining');
 const reset = rawResponse.headers.get('x-ratelimit-reset'); // seconds
 ```
 
+## Compute & GPU Plans
+
+Full live tables (every compute plan, GPU SKU, pricing, and per-region GPU availability) are auto-generated into [references/plans.md](references/plans.md) by `scripts/generate_references.js`. Re-run with `--force` to refresh after Northflank ships new SKUs or price changes. The underlying endpoints are public — no auth needed:
+
+```bash
+curl -s https://api.northflank.com/v1/plans   | jq '.data.plans[]   | {id, cpu: .cpuResource, ramMB: .ramResource, hr: .amountPerHour}'
+curl -s https://api.northflank.com/v1/regions | jq '.data.regions[] | {id, gpus: (.gpuDevices // [] | map(.id))}'
+```
+
+JS client / CLI equivalents: `apiClient.list.plans({})` / `apiClient.list.regions({})` and `northflank list plans` / `northflank list regions`.
+
+### Compute plan slugs
+
+Format: `nf-compute-<cpu*100>-<ram_gb>` (newer, explicit) or `nf-compute-<cpu*100>` (legacy, RAM implied). Common picks:
+
+- `nf-compute-10` — 0.1 vCPU / 256 MB (~$2.70/mo) — sidecars, light workers
+- `nf-compute-50` — 0.5 vCPU / 1 GB (~$12/mo) — small APIs, cron jobs
+- `nf-compute-200` — 2 vCPU / 4 GB (~$48/mo) — typical production service
+- `nf-compute-400-16` — 4 vCPU / 16 GB (~$144/mo) — also valid as `buildPlan`
+
+`buildPlan` only accepts plans with 4+ vCPU and defaults to `nf-compute-400-16` if omitted. See [references/plans.md](references/plans.md) for all 20 SKUs.
+
+### GPU plan slugs
+
+Format: `nf-gpu-<gpuType>-<count>g` (the `g` suffix is literal, not a unit). The plan bundles CPU/RAM around the GPU — you do **not** combine an `nf-compute-*` plan with a separate GPU. Worked example:
+
+```js
+data: {
+  billing: { deploymentPlan: 'nf-gpu-a100-80-1g' },  // 1× A100 80GB
+  deployment: {
+    gpu: { enabled: true, gpuType: 'a100-80', gpuCount: 1 },
+    // ...
+  },
+}
+```
+
+- `gpuType` is the model id (lowercase, no `nvidia-` prefix). Currently: `l4-24`, `a100-40`, `a100-80`, `h100-80`, `h200-141`, `b200-180`.
+- `gpuCount` must be one of the model's `countOptions` (typically `1, 2, 4, 8`; H200 and B200 are 8-only). Invalid counts are rejected.
+- The `gpu` block can sit under `deployment.gpu` or `billing.gpu`; Northflank's own templates use `deployment.gpu`.
+- GPU billing is per GPU per hour, on top of the bundled compute. Pricing and per-region availability live in [references/plans.md](references/plans.md).
+
+For BYOC clusters, GPU node types come from the cloud provider — query with `apiClient.list.cloudProviders.nodeTypes({ options: { hasGpu: true } })` and define custom resource plans (see `references/guides/bring-your-own-cloud.md#create-custom-resource-plans`). Timeslicing is supported on BYOC, not on managed cloud.
+
+For Northflank-published GPU base images (PyTorch + CUDA + Jupyter pre-installed), pull from `europe-docker.pkg.dev/northflank/public/...` instead of building from raw `pytorch/pytorch:*`.
+
 ## Common Patterns
 
 ### Deploy and watch until healthy
@@ -501,6 +546,7 @@ await apiClient.start.job.run({ parameters: { projectId: 'my-project', jobId: 'd
 | Wire database credentials into a service via secret groups | `apiClient.create.secret` with `addonDependencies` / `northflank create secret`; `references/api/project/secrets/_index.md` |
 | Create a cron or manual job | `apiClient.create.job` with `settings.cron` / `northflank create job cron|manual`; `references/api/project/jobs/_index.md` |
 | Configure autoscaling, replicas, or resource sizing | `deployment.autoscaling.horizontal` field; `references/guides/scale.md` |
+| Pick a compute or GPU plan (sizes, pricing, regions) | [references/plans.md](references/plans.md) — auto-generated from `/v1/plans` and `/v1/regions`; slug patterns in [Compute & GPU Plans](#compute--gpu-plans) |
 | Set up CI/CD: pipelines, release flows, preview environments | `references/guides/release.md` |
 | Define infrastructure as code (templates, GitOps, OpenTofu) | `apiClient.create.template` / `northflank create template`; `references/guides/infrastructure-as-code.md` |
 | Add a custom domain with TLS, CDN, or path routing | `references/guides/domains.md`; `references/api/team/domains/_index.md` |
@@ -520,6 +566,7 @@ await apiClient.start.job.run({ parameters: { projectId: 'my-project', jobId: 'd
 - [references/api-overview.md](references/api-overview.md) — REST API base URL, auth, pagination, endpoint tables
 - [references/cli.md](references/cli.md) — CLI install, contexts, common commands, file transfer
 - [references/js-client.md](references/js-client.md) — JS client quickstart and usage pointers
+- [references/plans.md](references/plans.md) — auto-generated compute & GPU plans + region availability (live from `/v1/plans` and `/v1/regions`)
 
 ### API Endpoint References
 - [references/api/_index.md](references/api/_index.md) — master index of all endpoints
