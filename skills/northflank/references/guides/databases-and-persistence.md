@@ -581,6 +581,7 @@ How an addon manages additional replicas, and replica failures, depends on the t
 | PostgreSQL | Primary-secondary | Automated failover: a read replica is promoted to primary |
 | MongoDB® | Primary-secondary | Automated failover: a read replica is promoted to primary |
 | MySQL | Primary-secondary | Read-only: writes unavailable until primary replica is replaced |
+| MySQL (InnoDB Cluster) | Group Replication | Automated failover: Group Replication elects a new primary |
 | Redis® | Primary-secondary | Read-only: writes unavailable until primary replica is replaced OR Automated failover if deployed with Sentinel |
 | MinIO® | Sharding | Damaged data is restored using healthy shards, failing replicas will be replaced |
 | RabbitMQ (quorum queue) | Primary-secondary | Automated failover: a queue follower is promoted to leader |
@@ -656,11 +657,63 @@ You can configure your [read preference](https://www.mongodb.com/docs/manual/cor
 
 ### Configure addons for high availability: MySQL
 
+#### Configure addons for high availability: Standard MySQL
+
 When you scale a MySQL addon, new read replicas of the database are added. New read replica secrets are also added to the connection details for the addon. The read replica connection is added to each connection string, as well as a separate `HOST_READ` secret.
 
-In the event a primary replica becomes unavailable writes will be blocked, and only read operations will be available. Write operations will be available when the primary replica becomes available again.
+In the event a primary replica becomes unavailable, writes will be blocked and only read operations will be available. Write operations will resume when the primary replica becomes available again.
 
-You can configure your application to make use of the read replica connections to ensure your application can still read data. You can, for example, implement handling in your application to use a separate read connection for read operations only, or fall back to a read-only connection if the primary becomes unavailable.
+You can configure your application to make use of the read replica connections to ensure your application can still read data during primary unavailability — for example, by implementing a separate read connection for read-only operations, or falling back to a read-only connection if the primary becomes unavailable.
+
+#### Configure addons for high availability: MySQL HA (InnoDB Cluster)
+
+Northflank's MySQL HA addon provides automated failover and high availability using [MySQL Group Replication](https://dev.mysql.com/doc/refman/9.6/en/group-replication.html) and [MySQL Router](https://dev.mysql.com/doc/refman/9.6/en/mysql-router.html).
+
+##### Configure addons for high availability: Architecture
+
+InnoDB Cluster deploys three nodes in a single-writer, multi-reader configuration. MySQL Router is included and runs transparently — your application connects using the same connection string as a standard MySQL addon, and the Router directs writes to the current primary and distributes reads across all nodes. A separate `HOST_READ` secret is also available if you want to direct read-only traffic explicitly.
+
+Enabling InnoDB Cluster is a toggle at addon creation time and cannot be changed after creation.
+
+##### Configure addons for high availability: Requirements
+
+MySQL Group Replication has schema requirements that must be met for replication to function correctly. The most important requirement is that **every table must have a primary key**. Review the full list of [Group Replication requirements](https://dev.mysql.com/doc/refman/9.6/en/group-replication-requirements.html) before migrating existing data or creating new schemas.
+
+##### Configure addons for high availability: MySQL Router connection pooling
+
+MySQL Router maintains a persistent pool of backend connections, which reduces the overhead of establishing new connections for each client request. This has practical advantages over connecting directly through a Kubernetes service:
+
+- **Reduced connection overhead** — Router reuses backend connections across multiple client connections, reducing TCP and authentication handshake costs at scale.
+
+- **Connection limiting** — Router caps backend connections independently of how many clients connect, protecting MySQL nodes from connection storms during traffic spikes.
+
+- **Faster failover recovery** — On primary election, Router detects the topology change and reroutes connections faster than waiting for the Kubernetes service label reconciliation loop, reducing the disruption window visible to your application.
+
+In routerless mode, you give up these benefits in exchange for direct node access — the Kubernetes service still handles failover via label updates, but there is no connection pooling or topology-aware rerouting at the proxy layer.
+
+##### Configure addons for high availability: Routerless mode
+
+You can disable the Router to run in routerless mode, where your application connects directly to the primary node via a Kubernetes service. This can be changed on an existing InnoDB Cluster addon at any time.
+
+In routerless mode:
+
+- The connection string points to the primary or read-only node via a Kubernetes service.
+
+- On failover, Group Replication still elects a new primary automatically. The Kubernetes service updates to point to the new primary, so connections resume without manual intervention after a brief transition period.
+
+Routerless mode is suitable for workloads that require direct database access or cannot use an intermediary proxy.
+
+##### Configure addons for high availability: Automated failover
+
+If the primary node becomes unavailable, Group Replication automatically elects a new primary from the remaining nodes. Read and write operations continue without application-level intervention. After a defined period, the cluster automatically fails back to the preferred primary node (replica-0) with proper connection draining to avoid disruption.
+
+##### Configure addons for high availability: Quorum loss recovery
+
+If two or more nodes fail simultaneously, the cluster loses quorum and enters read-only protection mode to prevent split-brain scenarios. Northflank has automatic quorum recovery in place, which triggers after a delay (default: 2 minutes) to distinguish a genuine quorum loss from a transient network issue before attempting recovery.
+
+##### Configure addons for high availability: Node rejoin
+
+When a failed or replaced node comes back online, it automatically attempts to rejoin the cluster. Group Replication uses incremental recovery (replaying missed transactions from the binary log) or a full clone if the node has fallen too far behind. No manual intervention is required under normal conditions.
 
 ### Configure addons for high availability: Redis
 
@@ -1446,7 +1499,9 @@ This guide explains how to quickly and easily deploy and use [MySQL](https://www
 
 7. Select the required [resources](databases-and-persistence.md#scale-a-database) for your database. You can scale the database after creation, but available storage and replicas cannot be decreased once increased.
 
-8. Create addon and MySQL will begin provisioning, this may take a few minutes.
+8. Optionally, enable high availability to deploy as a [MySQL InnoDB Cluster](databases-and-persistence.md#configure-addons-for-high-availability-mysql) — a 3-node Group Replication cluster with MySQL Router and automated failover. This cannot be changed after creation.
+
+9. Create addon and MySQL will begin provisioning, this may take a few minutes.
 
 ### Deploy MySQL on Northflank: Advanced options
 
@@ -1556,7 +1611,7 @@ The maximum concurrent connections allowed on a MySQL addon depend on the amount
 
 ### Deploy MySQL on Northflank: Next steps
 
-- [Configure MySQL for high availability: Make use of read replicas in your application for high availability MySQL databases.](databases-and-persistence.md#configure-addons-for-high-availability-mysql)
+- [Configure MySQL for high availability: Deploy MySQL with InnoDB Cluster for automated failover, Group Replication, and transparent routing.](databases-and-persistence.md#configure-addons-for-high-availability-mysql)
 - [Use the Northflank CLI: Learn how to create and manage projects on Northflank using the command line client.](../api/use-the-cli.md)
 - [Scale a database: Increase the storage size, number of replicas, and the available CPU and memory to improve availability and performance.](databases-and-persistence.md#scale-a-database)
 

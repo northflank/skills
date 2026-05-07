@@ -25,8 +25,8 @@ Required permission: Project > PreviewBlueprints > General > Update
   - `branch`: (string) (required) The name of the branch to use.
   - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]+$)
 - `$schema`: (string)
-- `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
+- `name`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
+- `description`: (multiple options) (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) (pattern: .*\${.*}.*)
 - `options`: {object}
   - `concurrencyPolicy`: (string) Defines the concurrency behaviour of the template with respect to parallel runs. (enum: allow, queue, forbid, latest, replace)
   - `nameFormat`: (string) The format of the automatically generated preview name. This is a parsed ref string.
@@ -135,6 +135,11 @@ Required permission: Project > PreviewBlueprints > General > Update
         - `allowList`: (boolean)
         - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
       - `ignoreDrafts`: (boolean) If `true`, draft pull requests from this repo will not trigger the template.
+    - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
+    - `id`: (string) | {object}
+    - `kind`: (string) (required) (enum: cron)
+    - `spec`: {object}
+      - `cron`: (string) (required) A cron expression that defines the schedule on which the template will be executed.
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
     - `id`: (string)
 - `apiVersion`: (string) (required)

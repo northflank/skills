@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(northflank get *)",
+      "Bash(northflank list *)",
+      "Bash(northflank exec *)"
+    ]
+  }
+}

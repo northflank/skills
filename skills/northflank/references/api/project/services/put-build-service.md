@@ -62,6 +62,10 @@ Required permission: Project > Services > General > Create
 - `buildConfiguration`: {object}
   - `prRestrictions`: [array of] (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
   - `branchRestrictions`: [array of] (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
+  - `crossProjectAccess`: {object}
+    - `enabled`: (boolean) (required) Allow this build service to be referenced by resources in other projects.
+    - `projects`: [array of] (string) The ID of a project to include or exclude. (pattern: ^[A-Za-z0-9-]+$)
+    - `isAllowList`: (boolean) (required) If true, only the listed projects can use this build service. If false, all projects except the listed ones can use this build service.
   - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
   - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
   - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
@@ -130,6 +134,10 @@ Required permission: Project > Services > General > Create
   - `buildConfiguration`: {object}
     - `prRestrictions`: [array of] (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
     - `branchRestrictions`: [array of] (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
+    - `crossProjectAccess`: {object}
+      - `enabled`: (boolean) (required) Allow this build service to be referenced by resources in other projects.
+      - `projects`: [array of] (string) The ID of a project to include or exclude. (pattern: ^[A-Za-z0-9-]+$)
+      - `isAllowList`: (boolean) (required) If true, only the listed projects can use this build service. If false, all projects except the listed ones can use this build service.
     - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
     - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
     - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
@@ -174,7 +182,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
-  --data '{"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}' \
+  --data '{"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}' \
   https://api.northflank.com/v1/projects/{projectId}/services/build
 ```
 
@@ -215,6 +223,12 @@ const payload = {
     "branchRestrictions": [
       "feature/*"
     ],
+    "crossProjectAccess": {
+      "enabled": true,
+      "projects": [
+        "example-project"
+      ]
+    },
     "pathIgnoreRules": [
       "README.md"
     ],
@@ -267,7 +281,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/build"
 
-payload = {"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}
+payload = {"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PUT", url, headers = headers, json = payload)
@@ -288,7 +302,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/build"
 
-  var jsonStr = []byte(`{"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}`)
+  var jsonStr = []byte(`{"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}`)
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -349,6 +363,12 @@ func main() {
       "branchRestrictions": [
         "feature/*"
       ],
+      "crossProjectAccess": {
+        "enabled": true,
+        "projects": [
+          "example-project"
+        ]
+      },
       "pathIgnoreRules": [
         "README.md"
       ],
@@ -457,6 +477,12 @@ Options:
     "branchRestrictions": [
       "feature/*"
     ],
+    "crossProjectAccess": {
+      "enabled": true,
+      "projects": [
+        "example-project"
+      ]
+    },
     "pathIgnoreRules": [
       "README.md"
     ],
@@ -533,6 +559,12 @@ Options:
     "branchRestrictions": [
       "feature/*"
     ],
+    "crossProjectAccess": {
+      "enabled": true,
+      "projects": [
+        "example-project"
+      ]
+    },
     "pathIgnoreRules": [
       "README.md"
     ],
@@ -632,6 +664,12 @@ await apiClient.put.service.build({
       "branchRestrictions": [
         "feature/*"
       ],
+      "crossProjectAccess": {
+        "enabled": true,
+        "projects": [
+          "example-project"
+        ]
+      },
       "pathIgnoreRules": [
         "README.md"
       ],
@@ -710,6 +748,12 @@ await apiClient.put.service.build({
       "branchRestrictions": [
         "feature/*"
       ],
+      "crossProjectAccess": {
+        "enabled": true,
+        "projects": [
+          "example-project"
+        ]
+      },
       "pathIgnoreRules": [
         "README.md"
       ],

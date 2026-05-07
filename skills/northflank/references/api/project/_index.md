@@ -11,6 +11,6 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 - [Pipelines](pipelines/_index.md) — 15 endpoints
 - [Preview Blueprints](preview-blueprints/_index.md) — 14 endpoints
 - [Secrets](secrets/_index.md) — 11 endpoints
-- [Services](services/_index.md) — 41 endpoints
+- [Services](services/_index.md) — 42 endpoints
 - [Volumes](volumes/_index.md) — 11 endpoints
 - [Workflows](workflows/_index.md) — 8 endpoints

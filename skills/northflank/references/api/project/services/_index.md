@@ -7,6 +7,7 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 | Page | API Reference | File |
 |------|---------------|------|
 | **Abort service build** | `DELETE /v1/projects/{projectId}/services/{serviceId}/build/{buildId}`<br>`DELETE /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/build/{buildId}` | [abort-service-build.md](abort-service-build.md) |
+| **Clear the build cache of a service** | `DELETE /v1/projects/{projectId}/services/{serviceId}/build-cache`<br>`DELETE /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/build-cache` | [clear-the-build-cache-of-a-service.md](clear-the-build-cache-of-a-service.md) |
 | **Create build service** | `POST /v1/projects/{projectId}/services/build`<br>`POST /v1/teams/{teamId}/projects/{projectId}/services/build` | [create-build-service.md](create-build-service.md) |
 | **Create combined service** | `POST /v1/projects/{projectId}/services/combined`<br>`POST /v1/teams/{teamId}/projects/{projectId}/services/combined` | [create-combined-service.md](create-combined-service.md) |
 | **Create deployment service** | `POST /v1/projects/{projectId}/services/deployment`<br>`POST /v1/teams/{teamId}/projects/{projectId}/services/deployment` | [create-deployment-service.md](create-deployment-service.md) |

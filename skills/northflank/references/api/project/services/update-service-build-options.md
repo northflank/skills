@@ -32,6 +32,10 @@ Required permission: Project > Services > General > Update
     - `internalCacheStorage`: (integer) DEPRECATED: This field will be removed in the near future.
 - `prRestrictions`: [array of] (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
 - `branchRestrictions`: [array of] (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
+- `crossProjectAccess`: {object}
+  - `enabled`: (boolean) (required) Allow this build service to be referenced by resources in other projects.
+  - `projects`: [array of] (string) The ID of a project to include or exclude. (pattern: ^[A-Za-z0-9-]+$)
+  - `isAllowList`: (boolean) (required) If true, only the listed projects can use this build service. If false, all projects except the listed ones can use this build service.
 - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
 - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
 - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
@@ -63,6 +67,10 @@ OR
 {object}
 - `prRestrictions`: [array of] (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
 - `branchRestrictions`: [array of] (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
+- `crossProjectAccess`: {object}
+  - `enabled`: (boolean) (required) Allow this build service to be referenced by resources in other projects.
+  - `projects`: [array of] (string) The ID of a project to include or exclude. (pattern: ^[A-Za-z0-9-]+$)
+  - `isAllowList`: (boolean) (required) If true, only the listed projects can use this build service. If false, all projects except the listed ones can use this build service.
 - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
 - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
 - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
@@ -97,7 +105,7 @@ Build from a Dockerfile
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}' \
+  --data '{"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}' \
   https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options
 ```
 
@@ -114,6 +122,12 @@ const payload = {
   "branchRestrictions": [
     "feature/*"
   ],
+  "crossProjectAccess": {
+    "enabled": true,
+    "projects": [
+      "example-project"
+    ]
+  },
   "pathIgnoreRules": [
     "README.md"
   ],
@@ -149,7 +163,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options"
 
-payload = {"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}
+payload = {"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -170,7 +184,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options"
 
-  var jsonStr = []byte(`{"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}`)
+  var jsonStr = []byte(`{"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -286,7 +300,7 @@ Don't modify build type settings
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}' \
+  --data '{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}' \
   https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options
 ```
 
@@ -298,6 +312,12 @@ const payload = {
   "branchRestrictions": [
     "feature/*"
   ],
+  "crossProjectAccess": {
+    "enabled": true,
+    "projects": [
+      "example-project"
+    ]
+  },
   "pathIgnoreRules": [
     "README.md"
   ],
@@ -333,7 +353,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options"
 
-payload = {"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}
+payload = {"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -354,7 +374,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options"
 
-  var jsonStr = []byte(`{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}`)
+  var jsonStr = []byte(`{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -418,6 +438,12 @@ Build from a Dockerfile
   "branchRestrictions": [
     "feature/*"
   ],
+  "crossProjectAccess": {
+    "enabled": true,
+    "projects": [
+      "example-project"
+    ]
+  },
   "pathIgnoreRules": [
     "README.md"
   ],
@@ -472,6 +498,12 @@ Don't modify build type settings
   "branchRestrictions": [
     "feature/*"
   ],
+  "crossProjectAccess": {
+    "enabled": true,
+    "projects": [
+      "example-project"
+    ]
+  },
   "pathIgnoreRules": [
     "README.md"
   ],
@@ -524,6 +556,12 @@ await apiClient.update.service.buildOptions({
     "branchRestrictions": [
       "feature/*"
     ],
+    "crossProjectAccess": {
+      "enabled": true,
+      "projects": [
+        "example-project"
+      ]
+    },
     "pathIgnoreRules": [
       "README.md"
     ],
@@ -590,6 +628,12 @@ await apiClient.update.service.buildOptions({
     "branchRestrictions": [
       "feature/*"
     ],
+    "crossProjectAccess": {
+      "enabled": true,
+      "projects": [
+        "example-project"
+      ]
+    },
     "pathIgnoreRules": [
       "README.md"
     ],

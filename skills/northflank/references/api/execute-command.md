@@ -20,9 +20,33 @@ A command can also be specified directly which allows you to run a command witho
 
 `northflank exec service|job --cmd "ls -lah"`
 
-There are multiple options such as `instance`, `user` and others which allows you to customise how commands are executed. You can view options with the `northflank exec service|job --help` command.
+There are multiple options such as `instance`, `user` and others which allow you to customise how commands are executed. You can view options with the `northflank exec service|job --help` command.
 
-> Note: `northflank exec service|job --cmd "..."` silently discards stdout/stderr when there's no TTY attached (CI runners, agent harnesses, anything wrapped in `bash -c`). Neither `--shell-cmd` nor `--verbose` changes this. To capture output non-interactively, wrap the call in `script -q /dev/null northflank exec service|job ...` on macOS/BSD or `script -qfc 'northflank exec service|job ...' /dev/null` on Linux.
+#### Modes
+
+`northflank exec service|job` runs in one of three modes depending on the flags you pass:
+
+- **Interactive shell** — `northflank exec service`. With no `--cmd`, an interactive session with stdin and TTY is opened. If `--shell-cmd` is not set, a list of standard shells is attempted in turn.
+
+- **Single command, no shell** — `northflank exec service --cmd 'date'`. The command is executed directly inside the container without a shell, so shell features like pipes, redirects, globs, and `$VAR` expansion are not available.
+
+- **Single command, custom shell** — `northflank exec service --cmd 'ls -l /usr' --shell-cmd 'bash -c'`. The command is passed to the specified shell, so shell expressions are evaluated.
+
+#### Options
+
+| Option | Description |
+| --- | --- |
+| `--project`, `--projectId [NAME]` | Project to exec into. |
+| `--service`, `--serviceId [NAME]` | Service to exec into. (`--job`, `--jobId` for jobs.) |
+| `--instance`, `--instanceName [NAME]` | Instance to exec into. If omitted, a random running instance is chosen. |
+| `--cmd`, `--command [COMMAND]` | Command to execute. If `--shell-cmd` is set, the command runs in that shell; otherwise it runs without a shell. If omitted, an interactive session with stdin and TTY is opened. |
+| `--shell-cmd [SHELL-CMD]` | Run the command with the given shell (e.g. `bash`, `sh`, `bash -c`). With no `--cmd` and no `--shell-cmd`, the CLI attempts several standard shells. With `--cmd` and no `--shell-cmd`, the command runs without a shell. |
+| `--user [USER]` | Run the command as this user (name or uid). |
+| `--group [GROUP]` | Run the command with this group (name or gid). |
+| `--noDefaults` | Don't use context default values; either set options explicitly or be prompted. |
+| `--skipValidation` | Skip client-side validation of input fields. |
+| `--verbose` | Verbose output. |
+| `--quiet` | No console output. |
 
 #### Execute a command as a specific user
 
@@ -36,6 +60,20 @@ uid=0(root) gid=0(root) groups=0(root)
 $ northflank exec service --user 0 --cmd id
 uid=0(root) gid=0(root) groups=0(root)
 ```
+
+#### Capturing output in non-interactive environments
+
+`northflank exec service|job --cmd '...'` is designed for an interactive terminal. When stdout is not a TTY — for example in CI pipelines, automation harnesses, coding agents (such as Claude Code, OpenCode, etc), or under `bash -c '...'` — the remote command's stdout and stderr can be silently discarded. Neither `--shell-cmd` nor `--verbose` changes this. If you need to capture output programmatically, allocate a pseudo-TTY using `script(1)`:
+
+```bash
+# macOS / BSD
+script -q /dev/null northflank exec service --cmd 'ls -lah /workspace'
+
+# Linux (util-linux)
+script -qfc 'northflank exec service --cmd "ls -lah /workspace"' /dev/null
+```
+
+If you are scripting against Northflank from Node.js, prefer the [JavaScript client's exec API](https://northflank.com/docs/v1/api/execute-command-js-client), which returns stdout and stderr as readable streams without needing a PTY shim.
 
 ### Execute a command using the JavaScript client
 

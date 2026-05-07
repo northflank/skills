@@ -107,6 +107,10 @@ Required permission: Project > Services > General > Read
   - `buildConfiguration`: {object}
     - `prRestrictions`: [array of] (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
     - `branchRestrictions`: [array of] (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
+    - `crossProjectAccess`: {object}
+      - `enabled`: (boolean) (required) Allow this build service to be referenced by resources in other projects.
+      - `projects`: [array of] (string) The ID of a project to include or exclude. (pattern: ^[A-Za-z0-9-]+$)
+      - `isAllowList`: (boolean) (required) If true, only the listed projects can use this build service. If false, all projects except the listed ones can use this build service.
     - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
     - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
     - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
@@ -276,6 +280,12 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}
       "branchRestrictions": [
         "feature/*"
       ],
+      "crossProjectAccess": {
+        "enabled": true,
+        "projects": [
+          "example-project"
+        ]
+      },
       "pathIgnoreRules": [
         "README.md"
       ],
@@ -468,6 +478,12 @@ Options:
     "branchRestrictions": [
       "feature/*"
     ],
+    "crossProjectAccess": {
+      "enabled": true,
+      "projects": [
+        "example-project"
+      ]
+    },
     "pathIgnoreRules": [
       "README.md"
     ],
@@ -657,6 +673,12 @@ await apiClient.get.service({
       "branchRestrictions": [
         "feature/*"
       ],
+      "crossProjectAccess": {
+        "enabled": true,
+        "projects": [
+          "example-project"
+        ]
+      },
       "pathIgnoreRules": [
         "README.md"
       ],

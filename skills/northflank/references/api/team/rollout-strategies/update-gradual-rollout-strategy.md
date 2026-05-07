@@ -29,8 +29,12 @@ Required permission: Account > GradualRollouts > General > Update
    - `config`: (multiple options) {object}
       - `canaryPercentage`: (integer) (required) Percentage of traffic to route to the canary deployment
       - `stablePercentage`: (integer) (required) Percentage of traffic to route to the stable deployment | {object}
-      - `headerName`: (string) (required) HTTP header name used to identify requests that should be routed to the canary deployment (min length: 1)
-      - `headerValue`: (string) (required) HTTP header value that routes matching requests to the canary deployment (min length: 1)
+      - `canaryHeader`: {object}
+        - `headerName`: (string) (required) HTTP header name used to identify requests that should be routed to the target deployment (min length: 1)
+        - `headerValue`: (string) (required) HTTP header value that routes matching requests to the target deployment (min length: 1)
+      - `stableHeader`: {object}
+        - `headerName`: (string) (required) HTTP header name used to identify requests that should be routed to the target deployment (min length: 1)
+        - `headerValue`: (string) (required) HTTP header value that routes matching requests to the target deployment (min length: 1)
 
 **Response body:**
 

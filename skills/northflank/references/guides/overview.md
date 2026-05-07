@@ -9,7 +9,7 @@ Find guides on how to build, deploy, and scale your code on Northflank.
 - [Getting started: Learn the basics and get up-and-running on Northflank within minutes by following walkthroughs to begin building and deploying your code.](getting-started.md#introduction-to-northflank)
 - [Migrate from Heroku: Migrate your services to Northflank from Heroku using our automated import feature, or manually transfer your Heroku applications to Northflank.](migrate-from-heroku.md)
 - [Run production workloads: Learn how to set up your DevOps workflow and confidently manage your production workloads on Northflank.](production-workloads.md#get-production-ready-on-northflank)
-- [Deployment guides: Browse our guides on deploying specific applications on Northflank.](deploy-on-northflank.md)
+- [Deployment guides: Browse our guides on deploying specific applications on Northflank.](https://northflank.com/docs/v1/application/deploy-on-northflank)
 
 ### How-to guides
 

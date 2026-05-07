@@ -341,6 +341,148 @@ console.log('Public URL:', publicUrl);
 
 Set `public: false` if the port should only be reachable by other services within the same project. The `protocol` field supports `HTTP`, `HTTP2`, `TCP`, and `UDP`.
 
+### Sandboxes on Northflank: Create a GPU sandbox
+
+Sandboxes support GPU-enabled workloads for machine learning, AI inference, and compute-intensive tasks. GPU plans bundle CPU and RAM matched to the GPU model using the format `nf-gpu-<model>-<count>g`.
+
+#### Sandboxes on Northflank: On Northflank cloud
+
+GPU workloads on Northflank cloud use gVisor isolation by default. Projects must be in a GPU-enabled region like `asia-southeast`.
+
+##### Sandboxes on Northflank: Starting an ephemeral GPU sandbox
+
+Deploy a GPU service without persistent storage. Anything written inside the container is lost when it restarts or scales to zero.
+
+```typescript
+const sandboxId = `jupyter-${crypto.randomUUID().split('-')[4]}`;
+
+await apiClient.create.service.deployment({
+  parameters: {
+    projectId: 'your-project-id', // must be in GPU-enabled region
+  },
+  data: {
+    name: sandboxId,
+    billing: {
+      deploymentPlan: 'nf-gpu-a100-80-1g', // 1x A100 80GB GPU
+    },
+    deployment: {
+      instances: 1,
+      external: {
+        imagePath: 'quay.io/jupyter/pytorch-notebook:cuda12-2026-02-09',
+      },
+      docker: {
+        configType: 'default',
+      },
+      gpu: {
+        enabled: true,
+        configuration: {
+          gpuType: 'a100-80',
+          gpuCount: 1,
+          timesliced: false,
+        },
+      },
+      storage: {
+        ephemeralStorage: {
+          storageSize: 256000,
+        },
+        shmSize: 174080, // must match host RAM for GPU type
+      },
+    },
+    ports: [
+      {
+        name: 'app',
+        internalPort: 8888,
+        public: true,
+        protocol: 'HTTP',
+      },
+    ],
+  },
+});
+```
+
+The `shmSize` value should match the host RAM for your GPU instance type. For A100-80 instances, use 174080 MB.
+
+##### Sandboxes on Northflank: Create GPU sandbox with volume for persistence
+
+For workloads that need to preserve notebooks, datasets, or model weights across restarts and pauses, create the volume first and attach it at service creation time using `createOptions.volumesToAttach`:
+
+```typescript
+const sandboxId = `jupyter-${crypto.randomUUID().split('-')[4]}`;
+const volumeName = `data-${sandboxId}`;
+
+// Create the volume first
+await apiClient.create.volume({
+  parameters: {
+    projectId: 'your-project-id',
+  },
+  data: {
+    name: volumeName,
+    spec: {
+      accessMode: 'ReadWriteMany',
+      storageClassName: 'nf-multi-rw',
+      storageSize: 102400, // 100 GB
+    },
+    mounts: [
+      { containerMountPath: '/home/jovyan' },
+      { containerMountPath: '/workspace' },
+    ],
+  },
+});
+
+// Create the GPU service and attach the volume
+await apiClient.create.service.deployment({
+  parameters: {
+    projectId: 'your-project-id', // must be in GPU-enabled region
+  },
+  data: {
+    name: sandboxId,
+    billing: {
+      deploymentPlan: 'nf-gpu-a100-80-1g', // 1x A100 80GB GPU
+    },
+    deployment: {
+      instances: 1,
+      external: {
+        imagePath: 'quay.io/jupyter/pytorch-notebook:cuda12-2026-02-09',
+      },
+      docker: {
+        configType: 'default',
+      },
+      gpu: {
+        enabled: true,
+        configuration: {
+          gpuType: 'a100-80',
+          gpuCount: 1,
+          timesliced: false,
+        },
+      },
+      storage: {
+        ephemeralStorage: {
+          storageSize: 256000,
+        },
+        shmSize: 174080, // must match host RAM for GPU type
+      },
+    },
+    ports: [
+      {
+        name: 'app',
+        internalPort: 8888,
+        public: true,
+        protocol: 'HTTP',
+      },
+    ],
+    createOptions: {
+      volumesToAttach: [volumeName],
+    },
+  },
+});
+```
+
+#### Sandboxes on Northflank: On BYOC cluster
+
+Configure your cluster with sandbox security and a GPU node pool. See [Deploy GPUs in your own cloud](gpu-workloads.md#deploy-gpus-in-your-own-cloud) for setup steps.
+
+Once configured, use the same deployment code from the Northflank Cloud examples above. The service will automatically deploy to your GPU node pool with the configured isolation.
+
 ### Sandboxes on Northflank: Pause or destroy the sandbox
 
 Pause a sandbox by scaling to zero to stop compute billing while keeping the volume and service configuration intact. Resume later by scaling back to 1.

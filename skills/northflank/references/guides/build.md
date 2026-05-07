@@ -1,6 +1,6 @@
 # Build
 
-Generated from 7 application pages listed in `llms.txt`.
+Generated from 8 application pages listed in `llms.txt`.
 
 ## Pages
 
@@ -11,6 +11,7 @@ Generated from 7 application pages listed in `llms.txt`.
 - [Build your code on Northflank](#build-your-code-on-northflank)
 - [Inject build arguments](#inject-build-arguments)
 - [Pull images from Northflank](#pull-images-from-northflank)
+- [Share builds across projects](#share-builds-across-projects)
 
 ## Build code from a Git repository
 
@@ -520,6 +521,101 @@ FROM registry.northflank.com/${PROJECT_ID}/${SERVICE_ID}:${BUILD_ID} as builder
 ```
 
 ### Pull images from Northflank: Next steps
+
+- [Build from a Git repository: Start building from your linked Git repositories in minutes.](build.md#build-code-from-a-git-repository)
+- [Build a repository using a Dockerfile: Configure your application build process using a Dockerfile.](build.md#build-with-a-dockerfile)
+- [Inject secrets: Set build arguments and inject runtime variables into running deployments.](secure.md#inject-secrets)
+- [Upload a secret file: Add secret files that will be mounted in your container.](secure.md#upload-secret-files)
+
+## Share builds across projects
+
+Source: https://northflank.com/docs/v1/application/build/share-builds-across-projects.md
+
+Cross-project builds let you reference a build service from any project in your team or organization. A single build service can produce images consumed by deployment services and jobs across multiple projects.
+
+Use this to organize resources so one build service powers multiple environments. For example, a shared CI build in a `builds` project can deploy to separate `staging`, `qa`, and `production` projects.
+
+### Share builds across projects: Enable cross-project access
+
+Build services require explicit configuration to allow cross-project references. By default, a build service can only be referenced within its own project.
+
+1. Navigate to your build service.
+
+2. Click **Build options**.
+
+3. Scroll to **Advanced build settings**.
+
+4. Under **Cross project access**, enable **Share build access to other projects**.
+
+5. Select which projects can reference this build service (optional):
+
+  - By default, all projects in your team can reference this build service
+
+  - To restrict access, add specific project IDs to allow only those projects
+
+  - Enable **Use as exclusion rule** to allow all projects except the ones listed
+
+6. Click **Update build options**.
+
+Once enabled, the build service can be referenced from deployment services, jobs, and workflows in the allowed projects.
+
+### Share builds across projects: Reference a shared build
+
+After enabling cross-project access, you can reference the build service from deployment services through the UI or programmatically in templates and workflows.
+
+#### Share builds across projects: Link to a deployment service in the UI
+
+1. Create a new deployment service
+
+2. Under **Deployment**, select **Northflank** as the deployment source
+
+3. The **Link build service** section appears
+
+4. Under **Build service**, select the project and build service you want to deploy
+
+5. Select **Branch** to deploy from
+
+6. Click **Create service**
+
+The deployment service will now use builds from the selected cross-project build service.
+
+#### Share builds across projects: Use in templates and workflows
+
+Cross-project build references work in templates, workflows, and preview blueprints.
+
+Reference a build service using its ID, prefixed with the project ID:
+
+```
+<project-id>/<build-service-id>
+```
+
+If the build service is in the same project, omit the project ID prefix:
+
+```
+<build-service-id>
+```
+
+For a deployment service node consuming a cross-project build:
+
+```json
+{
+  "kind": "DeploymentService",
+  "spec": {
+    "type": "deployment",
+    "internal": {
+      "id": "builds-project/shared-build-service",
+      "branch": "main",
+      "buildSHA": "latest"
+    }
+  }
+}
+```
+
+### Share builds across projects: Access control
+
+Build services can only be referenced by projects in the same team. Access can be controlled on the build service level by allowing access from all or specific projects.
+
+### Share builds across projects: Next steps
 
 - [Build from a Git repository: Start building from your linked Git repositories in minutes.](build.md#build-code-from-a-git-repository)
 - [Build a repository using a Dockerfile: Configure your application build process using a Dockerfile.](build.md#build-with-a-dockerfile)

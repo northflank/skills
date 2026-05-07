@@ -51,6 +51,8 @@ Required permission: Project > ExternalAddons > General > Read
             - `akamai`: {object}
               - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
           - `config`: {object}
+          - `outputs`: {object}
+          - `workloadIdentityId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
         - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `pagination`: {object}
       - `page`: (integer) (required) Current page number

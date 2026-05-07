@@ -130,6 +130,11 @@ Required permission: Project > Workflows > General > Create
         - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
       - `ignoreDrafts`: (boolean) If `true`, draft pull requests from this repo will not trigger the template.
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
+    - `id`: (string) | {object}
+    - `kind`: (string) (required) (enum: cron)
+    - `spec`: {object}
+      - `cron`: (string) (required) A cron expression that defines the schedule on which the template will be executed.
+    - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
     - `id`: (string)
 - `apiVersion`: (string) (required)
 - `project`: {object}

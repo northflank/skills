@@ -91,8 +91,12 @@ Required permission: Project > Pipelines > General > Read
              - `config`: (multiple options) (multiple options) {object}
                    - `canaryPercentage`: (multiple options) (integer) Percentage of traffic to route to the canary deployment | (string) A string containing one or more references that resolve to percentage of traffic to route to the canary deployment (pattern: .*\${.*}.*)
                    - `stablePercentage`: (multiple options) (integer) Percentage of traffic to route to the stable deployment | (string) A string containing one or more references that resolve to percentage of traffic to route to the stable deployment (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to configuration for the selected canary strategy (pattern: .*\${.*}.*) | (multiple options) {object}
-                   - `headerName`: (multiple options) (string) HTTP header name used to identify requests that should be routed to the canary deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header name used to identify requests that should be routed to the canary deployment (pattern: .*\${.*}.*)
-                   - `headerValue`: (multiple options) (string) HTTP header value that routes matching requests to the canary deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header value that routes matching requests to the canary deployment (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to configuration for the selected canary strategy (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to strategy-specific configuration details (pattern: .*\${.*}.*)
+                   - `canaryHeader`: {object}
+                     - `headerName`: (multiple options) (string) HTTP header name used to identify requests that should be routed to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header name used to identify requests that should be routed to the target deployment (pattern: .*\${.*}.*)
+                     - `headerValue`: (multiple options) (string) HTTP header value that routes matching requests to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header value that routes matching requests to the target deployment (pattern: .*\${.*}.*)
+                   - `stableHeader`: {object}
+                     - `headerName`: (multiple options) (string) HTTP header name used to identify requests that should be routed to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header name used to identify requests that should be routed to the target deployment (pattern: .*\${.*}.*)
+                     - `headerValue`: (multiple options) (string) HTTP header value that routes matching requests to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header value that routes matching requests to the target deployment (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to configuration for the selected canary strategy (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to strategy-specific configuration details (pattern: .*\${.*}.*)
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -155,6 +159,35 @@ Required permission: Project > Pipelines > General > Read
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
        - `data`: (undefined) The response data of the AddonBackup node. | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `settings`: {object}
+       - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
+       - `backoff`: {object}
+         - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
+         - `delay`: (integer) The time between attempts in seconds.
+     - `kind`: (string) (required) The kind of node. (enum: AddonImport)
+     - `spec`: {object}
+       - `projectId`: (multiple options) (string) The ID of the project containing the addon. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the project containing the addon. (pattern: .*\${.*}.*)
+       - `addonId`: (multiple options) (string) The ID of the addon to import a backup into. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the addon to import a backup into. (pattern: .*\${.*}.*)
+       - `importUrl`: (multiple options) (string) A URL to import a backup file from. | (string) A string containing one or more references that resolve to a URL to import a backup file from. (pattern: .*\${.*}.*)
+       - `connectionString`: (multiple options) (string) A connection string for a live database to dump and import. | (string) A string containing one or more references that resolve to a connection string for a live database to dump and import. (pattern: .*\${.*}.*)
+       - `importAllDatabases`: (boolean) When true, all non-system databases will be detected and dumped. Only applicable when using a connection string with PostgreSQL.
+       - `compressionType`: (multiple options) (string) (enum: zstd, gz, none) | (string) (pattern: .*\${.*}.*)
+       - `customDestinationId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
+     - `condition`: (string) (enum: success)
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `response`: {object}
+       - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
+       - `error`: (undefined) Error data of the node.
+       - `retries`: {object}
+         - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
+         - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
+         - `timestamp`: (integer) (required) The timestamp of the most recent attempt.
+         - `nextAttempt`: (integer) The timestamp of the next attempt.
+         - `initialCheckTime`: (integer) The timestamp of the initial condition check.
+       - `startTime`: (integer) The timestamp of the initial attempt.
+       - `endTime`: (integer) The timestamp of the final attempt.
+       - `data`: (undefined) The response data of the AddonImport node. | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}
        - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
@@ -229,7 +262,7 @@ Required permission: Project > Pipelines > General > Read
                - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
              - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
            - `internal`: {object}
-             - `id`: (multiple options) (string) ID of the build service to deploy (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+             - `id`: (multiple options) (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
              - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
              - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
              - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*) | {object}
@@ -400,6 +433,13 @@ Required permission: Project > Pipelines > General > Read
                - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
                - `addonId`: (multiple options) (string) The id of the addon to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the addon to monitor. (pattern: .*\${.*}.*)
                - `backupId`: (multiple options) (string) The id of the backup to monitor. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the backup to monitor. (pattern: .*\${.*}.*) | {object}
+         - `kind`: (string) (required) The kind of condition. (enum: AddonImport)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of condition. (enum: success)
+             - `data`: {object}
+               - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+               - `addonId`: (multiple options) (string) The id of the addon to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the addon to monitor. (pattern: .*\${.*}.*)
+               - `importId`: (multiple options) (string) The id of the import to monitor. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the import to monitor. (pattern: .*\${.*}.*) | {object}
          - `kind`: (string) (required) The kind of condition. (enum: Build)
          - `spec`: (multiple options) {object}
              - `type`: (string) (required) The type of condition. (enum: success)
