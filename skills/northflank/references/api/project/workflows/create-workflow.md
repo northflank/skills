@@ -55,6 +55,10 @@ Required permission: Project > Workflows > General > Create
   - `spec`: (undefined) (required) The root node of the teardown workflow.
   - `failurePolicy`: (string) Controls what happens if the teardown spec fails or times out. `ignore` (default) — proceed with resource deletion regardless. `block` — halt deletion and set the environment to `teardown_failed` (enum: ignore, block)
 - `argumentOverrides`: {object}
+- `crossProjectAccess`: {object}
+  - `enabled`: (boolean) (required) Allow this workflow to be run from other projects.
+  - `projects`: [array of] (string) (pattern: ^[A-Za-z0-9-]+$)
+  - `isAllowList`: (boolean) (required) If true, only the listed projects can run this workflow. If false, all projects except the listed ones can run this workflow.
 - `stageId`: (multiple options) (string) ID of the stage (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to iD of the stage (pattern: .*\${.*}.*)
 - `triggers`: [array of] (multiple options) {object}
     - `kind`: (string) (required) (enum: vcs-push)
@@ -154,7 +158,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"richInputs":[{"kind":"BranchCommitSelector","spec":{"required":false,"inputs":{"source":"build-service"},"outputs":{"branch":"TARGET_BRANCH","buildSha":"TARGET_COMMIT"}}}],"options":{"autorun":false,"concurrencyPolicy":"allow"},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]"]},"filePaths":{"paths":["README.md"]}}}]}' \
+  --data '{"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"richInputs":[{"kind":"BranchCommitSelector","spec":{"required":false,"inputs":{"source":"build-service"},"outputs":{"branch":"TARGET_BRANCH","buildSha":"TARGET_COMMIT"}}}],"options":{"autorun":false,"concurrencyPolicy":"allow"},"crossProjectAccess":{"projects":["example-project"]},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]"]},"filePaths":{"paths":["README.md"]}}}]}' \
   https://api.northflank.com/v1/projects/{projectId}/workflows
 ```
 
@@ -185,6 +189,11 @@ const payload = {
   "options": {
     "autorun": false,
     "concurrencyPolicy": "allow"
+  },
+  "crossProjectAccess": {
+    "projects": [
+      "example-project"
+    ]
   },
   "triggers": [
     {
@@ -227,7 +236,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/workflows"
 
-payload = {"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"richInputs":[{"kind":"BranchCommitSelector","spec":{"required":false,"inputs":{"source":"build-service"},"outputs":{"branch":"TARGET_BRANCH","buildSha":"TARGET_COMMIT"}}}],"options":{"autorun":false,"concurrencyPolicy":"allow"},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]"]},"filePaths":{"paths":["README.md"]}}}]}
+payload = {"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"richInputs":[{"kind":"BranchCommitSelector","spec":{"required":false,"inputs":{"source":"build-service"},"outputs":{"branch":"TARGET_BRANCH","buildSha":"TARGET_COMMIT"}}}],"options":{"autorun":false,"concurrencyPolicy":"allow"},"crossProjectAccess":{"projects":["example-project"]},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]"]},"filePaths":{"paths":["README.md"]}}}]}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -248,7 +257,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/workflows"
 
-  var jsonStr = []byte(`{"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"richInputs":[{"kind":"BranchCommitSelector","spec":{"required":false,"inputs":{"source":"build-service"},"outputs":{"branch":"TARGET_BRANCH","buildSha":"TARGET_COMMIT"}}}],"options":{"autorun":false,"concurrencyPolicy":"allow"},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]"]},"filePaths":{"paths":["README.md"]}}}]}`)
+  var jsonStr = []byte(`{"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"richInputs":[{"kind":"BranchCommitSelector","spec":{"required":false,"inputs":{"source":"build-service"},"outputs":{"branch":"TARGET_BRANCH","buildSha":"TARGET_COMMIT"}}}],"options":{"autorun":false,"concurrencyPolicy":"allow"},"crossProjectAccess":{"projects":["example-project"]},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]"]},"filePaths":{"paths":["README.md"]}}}]}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -317,6 +326,11 @@ Options:
     "autorun": false,
     "concurrencyPolicy": "allow"
   },
+  "crossProjectAccess": {
+    "projects": [
+      "example-project"
+    ]
+  },
   "triggers": [
     {
       "spec": {
@@ -378,6 +392,11 @@ await apiClient.create.workflow({
     "options": {
       "autorun": false,
       "concurrencyPolicy": "allow"
+    },
+    "crossProjectAccess": {
+      "projects": [
+        "example-project"
+      ]
     },
     "triggers": [
       {

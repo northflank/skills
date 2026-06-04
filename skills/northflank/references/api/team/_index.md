@@ -5,7 +5,7 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 ## Groups
 
 - [Backup Destinations](backup-destinations/_index.md) — 6 endpoints
-- [Billing](billing/_index.md) — 2 endpoints
+- [Billing](billing/_index.md) — 4 endpoints
 - [Cloud Providers](cloud-providers/_index.md) — 18 endpoints
 - [Domains](domains/_index.md) — 23 endpoints
 - [Egress Ips](egress-ips/_index.md) — 6 endpoints

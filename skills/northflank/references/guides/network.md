@@ -498,6 +498,9 @@ You can use any port from 1 to 65535 (ports for web servers are often 80, 443, 3
 
 Public ports allow your application to receive and send traffic from clients on the internet. Only HTTP and HTTP/2 ports can be publicly exposed.
 
+> [!note]
+> HTTP and HTTP/2 public ports work out of the box and need no additional cluster configuration. TCP and UDP ports cannot be made public directly — to reach a TCP or UDP service from the internet, route traffic to it through a [load balancer](https://northflank.com/docs/v1/application/configure-load-balancers), which provides a stable public IP at Layer 4.
+
 Public ports are automatically assigned a Northflank domain name, secured with an automatically-generated TLS certificate. They take the format:
 
 `[port-name]--[service-name]--[random-string].code.run`

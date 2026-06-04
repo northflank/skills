@@ -86,7 +86,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -108,7 +110,7 @@ Required permission: Account > Templates > General > Read
        - `name`: (multiple options) (string) Subdomain prepended to the domain name | (string) A string containing one or more references that resolve to subdomain prepended to the domain name (pattern: .*\${.*}.*)
        - `options`: {object}
          - `tlsMode`: (string) Desired TLS mode for the subdomain. (enum: default, passthrough)
-         - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_2, TLSV1_3)
+         - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
          - `autoVerify`: (boolean) The domain will be automatically verified on creation. Only configurable if the relevant feature flag is enabled for you account.
          - `aliasDomains`: [array of] (string)
        - `cdn`: {object}
@@ -147,7 +149,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -161,7 +165,7 @@ Required permission: Account > Templates > General > Read
          - `name`: (string) (required) Subdomain prepended to the domain name
          - `options`: {object}
            - `tlsMode`: (string) Desired TLS mode for the subdomain. (enum: default, passthrough)
-           - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_2, TLSV1_3)
+           - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
            - `autoVerify`: (boolean) The domain will be automatically verified on creation. Only configurable if the relevant feature flag is enabled for you account.
            - `aliasDomains`: [array of] (string)
          - `cdn`: {object}
@@ -245,7 +249,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -309,13 +315,28 @@ Required permission: Account > Templates > General > Read
                - `key`: (string) (required)
                - `operator`: (string) (required) (enum: In, NotIn)
                - `values`: [array of] (string)
+       - `sandboxing`: {object}
+         - `builds`: {object}
+           - `enabled`: (boolean) (required) Enables runtime scheduling constraints for builds
+           - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for builds (enum: none, gvisor, kata-clh, kata-qemu)
+         - `services`: {object}
+           - `enabled`: (boolean) (required) Enables runtime scheduling constraints for services
+           - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for services (enum: none, gvisor, kata-clh, kata-qemu)
+         - `addons`: {object}
+           - `enabled`: (boolean) (required) Enables runtime scheduling constraints for addons
+           - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for addons (enum: none, gvisor, kata-clh, kata-qemu)
+         - `jobs`: {object}
+           - `enabled`: (boolean) (required) Enables runtime scheduling constraints for jobs
+           - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for jobs (enum: none, gvisor, kata-clh, kata-qemu)
        - `color`: (string) (pattern: ^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$)
        - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
        - `name`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -334,6 +355,19 @@ Required permission: Account > Templates > General > Read
                  - `key`: (string) (required)
                  - `operator`: (string) (required) (enum: In, NotIn)
                  - `values`: [array of] (string)
+         - `sandboxing`: {object}
+           - `builds`: {object}
+             - `enabled`: (boolean) (required) Enables runtime scheduling constraints for builds
+             - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for builds (enum: none, gvisor, kata-clh, kata-qemu)
+           - `services`: {object}
+             - `enabled`: (boolean) (required) Enables runtime scheduling constraints for services
+             - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for services (enum: none, gvisor, kata-clh, kata-qemu)
+           - `addons`: {object}
+             - `enabled`: (boolean) (required) Enables runtime scheduling constraints for addons
+             - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for addons (enum: none, gvisor, kata-clh, kata-qemu)
+           - `jobs`: {object}
+             - `enabled`: (boolean) (required) Enables runtime scheduling constraints for jobs
+             - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for jobs (enum: none, gvisor, kata-clh, kata-qemu)
          - `color`: (string) (pattern: ^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$)
          - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
          - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -371,7 +405,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -478,7 +514,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -830,7 +868,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -1327,7 +1367,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -1623,7 +1665,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -1827,7 +1871,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -2090,7 +2136,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -2355,7 +2403,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -2570,11 +2620,22 @@ Required permission: Account > Templates > General > Read
          - `type`: (string) (required) The identifier for the type of addon. Addon types can be found at the Get Addon Types endpoint.
          - `infrastructure`: {object}
            - `architecture`: (string) (enum: x86, arm)
-         - `templateValues`: {object}
+         - `templateValues`: {object} | {object}
+         - `name`: (multiple options) (string) The name of the addon. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the name of the addon. (pattern: .*\${.*}.*)
+         - `description`: (multiple options) (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the addon. (pattern: .*\${.*}.*)
+         - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+         - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
+         - `tags`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
+         - `type`: (string) (required) The identifier for the type of addon. Addon types can be found at the Get Addon Types endpoint.
+         - `infrastructure`: {object}
+           - `architecture`: (string) (enum: x86, arm)
+         - `region`: (string) The AWS region identifier for the bucket location.
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -2669,6 +2730,24 @@ Required permission: Account > Templates > General > Read
              - `loadBalancers`: [array of] (string)
            - `createdAt`: (string) time of creation (format: date-time)
            - `updatedAt`: (string) time of update (format: date-time) | {object}
+           - `name`: (string) (required) The name of the addon. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+           - `description`: (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
+           - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+           - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+           - `type`: (string) (required) The identifier for the type of addon. Addon types can be found at the Get Addon Types endpoint.
+           - `infrastructure`: {object}
+             - `architecture`: (string) (enum: x86, arm)
+           - `region`: (string) The AWS region identifier for the bucket location.
+           - `id`: (string) (required) Identifier for the addon.
+           - `appId`: (string) (required) Full identifier used for deployment
+           - `status`: (string) (required) The current state of the addon. (enum: preDeployment, triggerAllocation, allocating, postDeployment, running, paused, scaling, upgrading, resetting, backup, restore, failed, error, errorAllocating, deleting, deleted)
+           - `cluster`: {object}
+             - `id`: (string) (required) The id of the cluster associated with this project.
+             - `name`: (string) (required) The name of the cluster associated with this project.
+             - `namespace`: (string) Namespace this resource is located within on the cluster.
+             - `loadBalancers`: [array of] (string)
+           - `createdAt`: (string) time of creation (format: date-time)
+           - `updatedAt`: (string) time of update (format: date-time) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}
        - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
@@ -2681,7 +2760,7 @@ Required permission: Account > Templates > General > Read
        - `tags`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
        - `environmentId`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
        - `spec`: {object}
-         - `resourceType`: (string) (required) (enum: s3, rds)
+         - `resourceType`: (string) (required) (enum: s3, rds, cloudSql, memorystore)
          - `provider`: {object}
            - `aws`: {object}
              - `region`: (string) (required)
@@ -2710,7 +2789,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -2741,7 +2822,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -2770,7 +2853,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -2820,7 +2905,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -2892,7 +2979,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -2935,7 +3024,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -3003,7 +3094,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -3026,7 +3119,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -3115,7 +3210,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -3188,7 +3285,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -3234,7 +3333,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -3272,7 +3373,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -3293,7 +3396,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -3318,7 +3423,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -3365,7 +3472,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -3387,7 +3496,9 @@ Required permission: Account > Templates > General > Read
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.

@@ -80,7 +80,16 @@ Required permission: Project > Addons > General > Create
  - `type`: (string) (required) The identifier for the type of addon. Addon types can be found at the Get Addon Types endpoint.
  - `infrastructure`: {object}
    - `architecture`: (string) (enum: x86, arm)
- - `templateValues`: {object}
+ - `templateValues`: {object} | {object}
+ - `name`: (string) (required) The name of the addon. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+ - `description`: (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
+ - `projectId`: (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$)
+ - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+ - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+ - `type`: (string) (required) The identifier for the type of addon. Addon types can be found at the Get Addon Types endpoint.
+ - `infrastructure`: {object}
+   - `architecture`: (string) (enum: x86, arm)
+ - `region`: (string) The AWS region identifier for the bucket location.
 
 **Response body:**
 
@@ -161,6 +170,24 @@ Required permission: Project > Addons > General > Create
    - `infrastructure`: {object}
      - `architecture`: (string) (enum: x86, arm)
    - `templateValues`: {object}
+   - `id`: (string) (required) Identifier for the addon.
+   - `appId`: (string) (required) Full identifier used for deployment
+   - `status`: (string) (required) The current state of the addon. (enum: preDeployment, triggerAllocation, allocating, postDeployment, running, paused, scaling, upgrading, resetting, backup, restore, failed, error, errorAllocating, deleting, deleted)
+   - `cluster`: {object}
+     - `id`: (string) (required) The id of the cluster associated with this project.
+     - `name`: (string) (required) The name of the cluster associated with this project.
+     - `namespace`: (string) Namespace this resource is located within on the cluster.
+     - `loadBalancers`: [array of] (string)
+   - `createdAt`: (string) time of creation (format: date-time)
+   - `updatedAt`: (string) time of update (format: date-time) | {object}
+   - `name`: (string) (required) The name of the addon. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+   - `description`: (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
+   - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+   - `type`: (string) (required) The identifier for the type of addon. Addon types can be found at the Get Addon Types endpoint.
+   - `infrastructure`: {object}
+     - `architecture`: (string) (enum: x86, arm)
+   - `region`: (string) The AWS region identifier for the bucket location.
    - `id`: (string) (required) Identifier for the addon.
    - `appId`: (string) (required) Full identifier used for deployment
    - `status`: (string) (required) The current state of the addon. (enum: preDeployment, triggerAllocation, allocating, postDeployment, running, paused, scaling, upgrading, resetting, backup, restore, failed, error, errorAllocating, deleting, deleted)
@@ -397,6 +424,30 @@ func main() {
 }
 ```
 
+[object Object]
+
+```json
+{
+  "data": {
+    "name": "Example Addon",
+    "description": "An addon description",
+    "type": "postgresql",
+    "region": "eu-west-2",
+    "id": "example-addon",
+    "appId": "/example-user/default-project/example-addon",
+    "status": "running",
+    "cluster": {
+      "id": "nf-europe-west",
+      "name": "nf-europe-west",
+      "namespace": "ns-8zy2mcjh9zn2",
+      "loadBalancers": [
+        "lb.659200800000000000000000.northflank.com"
+      ]
+    }
+  }
+}
+```
+
 ### CLI reference
 
 $ northflank put addon
@@ -561,6 +612,28 @@ Options:
 }
 ```
 
+[object Object]
+
+```json
+{
+  "name": "Example Addon",
+  "description": "An addon description",
+  "type": "postgresql",
+  "region": "eu-west-2",
+  "id": "example-addon",
+  "appId": "/example-user/default-project/example-addon",
+  "status": "running",
+  "cluster": {
+    "id": "nf-europe-west",
+    "name": "nf-europe-west",
+    "namespace": "ns-8zy2mcjh9zn2",
+    "loadBalancers": [
+      "lb.659200800000000000000000.northflank.com"
+    ]
+  }
+}
+```
+
 ### JavaScript client reference
 
 #### Example request
@@ -710,6 +783,33 @@ await apiClient.put.addon({
     "description": "An addon description",
     "type": "postgresql",
     "templateValues": "{\"replicas\": 2}",
+    "id": "example-addon",
+    "appId": "/example-user/default-project/example-addon",
+    "status": "running",
+    "cluster": {
+      "id": "nf-europe-west",
+      "name": "nf-europe-west",
+      "namespace": "ns-8zy2mcjh9zn2",
+      "loadBalancers": [
+        "lb.659200800000000000000000.northflank.com"
+      ]
+    }
+  },
+  "rawResponse": "...",
+  "request": "...",
+  "error": "..."
+}
+```
+
+[object Object]
+
+```json
+{
+  "data": {
+    "name": "Example Addon",
+    "description": "An addon description",
+    "type": "postgresql",
+    "region": "eu-west-2",
     "id": "example-addon",
     "appId": "/example-user/default-project/example-addon",
     "status": "running",

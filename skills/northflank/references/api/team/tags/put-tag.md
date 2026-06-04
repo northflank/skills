@@ -23,6 +23,19 @@ Required permission: Account > Tags > General > Update
       - `key`: (string) (required)
       - `operator`: (string) (required) (enum: In, NotIn)
       - `values`: [array of] (string)
+- `sandboxing`: {object}
+  - `builds`: {object}
+    - `enabled`: (boolean) (required) Enables runtime scheduling constraints for builds
+    - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for builds (enum: none, gvisor, kata-clh, kata-qemu)
+  - `services`: {object}
+    - `enabled`: (boolean) (required) Enables runtime scheduling constraints for services
+    - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for services (enum: none, gvisor, kata-clh, kata-qemu)
+  - `addons`: {object}
+    - `enabled`: (boolean) (required) Enables runtime scheduling constraints for addons
+    - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for addons (enum: none, gvisor, kata-clh, kata-qemu)
+  - `jobs`: {object}
+    - `enabled`: (boolean) (required) Enables runtime scheduling constraints for jobs
+    - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for jobs (enum: none, gvisor, kata-clh, kata-qemu)
 - `color`: (string) (pattern: ^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$)
 - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -46,7 +59,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
-  --data '{"useSpotNodes":false,"useOnDemandNodes":false,"color":"#57637A","name":"Example Tag"}' \
+  --data '{"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A","name":"Example Tag"}' \
   https://api.northflank.com/v1/tags
 ```
 
@@ -54,6 +67,24 @@ curl --header "Content-Type: application/json" \
 const payload = {
   "useSpotNodes": false,
   "useOnDemandNodes": false,
+  "sandboxing": {
+    "builds": {
+      "enabled": false,
+      "runtimeClass": "gvisor"
+    },
+    "services": {
+      "enabled": false,
+      "runtimeClass": "gvisor"
+    },
+    "addons": {
+      "enabled": false,
+      "runtimeClass": "gvisor"
+    },
+    "jobs": {
+      "enabled": false,
+      "runtimeClass": "gvisor"
+    }
+  },
   "color": "#57637A",
   "name": "Example Tag"
 }
@@ -76,7 +107,7 @@ import requests
 
 url = "https://api.northflank.com/v1/tags"
 
-payload = {"useSpotNodes":false,"useOnDemandNodes":false,"color":"#57637A","name":"Example Tag"}
+payload = {"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A","name":"Example Tag"}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PUT", url, headers = headers, json = payload)
@@ -97,7 +128,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/tags"
 
-  var jsonStr = []byte(`{"useSpotNodes":false,"useOnDemandNodes":false,"color":"#57637A","name":"Example Tag"}`)
+  var jsonStr = []byte(`{"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A","name":"Example Tag"}`)
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -148,6 +179,24 @@ Options:
 {
   "useSpotNodes": false,
   "useOnDemandNodes": false,
+  "sandboxing": {
+    "builds": {
+      "enabled": false,
+      "runtimeClass": "gvisor"
+    },
+    "services": {
+      "enabled": false,
+      "runtimeClass": "gvisor"
+    },
+    "addons": {
+      "enabled": false,
+      "runtimeClass": "gvisor"
+    },
+    "jobs": {
+      "enabled": false,
+      "runtimeClass": "gvisor"
+    }
+  },
   "color": "#57637A",
   "name": "Example Tag"
 }
@@ -175,6 +224,24 @@ await apiClient.put.tag({
   data: {
     "useSpotNodes": false,
     "useOnDemandNodes": false,
+    "sandboxing": {
+      "builds": {
+        "enabled": false,
+        "runtimeClass": "gvisor"
+      },
+      "services": {
+        "enabled": false,
+        "runtimeClass": "gvisor"
+      },
+      "addons": {
+        "enabled": false,
+        "runtimeClass": "gvisor"
+      },
+      "jobs": {
+        "enabled": false,
+        "runtimeClass": "gvisor"
+      }
+    },
     "color": "#57637A",
     "name": "Example Tag"
   }

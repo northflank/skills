@@ -40,7 +40,11 @@ Required permission: Project > Addons > General > Read
           - `ipPolicies`: [array of] {object}
               - `address`: (string) (required) An IP address used by this rule.
               - `action`: (string) (required) The action for this rule. (enum: DENY, ALLOW) | {object}
-        - `templateValues`: (string) (required) The template values to be passed to the templating engine.
+        - `templateValues`: (string) (required) The template values to be passed to the templating engine. | {object}
+        - `region`: (string) The region where the bucket is provisioned.
+    - `pendingActions`: [array of] {object}
+        - `type`: (string) Type of the pending action
+        - `createdAt`: (string) ISO timestamp of when the action was triggered (format: date-time)
   - `cluster`: {object}
     - `id`: (string) (required) The id of the cluster associated with this project.
     - `name`: (string) (required) The name of the cluster associated with this project.
@@ -88,7 +92,13 @@ GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}
             }
           ]
         }
-      }
+      },
+      "pendingActions": [
+        {
+          "type": "backup",
+          "createdAt": "2026-03-13T15:50:56.219Z"
+        }
+      ]
     },
     "cluster": {
       "id": "nf-europe-west",
@@ -152,7 +162,13 @@ Options:
           }
         ]
       }
-    }
+    },
+    "pendingActions": [
+      {
+        "type": "backup",
+        "createdAt": "2026-03-13T15:50:56.219Z"
+      }
+    ]
   },
   "cluster": {
     "id": "nf-europe-west",
@@ -213,7 +229,13 @@ await apiClient.get.addon({
             }
           ]
         }
-      }
+      },
+      "pendingActions": [
+        {
+          "type": "backup",
+          "createdAt": "2026-03-13T15:50:56.219Z"
+        }
+      ]
     },
     "cluster": {
       "id": "nf-europe-west",

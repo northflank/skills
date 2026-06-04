@@ -1614,8 +1614,8 @@ Example preview environment template
             "type": "postgresql",
             "billing": {
               "replicas": 1,
-              "storage": 4096,
-              "storageClass": "ssd",
+              "storage": 6144,
+              "storageClass": "nvme",
               "deploymentPlan": "nf-compute-200"
             },
             "typeSpecificSettings": {

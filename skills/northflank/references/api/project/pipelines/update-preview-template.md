@@ -70,7 +70,7 @@ Required permission: Account > Templates > General > Create
      - `name`: (multiple options) (string) Subdomain prepended to the domain name | (string) A string containing one or more references that resolve to subdomain prepended to the domain name (pattern: .*\${.*}.*)
      - `options`: {object}
        - `tlsMode`: (string) Desired TLS mode for the subdomain. (enum: default, passthrough)
-       - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_2, TLSV1_3)
+       - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
        - `autoVerify`: (boolean) The domain will be automatically verified on creation. Only configurable if the relevant feature flag is enabled for you account.
        - `aliasDomains`: [array of] (string)
      - `cdn`: {object}
@@ -158,6 +158,19 @@ Required permission: Account > Templates > General > Create
              - `key`: (string) (required)
              - `operator`: (string) (required) (enum: In, NotIn)
              - `values`: [array of] (string)
+     - `sandboxing`: {object}
+       - `builds`: {object}
+         - `enabled`: (boolean) (required) Enables runtime scheduling constraints for builds
+         - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for builds (enum: none, gvisor, kata-clh, kata-qemu)
+       - `services`: {object}
+         - `enabled`: (boolean) (required) Enables runtime scheduling constraints for services
+         - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for services (enum: none, gvisor, kata-clh, kata-qemu)
+       - `addons`: {object}
+         - `enabled`: (boolean) (required) Enables runtime scheduling constraints for addons
+         - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for addons (enum: none, gvisor, kata-clh, kata-qemu)
+       - `jobs`: {object}
+         - `enabled`: (boolean) (required) Enables runtime scheduling constraints for jobs
+         - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for jobs (enum: none, gvisor, kata-clh, kata-qemu)
      - `color`: (string) (pattern: ^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$)
      - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
      - `name`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -1210,7 +1223,16 @@ Required permission: Account > Templates > General > Create
       - `type`: (string) (required) The identifier for the type of addon. Addon types can be found at the Get Addon Types endpoint.
       - `infrastructure`: {object}
         - `architecture`: (string) (enum: x86, arm)
-      - `templateValues`: {object}
+      - `templateValues`: {object} | {object}
+      - `name`: (multiple options) (string) The name of the addon. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the name of the addon. (pattern: .*\${.*}.*)
+      - `description`: (multiple options) (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the addon. (pattern: .*\${.*}.*)
+      - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+      - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
+      - `tags`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
+      - `type`: (string) (required) The identifier for the type of addon. Addon types can be found at the Get Addon Types endpoint.
+      - `infrastructure`: {object}
+        - `architecture`: (string) (enum: x86, arm)
+      - `region`: (string) The AWS region identifier for the bucket location.
    - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*) | {object}
    - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
    - `kind`: (string) (required) The kind of node. (enum: ExternalAddon)
@@ -1219,7 +1241,7 @@ Required permission: Account > Templates > General > Create
      - `tags`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
      - `environmentId`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
      - `spec`: {object}
-       - `resourceType`: (string) (required) (enum: s3, rds)
+       - `resourceType`: (string) (required) (enum: s3, rds, cloudSql, memorystore)
        - `provider`: {object}
          - `aws`: {object}
            - `region`: (string) (required)

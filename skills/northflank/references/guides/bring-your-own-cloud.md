@@ -1203,7 +1203,13 @@ To create a workload identity:
 
 1. **Credential name**: Select your cloud provider integration
 
-When you select a provider link, you'll be prompted to install the OIDC provider if this is the first workload identity for this integration. This is a one-time operation.
+2. **Provider setup**: Choose how to set up the OIDC provider
+
+  - **Automatic** (recommended): Northflank installs the required resources
+
+  - **Manual**: You create the IAM OpenID Connect identity provider yourself using the Provider URL and Audience shown. This is useful when your credentials lack permission to manage IAM infrastructure.
+
+When using Manual setup, click **Verify** after creating the resources in your cloud account. Verify may fail if credentials lack read permissions, but the workload identity can still work if configured correctly.
 
 #### Configure workload identity: Scope
 
@@ -1231,9 +1237,15 @@ Configure which project can use this identity. By default, the identity is not a
 
 #### Configure workload identity: Permission details
 
-Configure the permissions the workload identity will have in your cloud account.
+1. **Role mode**: Choose how to configure the IAM role
 
-**For AWS:**
+  - **Managed role** (recommended): Northflank creates and manages the IAM role
+
+  - **Existing role**: Use a pre-existing IAM role from your cloud account
+
+**For Managed role:**
+
+**AWS:**
 
 Provide an IAM policy document:
 
@@ -1253,7 +1265,7 @@ Provide an IAM policy document:
 }
 ```
 
-**For GCP:**
+**GCP:**
 
 Provide a list of permissions:
 
@@ -1262,6 +1274,10 @@ storage.objects.get
 storage.objects.create
 storage.buckets.list
 ```
+
+**For Existing role:**
+
+Create an IAM role in your cloud account with the trust policy shown in the UI, then enter the role ARN or name and click **Verify**.
 
 #### Configure workload identity: Create and install
 

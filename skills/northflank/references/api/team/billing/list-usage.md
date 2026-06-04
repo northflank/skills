@@ -1,8 +1,8 @@
-# List invoices
+# List usage
 
-Source: https://northflank.com/docs/v1/api/team/billing/list-invoices.md
+Source: https://northflank.com/docs/v1/api/team/billing/list-usage.md
 
-Lists finalized invoices.
+Lists hourly usage entries.
 
 Required permission: Account > Billing > General > Read
 
@@ -12,17 +12,15 @@ Required permission: Account > Billing > General > Read
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
 - `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `startTime`: (integer) The Unix timestamp to start from (inclusive).
+- `endTime`: (integer) The Unix timestamp to end at (exclusive). Requires startTime.
 
 **Response body:**
 
 {object}
 - `data`: {object}
-  - `invoices`: [array of] {object}
-     - `id`: (string) Identifier for the invoice.
-     - `period`: {object}
-       - `start`: (number) The start of the billing period, as a Unix timestamp. (format: float)
-       - `end`: (number) The end of the billing period, as a Unix timestamp. (format: float)
-     - `currency`: (string) The currency code.
+  - `usage`: [array of] {object}
+     - `timestamp`: (number) The Unix timestamp of the billing hour. (format: float)
      - `paasUsage`: {object}
        - `price`: {object}
          - `total`: (number) The total PaaS price, in cents. (format: float)
@@ -37,9 +35,6 @@ Required permission: Account > Billing > General > Read
          - `memory`: (number) The memory usage price, in cents. (format: float)
          - `gpuMemory`: (number) The GPU memory usage price, in cents. (format: float)
          - `cluster`: (number) The cluster usage price, in cents. (format: float)
-     - `total`: (number) The total cost of the invoice, including tax, in cents. (format: float)
-     - `subTotal`: (number) The subtotal before tax and discounts, in cents. (format: float)
-     - `paid`: (boolean) Whether the invoice has been paid.
 - `pagination`: {object}
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
@@ -47,23 +42,16 @@ Required permission: Account > Billing > General > Read
 
 ### API reference
 
-GET /v1/billing/invoices
+GET /v1/billing/usage
 
-GET /v1/teams/{teamId}/billing/invoices
+GET /v1/teams/{teamId}/billing/usage
 
 #### Example Response
 
-200 OK: A list of invoices.
+200 OK: A list of hourly usage entries.
 
 ```json
 {
-  "data": {
-    "invoices": [
-      {
-        "currency": "usd"
-      }
-    ]
-  },
   "pagination": {
     "hasNextPage": false,
     "count": 1
@@ -73,7 +61,7 @@ GET /v1/teams/{teamId}/billing/invoices
 
 ### CLI reference
 
-$ northflank list invoices
+$ northflank list usage
 
 Options:
 
@@ -83,6 +71,10 @@ Options:
 
 - `--cursor <cursor>`: The cursor returned from the previous page of results, used to request the next page.
 
+- `--startTime <startTime>`: The Unix timestamp to start from (inclusive).
+
+- `--endTime <endTime>`: The Unix timestamp to end at (exclusive). Requires startTime.
+
 - `--verbose `: Verbose output
 
 - `--quiet `: No console output
@@ -91,16 +83,10 @@ Options:
 
 #### Example Response
 
- A list of invoices.
+ A list of hourly usage entries.
 
 ```json
-{
-  "invoices": [
-    {
-      "currency": "usd"
-    }
-  ]
-}
+undefined
 ```
 
 ### JavaScript client reference
@@ -108,7 +94,7 @@ Options:
 #### Example request
 
 ```javascript
-await apiClient.list.invoices({
+await apiClient.list.usage({
   options: {
     "per_page": 50,
     "page": 1
@@ -118,17 +104,10 @@ await apiClient.list.invoices({
 
 #### Example Response
 
- A list of invoices.
+ A list of hourly usage entries.
 
 ```json
 {
-  "data": {
-    "invoices": [
-      {
-        "currency": "usd"
-      }
-    ]
-  },
   "pagination": {
     "hasNextPage": false,
     "count": 1

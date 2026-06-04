@@ -16,7 +16,7 @@ Required permission: Account > Git > General > Read
      - `login`: (string) (required) The username of the account linked with this provider.
      - `name`: (string) The name of the version control provider. Only returned for self-hosted links.
      - `vcsUrl`: (string) The url of the version control provider. Only returned for self-hosted links.
-     - `vcsType`: (string) The type of the self-hosted vcs provider. Only returned for self-hosted links. (enum: gitlab-ee)
+     - `vcsType`: (string) The type of the self-hosted vcs provider. Only returned for self-hosted links. (enum: gitlab-ee, github-ghe)
      - `internalId`: (string) The ID of the self-hosted vcs provider. Only returned for self-hosted links.
      - `entityName`: (string) The name of the team the self-hosted vcs belongs to. Only returned for self-hosted links.
 

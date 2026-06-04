@@ -24,6 +24,19 @@ Required permission: Account > Tags > General > Read
          - `key`: (string) (required)
          - `operator`: (string) (required) (enum: In, NotIn)
          - `values`: [array of] (string)
+  - `sandboxing`: {object}
+    - `builds`: {object}
+      - `enabled`: (boolean) (required) Enables runtime scheduling constraints for builds
+      - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for builds (enum: none, gvisor, kata-clh, kata-qemu)
+    - `services`: {object}
+      - `enabled`: (boolean) (required) Enables runtime scheduling constraints for services
+      - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for services (enum: none, gvisor, kata-clh, kata-qemu)
+    - `addons`: {object}
+      - `enabled`: (boolean) (required) Enables runtime scheduling constraints for addons
+      - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for addons (enum: none, gvisor, kata-clh, kata-qemu)
+    - `jobs`: {object}
+      - `enabled`: (boolean) (required) Enables runtime scheduling constraints for jobs
+      - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for jobs (enum: none, gvisor, kata-clh, kata-qemu)
   - `color`: (string) (pattern: ^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$)
   - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
   - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -45,6 +58,24 @@ GET /v1/teams/{teamId}/tags/{resourceTagId}
   "data": {
     "useSpotNodes": false,
     "useOnDemandNodes": false,
+    "sandboxing": {
+      "builds": {
+        "enabled": false,
+        "runtimeClass": "gvisor"
+      },
+      "services": {
+        "enabled": false,
+        "runtimeClass": "gvisor"
+      },
+      "addons": {
+        "enabled": false,
+        "runtimeClass": "gvisor"
+      },
+      "jobs": {
+        "enabled": false,
+        "runtimeClass": "gvisor"
+      }
+    },
     "color": "#57637A",
     "name": "Example Tag",
     "id": "example-tag",
@@ -75,6 +106,24 @@ Options:
 {
   "useSpotNodes": false,
   "useOnDemandNodes": false,
+  "sandboxing": {
+    "builds": {
+      "enabled": false,
+      "runtimeClass": "gvisor"
+    },
+    "services": {
+      "enabled": false,
+      "runtimeClass": "gvisor"
+    },
+    "addons": {
+      "enabled": false,
+      "runtimeClass": "gvisor"
+    },
+    "jobs": {
+      "enabled": false,
+      "runtimeClass": "gvisor"
+    }
+  },
   "color": "#57637A",
   "name": "Example Tag",
   "id": "example-tag",
@@ -103,6 +152,24 @@ await apiClient.get.tag({
   "data": {
     "useSpotNodes": false,
     "useOnDemandNodes": false,
+    "sandboxing": {
+      "builds": {
+        "enabled": false,
+        "runtimeClass": "gvisor"
+      },
+      "services": {
+        "enabled": false,
+        "runtimeClass": "gvisor"
+      },
+      "addons": {
+        "enabled": false,
+        "runtimeClass": "gvisor"
+      },
+      "jobs": {
+        "enabled": false,
+        "runtimeClass": "gvisor"
+      }
+    },
     "color": "#57637A",
     "name": "Example Tag",
     "id": "example-tag",

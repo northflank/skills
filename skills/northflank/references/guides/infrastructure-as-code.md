@@ -1776,6 +1776,7 @@ You can define actions to take on existing services, addons, or Git services.
 | Kind | Description |
 | --- | --- |
 | Run backup | Performs a backup on an addon |
+| Import backup | Imports a backup into an addon from a URL or connection string |
 | Job run | Runs a job with the specified configuration |
 | Start build | Triggers a build in a service or job, from a branch or a specific commit |
 | Run action | Performs the action contained within the node |
@@ -1813,6 +1814,33 @@ Start a [job run](run.md#run-an-image-once-or-on-a-schedule). The job must have 
   string requiredThe kind of node.one ofJobRun
 - spec
   {object} requiredThe specification for the JobRun node.
+- condition
+  string one ofsuccess
+- skipNodeExecution
+  (multiple options: oneOf)
+
+- string one oftrue, false
+OR
+- string pattern.*\${.*}.*
+
+#### Template nodes: Import backup
+
+Import a backup into an addon from a URL or live database connection. Use this to automate data seeding, cross-environment migrations, or disaster recovery workflows in templates, workflows, and preview blueprints. See [backup, restore, and import data](databases-and-persistence.md#backup-restore-and-import-data-import-a-backup) for the UI method.
+
+Provide exactly one of `url` (for publicly accessible backup files) or `connectionString` (to dump a live external database). File upload is only supported via the UI, not in template nodes.
+
+By default, imports run asynchronously. Enable `waitForCompletion` to pause the workflow until the import finishes.
+
+You can combine this with a `Run action` node to import and restore data in the same workflow.
+
+- {object} AddonImport node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofAddonImport
+- spec
+  {object} requiredThe specification for the AddonImport node.
 - condition
   string one ofsuccess
 - skipNodeExecution
@@ -2389,8 +2417,8 @@ Deploy an addon and combined service
                   "type": "mongodb",
                   "billing": {
                     "replicas": 1,
-                    "storage": 4096,
-                    "storageClass": "ssd",
+                    "storage": 6144,
+                    "storageClass": "nvme",
                     "deploymentPlan": "nf-compute-50"
                   },
                   "tlsEnabled": true,
@@ -2519,8 +2547,8 @@ Create a secret group
                   "type": "mongodb",
                   "billing": {
                     "replicas": 1,
-                    "storage": 4096,
-                    "storageClass": "ssd",
+                    "storage": 6144,
+                    "storageClass": "nvme",
                     "deploymentPlan": "nf-compute-50"
                   },
                   "tlsEnabled": true,
@@ -2683,8 +2711,8 @@ Configure template settings
                   "type": "mongodb",
                   "billing": {
                     "replicas": 1,
-                    "storage": 4096,
-                    "storageClass": "ssd",
+                    "storage": 6144,
+                    "storageClass": "nvme",
                     "deploymentPlan": "nf-compute-50"
                   },
                   "tlsEnabled": true,
@@ -2865,8 +2893,8 @@ Await conditions and restart the service
                   "type": "mongodb",
                   "billing": {
                     "replicas": 1,
-                    "storage": 4096,
-                    "storageClass": "ssd",
+                    "storage": 6144,
+                    "storageClass": "nvme",
                     "deploymentPlan": "nf-compute-50"
                   },
                   "tlsEnabled": true,

@@ -301,7 +301,7 @@ Required permission: Project > Workflows > General > Read
      - `spec`: {object}
        - `type`: (string) (required) (enum: build, deployment, registry)
        - `origin`: (multiple options) {object}
-           - `id`: (multiple options) (string) ID of the build service to deploy (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+           - `id`: (multiple options) (string) ID of the build service to deploy (pattern: ^((?<projectId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)\/)?(?<internalId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)$) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `build`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*) | {object}
            - `id`: (multiple options) (string) ID of the deployment service or job to promote from. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the deployment service or job to promote from. (pattern: .*\${.*}.*)
@@ -355,12 +355,13 @@ Required permission: Project > Workflows > General > Read
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: RunTemplate)
      - `spec`: {object}
-       - `templateId`: (multiple options) (string) The id of the template to run. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the template to run. (pattern: .*\${.*}.*)
        - `templateType`: (string) (required) (enum: template, release-flow-template, preview-env-template, workflow, preview-blueprint, template-teardown, workflow-teardown, preview-blueprint-teardown)
+       - `templateId`: (multiple options) (multiple options) (string) The id of the workflow to run. (pattern: ^((?<projectId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)\/)?(?<internalId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)$) (min length: 3) (max length: 79) | (string) A string containing one or more references that resolve to the id of the workflow to run. (pattern: .*\${.*}.*) | (multiple options) (string) The id of the template to run. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the template to run. (pattern: .*\${.*}.*)
        - `arguments`: {object}
          - `variables`: [array of] {object}
              - `key`: (string) (required)
              - `value`: (string)
+     - `condition`: (string) (enum: success)
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
   - `richInputs`: [array of] (multiple options) {object}
       - `kind`: (string) (required) The kind of input. (enum: BranchCommitSelector)
@@ -391,6 +392,10 @@ Required permission: Project > Workflows > General > Read
     - `spec`: (undefined) (required) The root node of the teardown workflow.
     - `failurePolicy`: (string) Controls what happens if the teardown spec fails or times out. `ignore` (default) — proceed with resource deletion regardless. `block` — halt deletion and set the environment to `teardown_failed` (enum: ignore, block)
   - `argumentOverrides`: {object}
+  - `crossProjectAccess`: {object}
+    - `enabled`: (boolean) (required) Allow this workflow to be run from other projects.
+    - `projects`: [array of] (string) (pattern: ^[A-Za-z0-9-]+$)
+    - `isAllowList`: (boolean) (required) If true, only the listed projects can run this workflow. If false, all projects except the listed ones can run this workflow.
   - `stageId`: (multiple options) (string) ID of the stage (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to iD of the stage (pattern: .*\${.*}.*)
   - `triggers`: [array of] (multiple options) {object}
       - `kind`: (string) (required) (enum: vcs-push)
@@ -521,6 +526,11 @@ GET /v1/teams/{teamId}/projects/{projectId}/workflows/{workflowId}
       "autorun": false,
       "concurrencyPolicy": "allow"
     },
+    "crossProjectAccess": {
+      "projects": [
+        "example-project"
+      ]
+    },
     "triggers": [
       {
         "spec": {
@@ -603,6 +613,11 @@ Options:
     "autorun": false,
     "concurrencyPolicy": "allow"
   },
+  "crossProjectAccess": {
+    "projects": [
+      "example-project"
+    ]
+  },
   "triggers": [
     {
       "spec": {
@@ -681,6 +696,11 @@ await apiClient.get.workflow({
     "options": {
       "autorun": false,
       "concurrencyPolicy": "allow"
+    },
+    "crossProjectAccess": {
+      "projects": [
+        "example-project"
+      ]
     },
     "triggers": [
       {

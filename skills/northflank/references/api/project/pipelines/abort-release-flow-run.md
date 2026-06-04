@@ -58,7 +58,9 @@ Required permission: Project > Pipelines > General > Update
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -100,7 +102,9 @@ Required permission: Project > Pipelines > General > Update
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -149,7 +153,9 @@ Required permission: Project > Pipelines > General > Update
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -178,7 +184,9 @@ Required permission: Project > Pipelines > General > Update
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -221,7 +229,9 @@ Required permission: Project > Pipelines > General > Update
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -289,7 +299,9 @@ Required permission: Project > Pipelines > General > Update
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -312,7 +324,9 @@ Required permission: Project > Pipelines > General > Update
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -401,7 +415,9 @@ Required permission: Project > Pipelines > General > Update
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -474,7 +490,9 @@ Required permission: Project > Pipelines > General > Update
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -494,7 +512,7 @@ Required permission: Project > Pipelines > General > Update
      - `spec`: {object}
        - `type`: (string) (required) (enum: build, deployment, registry)
        - `origin`: (multiple options) {object}
-           - `id`: (multiple options) (string) ID of the build service to deploy (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+           - `id`: (multiple options) (string) ID of the build service to deploy (pattern: ^((?<projectId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)\/)?(?<internalId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)$) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `build`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*) | {object}
            - `id`: (multiple options) (string) ID of the deployment service or job to promote from. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the deployment service or job to promote from. (pattern: .*\${.*}.*)
@@ -509,7 +527,9 @@ Required permission: Project > Pipelines > General > Update
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -547,7 +567,9 @@ Required permission: Project > Pipelines > General > Update
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -568,7 +590,9 @@ Required permission: Project > Pipelines > General > Update
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -593,7 +617,9 @@ Required permission: Project > Pipelines > General > Update
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -615,7 +641,9 @@ Required permission: Project > Pipelines > General > Update
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
@@ -633,16 +661,19 @@ Required permission: Project > Pipelines > General > Update
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: RunTemplate)
      - `spec`: {object}
-       - `templateId`: (multiple options) (string) The id of the template to run. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the template to run. (pattern: .*\${.*}.*)
        - `templateType`: (string) (required) (enum: template, release-flow-template, preview-env-template, workflow, preview-blueprint, template-teardown, workflow-teardown, preview-blueprint-teardown)
+       - `templateId`: (multiple options) (multiple options) (string) The id of the workflow to run. (pattern: ^((?<projectId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)\/)?(?<internalId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)$) (min length: 3) (max length: 79) | (string) A string containing one or more references that resolve to the id of the workflow to run. (pattern: .*\${.*}.*) | (multiple options) (string) The id of the template to run. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the template to run. (pattern: .*\${.*}.*)
        - `arguments`: {object}
          - `variables`: [array of] {object}
              - `key`: (string) (required)
              - `value`: (string)
+     - `condition`: (string) (enum: success)
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (undefined) Error data of the node.
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
        - `retries`: {object}
          - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
          - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.

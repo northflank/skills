@@ -6,7 +6,7 @@ Generated from the application pages listed in `https://northflank.com/docs/llms
 
 - [Billing](billing.md) — 9 pages
 - [Bring Your Own Cloud](bring-your-own-cloud.md) — 15 pages
-- [Build](build.md) — 8 pages
+- [Build](build.md) — 10 pages
 - [Collaborate](collaborate.md) — 5 pages
 - [Databases And Persistence](databases-and-persistence.md) — 29 pages
 - [Domains](domains.md) — 12 pages
@@ -24,5 +24,6 @@ Generated from the application pages listed in `https://northflank.com/docs/llms
 
 ## Standalone Guides
 
+- [Northflank Enterprise](enterprise.md)
 - [Migrate from Heroku](migrate-from-heroku.md)
 - [Overview](overview.md)

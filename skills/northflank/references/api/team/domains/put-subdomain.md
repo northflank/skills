@@ -17,7 +17,7 @@ Required permission: Account > Subdomains > General > Update
 - `name`: (string) (required) Subdomain prepended to the domain name
 - `options`: {object}
   - `tlsMode`: (string) Desired TLS mode for the subdomain. (enum: default, passthrough)
-  - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_2, TLSV1_3)
+  - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
   - `autoVerify`: (boolean) The domain will be automatically verified on creation. Only configurable if the relevant feature flag is enabled for you account.
   - `aliasDomains`: [array of] (string)
 - `cdn`: {object}

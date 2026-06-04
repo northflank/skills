@@ -93,7 +93,7 @@ You can create a new build service by sending a [POST request to the `/v1/projec
 const payload = {
   "name": "Build service",
   "billing": {
-    "deploymentPlan": "nf-compute-10"
+    "buildPlan": "nf-compute-400-16"
   },
   "vcsData": {
     "projectUrl": "https://github.com/northflank-examples/node-express-example",
@@ -139,6 +139,9 @@ const response = await fetch(`https://api.northflank.com/v1/projects/${projectId
 const json = await response.json()
 console.log(json)
 ```
+
+> [!note]
+> Build services are billed with `billing.buildPlan`, not `billing.deploymentPlan`. The `buildPlan` field only accepts plans with 4 or more vCPUs, and defaults to `nf-compute-400-16` if omitted. Creating a build service does not trigger an initial build — you must call the start build endpoint explicitly, as shown below.
 
 The response for a successful request includes the ID of the service, and all other configuration details for the service.
 
@@ -382,7 +385,7 @@ You can deploy databases and other addons, and manage them using the API, includ
 
 #### Create an addon
 
-You can create a new addon with a [POST request to the `/v1/projects/{projectId}/addons` endpoint](project/addons/create-addon.md), supplying the project ID you want to create the addon in. The addon to be created is defined by the `type`, and you can specify a `version` to be deployed, or use `latest` for the most recent available version. You can query available addons and their versions with a [GET request to the list addon types endpoint](https://northflank.com/docs/v1/api/addons/list-addon-types).
+You can create a new addon with a [POST request to the `/v1/projects/{projectId}/addons` endpoint](project/addons/create-addon.md), supplying the project ID you want to create the addon in. The addon to be created is defined by the `type`, and you can specify a `version` to be deployed, or use `latest` for the most recent available version.
 
 ```javascript
 const payload = {
@@ -392,8 +395,8 @@ const payload = {
     "version": "latest",
     "billing": {
         "deploymentPlan": "nf-compute-50",
-        "storageClass": "ssd",
-        "storage": 4096,
+        "storageClass": "nvme",
+        "storage": 6144,
         "replicas": 1
     },
     "tlsEnabled": false,
@@ -416,9 +419,12 @@ const json = await response.json();
 console.log(json);
 ```
 
-The response for a successful request includes the ID of the service, and other configuration details for the addon, including the `type` and `version`.
+> [!note]
+> Set `version` to a specific version string (for example `16.4`) or a latest selector (for example `16-latest`), or use `latest` for the most recent available version. A major-version-only value such as `16` may be rejected. Each addon type also enforces a minimum `storage` size that varies by type — for example, Redis requires at least 4096 MB.
 
-You can check the configuration for your service by sending a [GET request to the `/v1/projects/{projectId}/addons/{addonId}` endpoint](project/addons/get-addon.md), with the relevant project and service IDs.
+The response for a successful request includes the ID of the addon, and other configuration details for the addon, including the `type` and `version`.
+
+You can check the configuration for your addon by sending a [GET request to the `/v1/projects/{projectId}/addons/{addonId}` endpoint](project/addons/get-addon.md), with the relevant project and addon IDs.
 
 #### Run a backup
 

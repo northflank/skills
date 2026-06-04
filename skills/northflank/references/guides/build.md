@@ -1,6 +1,6 @@
 # Build
 
-Generated from 8 application pages listed in `llms.txt`.
+Generated from 10 application pages listed in `llms.txt`.
 
 ## Pages
 
@@ -9,9 +9,11 @@ Generated from 8 application pages listed in `llms.txt`.
 - [Build with a Dockerfile](#build-with-a-dockerfile)
 - [Build with buildpacks](#build-with-buildpacks)
 - [Build your code on Northflank](#build-your-code-on-northflank)
+- [GitHub Enterprise support](#github-enterprise-support)
 - [Inject build arguments](#inject-build-arguments)
 - [Pull images from Northflank](#pull-images-from-northflank)
 - [Share builds across projects](#share-builds-across-projects)
+- [Use custom build registry](#use-custom-build-registry)
 
 ## Build code from a Git repository
 
@@ -383,6 +385,72 @@ To build and run an image in one self-contained service you can use [a combined 
 - [Inject build arguments: Pass secrets and configuration settings to your builds.](build.md#inject-build-arguments)
 - [Pull an image from Northflank: Pull images built on Northflank locally, or use built images as the base image in your Dockerfile.](build.md#pull-images-from-northflank)
 
+## GitHub Enterprise support
+
+Source: https://northflank.com/docs/v1/application/build/github-enterprise-support.md
+
+GitHub Enterprise (GHE) is supported on Northflank as a self-hosted version control system. You can set up a GHE instance and link it to your Northflank team to build and deploy code from your self-hosted repositories.
+
+This feature is feature-flagged and available as part of the self-hosted VCS integration. For general self-hosted VCS setup, see [build code from a self-hosted VCS](https://northflank.com/docs/v1/application/build-code-from-a-self-hosted-vcs).
+
+### GitHub Enterprise support: Set up GitHub Enterprise
+
+1. In your Northflank team, navigate to **Team** → **Integrations**
+
+2. Click **Add a self-hosted VCS**
+
+3. Under **Basic info**, enter a name for the integration
+
+4. Select **GitHub Enterprise** from the **VCS type** dropdown
+
+5. Under **Connection details**, enter your GHE instance URL (e.g., `https://example.ghe.com`). HTTPS is required.
+
+6. Select your **GitHub App location type**:
+
+  - **User account**: App will be created on your personal account
+
+  - **Organization**: App will be created on a GitHub Organization
+
+7. If you selected Organization, enter the **Application namespace** (the organization slug from your GHE URL)
+
+8. Click **Submit**
+
+You will be redirected to your GHE instance to authorize the GitHub App. Northflank will retrieve and store the app details automatically.
+
+### GitHub Enterprise support: Link your GHE instance
+
+1. In your Northflank team, navigate to **Team** → **Integrations**
+
+2. Find your newly created GHE instance in the integrations list
+
+3. Click **Link** on the GHE card
+
+4. Go through the linking steps (follow prompts to authorize access)
+
+The GHE instance is now linked to your Northflank team and you can build code from your repositories.
+
+### GitHub Enterprise support: Link additional organizations
+
+To connect more GitHub organizations to the same GHE instance:
+
+1. Navigate to **Team** → **Integrations**
+
+2. Click on your GHE integration to open its settings
+
+3. Click **Link**
+
+4. Go through the linking steps for the new organization
+
+Each organization is linked independently but uses the same GHE instance configuration.
+
+### GitHub Enterprise support: Use GHE repositories in builds
+
+Once linked, you can select GHE repositories when creating build services or jobs. Select your GHE instance from the version control provider list and choose your repository and branch.
+
+### GitHub Enterprise support: Next steps
+
+- [Build from a Git repository: Start building from your linked Git repositories in minutes.](build.md#build-code-from-a-git-repository)
+
 ## Inject build arguments
 
 Source: https://northflank.com/docs/v1/application/build/inject-build-arguments.md
@@ -621,3 +689,66 @@ Build services can only be referenced by projects in the same team. Access can b
 - [Build a repository using a Dockerfile: Configure your application build process using a Dockerfile.](build.md#build-with-a-dockerfile)
 - [Inject secrets: Set build arguments and inject runtime variables into running deployments.](secure.md#inject-secrets)
 - [Upload a secret file: Add secret files that will be mounted in your container.](secure.md#upload-secret-files)
+
+## Use custom build registry
+
+Source: https://northflank.com/docs/v1/application/build/use-custom-build-registry.md
+
+Use your cloud provider's Docker registry to store build images instead of Northflank's managed registry. Supported providers are Azure, AWS, and GCP.
+
+This can only be configured when creating a new project.
+
+### Use custom build registry: Prerequisites
+
+Your BYOC provider integration must have these features enabled:
+
+- **Docker Registries**: Allows pulling images from your registry
+
+- **Docker Registry Push**: Allows pushing built images to your registry
+
+If these features are not enabled, you cannot create a custom registry integration.
+
+### Use custom build registry: Add a custom Docker registry
+
+1. Navigate to **Integrations** in your team settings
+
+2. Click **Registries** → **Add registry**
+
+3. Enter a registry name and select your container registry provider (Azure, AWS, or GCP)
+
+4. Select an existing BYOC integration or create a new one for Azure, AWS, or GCP
+
+5. Enter the provider-specific registry settings:
+
+  - **GCP**: Registry URL and project ID
+
+  - **AWS**: Registry URL and region
+
+  - **Azure**: Registry URL and resource group
+
+6. Under **Select the permissions you want to grant to this registry**, enable **Push access (write images)**
+
+7. Click **Add registry**
+
+The registry is now available for use in new projects.
+
+### Use custom build registry: Use in a project
+
+1. Create a new project
+
+2. Under **Advanced options**, expand **Docker Registry settings**
+
+3. Set **Registry Mode** to **Self Hosted**
+
+4. Under **Registry**, select your custom registry integration
+
+5. Click **Create project**
+
+All builds in this project will now push images to your custom registry.
+
+### Use custom build registry: Next steps
+
+- [Build from a Git repository: Start building from your linked Git repositories in minutes.](build.md#build-code-from-a-git-repository)
+- [Inject build arguments: Pass secrets and configuration settings to your builds.](build.md#inject-build-arguments)
+- [Run an image continuously: Deploy a built image as a continuously-running service.](run.md#run-an-image-continuously)
+- [Run an image once or on a schedule: Run an image manually or on a cron schedule.](run.md#run-an-image-once-or-on-a-schedule)

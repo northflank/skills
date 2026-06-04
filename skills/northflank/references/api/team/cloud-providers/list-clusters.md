@@ -174,8 +174,16 @@ Required permission: Account > Cloud > Clusters > Read
            - `runtimeClass`: (string) (enum: none, gvisor, kata-clh, kata-qemu)
          - `builds`: {object}
            - `runtimeClass`: (string) (enum: none, gvisor, kata-clh, kata-qemu)
-         - `installKata`: (boolean)
-         - `installGvisor`: (boolean)
+         - `sandboxing`: {object}
+           - `installGvisor`: (boolean)
+           - `installMicroVm`: (boolean)
+           - `defaultSandbox`: {object}
+             - `builds`: (string) (enum: none, gvisor, kata-clh, kata-qemu)
+             - `jobs`: (string) (enum: none, gvisor, kata-clh, kata-qemu)
+             - `services`: (string) (enum: none, gvisor, kata-clh, kata-qemu)
+             - `addons`: (string) (enum: none, gvisor, kata-clh, kata-qemu)
+         - `installKata`: (boolean) DEPRECATED: This field will be removed in the near future.
+         - `installGvisor`: (boolean) DEPRECATED: This field will be removed in the near future.
          - `cleanupVolumes`: (boolean)
          - `cleanupSnapshots`: (boolean)
          - `cephStorageProvider`: {object}

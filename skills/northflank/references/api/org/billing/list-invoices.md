@@ -2,7 +2,7 @@
 
 Source: https://northflank.com/docs/v1/api/org/billing/list-invoices.md
 
-Get a list of past invoices
+Lists finalized invoices.
 
 Required permission: Account > Billing > General > Read
 
@@ -17,12 +17,29 @@ Required permission: Account > Billing > General > Read
 
 {object}
 - `data`: {object}
-  - `invoices`: {object}
-    - `period`: {object}
-      - `start`: (number) (required) Unix timestamp of the start of the billing period. (format: float)
-      - `end`: (number) (required) Unix timestamp of the end of the billing period. (format: float)
-    - `total`: (number) (required) Total cost of the invoice, in cents, including tax. (format: float)
-    - `paid`: (boolean) If `timestamp` is passed in, whether the invoice has been paid.
+  - `invoices`: [array of] {object}
+     - `id`: (string) Identifier for the invoice.
+     - `period`: {object}
+       - `start`: (number) The start of the billing period, as a Unix timestamp. (format: float)
+       - `end`: (number) The end of the billing period, as a Unix timestamp. (format: float)
+     - `currency`: (string) The currency code.
+     - `paasUsage`: {object}
+       - `price`: {object}
+         - `total`: (number) The total PaaS price, in cents. (format: float)
+         - `cpu`: (number) The CPU usage price, in cents. (format: float)
+         - `memory`: (number) The memory usage price, in cents. (format: float)
+         - `storage`: (number) The storage usage price, in cents. (format: float)
+         - `gpu`: (number) The GPU usage price, in cents. (format: float)
+     - `byocUsage`: {object}
+       - `price`: {object}
+         - `total`: (number) The total BYOC price, in cents. (format: float)
+         - `vcpu`: (number) The vCPU usage price, in cents. (format: float)
+         - `memory`: (number) The memory usage price, in cents. (format: float)
+         - `gpuMemory`: (number) The GPU memory usage price, in cents. (format: float)
+         - `cluster`: (number) The cluster usage price, in cents. (format: float)
+     - `total`: (number) The total cost of the invoice, including tax, in cents. (format: float)
+     - `subTotal`: (number) The subtotal before tax and discounts, in cents. (format: float)
+     - `paid`: (boolean) Whether the invoice has been paid.
 - `pagination`: {object}
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
@@ -36,18 +53,16 @@ GET /v1/teams/{teamId}/billing/invoices
 
 #### Example Response
 
-200 OK: Details about an invoice.
+200 OK: A list of invoices.
 
 ```json
 {
   "data": {
-    "invoices": {
-      "period": {
-        "start": 1655823815,
-        "end": 1655910214
-      },
-      "total": 1200
-    }
+    "invoices": [
+      {
+        "currency": "usd"
+      }
+    ]
   },
   "pagination": {
     "hasNextPage": false,
@@ -76,17 +91,15 @@ Options:
 
 #### Example Response
 
- Details about an invoice.
+ A list of invoices.
 
 ```json
 {
-  "invoices": {
-    "period": {
-      "start": 1655823815,
-      "end": 1655910214
-    },
-    "total": 1200
-  }
+  "invoices": [
+    {
+      "currency": "usd"
+    }
+  ]
 }
 ```
 
@@ -105,18 +118,16 @@ await apiClient.list.invoices({
 
 #### Example Response
 
- Details about an invoice.
+ A list of invoices.
 
 ```json
 {
   "data": {
-    "invoices": {
-      "period": {
-        "start": 1655823815,
-        "end": 1655910214
-      },
-      "total": 1200
-    }
+    "invoices": [
+      {
+        "currency": "usd"
+      }
+    ]
   },
   "pagination": {
     "hasNextPage": false,

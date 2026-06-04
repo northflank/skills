@@ -395,11 +395,11 @@ The getting started section contains walkthrough guides to get you up-and-runnin
 
 Source: https://northflank.com/docs/v1/application/getting-started/link-your-git-account.md
 
-Northflank integrates with Git version control systems (VCS) such as GitHub, GitLab and Bitbucket in order to build and deploy code from your repositories.
+Northflank integrates with Git version control systems (VCS) such as GitHub, GitLab, Bitbucket and Azure DevOps in order to build and deploy code from your repositories.
 
 You will be prompted to link a Git account when you create a team, or if your team no longer has access to any Git provider.
 
-You can also link self-hosted instances of GitLab, as well as multiple accounts for GitHub, GitLab, and Bitbucket.
+You can also link self-hosted instances of GitLab and GitHub Enterprise, as well as multiple accounts for GitHub, GitLab, Bitbucket and Azure DevOps.
 
 You can manage Git integrations from your team dashboard.
 
@@ -448,7 +448,9 @@ To remove Northflank from your GitHub team you must uninstall the Northflank app
 
 ### Link your Git account: Link your GitLab account
 
-You can connect your GitLab account with Northflank via OAuth. When you connect your GitLab account you will be redirected to GitLab to complete the verification steps. All repositories your GitLab account has access to, including repositories that you do not own, are accessible with the connection.
+You can connect your GitLab account with Northflank via OAuth or Personal Access Token (PAT). When you connect your GitLab account you will be redirected to GitLab to complete the verification steps. All repositories your GitLab account has access to, including repositories that you do not own, are accessible with the connection.
+
+Personal Access Token (PAT) authentication is a feature-flagged option. If you don't see the PAT option, contact support to enable it for your team.
 
 #### Link your Git account: Link your GitLab account
 
@@ -465,6 +467,24 @@ You can now begin building and deploying code from your GitLab repositories.
 #### Link your Git account: Regenerate webhooks
 
 Northflank makes an API request to create webhooks for your GitLab repositories to enable CI. You can regenerate the webhooks if the token is accidentally deleted or exposed.
+
+#### Link your Git account: Link via Personal Access Token
+
+If PAT authentication is enabled for your team, you can link GitLab using a Personal Access Token instead of OAuth.
+
+1. Navigate to the Git integration page in your Northflank team
+
+2. Click Link with PAT on the GitLab card
+
+3. Enter your GitLab Personal Access Token
+
+Your PAT must have the following scopes:
+
+- api
+
+- read_repository
+
+Repository access is scoped to the permissions granted in your PAT. Your PAT must have access to all projects you want to use with Northflank.
 
 #### Link your Git account: Remove GitLab
 
@@ -493,6 +513,44 @@ Northflank makes an API request to create webhooks for your Bitbucket repositori
 To remove your team's access to your Bitbucket account, select the linked account and click unlink.
 
 To completely remove Northflank from your Bitbucket account, go to Bitbucket personal settings, open the app authorizations page and revoke the Northflank application's access.
+
+### Link your Git account: Link your Azure DevOps account
+
+You can connect your Azure DevOps account with Northflank via OAuth or Personal Access Token (PAT). When you connect your Azure DevOps account you will be redirected to Azure DevOps to complete the verification steps. All repositories your Azure DevOps account has access to, including repositories that you do not own, are accessible with the connection.
+
+Personal Access Token (PAT) authentication is a feature-flagged option. If you don't see the PAT option, contact support to enable it for your team.
+
+#### Link your Git account: Link your Azure DevOps account
+
+1. Navigate to the Git integration page in your Northflank team
+
+2. Click Link Azure DevOps to be redirected to Azure DevOps and authorize Northflank access.
+
+3. Log in with your Microsoft account and authorize the connection
+
+You will now be redirected back to Northflank and you will see your Azure DevOps account name on the entry for Azure DevOps. You can now begin building and deploying code from your Azure DevOps repositories.
+
+#### Link your Git account: Link via Personal Access Token
+
+If PAT authentication is enabled for your team, you can link Azure DevOps using a Personal Access Token instead of OAuth.
+
+1. Navigate to the Git integration page in your Northflank team
+
+2. Click Link with PAT on the Azure DevOps card
+
+3. Enter your Azure DevOps Personal Access Token
+
+Your PAT must have the following scopes:
+
+- Code (read)
+
+- Build (read)
+
+Repository access is scoped to the permissions granted in your PAT. Your PAT must have access to all organizations and repositories you want to use with Northflank.
+
+#### Link your Git account: Remove Azure DevOps
+
+To remove your team's access to your Azure DevOps account, select the account and click unlink.
 
 ### Link your Git account: Set team namespaces
 
@@ -861,3 +919,19 @@ After you have configured the workflow, you can manually test run it and Northfl
 The workflow will execute and you can monitor its progress. If you configured Git triggers, the workflow will also run automatically when commits are pushed to the configured branch.
 
 ![Running a workflow in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/set-up-environments/run-workflow.png)
+
+### Set up environments: Use cron schedules (optional)
+
+Workflows and preview blueprints can run automatically on a repeating schedule. This is useful for regular deployments (nightly builds), periodic maintenance tasks (database backups, cache warming), or refreshing test environments on a schedule.
+
+To add a cron trigger:
+
+1. Open your workflow or preview blueprint
+
+2. Click the plus sign
+
+3. Select **Cron schedule** from the **Kind** dropdown
+
+4. Enter a cron expression in the **Schedule** field (times are UTC, minimum interval is 10 minutes)
+
+Each workflow or preview blueprint can have one cron trigger.

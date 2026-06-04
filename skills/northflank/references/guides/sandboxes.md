@@ -172,6 +172,8 @@ await apiClient.create.service.deployment({
 
 The `deploymentPlan` controls CPU and memory allocation. Use `external.imagePath` to pull any public or private container image. Environment variables passed via `runtimeEnvironment` are injected into the container at runtime.
 
+See the [JavaScript client reference](../api/use-the-javascript-client.md) for the full service payload schema.
+
 ### Sandboxes on Northflank: Create sandbox with volume for persistence
 
 Skip this step if your sandbox does not need persistent storage. Volumes preserve data across restarts and pauses, so anything written to the mount path survives a scale to zero.
@@ -235,6 +237,8 @@ await apiClient.create.service.deployment({
   },
 });
 ```
+
+See the [JavaScript client reference](../api/use-the-javascript-client.md) for the full volume payload schema.
 
 ### Sandboxes on Northflank: Start the sandbox
 

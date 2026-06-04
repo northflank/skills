@@ -18,7 +18,7 @@ Required permission: Project > ExternalAddons > General > Create
 - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `environmentId`: (string)
 - `spec`: {object}
-  - `resourceType`: (string) (required) (enum: s3, rds)
+  - `resourceType`: (string) (required) (enum: s3, rds, cloudSql, memorystore)
   - `provider`: {object}
     - `aws`: {object}
       - `region`: (string) (required)
@@ -51,7 +51,7 @@ Required permission: Project > ExternalAddons > General > Create
   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `environmentId`: (string)
   - `spec`: {object}
-    - `resourceType`: (string) (required) (enum: s3, rds)
+    - `resourceType`: (string) (required) (enum: s3, rds, cloudSql, memorystore)
     - `provider`: {object}
       - `aws`: {object}
         - `region`: (string) (required)

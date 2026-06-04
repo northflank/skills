@@ -964,7 +964,23 @@ Managed external addon types currently include:
 
 2. **Region**: Choose the cloud region where the resource will be created
 
+3. **Workload identity** (optional): Select a workload identity to automatically inject cloud credentials into services and jobs using this addon
+
 This determines where the external addon will be provisioned in your cloud account.
+
+When you select a workload identity, it is automatically injected into services and jobs that use this addon via a secret group, allowing them to access cloud resources without separate configuration. The workload identity must use the same cloud provider as the addon.
+
+#### Create a managed external addon: Configuration mode
+
+Choose between Managed and Advanced configuration:
+
+- **Managed**: Configure only recommended settings
+
+- **Advanced**: Access all configuration options from the OpenTofu provider
+
+**For Advanced mode:**
+
+Enter the JSON configuration for your resource. Configuration fields match the OpenTofu provider for your cloud platform (e.g., [AWS provider](https://search.opentofu.org/provider/opentofu/aws/latest)).
 
 #### Create a managed external addon: Create the addon
 
@@ -2105,8 +2121,8 @@ Below is an example of taking a backup and using the reference (`${refs.sourceDa
             "tlsEnabled": true,
             "billing": {
               "replicas": 1,
-              "storage": 4096,
-              "storageClass": "ssd",
+              "storage": 6144,
+              "storageClass": "nvme",
               "deploymentPlan": "nf-compute-50"
             },
             "typeSpecificSettings": {

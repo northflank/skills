@@ -19,6 +19,7 @@ Required permission: Project > Addons > General > Read
 - `data`: {object}
   - `id`: (string) (required) The identifier for the backup.
   - `name`: (string) (required) The name of the backup.
+  - `uid`: (string) (required) The unique id of the backup.
   - `status`: (string) (required) The current status of the backup. (enum: scheduled, in-progress, completed, aborting, aborted, failed, not-supported)
   - `createdAt`: (string) (required) The time the backup was initiated.
   - `completedAt`: (string) The time the backup was completed.
@@ -47,6 +48,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}/backups/{backupId}
   "data": {
     "id": "example-backup",
     "name": "Example Backup",
+    "uid": "88283b31-06f3-4857-b75f-f807bd7a52af",
     "status": "completed",
     "createdAt": "2021-01-20T11:19:53.175Z",
     "completedAt": "2021-01-20T11:19:54.494Z",
@@ -92,6 +94,7 @@ Options:
 {
   "id": "example-backup",
   "name": "Example Backup",
+  "uid": "88283b31-06f3-4857-b75f-f807bd7a52af",
   "status": "completed",
   "createdAt": "2021-01-20T11:19:53.175Z",
   "completedAt": "2021-01-20T11:19:54.494Z",
@@ -133,6 +136,7 @@ await apiClient.get.addon.backup({
   "data": {
     "id": "example-backup",
     "name": "Example Backup",
+    "uid": "88283b31-06f3-4857-b75f-f807bd7a52af",
     "status": "completed",
     "createdAt": "2021-01-20T11:19:53.175Z",
     "completedAt": "2021-01-20T11:19:54.494Z",
