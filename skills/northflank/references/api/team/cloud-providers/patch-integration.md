@@ -47,6 +47,7 @@ Required permission: Account > Cloud > Integrations > Update
   - `accessToken`: (string) Akamai Access Token
   - `clientToken`: (string) Akamai Client Token
   - `clientSecret`: (string) Akamai Client Secret
+- `aws`: (undefined)
 
 **Response body:**
 
@@ -90,6 +91,7 @@ Required permission: Account > Cloud > Integrations > Update
     - `clientSecret`: (string) Akamai Client Secret
   - `aws`: {object}
     - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
+    - `permissionCheckLevel`: (string) (enum: enabled, disabled, ignore-implicit-deny-by-organization)
   - `gcp`: {object}
     - `projectId`: (string) (required) GCP Project ID
     - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)

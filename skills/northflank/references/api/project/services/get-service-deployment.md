@@ -107,7 +107,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/deployment
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {
@@ -184,7 +184,7 @@ Options:
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {
@@ -261,7 +261,7 @@ await apiClient.get.service.deployment({
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {

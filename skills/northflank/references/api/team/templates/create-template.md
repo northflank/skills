@@ -201,6 +201,7 @@ Required permission: Account > Templates > General > Create
        - `clientSecret`: (multiple options) (string) Akamai Client Secret | (string) A string containing one or more references that resolve to akamai Client Secret (pattern: .*\${.*}.*)
      - `aws`: {object}
        - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
+       - `permissionCheckLevel`: (string) (enum: enabled, disabled, ignore-implicit-deny-by-organization)
      - `gcp`: {object}
        - `projectId`: (string) (required) GCP Project ID
        - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
@@ -3145,6 +3146,7 @@ OR
        - `clientSecret`: (multiple options) (string) Akamai Client Secret | (string) A string containing one or more references that resolve to akamai Client Secret (pattern: .*\${.*}.*)
      - `aws`: {object}
        - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
+       - `permissionCheckLevel`: (string) (enum: enabled, disabled, ignore-implicit-deny-by-organization)
      - `gcp`: {object}
        - `projectId`: (string) (required) GCP Project ID
        - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
@@ -5848,6 +5850,7 @@ OR
          - `clientSecret`: (multiple options) (string) Akamai Client Secret | (string) A string containing one or more references that resolve to akamai Client Secret (pattern: .*\${.*}.*)
        - `aws`: {object}
          - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
+         - `permissionCheckLevel`: (string) (enum: enabled, disabled, ignore-implicit-deny-by-organization)
        - `gcp`: {object}
          - `projectId`: (string) (required) GCP Project ID
          - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
@@ -5906,6 +5909,7 @@ OR
            - `clientSecret`: (string) Akamai Client Secret
          - `aws`: {object}
            - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
+           - `permissionCheckLevel`: (string) (enum: enabled, disabled, ignore-implicit-deny-by-organization)
          - `gcp`: {object}
            - `projectId`: (string) (required) GCP Project ID
            - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)

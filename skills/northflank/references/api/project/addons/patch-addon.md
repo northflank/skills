@@ -367,7 +367,7 @@ func main() {
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {
@@ -391,7 +391,7 @@ func main() {
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {
@@ -551,7 +551,7 @@ Options:
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {
@@ -573,7 +573,7 @@ Options:
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {
@@ -728,7 +728,7 @@ await apiClient.patch.addon({
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {
@@ -755,7 +755,7 @@ await apiClient.patch.addon({
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {

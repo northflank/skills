@@ -28,6 +28,7 @@ Required permission: Account > Cloud > Integrations > Read
            - `teamId`: (string) (required) The ID of the team that has access to this BYOC cluster
      - `aws`: {object}
        - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
+       - `permissionCheckLevel`: (string) (enum: enabled, disabled, ignore-implicit-deny-by-organization)
      - `gcp`: {object}
        - `projectId`: (string) (required) GCP Project ID
        - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)

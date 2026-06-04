@@ -400,7 +400,7 @@ func main() {
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {
@@ -424,7 +424,7 @@ func main() {
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {
@@ -590,7 +590,7 @@ Options:
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {
@@ -612,7 +612,7 @@ Options:
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {
@@ -774,7 +774,7 @@ await apiClient.put.addon({
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {
@@ -801,7 +801,7 @@ await apiClient.put.addon({
 }
 ```
 
-[object Object]
+OR
 
 ```json
 {

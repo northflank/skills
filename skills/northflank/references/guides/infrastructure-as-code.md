@@ -1380,10 +1380,8 @@ You can specify the [project context](infrastructure-as-code.md#write-a-template
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofWorkflow
-
 - spec
   {object} requiredThe specification for the workflow node.
-
 - skipNodeExecution
   (multiple options: oneOf)
 
