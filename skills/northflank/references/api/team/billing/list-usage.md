@@ -10,7 +10,6 @@ Required permission: Account > Billing > General > Read
 
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
-- `page`: (integer) The page number to access.
 - `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
 - `startTime`: (integer) The Unix timestamp to start from (inclusive).
 - `endTime`: (integer) The Unix timestamp to end at (exclusive). Requires startTime.
@@ -67,8 +66,6 @@ Options:
 
 - `--per_page <per_page>`: The number of results to display per request. Maximum of 100 results per page.
 
-- `--page <page>`: The page number to access.
-
 - `--cursor <cursor>`: The cursor returned from the previous page of results, used to request the next page.
 
 - `--startTime <startTime>`: The Unix timestamp to start from (inclusive).
@@ -96,8 +93,7 @@ undefined
 ```javascript
 await apiClient.list.usage({
   options: {
-    "per_page": 50,
-    "page": 1
+    "per_page": 50
   }
 });
 ```

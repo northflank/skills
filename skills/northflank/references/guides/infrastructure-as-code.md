@@ -1358,6 +1358,8 @@ The nodes are divided into the following categories:
 
 - Actions  specifies an action to run on a resources, such as starting a build, running a job, or executing a command
 
+- Messages  sends a notification to Slack, a webhook, or a pull request
+
 - Conditions  hold the template run while until the status of a resource or action is returned
 
 ### Template nodes: Flow control nodes
@@ -1380,8 +1382,10 @@ You can specify the [project context](infrastructure-as-code.md#write-a-template
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofWorkflow
+
 - spec
   {object} requiredThe specification for the workflow node.
+
 - skipNodeExecution
   (multiple options: oneOf)
 
@@ -1783,6 +1787,8 @@ You can define actions to take on existing services, addons, or Git services.
 
 An addon must be in a running state to [run a backup](databases-and-persistence.md#backup-restore-and-import-data) successfully. You can use a [condition node](infrastructure-as-code.md#template-nodes-condition-nodes) to ensure an addon is ready before the backup node runs.
 
+In [preview blueprints](getting-started.md#set-up-environments) you can enable `runNodeOnce` to run this node only the first time the blueprint runs for an environment, and skip it on every subsequent run for that environment. This is useful for one-off setup steps, such as seeding a database, that should not repeat when the environment is later redeployed.
+
 - {object} AddonBackup node
 
 - ref
@@ -1803,6 +1809,8 @@ OR
 #### Template nodes: Run job
 
 Start a [job run](run.md#run-an-image-once-or-on-a-schedule). The job must have a build or image available.
+
+In [preview blueprints](getting-started.md#set-up-environments) you can enable `runNodeOnce` to run this node only the first time the blueprint runs for an environment, and skip it on every subsequent run for that environment.
 
 - {object} JobRun node
 
@@ -1830,6 +1838,8 @@ Provide exactly one of `url` (for publicly accessible backup files) or `connecti
 By default, imports run asynchronously. Enable `waitForCompletion` to pause the workflow until the import finishes.
 
 You can combine this with a `Run action` node to import and restore data in the same workflow.
+
+In [preview blueprints](getting-started.md#set-up-environments) you can enable `runNodeOnce` to run this node only the first time the blueprint runs for an environment, and skip it on every subsequent run for that environment.
 
 - {object} AddonImport node
 
@@ -1882,6 +1892,8 @@ The run action node can be used to perform actions in services, jobs, addons, an
 
 Commands in action nodes do not invoke a shell by default. Learn more about [executing commands in action nodes](run.md#access-running-containers-locally-execute-commands-in-an-action-node).
 
+In [preview blueprints](getting-started.md#set-up-environments) you can enable `runNodeOnce` to run this node only the first time the blueprint runs for an environment, and skip it on every subsequent run for that environment.
+
 - {object} Action node
 
 - ref
@@ -1890,6 +1902,35 @@ Commands in action nodes do not invoke a shell by default. Learn more about [exe
   string requiredThe kind of node.one ofAction
 - spec
   (multiple options: oneOf) requiredThe specification for the Action node.
+- skipNodeExecution
+  (multiple options: oneOf)
+
+- string one oftrue, false
+OR
+- string pattern.*\${.*}.*
+
+### Template nodes: Message node
+
+A message node sends a notification when it runs. You can use it to report progress from a template, workflow, or preview blueprint.
+
+| Kind | Description |
+| --- | --- |
+| Slack | Sends a message to Slack via a webhook or a [Slack integration](https://northflank.com/docs/v1/application/secure/manage-integrations) |
+| Webhook | Sends a message to an arbitrary webhook URL |
+| VCS | Comments on a pull request in a linked version control repository |
+
+The message content supports template arguments, functions, and references, so you can include values such as a generated preview domain in the notification.
+
+In [preview blueprints](getting-started.md#set-up-environments) you can enable `runNodeOnce` to send this notification only the first time the blueprint runs for an environment, and skip it on every subsequent run for that environment.
+
+- {object} Message node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofMessage
+- spec
+  (multiple options: oneOf) requiredThe specification for the Message node.
 - skipNodeExecution
   (multiple options: oneOf)
 

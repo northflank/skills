@@ -24,6 +24,10 @@ Required permission: Project > Addons > General > Update
    - `storageClass`: (string) The type of storage. Only configurable if the relevant feature flag is enabled for you account (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
    - `storage`: (integer) The size of the addon storage, in megabytes.
    - `replicas`: (integer) The number of addon replicas to run.
+   - `diskAutoscaling`: {object}
+     - `enabled`: (boolean) (required) Enable automatic disk scaling when usage exceeds the configured threshold.
+     - `thresholdPercent`: (number) Disk usage percentage that triggers a resize. Defaults to 90. (format: float) (enum: 75, 90)
+     - `maxSizeMib`: (integer) Maximum disk size in mebibytes. When set, autoscaling will not expand storage beyond this value. Must be greater than the current storage size.
  - `tlsEnabled`: (boolean) Enables access to the addon via TLS (if supported by the addon type).
  - `externalAccessEnabled`: (boolean) Enables external access to the addon via TLS (if supported by the addon type).
  - `ipPolicies`: [array of] {object}
@@ -33,13 +37,14 @@ Required permission: Project > Addons > General > Update
    - `redisMaxMemoryPolicy`: (string) Redis only: Key eviction policy at memory pressure. (enum: noeviction, allkeys-lru, allkeys-lfu, volatile-lru, volatile-lfu, allkeys-random, volatile-random, volatile-ttl, volatile-lrm, allkeys-lrm)
    - `redisSentinelEnabled`: (boolean) Redis only: Deploy Redis with Sentinel high availability. Default: false
    - `postgresqlWalLevel`: (string) PostgreSQL only: Configure wal_level setting. (enum: replica, logical)
-   - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode.
+   - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode (additional extensions and event trigger creation support). Cannot be changed after creation.
    - `postgresqlConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of postgres instance.
    - `postgresqlConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of connection pooler instances in case connection pooler is enabled.
    - `postgresqlReadConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of read-only postgres instance.
    - `postgresqlReadConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of read-only connection pooler replicas in case read-only connection pooler is enabled.
    - `postgresqlImportMode`: (boolean) PostgreSQL only: Configure PostgreSQL for higher import speed. Not recommended for production workloads.
    - `mysqlHaModeEnabled`: (boolean) MySQL only: Run MySQL in HA configuration with auto-failover and connection poolers.
+   - `mysqlHaRouterEnabled`: (boolean) MySQL HA only: Run connection routers in front of MySQL instances.
    - `mysqlRouterReplicas`: (integer) MysqlHA only: Number of connection router replicas in case connection router is enabled.
  - `backupSchedules`: [array of] {object}
     - `scheduling`: {object}
@@ -86,6 +91,10 @@ Required permission: Project > Addons > General > Update
      - `zonalRedundancy`: {object}
        - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: required, disabled)
        - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
+     - `diskAutoscaling`: {object}
+       - `enabled`: (boolean) (required) Enable automatic disk scaling when usage exceeds the configured threshold.
+       - `thresholdPercent`: (number) Disk usage percentage that triggers a resize. Defaults to 90. (format: float) (enum: 75, 90)
+       - `maxSizeMib`: (integer) Maximum disk size in mebibytes. When set, autoscaling will not expand storage beyond this value. Must be greater than the current storage size.
    - `source`: (multiple options) {object}
       - `projectId`: (string) ID of the project of the source addon. Only required if not the same as target addon (pattern: ^[A-Za-z0-9-]+$)
       - `addonId`: (string) (required) ID of the addon to fork. (pattern: ^[A-Za-z0-9-]+$)
@@ -100,13 +109,14 @@ Required permission: Project > Addons > General > Update
      - `redisMaxMemoryPolicy`: (string) Redis only: Key eviction policy at memory pressure. (enum: noeviction, allkeys-lru, allkeys-lfu, volatile-lru, volatile-lfu, allkeys-random, volatile-random, volatile-ttl, volatile-lrm, allkeys-lrm)
      - `redisSentinelEnabled`: (boolean) Redis only: Deploy Redis with Sentinel high availability. Default: false
      - `postgresqlWalLevel`: (string) PostgreSQL only: Configure wal_level setting. (enum: replica, logical)
-     - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode.
+     - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode (additional extensions and event trigger creation support). Cannot be changed after creation.
      - `postgresqlConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of postgres instance.
      - `postgresqlConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of connection pooler replicas in case connection pooler is enabled.
      - `postgresqlReadConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of read-only postgres instance.
      - `postgresqlReadConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of read-only connection pooler replicas in case read-only connection pooler is enabled.
      - `postgresqlImportMode`: (boolean) PostgreSQL only: Configure PostgreSQL for higher import speed. Not recommended for production workloads.
      - `mysqlHaModeEnabled`: (boolean) MySQL only: Run MySQL in HA configuration with auto-failover and connection poolers.
+     - `mysqlHaRouterEnabled`: (boolean) MySQL HA only: Run connection routers in front of MySQL instances.
      - `mysqlRouterReplicas`: (integer) MysqlHA only: Number of connection router replicas in case connection router is enabled.
    - `customCredentials`: {object}
      - `dbName`: (string) Custom database name. Not supported for all addon types.

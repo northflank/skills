@@ -236,7 +236,7 @@ You may choose to use an external service to manage your data, such as [MongoDB 
 
 You can add the connection details for these external services to a secret group, or directly in the environment variable of your services and jobs, as you would for a Northflank addon.
 
-You may be required to provide the IP address for your Northflank services to your external service provider. If you would like to discuss creating a static egress IP address for your team, contact [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com).
+You may be required to provide the IP address for your Northflank services to your external service provider. If you would like to discuss creating a static egress IP address for your team, contact [support@northflank.com](mailto:support@northflank.com).
 
 ### Persistent storage in production: Add a persistent volume
 
@@ -588,7 +588,7 @@ This means traffic can continue to be routed to running containers while deployi
 To counter this, you can configure a health check with a readiness probe to ensure your application in the new container is ready to respond to requests.
 
 > [!note]
-> If you require fine-grained control over the redeployment method your services use, please contact [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com) to request access to the rollout strategy feature.
+> If you require fine-grained control over the redeployment method your services use, please contact [support@northflank.com](mailto:support@northflank.com) to request access to the rollout strategy feature.
 
 #### Release for production: Health checks
 

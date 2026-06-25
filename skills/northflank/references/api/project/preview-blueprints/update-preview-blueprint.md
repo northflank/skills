@@ -137,6 +137,24 @@ Required permission: Project > PreviewBlueprints > General > Update
       - `ignoreDrafts`: (boolean) If `true`, draft pull requests from this repo will not trigger the template.
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
     - `id`: (string) | {object}
+    - `kind`: (string) (required) (enum: vcs-check-suite)
+    - `spec`: {object}
+      - `vcs`: {object}
+        - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+        - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
+        - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
+        - `vcsLinkId`: (string)
+        - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+      - `branchNamePatterns`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
+      - `commitMessageFlags`: {object}
+        - `enabled`: (boolean)
+        - `flags`: [array of] (string) A commit ignore flag. (max length: 72)
+      - `filePaths`: {object}
+        - `enabled`: (boolean)
+        - `allowList`: (boolean)
+        - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+    - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
+    - `id`: (string) | {object}
     - `kind`: (string) (required) (enum: cron)
     - `spec`: {object}
       - `cron`: (string) (required) A cron expression that defines the schedule on which the template will be executed.

@@ -352,7 +352,7 @@ Next, select a purchasing option. Choose Capacity Blocks and enter your [capacit
 
 Do not configure the machine image, subnets, shutdown behaviour or IAM profile in the Launch Template, as these are handled by Northflank. Finally, save your Launch template.
 
-Configuring resources not mentioned in this guide in a Launch Template may cause issues scheduling and managing nodes with Northflank. Learn more about [Launch Template configuration](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html), or contact [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com) to discuss other use cases.
+Configuring resources not mentioned in this guide in a Launch Template may cause issues scheduling and managing nodes with Northflank. Learn more about [Launch Template configuration](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html), or contact [support@northflank.com](mailto:support@northflank.com) to discuss other use cases.
 
 #### Amazon Web Services on Northflank: Use a Launch Template
 
@@ -2189,7 +2189,7 @@ A Kubernetes upgrade follows the steps:
 
 4. Old node pools are terminated and the upgrade is complete
 
-If you would like to discuss setting maintenance windows for your clusters, contact [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com).
+If you would like to discuss setting maintenance windows for your clusters, contact [support@northflank.com](mailto:support@northflank.com).
 
 ### Manage your cluster: Delete a cluster
 

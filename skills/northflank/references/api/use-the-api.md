@@ -36,7 +36,7 @@ Authorization: Bearer [YOUR AUTH TOKEN]
 
 ### Rate limits
 
-The Northflank API has a default rate limit of 1000 requests per hour, which resets one hour after the first request is sent. You can contact [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com) to request higher API limits.
+The Northflank API has a default rate limit of 1000 requests per hour, which resets one hour after the first request is sent. You can contact [support@northflank.com](mailto:support@northflank.com) to request higher API limits.
 
 The details for your rate limit are sent in the header for each response from the Northflank API, which can be accessed with the following keys:
 

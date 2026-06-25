@@ -24,6 +24,9 @@ Required permission: Account > LoadBalancers > General > Update
   - `ports`: [array of] {object}
      - `id`: (string) (required) Unique port identifier (pattern: ^port-\d+$)
      - `port`: (string) (required) Port number or range (single port, multiple comma-separated, or range with dash)
+     - `customSettings`: {object}
+       - `bridgeTlsMode`: (boolean)
+       - `subdomainId`: (string) Full name of the load balancer subdomain linked to this port (TLS bridge mode)
      - `backends`: [array of] {object}
          - `id`: (string) (required) Backend reference in format {projectId}/{nfObjectId} (pattern: ^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$)
          - `type`: (string) (required) Backend type (service or addon) (enum: service, addon)
@@ -45,6 +48,9 @@ Required permission: Account > LoadBalancers > General > Update
     - `ports`: [array of] {object}
         - `id`: (string) (required) Unique port identifier (pattern: ^port-\d+$)
         - `port`: (string) (required) Port number or range (single port, multiple comma-separated, or range with dash)
+        - `customSettings`: {object}
+          - `bridgeTlsMode`: (boolean)
+          - `subdomainId`: (string) Full name of the load balancer subdomain linked to this port (TLS bridge mode)
         - `backends`: [array of] {object}
             - `id`: (string) (required) Backend reference in format {projectId}/{nfObjectId} (pattern: ^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$)
             - `type`: (string) (required) Backend type (service or addon) (enum: service, addon)
@@ -71,7 +77,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
-  --data '{"name":"my-load-balancer","description":"This is a new load balancer.","spec":{"type":"tcp","target":{"type":"region","targetId":"europe-west"},"ports":[{"id":"port-80","port":"80","backends":[{"id":"my-project/my-service","type":"service","port":3000,"weight":1}]}]}}' \
+  --data '{"name":"my-load-balancer","description":"This is a new load balancer.","spec":{"type":"tcp","target":{"type":"region","targetId":"europe-west"},"ports":[{"id":"port-80","port":"80","customSettings":{"subdomainId":"api.example.com"},"backends":[{"id":"my-project/my-service","type":"service","port":3000,"weight":1}]}]}}' \
   https://api.northflank.com/v1/load-balancers/{loadBalancerId}
 ```
 
@@ -89,6 +95,9 @@ const payload = {
       {
         "id": "port-80",
         "port": "80",
+        "customSettings": {
+          "subdomainId": "api.example.com"
+        },
         "backends": [
           {
             "id": "my-project/my-service",
@@ -120,7 +129,7 @@ import requests
 
 url = "https://api.northflank.com/v1/load-balancers/{loadBalancerId}"
 
-payload = {"name":"my-load-balancer","description":"This is a new load balancer.","spec":{"type":"tcp","target":{"type":"region","targetId":"europe-west"},"ports":[{"id":"port-80","port":"80","backends":[{"id":"my-project/my-service","type":"service","port":3000,"weight":1}]}]}}
+payload = {"name":"my-load-balancer","description":"This is a new load balancer.","spec":{"type":"tcp","target":{"type":"region","targetId":"europe-west"},"ports":[{"id":"port-80","port":"80","customSettings":{"subdomainId":"api.example.com"},"backends":[{"id":"my-project/my-service","type":"service","port":3000,"weight":1}]}]}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PATCH", url, headers = headers, json = payload)
@@ -141,7 +150,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/load-balancers/{loadBalancerId}"
 
-  var jsonStr = []byte(`{"name":"my-load-balancer","description":"This is a new load balancer.","spec":{"type":"tcp","target":{"type":"region","targetId":"europe-west"},"ports":[{"id":"port-80","port":"80","backends":[{"id":"my-project/my-service","type":"service","port":3000,"weight":1}]}]}}`)
+  var jsonStr = []byte(`{"name":"my-load-balancer","description":"This is a new load balancer.","spec":{"type":"tcp","target":{"type":"region","targetId":"europe-west"},"ports":[{"id":"port-80","port":"80","customSettings":{"subdomainId":"api.example.com"},"backends":[{"id":"my-project/my-service","type":"service","port":3000,"weight":1}]}]}}`)
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -180,6 +189,9 @@ func main() {
         {
           "id": "port-80",
           "port": "80",
+          "customSettings": {
+            "subdomainId": "api.example.com"
+          },
           "backends": [
             {
               "id": "my-project/my-service",
@@ -232,6 +244,9 @@ Options:
       {
         "id": "port-80",
         "port": "80",
+        "customSettings": {
+          "subdomainId": "api.example.com"
+        },
         "backends": [
           {
             "id": "my-project/my-service",
@@ -265,6 +280,9 @@ Options:
       {
         "id": "port-80",
         "port": "80",
+        "customSettings": {
+          "subdomainId": "api.example.com"
+        },
         "backends": [
           {
             "id": "my-project/my-service",
@@ -308,6 +326,9 @@ await apiClient.patch.loadBalancer({
         {
           "id": "port-80",
           "port": "80",
+          "customSettings": {
+            "subdomainId": "api.example.com"
+          },
           "backends": [
             {
               "id": "my-project/my-service",
@@ -343,6 +364,9 @@ await apiClient.patch.loadBalancer({
         {
           "id": "port-80",
           "port": "80",
+          "customSettings": {
+            "subdomainId": "api.example.com"
+          },
           "backends": [
             {
               "id": "my-project/my-service",

@@ -17,7 +17,7 @@ Required permission: Project > Services > Deployment > View Instance Logs
 {object}
 - `deploymentId`: (string) Limit logs to a specific deployment.
 - `type`: (string) Type of log. Multiple log types can be selected by specifying the query parameter repeatedly. (enum: cdn, mesh, ingress, runtime, build, backup, restore)
-- `containerName`: (string) Limits logs to a specific container.
+- `containerName`: (undefined) Limits logs to specific container(s). Multiple containers can be selected by specifying the query parameter repeatedly.
 - `queryType`: (string) `range` selects a log range and returns immediately. (enum: range)
 - `startTime`: (string) Fetch logs generated after this timestamp.
 - `endTime`: (string) Fetch logs generated before this timestamp.
@@ -72,7 +72,7 @@ Options:
 
 - `--type <type>`: Type of log. Multiple log types can be selected by specifying the query parameter repeatedly.
 
-- `--containerName <containerName>`: Limits logs to a specific container.
+- `--containerName <containerName>`: Limits logs to specific container(s). Multiple containers can be selected by specifying the query parameter repeatedly.
 
 - `--queryType <queryType>`: `range` selects a log range and returns immediately.
 

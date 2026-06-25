@@ -28,6 +28,9 @@ Required permission: Account > LoadBalancers > General > Read
        - `ports`: [array of] {object}
            - `id`: (string) (required) Unique port identifier (pattern: ^port-\d+$)
            - `port`: (string) (required) Port number or range (single port, multiple comma-separated, or range with dash)
+           - `customSettings`: {object}
+             - `bridgeTlsMode`: (boolean)
+             - `subdomainId`: (string) Full name of the load balancer subdomain linked to this port (TLS bridge mode)
            - `backends`: [array of] {object}
                - `id`: (string) (required) Backend reference in format {projectId}/{nfObjectId} (pattern: ^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$)
                - `type`: (string) (required) Backend type (service or addon) (enum: service, addon)
@@ -68,6 +71,9 @@ GET /v1/teams/{teamId}/load-balancers
             {
               "id": "port-80",
               "port": "80",
+              "customSettings": {
+                "subdomainId": "api.example.com"
+              },
               "backends": [
                 {
                   "id": "my-project/my-service",
@@ -130,6 +136,9 @@ Options:
           {
             "id": "port-80",
             "port": "80",
+            "customSettings": {
+              "subdomainId": "api.example.com"
+            },
             "backends": [
               {
                 "id": "my-project/my-service",
@@ -183,6 +192,9 @@ await apiClient.list.loadBalancers({
             {
               "id": "port-80",
               "port": "80",
+              "customSettings": {
+                "subdomainId": "api.example.com"
+              },
               "backends": [
                 {
                   "id": "my-project/my-service",

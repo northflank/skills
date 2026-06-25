@@ -320,7 +320,7 @@ Northflank currently supports the following regions:
 | US West | `us-west` | Americas |
 | US West California | `us-west-california` | Americas |
 
-Contact [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com) to register your interest for regions not listed above.
+Contact [support@northflank.com](mailto:support@northflank.com) to register your interest for regions not listed above.
 
 You can also [integrate with other cloud providers](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank) to deploy your own clusters, which will allow you to create projects hosted on your chosen cloud provider, in the regions they support.
 

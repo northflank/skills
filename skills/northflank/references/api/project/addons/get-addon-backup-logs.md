@@ -16,7 +16,7 @@ Required permission: Project > Addons > Deployment > View Instance Logs
 **Query parameters:**
 
 {object}
-- `containerName`: (string) Limits logs to a specific container.
+- `containerName`: (undefined) Limits logs to specific container(s). Multiple containers can be selected by specifying the query parameter repeatedly.
 - `queryType`: (string) `range` selects a log range and returns immediately. (enum: range)
 - `startTime`: (string) Fetch logs generated after this timestamp.
 - `endTime`: (string) Fetch logs generated before this timestamp.
@@ -69,7 +69,7 @@ Options:
 
 - `--backupId <backupId>`: ID of the backup
 
-- `--containerName <containerName>`: Limits logs to a specific container.
+- `--containerName <containerName>`: Limits logs to specific container(s). Multiple containers can be selected by specifying the query parameter repeatedly.
 
 - `--queryType <queryType>`: `range` selects a log range and returns immediately.
 

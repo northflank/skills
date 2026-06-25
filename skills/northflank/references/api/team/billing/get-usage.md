@@ -16,7 +16,9 @@ Required permission: Account > Billing > General > Read
 {object}
 - `teamId`: (string) The ID of the team to filter by.
 - `projectId`: (string) The ID of the project to filter by.
-- `resourceType`: (string) The resource type to filter by (e.g. service, job, addon, volume). (enum: job, service, addon, volume, opentofu-job, llm-model-deployment, external-addon)
+- `resourceType`: (string) The resource type to filter by (e.g. service, job, addon, volume). (enum: job, service, addon, volume)
+- `per_page`: (integer) The number of breakdown entries to return per page (teams, projects, or resources depending on the active filters). Maximum of 100.
+- `page`: (integer) The page number of breakdown entries to access.
 
 **Response body:**
 
@@ -72,6 +74,10 @@ Required permission: Account > Billing > General > Read
       - `memory`: (number) The memory usage price, in cents. (format: float)
       - `gpuMemory`: (number) The GPU memory usage price, in cents. (format: float)
       - `cluster`: (number) The cluster usage price, in cents. (format: float)
+- `pagination`: {object}
+  - `hasNextPage`: (boolean) (required) Is there another page of results available?
+  - `cursor`: (string) The cursor to access the next page of results.
+  - `count`: (number) (required) The number of results returned by this request. (format: float)
 
 ### API reference
 
@@ -84,7 +90,12 @@ GET /v1/teams/{teamId}/billing/usage/{timestamp}
 200 OK: Hourly usage detail.
 
 ```json
-undefined
+{
+  "pagination": {
+    "hasNextPage": false,
+    "count": 1
+  }
+}
 ```
 
 ### CLI reference
@@ -100,6 +111,10 @@ Options:
 - `--projectId <projectId>`: The ID of the project to filter by.
 
 - `--resourceType <resourceType>`: The resource type to filter by (e.g. service, job, addon, volume).
+
+- `--per_page <per_page>`: The number of breakdown entries to return per page (teams, projects, or resources depending on the active filters). Maximum of 100.
+
+- `--page <page>`: The page number of breakdown entries to access.
 
 - `--verbose `: Verbose output
 
@@ -124,7 +139,10 @@ await apiClient.get.usage({
   parameters: {
     "timestamp": "1655823815"
   },
-  options: {}
+  options: {
+    "per_page": 50,
+    "page": 1
+  }
 });
 ```
 
@@ -134,6 +152,10 @@ await apiClient.get.usage({
 
 ```json
 {
+  "pagination": {
+    "hasNextPage": false,
+    "count": 1
+  },
   "rawResponse": "...",
   "request": "...",
   "error": "..."

@@ -39,7 +39,9 @@ Required permission: Project > Addons > General > Read
           - `externalAccessEnabled`: (boolean) (required) Whether this addon is publicly accessible via the internet.
           - `ipPolicies`: [array of] {object}
               - `address`: (string) (required) An IP address used by this rule.
-              - `action`: (string) (required) The action for this rule. (enum: DENY, ALLOW) | {object}
+              - `action`: (string) (required) The action for this rule. (enum: DENY, ALLOW)
+        - `typeSpecificSettings`: {object}
+          - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Whether Supabase mode is enabled (loads supabase extensions and supautils). Set at creation, cannot be changed afterwards. | {object}
         - `templateValues`: (string) (required) The template values to be passed to the templating engine. | {object}
         - `region`: (string) The region where the bucket is provisioned.
     - `pendingActions`: [array of] {object}
@@ -91,6 +93,9 @@ GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}
               "action": "ALLOW"
             }
           ]
+        },
+        "typeSpecificSettings": {
+          "postgresqlSupabaseMode": true
         }
       },
       "pendingActions": [
@@ -161,6 +166,9 @@ Options:
             "action": "ALLOW"
           }
         ]
+      },
+      "typeSpecificSettings": {
+        "postgresqlSupabaseMode": true
       }
     },
     "pendingActions": [
@@ -228,6 +236,9 @@ await apiClient.get.addon({
               "action": "ALLOW"
             }
           ]
+        },
+        "typeSpecificSettings": {
+          "postgresqlSupabaseMode": true
         }
       },
       "pendingActions": [

@@ -525,6 +525,7 @@ Required permission: Account > Templates > General > Create
                - `thresholdValue`: (multiple options) (number) Threshold value on which the workload will be scaled. Represents the average value across all running pods. (format: float) | (string) A string containing one or more references that resolve to threshold value on which the workload will be scaled. Represents the average value across all running pods. (pattern: .*\${.*}.*)
      - `createOptions`: {object}
        - `volumesToAttach`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+       - `expiryTime`: (integer) Number of seconds from creation after which the service should automatically expire. Once reached, the service is paused and scheduled for deletion. Must be between 300 (5 minutes) and 604800 (7 days).
    - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*) | {object}
    - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
    - `kind`: (string) (required) The kind of node. (enum: DeploymentService)
@@ -737,6 +738,7 @@ Required permission: Account > Templates > General > Create
                - `thresholdValue`: (multiple options) (number) Threshold value on which the workload will be scaled. Represents the average value across all running pods. (format: float) | (string) A string containing one or more references that resolve to threshold value on which the workload will be scaled. Represents the average value across all running pods. (pattern: .*\${.*}.*)
      - `createOptions`: {object}
        - `volumesToAttach`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+       - `expiryTime`: (integer) Number of seconds from creation after which the service should automatically expire. Once reached, the service is paused and scheduled for deletion. Must be between 300 (5 minutes) and 604800 (7 days).
    - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*) | {object}
    - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
    - `kind`: (string) (required) The kind of node. (enum: LLMModelDeployment)
@@ -1174,6 +1176,10 @@ Required permission: Account > Templates > General > Create
         - `zonalRedundancy`: {object}
           - `type`: (multiple options) (string) Defines scheduling behaviour across different zones within the same region. (enum: required, disabled) | (string) A string containing one or more references that resolve to defines scheduling behaviour across different zones within the same region. (pattern: .*\${.*}.*)
           - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
+        - `diskAutoscaling`: {object}
+          - `enabled`: (boolean) (required) Enable automatic disk scaling when usage exceeds the configured threshold.
+          - `thresholdPercent`: (number) Disk usage percentage that triggers a resize. Defaults to 90. (format: float) (enum: 75, 90)
+          - `maxSizeMib`: (integer) Maximum disk size in mebibytes. When set, autoscaling will not expand storage beyond this value. Must be greater than the current storage size.
       - `source`: (multiple options) {object}
           - `projectId`: (multiple options) (string) ID of the project of the source addon. Only required if not the same as target addon (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the project of the source addon. Only required if not the same as target addon (pattern: .*\${.*}.*)
           - `addonId`: (multiple options) (string) ID of the addon to fork. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the addon to fork. (pattern: .*\${.*}.*)
@@ -1188,13 +1194,14 @@ Required permission: Account > Templates > General > Create
         - `redisMaxMemoryPolicy`: (string) Redis only: Key eviction policy at memory pressure. (enum: noeviction, allkeys-lru, allkeys-lfu, volatile-lru, volatile-lfu, allkeys-random, volatile-random, volatile-ttl, volatile-lrm, allkeys-lrm)
         - `redisSentinelEnabled`: (boolean) Redis only: Deploy Redis with Sentinel high availability. Default: false
         - `postgresqlWalLevel`: (string) PostgreSQL only: Configure wal_level setting. (enum: replica, logical)
-        - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode.
+        - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode (additional extensions and event trigger creation support). Cannot be changed after creation.
         - `postgresqlConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of postgres instance.
         - `postgresqlConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of connection pooler instances in case connection pooler is enabled.
         - `postgresqlReadConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of read-only postgres instance.
         - `postgresqlReadConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of read-only connection pooler replicas in case read-only connection pooler is enabled.
         - `postgresqlImportMode`: (boolean) PostgreSQL only: Configure PostgreSQL for higher import speed. Not recommended for production workloads.
         - `mysqlHaModeEnabled`: (boolean) MySQL only: Run MySQL in HA configuration with auto-failover and connection poolers.
+        - `mysqlHaRouterEnabled`: (boolean) MySQL HA only: Run connection routers in front of MySQL instances.
         - `mysqlRouterReplicas`: (multiple options) (integer) MysqlHA only: Number of connection router replicas in case connection router is enabled. | (string) A string containing one or more references that resolve to mysqlHA only: Number of connection router replicas in case connection router is enabled. (pattern: .*\${.*}.*)
       - `customCredentials`: {object}
         - `dbName`: (multiple options) (string) Custom database name. Not supported for all addon types. | (string) A string containing one or more references that resolve to custom database name. Not supported for all addon types. (pattern: .*\${.*}.*)
@@ -1343,7 +1350,7 @@ Required permission: Account > Templates > General > Create
        - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
      - `source`: {object}
        - `type`: (multiple options) (string) (enum: volume, backup) | (string) (pattern: .*\${.*}.*)
-       - `sourceId`: (multiple options) (string) The ID of the source object (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the source object (pattern: .*\${.*}.*)
+       - `sourceId`: (multiple options) (string) Reference to the source object. For a volume source: "<volumeId>". For a backup source: "<volumeId>/<backupId>", or "<projectId>/<volumeId>/<backupId>" to restore from a backup in another project on the same cluster (requires the cross-project clone feature). | (string) A string containing one or more references that resolve to reference to the source object. For a volume source: "<volumeId>". For a backup source: "<volumeId>/<backupId>", or "<projectId>/<volumeId>/<backupId>" to restore from a backup in another project on the same cluster (requires the cross-project clone feature). (pattern: .*\${.*}.*)
      - `owningObject`: {object}
        - `id`: (multiple options) (string) The id of object to attach this volume to. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of object to attach this volume to. (pattern: .*\${.*}.*)
        - `type`: (string) (required) The type of the object to attach this volume to. (enum: service, job)

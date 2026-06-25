@@ -287,7 +287,7 @@ To enable single sign-on, follow these steps:
 
 - Then, you can Set-up SSO. This will redirect you to the single sign-on setup, provided via WorkOS. Follow the instructions on the pages provided. At the end of the setup, you will be prompted to test the connection. When this test succeeds, your identity provider will be linked to Northflank.
 
-Users from your identity provider can now sign up and log in to Northflank. To avoid logging in via a non-SSO account, users should log in via the Log in with Organisation Single Sign On option on the login page, or navigate to [[https://app.northflank.com/sso-login](https://app.northflank.com/sso-login)](https://app.northflank.com/sso-login).
+Users from your identity provider can now sign up and log in to Northflank. To avoid logging in via a non-SSO account, users should log in via the Log in with Organisation Single Sign On option on the login page, or navigate to [app.northflank.com/sso-login](https://app.northflank.com/sso-login).
 
 Some identity providers also support directly logging in via your organisation’s external dashboard.
 
@@ -315,7 +315,7 @@ After linking your identity provider you can also select how users can be invite
 - Enable require approval for any SSO sign-ups. When a user creates an account using SSO they will be added to a queue until their request is confirmed or rejected. This conflicts with automatically [provisioning users with directory sync](collaborate.md#manage-an-organisation-sync-your-directory), and cannot/should not be enabled at the same time.
 
 > [!note] Unlock SSO and directory sync
-> Contact [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com) or [schedule a meeting](https://cal.com/team/northflank/northflank-enterprise) to enable single sign-on and directory sync for your organisation.
+> Contact [support@northflank.com](mailto:support@northflank.com) or [schedule a meeting](https://cal.com/team/northflank/northflank-enterprise) to enable single sign-on and directory sync for your organisation.
 
 ### Manage an organisation: Sync your directory
 

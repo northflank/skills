@@ -528,7 +528,7 @@ Internal traffic in your project is managed with round-robin load-balancing betw
 
 You can forward private ports using the Northflank [CLI, API, or JavaScript client](../api/forwarding.md).
 
-If required, internal traffic between your containers can be encrypted with mTLS. Contact [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com) to discuss your requirements.
+If required, internal traffic between your containers can be encrypted with mTLS. Contact [support@northflank.com](mailto:support@northflank.com) to discuss your requirements.
 
 ### Configure ports: Detect ports
 

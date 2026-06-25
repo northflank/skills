@@ -759,7 +759,7 @@ You can create a quorum queue by creating a queue with the type `quorum`, which 
 
 [Streams](https://www.rabbitmq.com/streams.html) are an alternative option to quorum queues, and are more suitable for use-cases which require replicated, persistent messages.
 
-You can declare a stream by setting the queue type to `stream`, however you will need to contact [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com) to enable the stream plugin first.
+You can declare a stream by setting the queue type to `stream`, however you will need to contact [support@northflank.com](mailto:support@northflank.com) to enable the stream plugin first.
 
 ### Configure addons for high availability: Next steps
 
@@ -1179,10 +1179,10 @@ Your database will be accessible by workloads within the same project using the 
 | --- | --- | --- | --- | --- |
 | [MongoDB](https://www.mongodb.com/docs/manual/) | 8.0.20, 8.0.17, 8.0.10, 7.0.31, 7.0.28, 7.0.21, 6.0.27, 6.0.24, 5.0.31, 4.4.15, 4.2.21 | MongoDB® is a document-oriented database program that uses JSON-like documents with schema. | Native or disk | Yes |
 | [Redis](https://redis.io/) | 8.6.1, 8.4.2, 8.4.0, 7.2.13, 7.2.12, 7.2.4, 6.2.21 | Redis® implements a distributed, in-memory key-value database with optional durability. | Disk | Yes |
-| [MySQL](https://www.mysql.com/) | 9.6.0, 9.5.0, 8.4.8, 8.4.7, 8.0.45, 8.0.44 | MySQL is a fast, reliable, scalable, and easy to use open-source relational database system. | Native or disk | Yes (cannot be changed after creation) |
+| [MySQL](https://www.mysql.com/) | 9.6.0, 8.4.9, 8.4.8, 8.0.46, 8.0.45 | MySQL is a fast, reliable, scalable, and easy to use open-source relational database system. | Native or disk | Yes (cannot be changed after creation) |
 | [PostgreSQL](https://www.postgresql.org/) | 18, 17, 16, 15, 14, 13, 12 | PostgreSQL is a free and open-source relational database management system. High availability with Patroni | Native or disk | Yes |
 | [MinIO](https://min.io/) | 2025.10.15 | MinIO® is a High Performance Object Storage with an Amazon S3 cloud storage service compatible API. | Disk | Yes |
-| [RabbitMQ](https://www.rabbitmq.com/) | 4.2.4, 4.0.9, 3.13.7, 3.12.14 | RabbitMQ is an open source message broker software that implements the Advanced Message Queuing Protocol (AMQP). | Disk | Yes |
+| [RabbitMQ](https://www.rabbitmq.com/) | 4.3.2, 4.2.8, 4.0.9, 3.13.7, 3.12.14 | RabbitMQ is an open source message broker software that implements the Advanced Message Queuing Protocol (AMQP). | Disk | Yes |
 
 ### Deploy a database: Advanced configuration
 
@@ -1491,7 +1491,7 @@ This guide explains how to quickly and easily deploy and use [MySQL](https://www
 
 | Available versions | Description | Backups | TLS |
 | --- | --- | --- | --- |
-| 9.6.0, 9.5.0, 8.4.8, 8.4.7, 8.0.45, 8.0.44 | MySQL is a fast, reliable, scalable, and easy to use open-source relational database system. | Native or disk | Yes (cannot be changed after creation) |
+| 9.6.0, 8.4.9, 8.4.8, 8.0.46, 8.0.45 | MySQL is a fast, reliable, scalable, and easy to use open-source relational database system. | Native or disk | Yes (cannot be changed after creation) |
 
 ### Deploy MySQL on Northflank: Deploy MySQL
 
@@ -1799,7 +1799,7 @@ This guide explains how to quickly and easily deploy and use [RabbitMQ](https://
 
 | Available versions | Description | Backups | TLS |
 | --- | --- | --- | --- |
-| 4.2.4, 4.0.9, 3.13.7, 3.12.14 | RabbitMQ is an open source message broker software that implements the Advanced Message Queuing Protocol (AMQP). | Disk | Yes |
+| 4.3.2, 4.2.8, 4.0.9, 3.13.7, 3.12.14 | RabbitMQ is an open source message broker software that implements the Advanced Message Queuing Protocol (AMQP). | Disk | Yes |
 
 ### Deploy RabbitMQ on Northflank: Deploy RabbitMQ
 
@@ -1865,7 +1865,7 @@ You can access RabbitMQ using the [AMQP connection string](https://www.rabbitmq.
 | 1883 | 8883 | MQTT | `mqtt[s]://` |
 | 15672 | 15671 | HTTP | `http[s]://` |
 
-STOMP and Streams are disabled by default, contact [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com) to request that they are enabled.
+STOMP and Streams are disabled by default, contact [support@northflank.com](mailto:support@northflank.com) to request that they are enabled.
 
 #### Deploy RabbitMQ on Northflank: Automatically inherit RabbitMQ connection details into your workload
 
@@ -2056,7 +2056,7 @@ Redis is run with [AOF (Append Only File) persistence](https://redis.io/docs/man
 
 - vCPU: AOF rewrites create a fork process which can temporarily require vCPU resources. The performance impact should be minimal and is usually not noticeable.
 
-For custom requirements or configurations, please contact [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com).
+For custom requirements or configurations, please contact [support@northflank.com](mailto:support@northflank.com).
 
 ### Deploy Redis® on Northflank: Next steps
 

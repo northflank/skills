@@ -1726,6 +1726,7 @@ Required permission: Account > Templates > General > Run
                  - `thresholdValue`: (multiple options) (number) Threshold value on which the workload will be scaled. Represents the average value across all running pods. (format: float) | (string) A string containing one or more references that resolve to threshold value on which the workload will be scaled. Represents the average value across all running pods. (pattern: .*\${.*}.*)
        - `createOptions`: {object}
          - `volumesToAttach`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+         - `expiryTime`: (integer) Number of seconds from creation after which the service should automatically expire. Once reached, the service is paused and scheduled for deletion. Must be between 300 (5 minutes) and 604800 (7 days).
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -1951,6 +1952,7 @@ Required permission: Account > Templates > General > Run
                    - `thresholdValue`: (number) (required) Threshold value on which the workload will be scaled. Represents the average value across all running pods. (format: float)
          - `createOptions`: {object}
            - `volumesToAttach`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+           - `expiryTime`: (integer) Number of seconds from creation after which the service should automatically expire. Once reached, the service is paused and scheduled for deletion. Must be between 300 (5 minutes) and 604800 (7 days).
          - `serviceType`: (string) (required) Type of the service (combined, build or deployment) (enum: combined)
          - `deployment`: {object}
            - `type`: (string) The way the service should be deployed. Either as a deployment (default), or as a stateful set. (enum: deployment, statefulSet)
@@ -2001,6 +2003,9 @@ Required permission: Account > Templates > General > Run
            - `loadBalancers`: [array of] (string)
          - `createdAt`: (string) time of creation (format: date-time)
          - `updatedAt`: (string) time of update (format: date-time)
+         - `expiryTime`: (string) Absolute time at which the service is scheduled to automatically expire. Resolved from createOptions.expiryTime on creation; cleared once the service has expired. (format: date-time)
+         - `expiredAt`: (string) Time at which the service expired and was paused. (format: date-time)
+         - `scheduledDeletion`: (string) Time at which the expired service is scheduled for deletion. (format: date-time)
          - `status`: {object}
            - `build`: {object}
              - `status`: (string) (required) The current status of the build. (enum: QUEUED, PENDING, UNSCHEDULABLE, STARTING, CLONING, BUILDING, UPLOADING, ABORTED, FAILURE, SUBMISSION_FAILURE, SUCCESS, CRASHED, IN_PROGRESS)
@@ -2225,6 +2230,7 @@ Required permission: Account > Templates > General > Run
                  - `thresholdValue`: (multiple options) (number) Threshold value on which the workload will be scaled. Represents the average value across all running pods. (format: float) | (string) A string containing one or more references that resolve to threshold value on which the workload will be scaled. Represents the average value across all running pods. (pattern: .*\${.*}.*)
        - `createOptions`: {object}
          - `volumesToAttach`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+         - `expiryTime`: (integer) Number of seconds from creation after which the service should automatically expire. Once reached, the service is paused and scheduled for deletion. Must be between 300 (5 minutes) and 604800 (7 days).
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -2399,6 +2405,7 @@ Required permission: Account > Templates > General > Run
                    - `thresholdValue`: (number) (required) Threshold value on which the workload will be scaled. Represents the average value across all running pods. (format: float)
          - `createOptions`: {object}
            - `volumesToAttach`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+           - `expiryTime`: (integer) Number of seconds from creation after which the service should automatically expire. Once reached, the service is paused and scheduled for deletion. Must be between 300 (5 minutes) and 604800 (7 days).
          - `serviceType`: (string) (required) Type of the service (combined, build or deployment) (enum: deployment)
          - `deployment`: {object}
            - `type`: (string) The way the service should be deployed. Either as a deployment (default), or as a stateful set. (enum: deployment, statefulSet)
@@ -2457,6 +2464,9 @@ Required permission: Account > Templates > General > Run
            - `loadBalancers`: [array of] (string)
          - `createdAt`: (string) time of creation (format: date-time)
          - `updatedAt`: (string) time of update (format: date-time)
+         - `expiryTime`: (string) Absolute time at which the service is scheduled to automatically expire. Resolved from createOptions.expiryTime on creation; cleared once the service has expired. (format: date-time)
+         - `expiredAt`: (string) Time at which the service expired and was paused. (format: date-time)
+         - `scheduledDeletion`: (string) Time at which the expired service is scheduled for deletion. (format: date-time)
          - `status`: {object}
            - `deployment`: {object}
              - `status`: (string) (required) The current status of the deployment. (enum: PENDING, IN_PROGRESS, COMPLETED, FAILED)
@@ -3432,6 +3442,10 @@ Required permission: Account > Templates > General > Run
            - `zonalRedundancy`: {object}
              - `type`: (multiple options) (string) Defines scheduling behaviour across different zones within the same region. (enum: required, disabled) | (string) A string containing one or more references that resolve to defines scheduling behaviour across different zones within the same region. (pattern: .*\${.*}.*)
              - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
+           - `diskAutoscaling`: {object}
+             - `enabled`: (boolean) (required) Enable automatic disk scaling when usage exceeds the configured threshold.
+             - `thresholdPercent`: (number) Disk usage percentage that triggers a resize. Defaults to 90. (format: float) (enum: 75, 90)
+             - `maxSizeMib`: (integer) Maximum disk size in mebibytes. When set, autoscaling will not expand storage beyond this value. Must be greater than the current storage size.
          - `source`: (multiple options) {object}
              - `projectId`: (multiple options) (string) ID of the project of the source addon. Only required if not the same as target addon (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the project of the source addon. Only required if not the same as target addon (pattern: .*\${.*}.*)
              - `addonId`: (multiple options) (string) ID of the addon to fork. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the addon to fork. (pattern: .*\${.*}.*)
@@ -3446,13 +3460,14 @@ Required permission: Account > Templates > General > Run
            - `redisMaxMemoryPolicy`: (string) Redis only: Key eviction policy at memory pressure. (enum: noeviction, allkeys-lru, allkeys-lfu, volatile-lru, volatile-lfu, allkeys-random, volatile-random, volatile-ttl, volatile-lrm, allkeys-lrm)
            - `redisSentinelEnabled`: (boolean) Redis only: Deploy Redis with Sentinel high availability. Default: false
            - `postgresqlWalLevel`: (string) PostgreSQL only: Configure wal_level setting. (enum: replica, logical)
-           - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode.
+           - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode (additional extensions and event trigger creation support). Cannot be changed after creation.
            - `postgresqlConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of postgres instance.
            - `postgresqlConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of connection pooler instances in case connection pooler is enabled.
            - `postgresqlReadConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of read-only postgres instance.
            - `postgresqlReadConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of read-only connection pooler replicas in case read-only connection pooler is enabled.
            - `postgresqlImportMode`: (boolean) PostgreSQL only: Configure PostgreSQL for higher import speed. Not recommended for production workloads.
            - `mysqlHaModeEnabled`: (boolean) MySQL only: Run MySQL in HA configuration with auto-failover and connection poolers.
+           - `mysqlHaRouterEnabled`: (boolean) MySQL HA only: Run connection routers in front of MySQL instances.
            - `mysqlRouterReplicas`: (multiple options) (integer) MysqlHA only: Number of connection router replicas in case connection router is enabled. | (string) A string containing one or more references that resolve to mysqlHA only: Number of connection router replicas in case connection router is enabled. (pattern: .*\${.*}.*)
          - `customCredentials`: {object}
            - `dbName`: (multiple options) (string) Custom database name. Not supported for all addon types. | (string) A string containing one or more references that resolve to custom database name. Not supported for all addon types. (pattern: .*\${.*}.*)
@@ -3522,6 +3537,10 @@ Required permission: Account > Templates > General > Run
              - `zonalRedundancy`: {object}
                - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: required, disabled)
                - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
+             - `diskAutoscaling`: {object}
+               - `enabled`: (boolean) (required) Enable automatic disk scaling when usage exceeds the configured threshold.
+               - `thresholdPercent`: (number) Disk usage percentage that triggers a resize. Defaults to 90. (format: float) (enum: 75, 90)
+               - `maxSizeMib`: (integer) Maximum disk size in mebibytes. When set, autoscaling will not expand storage beyond this value. Must be greater than the current storage size.
            - `source`: (multiple options) {object}
                - `projectId`: (string) ID of the project of the source addon. Only required if not the same as target addon (pattern: ^[A-Za-z0-9-]+$)
                - `addonId`: (string) (required) ID of the addon to fork. (pattern: ^[A-Za-z0-9-]+$)
@@ -3536,13 +3555,14 @@ Required permission: Account > Templates > General > Run
              - `redisMaxMemoryPolicy`: (string) Redis only: Key eviction policy at memory pressure. (enum: noeviction, allkeys-lru, allkeys-lfu, volatile-lru, volatile-lfu, allkeys-random, volatile-random, volatile-ttl, volatile-lrm, allkeys-lrm)
              - `redisSentinelEnabled`: (boolean) Redis only: Deploy Redis with Sentinel high availability. Default: false
              - `postgresqlWalLevel`: (string) PostgreSQL only: Configure wal_level setting. (enum: replica, logical)
-             - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode.
+             - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode (additional extensions and event trigger creation support). Cannot be changed after creation.
              - `postgresqlConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of postgres instance.
              - `postgresqlConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of connection pooler replicas in case connection pooler is enabled.
              - `postgresqlReadConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of read-only postgres instance.
              - `postgresqlReadConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of read-only connection pooler replicas in case read-only connection pooler is enabled.
              - `postgresqlImportMode`: (boolean) PostgreSQL only: Configure PostgreSQL for higher import speed. Not recommended for production workloads.
              - `mysqlHaModeEnabled`: (boolean) MySQL only: Run MySQL in HA configuration with auto-failover and connection poolers.
+             - `mysqlHaRouterEnabled`: (boolean) MySQL HA only: Run connection routers in front of MySQL instances.
              - `mysqlRouterReplicas`: (integer) MysqlHA only: Number of connection router replicas in case connection router is enabled.
            - `customCredentials`: {object}
              - `dbName`: (string) Custom database name. Not supported for all addon types.
@@ -4118,7 +4138,7 @@ Required permission: Account > Templates > General > Run
          - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
        - `source`: {object}
          - `type`: (multiple options) (string) (enum: volume, backup) | (string) (pattern: .*\${.*}.*)
-         - `sourceId`: (multiple options) (string) The ID of the source object (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the source object (pattern: .*\${.*}.*)
+         - `sourceId`: (multiple options) (string) Reference to the source object. For a volume source: "<volumeId>". For a backup source: "<volumeId>/<backupId>", or "<projectId>/<volumeId>/<backupId>" to restore from a backup in another project on the same cluster (requires the cross-project clone feature). | (string) A string containing one or more references that resolve to reference to the source object. For a volume source: "<volumeId>". For a backup source: "<volumeId>/<backupId>", or "<projectId>/<volumeId>/<backupId>" to restore from a backup in another project on the same cluster (requires the cross-project clone feature). (pattern: .*\${.*}.*)
        - `owningObject`: {object}
          - `id`: (multiple options) (string) The id of object to attach this volume to. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of object to attach this volume to. (pattern: .*\${.*}.*)
          - `type`: (string) (required) The type of the object to attach this volume to. (enum: service, job)
@@ -4619,6 +4639,9 @@ Required permission: Account > Templates > General > Run
          - `ports`: [array of] {object}
              - `id`: (multiple options) (string) Unique port identifier (pattern: ^port-\d+$) | (string) A string containing one or more references that resolve to unique port identifier (pattern: .*\${.*}.*)
              - `port`: (multiple options) (string) Port number or range (single port, multiple comma-separated, or range with dash) | (string) A string containing one or more references that resolve to port number or range (single port, multiple comma-separated, or range with dash) (pattern: .*\${.*}.*)
+             - `customSettings`: {object}
+               - `bridgeTlsMode`: (boolean)
+               - `subdomainId`: (multiple options) (string) Full name of the load balancer subdomain linked to this port (TLS bridge mode) | (string) A string containing one or more references that resolve to full name of the load balancer subdomain linked to this port (TLS bridge mode) (pattern: .*\${.*}.*)
              - `backends`: [array of] {object}
                  - `id`: (multiple options) (string) Backend reference in format {projectId}/{nfObjectId} (pattern: ^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$) | (string) A string containing one or more references that resolve to backend reference in format {projectId}/{nfObjectId} (pattern: .*\${.*}.*)
                  - `type`: (multiple options) (string) Backend type (service or addon) (enum: service, addon) | (string) A string containing one or more references that resolve to backend type (service or addon) (pattern: .*\${.*}.*)
@@ -4786,6 +4809,24 @@ Required permission: Account > Templates > General > Run
                - `ignoreDrafts`: (multiple options) (boolean) If `true`, draft pull requests from this repo will not trigger the template. | (string) A string containing one or more references that resolve to if `true`, draft pull requests from this repo will not trigger the template. (pattern: .*\${.*}.*)
              - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
              - `id`: (string) | {object}
+             - `kind`: (string) (required) (enum: vcs-check-suite)
+             - `spec`: {object}
+               - `vcs`: {object}
+                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+                 - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
+                 - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
+                 - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
+                 - `repoUrl`: (multiple options) (string) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo that will trigger the template. (pattern: .*\${.*}.*)
+               - `branchNamePatterns`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$) | (string) (pattern: .*\${.*}.*)
+               - `commitMessageFlags`: {object}
+                 - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                 - `flags`: [array of] (multiple options) (string) A commit ignore flag. (max length: 72) | (string) A string containing one or more references that resolve to a commit ignore flag. (pattern: .*\${.*}.*)
+               - `filePaths`: {object}
+                 - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                 - `allowList`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                 - `paths`: [array of] (multiple options) (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260) | (string) A string containing one or more references that resolve to a path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (pattern: .*\${.*}.*)
+             - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
+             - `id`: (string) | {object}
              - `kind`: (string) (required) (enum: cron)
              - `spec`: {object}
                - `cron`: (string) (required) A cron expression that defines the schedule on which the template will be executed.
@@ -4914,6 +4955,24 @@ Required permission: Account > Templates > General > Run
                  - `allowList`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
                  - `paths`: [array of] (multiple options) (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260) | (string) A string containing one or more references that resolve to a path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (pattern: .*\${.*}.*)
                - `ignoreDrafts`: (multiple options) (boolean) If `true`, draft pull requests from this repo will not trigger the template. | (string) A string containing one or more references that resolve to if `true`, draft pull requests from this repo will not trigger the template. (pattern: .*\${.*}.*)
+             - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
+             - `id`: (string) | {object}
+             - `kind`: (string) (required) (enum: vcs-check-suite)
+             - `spec`: {object}
+               - `vcs`: {object}
+                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+                 - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
+                 - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
+                 - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
+                 - `repoUrl`: (multiple options) (string) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo that will trigger the template. (pattern: .*\${.*}.*)
+               - `branchNamePatterns`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$) | (string) (pattern: .*\${.*}.*)
+               - `commitMessageFlags`: {object}
+                 - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                 - `flags`: [array of] (multiple options) (string) A commit ignore flag. (max length: 72) | (string) A string containing one or more references that resolve to a commit ignore flag. (pattern: .*\${.*}.*)
+               - `filePaths`: {object}
+                 - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                 - `allowList`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                 - `paths`: [array of] (multiple options) (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260) | (string) A string containing one or more references that resolve to a path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (pattern: .*\${.*}.*)
              - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
              - `id`: (string) | {object}
              - `kind`: (string) (required) (enum: cron)

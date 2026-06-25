@@ -15,7 +15,7 @@ Required permission: Account > Subdomains > General > Update
 
 {object}
 - `subdomain`: (string) (required) A subdomain to be added. (pattern: ^\*|^@$|^([0-9a-z]([0-9a-z\-]*[0-9a-z])?\.)*[0-9a-z]([0-9a-z\-]*[0-9a-z])?$)
-- `routingMode`: (string) The routing mode for the subdomain. Determines how traffic is routed. Once set, this cannot be changed. (enum: paths, geoRouting)
+- `routingMode`: (string) The routing mode for the subdomain. Determines how traffic is routed. Once set, this cannot be changed. (enum: paths, geoRouting, loadBalancerSubdomain)
 - `cdn`: {object}
   - `northflank`: {object}
     - `enabled`: (boolean) (required)
@@ -34,6 +34,7 @@ Required permission: Account > Subdomains > General > Update
   - `fullName`: (string) (required) The full domain name with subdomain
   - `content`: (string) (required) The content to set the DNS record to
   - `verified`: (boolean) (required) Whether the subdomain has been verified successfully and can be used.
+  - `routingMode`: (string) The routing mode for the subdomain. (enum: paths, geoRouting, loadBalancerSubdomain)
 
 ### API reference
 
@@ -127,7 +128,8 @@ func main() {
     "name": "site",
     "fullName": "site.example.com",
     "content": "site.example.com.user-1234.dns.northflank.app",
-    "verified": false
+    "verified": false,
+    "routingMode": "paths"
   }
 }
 ```
@@ -174,7 +176,8 @@ Options:
   "name": "site",
   "fullName": "site.example.com",
   "content": "site.example.com.user-1234.dns.northflank.app",
-  "verified": false
+  "verified": false,
+  "routingMode": "paths"
 }
 ```
 
@@ -206,7 +209,8 @@ await apiClient.add.domain.subdomain({
     "name": "site",
     "fullName": "site.example.com",
     "content": "site.example.com.user-1234.dns.northflank.app",
-    "verified": false
+    "verified": false,
+    "routingMode": "paths"
   },
   "rawResponse": "...",
   "request": "...",

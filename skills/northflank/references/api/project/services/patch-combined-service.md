@@ -468,6 +468,7 @@ Required permission: Project > Services > General > Update
             - `thresholdValue`: (number) (required) Threshold value on which the workload will be scaled. Represents the average value across all running pods. (format: float)
   - `createOptions`: {object}
     - `volumesToAttach`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+    - `expiryTime`: (integer) Number of seconds from creation after which the service should automatically expire. Once reached, the service is paused and scheduled for deletion. Must be between 300 (5 minutes) and 604800 (7 days).
   - `serviceType`: (string) (required) Type of the service (combined, build or deployment) (enum: combined)
   - `deployment`: {object}
     - `type`: (string) The way the service should be deployed. Either as a deployment (default), or as a stateful set. (enum: deployment, statefulSet)
@@ -518,6 +519,9 @@ Required permission: Project > Services > General > Update
     - `loadBalancers`: [array of] (string)
   - `createdAt`: (string) time of creation (format: date-time)
   - `updatedAt`: (string) time of update (format: date-time)
+  - `expiryTime`: (string) Absolute time at which the service is scheduled to automatically expire. Resolved from createOptions.expiryTime on creation; cleared once the service has expired. (format: date-time)
+  - `expiredAt`: (string) Time at which the service expired and was paused. (format: date-time)
+  - `scheduledDeletion`: (string) Time at which the expired service is scheduled for deletion. (format: date-time)
   - `status`: {object}
     - `build`: {object}
       - `status`: (string) (required) The current status of the build. (enum: QUEUED, PENDING, UNSCHEDULABLE, STARTING, CLONING, BUILDING, UPLOADING, ABORTED, FAILURE, SUBMISSION_FAILURE, SUCCESS, CRASHED, IN_PROGRESS)
@@ -1092,6 +1096,9 @@ func main() {
         }
       }
     },
+    "createOptions": {
+      "expiryTime": 86400
+    },
     "serviceType": "combined",
     "deployment": {
       "instances": 1,
@@ -1115,6 +1122,9 @@ func main() {
         "lb.659200800000000000000000.northflank.com"
       ]
     },
+    "expiryTime": "2024-01-01T00:00:00.000Z",
+    "expiredAt": "2024-01-01T00:00:00.000Z",
+    "scheduledDeletion": "2024-01-31T00:00:00.000Z",
     "status": {
       "build": {
         "status": "SUCCESS",
@@ -1639,6 +1649,9 @@ Options:
       }
     }
   },
+  "createOptions": {
+    "expiryTime": 86400
+  },
   "serviceType": "combined",
   "deployment": {
     "instances": 1,
@@ -1662,6 +1675,9 @@ Options:
       "lb.659200800000000000000000.northflank.com"
     ]
   },
+  "expiryTime": "2024-01-01T00:00:00.000Z",
+  "expiredAt": "2024-01-01T00:00:00.000Z",
+  "scheduledDeletion": "2024-01-31T00:00:00.000Z",
   "status": {
     "build": {
       "status": "SUCCESS",
@@ -2178,6 +2194,9 @@ await apiClient.patch.service.combined({
         }
       }
     },
+    "createOptions": {
+      "expiryTime": 86400
+    },
     "serviceType": "combined",
     "deployment": {
       "instances": 1,
@@ -2201,6 +2220,9 @@ await apiClient.patch.service.combined({
         "lb.659200800000000000000000.northflank.com"
       ]
     },
+    "expiryTime": "2024-01-01T00:00:00.000Z",
+    "expiredAt": "2024-01-01T00:00:00.000Z",
+    "scheduledDeletion": "2024-01-31T00:00:00.000Z",
     "status": {
       "build": {
         "status": "SUCCESS",

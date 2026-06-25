@@ -21,6 +21,8 @@ Required permission: Account > Subdomains > General > Read
   - `fullName`: (string) (required) The full domain name with subdomain
   - `content`: (string) (required) The content to set the DNS record to
   - `verified`: (boolean) (required) Whether the subdomain has been verified successfully and can be used.
+  - `routingMode`: (string) The routing mode for the subdomain. (enum: paths, geoRouting, loadBalancerSubdomain)
+  - `loadBalancer`: (string) Name of the load balancer linked to this subdomain, if any.
   - `certificate`: {object}
     - `inProgress`: (boolean) Whether a certificate is in the process of being generated
     - `expiryDate`: (string) Expiry date of the current certificate (format: date-time)
@@ -78,7 +80,9 @@ GET /v1/teams/{teamId}/domains/{domain}/subdomains/{subdomain}
     "name": "site",
     "fullName": "site.example.com",
     "content": "site.example.com.user-1234.dns.northflank.app",
-    "verified": true
+    "verified": true,
+    "routingMode": "loadBalancerSubdomain",
+    "loadBalancer": "my-load-balancer"
   }
 }
 ```
@@ -109,7 +113,9 @@ Options:
   "name": "site",
   "fullName": "site.example.com",
   "content": "site.example.com.user-1234.dns.northflank.app",
-  "verified": true
+  "verified": true,
+  "routingMode": "loadBalancerSubdomain",
+  "loadBalancer": "my-load-balancer"
 }
 ```
 
@@ -137,7 +143,9 @@ await apiClient.get.subdomain({
     "name": "site",
     "fullName": "site.example.com",
     "content": "site.example.com.user-1234.dns.northflank.app",
-    "verified": true
+    "verified": true,
+    "routingMode": "loadBalancerSubdomain",
+    "loadBalancer": "my-load-balancer"
   },
   "rawResponse": "...",
   "request": "...",

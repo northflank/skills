@@ -1,7 +1,7 @@
 {
   "name": "northflank",
   "description": "Deploys, manages, and automates workloads on Northflank, including services, jobs, addons, preview environments, release workflows, sandboxes, GPU workloads, domains, secrets, and templates",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "author": {
     "name": "Northflank"
   },

@@ -26,7 +26,7 @@ Required permission: Project > Volumes > General > Create
   - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
 - `source`: {object}
   - `type`: (string) (required) (enum: volume, backup)
-  - `sourceId`: (string) (required) The ID of the source object (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `sourceId`: (string) (required) Reference to the source object. For a volume source: "<volumeId>". For a backup source: "<volumeId>/<backupId>", or "<projectId>/<volumeId>/<backupId>" to restore from a backup in another project on the same cluster (requires the cross-project clone feature).
 - `owningObject`: {object}
   - `id`: (string) (required) The id of object to attach this volume to. (pattern: ^[A-Za-z0-9-]+$)
   - `type`: (string) (required) The type of the object to attach this volume to. (enum: service, job)
@@ -66,7 +66,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"ssd","storageSize":6144},"attachedObjects":[{"id":"example-service","type":"service"}]}' \
+  --data '{"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"ssd","storageSize":6144},"source":{"sourceId":"example-volume/example-backup"},"attachedObjects":[{"id":"example-service","type":"service"}]}' \
   https://api.northflank.com/v1/projects/{projectId}/volumes
 ```
 
@@ -82,6 +82,9 @@ const payload = {
   "spec": {
     "storageClassName": "ssd",
     "storageSize": 6144
+  },
+  "source": {
+    "sourceId": "example-volume/example-backup"
   },
   "attachedObjects": [
     {
@@ -109,7 +112,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/volumes"
 
-payload = {"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"ssd","storageSize":6144},"attachedObjects":[{"id":"example-service","type":"service"}]}
+payload = {"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"ssd","storageSize":6144},"source":{"sourceId":"example-volume/example-backup"},"attachedObjects":[{"id":"example-service","type":"service"}]}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -130,7 +133,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/volumes"
 
-  var jsonStr = []byte(`{"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"ssd","storageSize":6144},"attachedObjects":[{"id":"example-service","type":"service"}]}`)
+  var jsonStr = []byte(`{"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"ssd","storageSize":6144},"source":{"sourceId":"example-volume/example-backup"},"attachedObjects":[{"id":"example-service","type":"service"}]}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -210,6 +213,9 @@ Options:
     "storageClassName": "ssd",
     "storageSize": 6144
   },
+  "source": {
+    "sourceId": "example-volume/example-backup"
+  },
   "attachedObjects": [
     {
       "id": "example-service",
@@ -265,6 +271,9 @@ await apiClient.create.volume({
     "spec": {
       "storageClassName": "ssd",
       "storageSize": 6144
+    },
+    "source": {
+      "sourceId": "example-volume/example-backup"
     },
     "attachedObjects": [
       {

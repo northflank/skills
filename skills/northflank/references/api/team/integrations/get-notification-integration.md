@@ -91,6 +91,7 @@ Required permission: Account > Team > Notifications > Read
     - `trigger:infrastructure:addon-volume:usage-90-exceeded`: (boolean)
     - `trigger:infrastructure:platform-volume:usage-75-exceeded`: (boolean)
     - `trigger:infrastructure:platform-volume:usage-90-exceeded`: (boolean)
+    - `trigger:infrastructure:addon-volume:disk-autoresize-triggered`: (boolean)
     - `trigger:infrastructure:byoc:cluster:error`: (boolean)
     - `trigger:infrastructure:byoc:node-pool:error`: (boolean)
     - `trigger:infrastructure:byoc:scheduling:error`: (boolean)
@@ -186,6 +187,7 @@ GET /v1/teams/{teamId}/integrations/notifications/{notificationId}
       "trigger:infrastructure:addon-volume:usage-90-exceeded": true,
       "trigger:infrastructure:platform-volume:usage-75-exceeded": true,
       "trigger:infrastructure:platform-volume:usage-90-exceeded": true,
+      "trigger:infrastructure:addon-volume:disk-autoresize-triggered": true,
       "trigger:infrastructure:byoc:cluster:error": true,
       "trigger:infrastructure:byoc:node-pool:error": true,
       "trigger:infrastructure:byoc:scheduling:error": true,
@@ -292,6 +294,7 @@ Options:
     "trigger:infrastructure:addon-volume:usage-90-exceeded": true,
     "trigger:infrastructure:platform-volume:usage-75-exceeded": true,
     "trigger:infrastructure:platform-volume:usage-90-exceeded": true,
+    "trigger:infrastructure:addon-volume:disk-autoresize-triggered": true,
     "trigger:infrastructure:byoc:cluster:error": true,
     "trigger:infrastructure:byoc:node-pool:error": true,
     "trigger:infrastructure:byoc:scheduling:error": true,
@@ -396,6 +399,7 @@ await apiClient.get.notification({
       "trigger:infrastructure:addon-volume:usage-90-exceeded": true,
       "trigger:infrastructure:platform-volume:usage-75-exceeded": true,
       "trigger:infrastructure:platform-volume:usage-90-exceeded": true,
+      "trigger:infrastructure:addon-volume:disk-autoresize-triggered": true,
       "trigger:infrastructure:byoc:cluster:error": true,
       "trigger:infrastructure:byoc:node-pool:error": true,
       "trigger:infrastructure:byoc:scheduling:error": true,

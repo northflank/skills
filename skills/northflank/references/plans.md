@@ -43,6 +43,7 @@ Pricing is per GPU per hour, on top of the bundled CPU/RAM in the `nf-gpu-*` pla
 | NVIDIA A100 | `a100-40` | 40 GB | 1, 2, 4, 8 | $1.42 | us-central, europe-west-netherlands, asia-southeast, asia-northeast |
 | NVIDIA A100 | `a100-80` | 80 GB | 1, 2, 4, 8 | $1.76 | us-central, europe-west-netherlands, asia-southeast, us-east1 |
 | NVIDIA H100 | `h100-80` | 80 GB | 1, 2, 4, 8 | $2.74 | us-central, europe-west-netherlands, asia-southeast, us-east1, us-west, asia-northeast |
+| NVIDIA RTX PRO 6000 | `rtx_pro_6000-96` | 96 GB | 8 | $3.00 | europe-west, us-central, us-east-ohio |
 | NVIDIA H200 | `h200-141` | 141 GB | 8 | $3.14 | us-central, europe-west-netherlands, us-east1, us-west |
 | NVIDIA B200 | `b200-180` | 180 GB | 8 | $5.87 | europe-west-netherlands, asia-southeast, us-east1, asia-northeast |
 
@@ -66,6 +67,7 @@ Pricing is per GPU per hour, on top of the bundled CPU/RAM in the `nf-gpu-*` pla
 - `nf-gpu-l4-24-2g` — 2× NVIDIA L4 (24 GB)
 - `nf-gpu-l4-24-4g` — 4× NVIDIA L4 (24 GB)
 - `nf-gpu-l4-24-8g` — 8× NVIDIA L4 (24 GB)
+- `nf-gpu-rtx_pro_6000-96-8g` — 8× NVIDIA RTX PRO 6000 (96 GB)
 
 ## Regions
 
@@ -75,8 +77,8 @@ Northflank's managed cloud runs on Google Cloud. GPU availability varies — onl
 |---|---|---|---|---|
 | `canada-central` | Canada - Central | Americas | `gcp/northamerica-northeast2` | — |
 | `southamerica-east` | South - America - East | Americas | `gcp/southamerica-east1` | — |
-| `us-central` | US - Central | Americas | `gcp/us-central1` | H200, H100, A100, A100, L4 |
-| `us-east-ohio` | US - East - Ohio | Americas | `gcp/us-east5` | — |
+| `us-central` | US - Central | Americas | `gcp/us-central1` | H200, H100, A100, A100, L4, RTX PRO 6000 |
+| `us-east-ohio` | US - East - Ohio | Americas | `gcp/us-east5` | RTX PRO 6000 |
 | `us-east1` | US - East | Americas | `gcp/us-east4` | B200, H200, H100, A100, L4 |
 | `us-west` | US - West | Americas | `gcp/us-west1` | H200, H100, L4 |
 | `us-west-california` | US - West - California | Americas | `gcp/us-west2` | — |
@@ -85,7 +87,7 @@ Northflank's managed cloud runs on Google Cloud. GPU availability varies — onl
 | `asia-southeast` | Asia - Southeast | Asia Pacific | `gcp/asia-southeast1` | B200, H100, A100, A100, L4 |
 | `australia-southeast` | Australia - Southeast | Asia Pacific | `gcp/australia-southeast2` | — |
 | `africa-south` | Africa - South | EMEA | `gcp/africa-south1` | — |
-| `europe-west` | Europe - West | EMEA | `gcp/europe-west2` | L4 |
+| `europe-west` | Europe - West | EMEA | `gcp/europe-west2` | L4, RTX PRO 6000 |
 | `europe-west-frankfurt` | Europe - West - Frankfurt | EMEA | `gcp/europe-west3` | L4 |
 | `europe-west-netherlands` | Europe - West - Netherlands | EMEA | `gcp/europe-west4` | H200, H100, A100, A100, B200 |
 | `europe-west-zurich` | Europe - West - Zurich | EMEA | `gcp/europe-west6` | — |
