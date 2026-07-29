@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/org/billing/get-usage.md
 
 Gets usage details for a given billing hour.
 
-Required permission: Account > Billing > General > Read
+Required permission: Organisation > Admin > Billing > Read
 
 **Path parameters:**
 

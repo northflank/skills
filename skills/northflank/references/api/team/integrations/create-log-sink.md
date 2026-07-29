@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/create-log-sink.md
 
 Creates a new log sink.
 
-Required permission: Account > Sinks > General > Create
+Required permission: Account > Observability > LogSinks > Create
 
 **Request body:**
 

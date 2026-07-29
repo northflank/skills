@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/update-log-sink.md
 
 Updates the settings for a log sink.
 
-Required permission: Account > Sinks > General > Update
+Required permission: Account > Observability > LogSinks > Update
 
 **Path parameters:**
 

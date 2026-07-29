@@ -44,7 +44,7 @@ Required permission: Project > Pipelines > General > Read
     - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
     - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
     - `branch`: (string) (required) The name of the branch to use.
-    - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]+$)
+    - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
   - `$schema`: (string)
   - `spec`: (multiple options) {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
@@ -54,7 +54,6 @@ Required permission: Project > Pipelines > General > Read
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: Workflow)
-     - `spec`: (undefined) (required)
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -69,7 +68,8 @@ Required permission: Project > Pipelines > General > Read
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
-       - `data`: (undefined) The response data of the Workflow node. | {object}
+       - `data`: (undefined) The response data of the Workflow node.
+     - `spec`: (undefined) (required) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}
        - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
@@ -77,28 +77,6 @@ Required permission: Project > Pipelines > General > Read
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: RolloutStrategy)
-     - `spec`: {object}
-       - `name`: (multiple options) (string) Display name for the gradual rollout strategy | (string) A string containing one or more references that resolve to display name for the gradual rollout strategy (pattern: .*\${.*}.*)
-       - `type`: (multiple options) (string) Type of the gradual rollout strategy (enum: canary) | (string) A string containing one or more references that resolve to type of the gradual rollout strategy (pattern: .*\${.*}.*)
-       - `options`: (multiple options) {object}
-           - `triggers`: (multiple options) {object}
-               - `releaseFromTemplate`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated from a template | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated from a template (pattern: .*\${.*}.*)
-               - `releaseFromReleaseFlow`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated from a release flow | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated from a release flow (pattern: .*\${.*}.*)
-               - `releaseFromCD`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated from a CD pipeline | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated from a CD pipeline (pattern: .*\${.*}.*)
-               - `releaseFromUI`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated from the UI | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated from the UI (pattern: .*\${.*}.*)
-               - `releaseFromApi`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated via the API | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated via the API (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to conditions under which a new release will automatically initiate as a gradual rollout (pattern: .*\${.*}.*)
-           - `blockDeploymentOnActiveRollout`: (multiple options) (boolean) When enabled, new deployments are blocked while a rollout is in progress | (string) A string containing one or more references that resolve to when enabled, new deployments are blocked while a rollout is in progress (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
-       - `details`: (multiple options) (multiple options) {object}
-             - `canaryStrategy`: (multiple options) (string) Strategy used to split traffic between stable and canary deployments (enum: percentage, header) | (string) A string containing one or more references that resolve to strategy used to split traffic between stable and canary deployments (pattern: .*\${.*}.*)
-             - `config`: (multiple options) (multiple options) {object}
-                   - `canaryPercentage`: (multiple options) (integer) Percentage of traffic to route to the canary deployment | (string) A string containing one or more references that resolve to percentage of traffic to route to the canary deployment (pattern: .*\${.*}.*)
-                   - `stablePercentage`: (multiple options) (integer) Percentage of traffic to route to the stable deployment | (string) A string containing one or more references that resolve to percentage of traffic to route to the stable deployment (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to configuration for the selected canary strategy (pattern: .*\${.*}.*) | (multiple options) {object}
-                   - `canaryHeader`: {object}
-                     - `headerName`: (multiple options) (string) HTTP header name used to identify requests that should be routed to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header name used to identify requests that should be routed to the target deployment (pattern: .*\${.*}.*)
-                     - `headerValue`: (multiple options) (string) HTTP header value that routes matching requests to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header value that routes matching requests to the target deployment (pattern: .*\${.*}.*)
-                   - `stableHeader`: {object}
-                     - `headerName`: (multiple options) (string) HTTP header name used to identify requests that should be routed to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header name used to identify requests that should be routed to the target deployment (pattern: .*\${.*}.*)
-                     - `headerValue`: (multiple options) (string) HTTP header value that routes matching requests to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header value that routes matching requests to the target deployment (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to configuration for the selected canary strategy (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to strategy-specific configuration details (pattern: .*\${.*}.*)
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -131,7 +109,93 @@ Required permission: Project > Pipelines > General > Read
                - `canaryPercentage`: (integer) (required)
                - `stablePercentage`: (integer) (required) | {object}
                - `headerName`: (string) (required) (min length: 1)
-               - `headerValue`: (string) (required) (min length: 1) | {object}
+               - `headerValue`: (string) (required) (min length: 1)
+     - `spec`: {object}
+       - `name`: (multiple options) (string) Display name for the gradual rollout strategy | (string) A string containing one or more references that resolve to display name for the gradual rollout strategy (pattern: .*\${.*}.*)
+       - `type`: (multiple options) (string) Type of the gradual rollout strategy (enum: canary) | (string) A string containing one or more references that resolve to type of the gradual rollout strategy (pattern: .*\${.*}.*)
+       - `options`: (multiple options) {object}
+           - `triggers`: (multiple options) {object}
+               - `releaseFromTemplate`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated from a template | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated from a template (pattern: .*\${.*}.*)
+               - `releaseFromReleaseFlow`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated from a release flow | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated from a release flow (pattern: .*\${.*}.*)
+               - `releaseFromCD`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated from a CD pipeline | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated from a CD pipeline (pattern: .*\${.*}.*)
+               - `releaseFromUI`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated from the UI | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated from the UI (pattern: .*\${.*}.*)
+               - `releaseFromApi`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated via the API | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated via the API (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to conditions under which a new release will automatically initiate as a gradual rollout (pattern: .*\${.*}.*)
+           - `blockDeploymentOnActiveRollout`: (multiple options) (boolean) When enabled, new deployments are blocked while a rollout is in progress | (string) A string containing one or more references that resolve to when enabled, new deployments are blocked while a rollout is in progress (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+       - `details`: (multiple options) (multiple options) {object}
+             - `canaryStrategy`: (multiple options) (string) Strategy used to split traffic between stable and canary deployments (enum: percentage, header) | (string) A string containing one or more references that resolve to strategy used to split traffic between stable and canary deployments (pattern: .*\${.*}.*)
+             - `config`: (multiple options) (multiple options) {object}
+                   - `canaryPercentage`: (multiple options) (integer) Percentage of traffic to route to the canary deployment | (string) A string containing one or more references that resolve to percentage of traffic to route to the canary deployment (pattern: .*\${.*}.*)
+                   - `stablePercentage`: (multiple options) (integer) Percentage of traffic to route to the stable deployment | (string) A string containing one or more references that resolve to percentage of traffic to route to the stable deployment (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to configuration for the selected canary strategy (pattern: .*\${.*}.*) | (multiple options) {object}
+                   - `canaryHeader`: {object}
+                     - `headerName`: (multiple options) (string) HTTP header name used to identify requests that should be routed to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header name used to identify requests that should be routed to the target deployment (pattern: .*\${.*}.*)
+                     - `headerValue`: (multiple options) (string) HTTP header value that routes matching requests to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header value that routes matching requests to the target deployment (pattern: .*\${.*}.*)
+                   - `stableHeader`: {object}
+                     - `headerName`: (multiple options) (string) HTTP header name used to identify requests that should be routed to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header name used to identify requests that should be routed to the target deployment (pattern: .*\${.*}.*)
+                     - `headerValue`: (multiple options) (string) HTTP header value that routes matching requests to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header value that routes matching requests to the target deployment (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to configuration for the selected canary strategy (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to strategy-specific configuration details (pattern: .*\${.*}.*)
+     - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `settings`: {object}
+       - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
+       - `backoff`: {object}
+         - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
+         - `delay`: (integer) The time between attempts in seconds.
+     - `kind`: (string) (required) The kind of node. (enum: RolloutStrategy)
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `response`: {object}
+       - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
+       - `retries`: {object}
+         - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
+         - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
+         - `timestamp`: (integer) (required) The timestamp of the most recent attempt.
+         - `nextAttempt`: (integer) The timestamp of the next attempt.
+         - `initialCheckTime`: (integer) The timestamp of the initial condition check.
+       - `startTime`: (integer) The timestamp of the initial attempt.
+       - `endTime`: (integer) The timestamp of the final attempt.
+       - `data`: {object}
+         - `id`: (string) (required) Identifier for the gradual rollout strategy
+         - `name`: (string) (required) Name of the gradual rollout strategy
+         - `type`: (string) (required) Type of the gradual rollout strategy (enum: canary)
+         - `options`: {object}
+           - `triggers`: {object}
+             - `releaseFromTemplate`: (boolean)
+             - `releaseFromReleaseFlow`: (boolean)
+             - `releaseFromCD`: (boolean)
+             - `releaseFromUI`: (boolean)
+             - `releaseFromApi`: (boolean)
+           - `blockDeploymentOnActiveRollout`: (boolean)
+         - `details`: {object}
+           - `canaryStrategy`: (string) (required) (enum: percentage, header)
+           - `config`: (multiple options) {object}
+               - `canaryPercentage`: (integer) (required)
+               - `stablePercentage`: (integer) (required) | {object}
+               - `headerName`: (string) (required) (min length: 1)
+               - `headerValue`: (string) (required) (min length: 1)
+     - `spec`: {object}
+       - `name`: (multiple options) (string) Display name for the gradual rollout strategy | (string) A string containing one or more references that resolve to display name for the gradual rollout strategy (pattern: .*\${.*}.*)
+       - `type`: (multiple options) (string) Type of the gradual rollout strategy (enum: canary) | (string) A string containing one or more references that resolve to type of the gradual rollout strategy (pattern: .*\${.*}.*)
+       - `options`: (multiple options) {object}
+           - `triggers`: (multiple options) {object}
+               - `releaseFromTemplate`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated from a template | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated from a template (pattern: .*\${.*}.*)
+               - `releaseFromReleaseFlow`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated from a release flow | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated from a release flow (pattern: .*\${.*}.*)
+               - `releaseFromCD`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated from a CD pipeline | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated from a CD pipeline (pattern: .*\${.*}.*)
+               - `releaseFromUI`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated from the UI | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated from the UI (pattern: .*\${.*}.*)
+               - `releaseFromApi`: (multiple options) (boolean) Automatically trigger the rollout strategy when a release is initiated via the API | (string) A string containing one or more references that resolve to automatically trigger the rollout strategy when a release is initiated via the API (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to conditions under which a new release will automatically initiate as a gradual rollout (pattern: .*\${.*}.*)
+           - `blockDeploymentOnActiveRollout`: (multiple options) (boolean) When enabled, new deployments are blocked while a rollout is in progress | (string) A string containing one or more references that resolve to when enabled, new deployments are blocked while a rollout is in progress (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+       - `details`: (multiple options) (multiple options) {object}
+             - `canaryStrategy`: (multiple options) (string) Strategy used to split traffic between stable and canary deployments (enum: percentage, header) | (string) A string containing one or more references that resolve to strategy used to split traffic between stable and canary deployments (pattern: .*\${.*}.*)
+             - `config`: (multiple options) (multiple options) {object}
+                   - `canaryPercentage`: (multiple options) (integer) Percentage of traffic to route to the canary deployment | (string) A string containing one or more references that resolve to percentage of traffic to route to the canary deployment (pattern: .*\${.*}.*)
+                   - `stablePercentage`: (multiple options) (integer) Percentage of traffic to route to the stable deployment | (string) A string containing one or more references that resolve to percentage of traffic to route to the stable deployment (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to configuration for the selected canary strategy (pattern: .*\${.*}.*) | (multiple options) {object}
+                   - `canaryHeader`: {object}
+                     - `headerName`: (multiple options) (string) HTTP header name used to identify requests that should be routed to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header name used to identify requests that should be routed to the target deployment (pattern: .*\${.*}.*)
+                     - `headerValue`: (multiple options) (string) HTTP header value that routes matching requests to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header value that routes matching requests to the target deployment (pattern: .*\${.*}.*)
+                   - `stableHeader`: {object}
+                     - `headerName`: (multiple options) (string) HTTP header name used to identify requests that should be routed to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header name used to identify requests that should be routed to the target deployment (pattern: .*\${.*}.*)
+                     - `headerValue`: (multiple options) (string) HTTP header value that routes matching requests to the target deployment (min length: 1) | (string) A string containing one or more references that resolve to hTTP header value that routes matching requests to the target deployment (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to configuration for the selected canary strategy (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to strategy-specific configuration details (pattern: .*\${.*}.*)
+     - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}
        - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
@@ -139,6 +203,23 @@ Required permission: Project > Pipelines > General > Read
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: AddonBackup)
+     - `condition`: (string) (enum: success)
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `response`: {object}
+       - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
+       - `retries`: {object}
+         - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
+         - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
+         - `timestamp`: (integer) (required) The timestamp of the most recent attempt.
+         - `nextAttempt`: (integer) The timestamp of the next attempt.
+         - `initialCheckTime`: (integer) The timestamp of the initial condition check.
+       - `startTime`: (integer) The timestamp of the initial attempt.
+       - `endTime`: (integer) The timestamp of the final attempt.
+       - `data`: (undefined) The response data of the AddonBackup node.
      - `spec`: {object}
        - `projectId`: (multiple options) (string) The ID of the addon to backup. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the addon to backup. (pattern: .*\${.*}.*)
        - `addonId`: (multiple options) (string) The ID of the addon to backup. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the addon to backup. (pattern: .*\${.*}.*)
@@ -148,23 +229,7 @@ Required permission: Project > Pipelines > General > Read
        - `additionalDestinations`: [array of] {object}
            - `destinationId`: (multiple options) (string) Additional custom back up destination that should be used to store the snapshot. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to additional custom back up destination that should be used to store the snapshot. (pattern: .*\${.*}.*)
            - `retentionTime`: (multiple options) (integer) Retention time of the additional back up in days. | (string) A string containing one or more references that resolve to retention time of the additional back up in days. (pattern: .*\${.*}.*)
-           - `type`: (string) (required) The type of backup destination to use (enum: custom)
-     - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
-     - `response`: {object}
-       - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (multiple options) {object}
-           - `code`: (integer) (required)
-           - `message`: (string) (required) | (undefined)
-       - `retries`: {object}
-         - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
-         - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
-         - `timestamp`: (integer) (required) The timestamp of the most recent attempt.
-         - `nextAttempt`: (integer) The timestamp of the next attempt.
-         - `initialCheckTime`: (integer) The timestamp of the initial condition check.
-       - `startTime`: (integer) The timestamp of the initial attempt.
-       - `endTime`: (integer) The timestamp of the final attempt.
-       - `data`: (undefined) The response data of the AddonBackup node. | {object}
+           - `type`: (string) (required) The type of backup destination to use (enum: custom) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}
        - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
@@ -172,6 +237,23 @@ Required permission: Project > Pipelines > General > Read
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: AddonImport)
+     - `condition`: (string) (enum: success)
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `response`: {object}
+       - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
+       - `retries`: {object}
+         - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
+         - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
+         - `timestamp`: (integer) (required) The timestamp of the most recent attempt.
+         - `nextAttempt`: (integer) The timestamp of the next attempt.
+         - `initialCheckTime`: (integer) The timestamp of the initial condition check.
+       - `startTime`: (integer) The timestamp of the initial attempt.
+       - `endTime`: (integer) The timestamp of the final attempt.
+       - `data`: (undefined) The response data of the AddonImport node.
      - `spec`: {object}
        - `projectId`: (multiple options) (string) The ID of the project containing the addon. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the project containing the addon. (pattern: .*\${.*}.*)
        - `addonId`: (multiple options) (string) The ID of the addon to import a backup into. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the addon to import a backup into. (pattern: .*\${.*}.*)
@@ -179,7 +261,14 @@ Required permission: Project > Pipelines > General > Read
        - `connectionString`: (multiple options) (string) A connection string for a live database to dump and import. | (string) A string containing one or more references that resolve to a connection string for a live database to dump and import. (pattern: .*\${.*}.*)
        - `importAllDatabases`: (boolean) When true, all non-system databases will be detected and dumped. Only applicable when using a connection string with PostgreSQL.
        - `compressionType`: (multiple options) (string) (enum: zstd, gz, none) | (string) (pattern: .*\${.*}.*)
-       - `customDestinationId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
+       - `customDestinationId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `settings`: {object}
+       - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
+       - `backoff`: {object}
+         - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
+         - `delay`: (integer) The time between attempts in seconds.
+     - `kind`: (string) (required) The kind of node. (enum: Build)
      - `condition`: (string) (enum: success)
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
@@ -195,14 +284,7 @@ Required permission: Project > Pipelines > General > Read
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
-       - `data`: (undefined) The response data of the AddonImport node. | {object}
-     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
-     - `settings`: {object}
-       - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
-       - `backoff`: {object}
-         - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
-         - `delay`: (integer) The time between attempts in seconds.
-     - `kind`: (string) (required) The kind of node. (enum: Build)
+       - `data`: (undefined) The response data of the Build node.
      - `spec`: {object}
        - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
        - `buildRules`: {object}
@@ -215,8 +297,8 @@ Required permission: Project > Pipelines > General > Read
          - `buildFiles`: {object}
          - `dockerSecretMounts`: {object}
          - `docker`: {object}
-           - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]+$)
-           - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]*$)
+           - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
+           - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
            - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: ^[a-zA-Z0-9-_]+$)
        - `id`: (multiple options) (string) The id of object to build. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of object to build. (pattern: .*\${.*}.*)
        - `type`: (string) (required) The type of the object to build. (enum: service, job)
@@ -224,9 +306,17 @@ Required permission: Project > Pipelines > General > Read
        - `branch`: (multiple options) (string) Branch to build from. If `sha` is not provided, the latest commit of this branch will be built. Only supported by build services. Build services require either `branch` or `pullRequestId` field, but cannot be provided with both. | (string) A string containing one or more references that resolve to branch to build from. If `sha` is not provided, the latest commit of this branch will be built. Only supported by build services. Build services require either `branch` or `pullRequestId` field, but cannot be provided with both. (pattern: .*\${.*}.*)
        - `pullRequestId`: (multiple options) (integer) ID of a pull request to build from. If `sha` is not provided, the latest commit of this pull request will be built. Only supported by build services. Build services require either `branch` or `pullRequestId` field, but cannot be provided with both. | (string) A string containing one or more references that resolve to iD of a pull request to build from. If `sha` is not provided, the latest commit of this pull request will be built. Only supported by build services. Build services require either `branch` or `pullRequestId` field, but cannot be provided with both. (pattern: .*\${.*}.*)
        - `reuseExistingBuilds`: (boolean) If true, the build node will return an existing build if one is available for that commit. Otherwise, a new build will be created with every new preview environment. Defaults to `true`.
-       - `buildRuleFallThroughHandling`: (string) Define handling if build rules do not match the specified commit (enum: fail, skip, useLastBuild)
+       - `buildRuleFallThroughHandling`: (string) Define handling if build rules do not match the specified commit (enum: fail, skip, useLastBuild) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `settings`: {object}
+       - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
+       - `backoff`: {object}
+         - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
+         - `delay`: (integer) The time between attempts in seconds.
+     - `kind`: (string) (required) The kind of node. (enum: JobRun)
      - `condition`: (string) (enum: success)
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
        - `error`: (multiple options) {object}
@@ -240,14 +330,7 @@ Required permission: Project > Pipelines > General > Read
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
-       - `data`: (undefined) The response data of the Build node. | {object}
-     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
-     - `settings`: {object}
-       - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
-       - `backoff`: {object}
-         - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
-         - `delay`: (integer) The time between attempts in seconds.
-     - `kind`: (string) (required) The kind of node. (enum: JobRun)
+       - `data`: (undefined) The response data of the JobRun node.
      - `spec`: {object}
        - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
        - `runtimeEnvironment`: (multiple options) {object} | (string) (pattern: .*\${.*}.*)
@@ -294,23 +377,7 @@ Required permission: Project > Pipelines > General > Read
            - `external`: {object}
              - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
              - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
-       - `jobId`: (multiple options) (string) The ID of the job to run. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the ID of the job to run. (pattern: .*\${.*}.*)
-     - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
-     - `response`: {object}
-       - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (multiple options) {object}
-           - `code`: (integer) (required)
-           - `message`: (string) (required) | (undefined)
-       - `retries`: {object}
-         - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
-         - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
-         - `timestamp`: (integer) (required) The timestamp of the most recent attempt.
-         - `nextAttempt`: (integer) The timestamp of the next attempt.
-         - `initialCheckTime`: (integer) The timestamp of the initial condition check.
-       - `startTime`: (integer) The timestamp of the initial attempt.
-       - `endTime`: (integer) The timestamp of the final attempt.
-       - `data`: (undefined) The response data of the JobRun node. | {object}
+       - `jobId`: (multiple options) (string) The ID of the job to run. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the ID of the job to run. (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}
        - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
@@ -318,9 +385,6 @@ Required permission: Project > Pipelines > General > Read
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: LoopWorkflow)
-     - `spec`: {object}
-       - `iterations`: (multiple options) [array of] (multiple options) {object} | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
-       - `steps`: [array of] (undefined)
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -335,7 +399,10 @@ Required permission: Project > Pipelines > General > Read
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
-       - `data`: (undefined) The response data of the LoopWorkflow node. | {object}
+       - `data`: (undefined) The response data of the LoopWorkflow node.
+     - `spec`: {object}
+       - `iterations`: (multiple options) [array of] (multiple options) {object} | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+       - `steps`: [array of] (undefined) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}
        - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
@@ -343,6 +410,22 @@ Required permission: Project > Pipelines > General > Read
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: Action)
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `response`: {object}
+       - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
+       - `retries`: {object}
+         - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
+         - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
+         - `timestamp`: (integer) (required) The timestamp of the most recent attempt.
+         - `nextAttempt`: (integer) The timestamp of the next attempt.
+         - `initialCheckTime`: (integer) The timestamp of the initial condition check.
+       - `startTime`: (integer) The timestamp of the initial attempt.
+       - `endTime`: (integer) The timestamp of the final attempt.
+       - `data`: (undefined) The response data of the Action node.
      - `spec`: (multiple options) {object}
          - `kind`: (string) (required) The kind of action. (enum: Addon)
          - `spec`: (multiple options) {object}
@@ -398,7 +481,10 @@ Required permission: Project > Pipelines > General > Read
                  - `vcsService`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
                  - `oauthProvider`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
                  - `repoUrl`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                 - `branch`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
                  - `accountLogin`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                 - `commitSha`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                 - `directory`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
                  - `vcsLinkId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
                  - `selfHostedVcsId`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
                - `targetData`: {object}
@@ -411,7 +497,14 @@ Required permission: Project > Pipelines > General > Read
                  - `vcsLinkId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
                  - `oauthProvider`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
                  - `vcsService`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `selfHostedVcsId`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                 - `selfHostedVcsId`: (multiple options) (string) | (string) (pattern: .*\${.*}.*) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `settings`: {object}
+       - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
+       - `backoff`: {object}
+         - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
+         - `delay`: (integer) The time between attempts in seconds.
+     - `kind`: (string) (required) The kind of node. (enum: Condition)
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -426,14 +519,7 @@ Required permission: Project > Pipelines > General > Read
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
-       - `data`: (undefined) The response data of the Action node. | {object}
-     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
-     - `settings`: {object}
-       - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
-       - `backoff`: {object}
-         - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
-         - `delay`: (integer) The time between attempts in seconds.
-     - `kind`: (string) (required) The kind of node. (enum: Condition)
+       - `data`: (undefined) The response data of the Condition node.
      - `spec`: (multiple options) {object}
          - `kind`: (string) (required) The kind of condition. (enum: Addon)
          - `spec`: (multiple options) {object}
@@ -486,22 +572,7 @@ Required permission: Project > Pipelines > General > Read
          - `spec`: (multiple options) {object}
              - `type`: (string) (required) The type of condition. (enum: createRepoFromSourceSuccess)
              - `data`: {object}
-               - `trackerId`: (multiple options) (string) The tracker id outputted from the 'createRepoFromSource' action to monitor. | (string) A string containing one or more references that resolve to the tracker id outputted from the 'createRepoFromSource' action to monitor. (pattern: .*\${.*}.*)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
-     - `response`: {object}
-       - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (multiple options) {object}
-           - `code`: (integer) (required)
-           - `message`: (string) (required) | (undefined)
-       - `retries`: {object}
-         - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
-         - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
-         - `timestamp`: (integer) (required) The timestamp of the most recent attempt.
-         - `nextAttempt`: (integer) The timestamp of the next attempt.
-         - `initialCheckTime`: (integer) The timestamp of the initial condition check.
-       - `startTime`: (integer) The timestamp of the initial attempt.
-       - `endTime`: (integer) The timestamp of the final attempt.
-       - `data`: (undefined) The response data of the Condition node. | {object}
+               - `trackerId`: (multiple options) (string) The tracker id outputted from the 'createRepoFromSource' action to monitor. | (string) A string containing one or more references that resolve to the tracker id outputted from the 'createRepoFromSource' action to monitor. (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}
        - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
@@ -509,19 +580,6 @@ Required permission: Project > Pipelines > General > Read
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: Release)
-     - `spec`: {object}
-       - `type`: (string) (required) (enum: build, deployment, registry)
-       - `origin`: (multiple options) {object}
-           - `id`: (multiple options) (string) ID of the build service to deploy (pattern: ^((?<projectId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)\/)?(?<internalId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)$) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
-           - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
-           - `build`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*) | {object}
-           - `id`: (multiple options) (string) ID of the deployment service or job to promote from. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the deployment service or job to promote from. (pattern: .*\${.*}.*)
-           - `type`: (string) (required) The type of resource to promote from. (enum: service, job) | {object}
-           - `imagePath`: (multiple options) (string) The image path of the external image to deploy. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to the image path of the external image to deploy. (pattern: .*\${.*}.*)
-           - `credentials`: (multiple options) (string) The ID of the credentials to authenticate with to access the external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the credentials to authenticate with to access the external image. (pattern: .*\${.*}.*)
-       - `target`: {object}
-         - `id`: (multiple options) (string) (pattern: ^[A-Za-z0-9-]+$) | (string) (pattern: .*\${.*}.*)
-         - `type`: (multiple options) (string) (enum: service, job) | (string) (pattern: .*\${.*}.*)
      - `condition`: (string) (enum: running)
      - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A string containing one or more references that resolve to timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. (pattern: .*\${.*}.*)
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
@@ -538,7 +596,20 @@ Required permission: Project > Pipelines > General > Read
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
-       - `data`: (undefined) The response data of the Release node. | {object}
+       - `data`: (undefined) The response data of the Release node.
+     - `spec`: {object}
+       - `type`: (string) (required) (enum: build, deployment, registry)
+       - `origin`: (multiple options) {object}
+           - `id`: (multiple options) (string) ID of the build service to deploy (pattern: ^((?<projectId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)\/)?(?<internalId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)$) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+           - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
+           - `build`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*) | {object}
+           - `id`: (multiple options) (string) ID of the deployment service or job to promote from. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the deployment service or job to promote from. (pattern: .*\${.*}.*)
+           - `type`: (string) (required) The type of resource to promote from. (enum: service, job) | {object}
+           - `imagePath`: (multiple options) (string) The image path of the external image to deploy. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to the image path of the external image to deploy. (pattern: .*\${.*}.*)
+           - `credentials`: (multiple options) (string) The ID of the credentials to authenticate with to access the external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the credentials to authenticate with to access the external image. (pattern: .*\${.*}.*)
+       - `target`: {object}
+         - `id`: (multiple options) (string) (pattern: ^[A-Za-z0-9-]+$) | (string) (pattern: .*\${.*}.*)
+         - `type`: (multiple options) (string) (enum: service, job) | (string) (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}
        - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
@@ -546,6 +617,22 @@ Required permission: Project > Pipelines > General > Read
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: Message)
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `response`: {object}
+       - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
+       - `retries`: {object}
+         - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
+         - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
+         - `timestamp`: (integer) (required) The timestamp of the most recent attempt.
+         - `nextAttempt`: (integer) The timestamp of the next attempt.
+         - `initialCheckTime`: (integer) The timestamp of the initial condition check.
+       - `startTime`: (integer) The timestamp of the initial attempt.
+       - `endTime`: (integer) The timestamp of the final attempt.
+       - `data`: (undefined) The response data of the Message node.
      - `spec`: (multiple options) {object}
          - `kind`: (string) (required) The kind of message to send. (enum: VCS)
          - `spec`: {object}
@@ -563,22 +650,7 @@ Required permission: Project > Pipelines > General > Read
          - `kind`: (string) (required) The kind of message to send. (enum: RAW_WEBHOOK)
          - `spec`: {object}
            - `webhookUrl`: (multiple options) (string) The webhook URL to send messages to. | (string) A string containing one or more references that resolve to the webhook URL to send messages to. (pattern: .*\${.*}.*)
-           - `message`: (multiple options) (string) The message content to send to the webhook. | (string) A string containing one or more references that resolve to the message content to send to the webhook. (pattern: .*\${.*}.*)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
-     - `response`: {object}
-       - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
-       - `error`: (multiple options) {object}
-           - `code`: (integer) (required)
-           - `message`: (string) (required) | (undefined)
-       - `retries`: {object}
-         - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
-         - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
-         - `timestamp`: (integer) (required) The timestamp of the most recent attempt.
-         - `nextAttempt`: (integer) The timestamp of the next attempt.
-         - `initialCheckTime`: (integer) The timestamp of the initial condition check.
-       - `startTime`: (integer) The timestamp of the initial attempt.
-       - `endTime`: (integer) The timestamp of the final attempt.
-       - `data`: (undefined) The response data of the Message node. | {object}
+           - `message`: (multiple options) (string) The message content to send to the webhook. | (string) A string containing one or more references that resolve to the message content to send to the webhook. (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}
        - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
@@ -586,7 +658,6 @@ Required permission: Project > Pipelines > General > Read
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: LoopData)
-     - `spec`: {object}
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -601,7 +672,8 @@ Required permission: Project > Pipelines > General > Read
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
-       - `data`: (undefined) The response data of the LoopData node. | {object}
+       - `data`: (undefined) The response data of the LoopData node.
+     - `spec`: {object} | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}
        - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
@@ -609,11 +681,6 @@ Required permission: Project > Pipelines > General > Read
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: SecretInheritance)
-     - `spec`: {object}
-       - `configs`: (multiple options) [array of] (multiple options) (string) (pattern: ^[A-Za-z0-9-]+$) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
-       - `secrets`: (multiple options) [array of] (multiple options) (string) (pattern: ^[A-Za-z0-9-]+$) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
-       - `requiredKeys`: (multiple options) [array of] (multiple options) (string) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
-       - `requiredFiles`: (multiple options) [array of] (multiple options) (string) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -628,7 +695,12 @@ Required permission: Project > Pipelines > General > Read
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
-       - `data`: (undefined) The response data of the SecretInheritance node. | {object}
+       - `data`: (undefined) The response data of the SecretInheritance node.
+     - `spec`: {object}
+       - `configs`: (multiple options) [array of] (multiple options) (string) (pattern: ^[A-Za-z0-9-]+$) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+       - `secrets`: (multiple options) [array of] (multiple options) (string) (pattern: ^[A-Za-z0-9-]+$) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+       - `requiredKeys`: (multiple options) [array of] (multiple options) (string) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+       - `requiredFiles`: (multiple options) [array of] (multiple options) (string) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}
        - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
@@ -636,8 +708,6 @@ Required permission: Project > Pipelines > General > Read
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: Approval)
-     - `spec`: {object}
-       - `amount`: (integer) (required)
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -652,7 +722,9 @@ Required permission: Project > Pipelines > General > Read
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
-       - `data`: (undefined) The response data of the Approval node. | {object}
+       - `data`: (undefined) The response data of the Approval node.
+     - `spec`: {object}
+       - `amount`: (integer) (required) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}
        - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
@@ -660,13 +732,6 @@ Required permission: Project > Pipelines > General > Read
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: RunTemplate)
-     - `spec`: {object}
-       - `templateType`: (string) (required) (enum: template, release-flow-template, preview-env-template, workflow, preview-blueprint, template-teardown, workflow-teardown, preview-blueprint-teardown)
-       - `templateId`: (multiple options) (multiple options) (string) The id of the workflow to run. (pattern: ^((?<projectId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)\/)?(?<internalId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)$) (min length: 3) (max length: 79) | (string) A string containing one or more references that resolve to the id of the workflow to run. (pattern: .*\${.*}.*) | (multiple options) (string) The id of the template to run. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the template to run. (pattern: .*\${.*}.*)
-       - `arguments`: {object}
-         - `variables`: [array of] {object}
-             - `key`: (string) (required)
-             - `value`: (string)
      - `condition`: (string) (enum: success)
      - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
@@ -683,6 +748,13 @@ Required permission: Project > Pipelines > General > Read
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
        - `data`: (undefined) The response data of the RunTemplate node.
+     - `spec`: {object}
+       - `templateType`: (string) (required) (enum: template, release-flow-template, preview-env-template, workflow, preview-blueprint, template-teardown, workflow-teardown, preview-blueprint-teardown)
+       - `templateId`: (multiple options) (multiple options) (string) The id of the workflow to run. (pattern: ^((?<projectId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)\/)?(?<internalId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)$) (min length: 3) (max length: 79) | (string) A string containing one or more references that resolve to the id of the workflow to run. (pattern: .*\${.*}.*) | (multiple options) (string) The id of the template to run. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the template to run. (pattern: .*\${.*}.*)
+       - `arguments`: {object}
+         - `variables`: [array of] {object}
+             - `key`: (string) (required)
+             - `value`: (string)
   - `refs`: {object}
   - `id`: (string) (required) ID of the release flow run
   - `name`: (string) Optional name for the release flow run

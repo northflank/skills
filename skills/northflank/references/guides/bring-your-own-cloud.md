@@ -342,7 +342,7 @@ You can then select an instance type. This is optional, if selected it will over
 
 ![Selecting an instance for an AWS Launch Template in the AWS console](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/aws-on-northflank/aws-launch-template-instances.png)
 
-You must define at least one volume in the Launch Template, which will override the disk specified for a node pool on Northflank. Add a new volume under storage, set the [device name](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html), for example `/dev/xvda`. Choose the disk size and select yes for delete on termination. You can configure other options, such as disk encryption, as required.
+You must define at least one volume in the Launch Template, which will override the disk specified for a node pool on Northflank. Add a new volume under storage, set the [device name](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html) to exactly `/dev/xvda`. If you use a different device name, the volume will be attached as a secondary disk instead of replacing the boot disk. Choose the disk size and select yes for delete on termination. You can configure other options, such as disk encryption, as required.
 
 ![Adding a volume in an AWS Launch Template in the AWS console](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/aws-on-northflank/aws-launch-template-storage.png)
 
@@ -365,6 +365,28 @@ Create a new node pool and [configure it as normal](https://northflank.com/docs/
 When you create your cluster, or add the new node pool, the Launch Template will override any configured fields.
 
 If you are using a capacity block nodes will not join the node pool until the date and time of the capacity reservation. At the end of the reservation period nodes will be removed from the node pool, you may want to gracefully terminate workloads before this happens. If your cluster has no other node pools with nodes that these workloads can schedule on, they will remain unscheduled until the required capacity is added.
+
+### Amazon Web Services on Northflank: Recommended configuration
+
+When you create an AWS EKS cluster with Northflank, AWS automatically creates a security group to manage traffic between cluster components. This security group is initially permissive to ensure cluster functionality, but you may want to restrict it for production workloads.
+
+#### Amazon Web Services on Northflank: How do I harden my EKS security group?
+
+For production deployments, review and restrict your EKS security group according to your use case. AWS provides detailed guidance on which rules are mandatory for cluster operation and which can be restricted.
+
+Common hardening approaches include:
+
+- Restricting inbound traffic to necessary ports and sources (e.g., your VPN or office IP ranges)
+
+- Limiting outbound traffic to specific destinations and ports required by your workloads
+
+- Adding tags and descriptions to security group rules for audit purposes
+
+- Using AWS security groups alongside Northflank's network policies for defense in depth
+
+You can manage your cluster's security group in your AWS console under EC2 security groups, or programmatically using AWS APIs and infrastructure-as-code tools.
+
+[Learn more about Amazon EKS security group requirements](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html)
 
 ### Amazon Web Services on Northflank: Next steps
 
@@ -2344,6 +2366,7 @@ You can create integrations with the following providers:
 | [ Civo](https://www.civo.com) | [Civo Kubernetes](https://www.civo.com/kubernetes) | [View on Northflank](https://northflank.com/cloud/civo) |
 | [ Oracle](https://www.oracle.com/) | [Oracle Kubernetes Engine (OKE)](https://www.oracle.com/cloud/cloud-native/kubernetes-engine/) | [View on Northflank](https://northflank.com/cloud/oci) |
 | CoreWeave | CoreWeave Kubernetes Service (CKS) | [View on Northflank](https://northflank.com/cloud/coreweave) |
+| Nebius | Nebius Managed Service for Kubernetes | [View on Northflank](https://northflank.com/cloud/nebius) |
 
 - [Integrate your Google account: Integrate your Google Cloud Platform account to create and manage Kubernetes clusters on GCP with Northflank.](bring-your-own-cloud.md#google-cloud-platform-on-northflank)
 - [Integrate your Amazon account: Integrate your Amazon Web Services account to create and manage Kubernetes clusters on AWS with Northflank.](bring-your-own-cloud.md#amazon-web-services-on-northflank)

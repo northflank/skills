@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/tags/update-tag.md
 
 Patch a resource tag.
 
-Required permission: Account > Tags > General > Update
+Required permission: Account > Platform > Tags > Update
 
 **Path parameters:**
 
@@ -14,6 +14,7 @@ Required permission: Account > Tags > General > Update
 **Request body:**
 
 {object}
+- `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service and job workloads after their next deployment. Required for usage in egress IP selectors.
 - `useSpotNodes`: (boolean) Schedule workloads to spot nodes
 - `useOnDemandNodes`: (boolean) Also allow workloads to schedule to on demand nodes. Only relevant if you want workloads to schedule across both spot and on demand nodes
 - `nodeAffinities`: [array of] {object}
@@ -58,12 +59,13 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
-  --data '{"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A"}' \
+  --data '{"useAsInfrastructureLabel":false,"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A"}' \
   https://api.northflank.com/v1/tags/{resourceTagId}
 ```
 
 ```javascript
 const payload = {
+  "useAsInfrastructureLabel": false,
   "useSpotNodes": false,
   "useOnDemandNodes": false,
   "sandboxing": {
@@ -105,7 +107,7 @@ import requests
 
 url = "https://api.northflank.com/v1/tags/{resourceTagId}"
 
-payload = {"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A"}
+payload = {"useAsInfrastructureLabel":false,"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A"}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PATCH", url, headers = headers, json = payload)
@@ -126,7 +128,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/tags/{resourceTagId}"
 
-  var jsonStr = []byte(`{"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A"}`)
+  var jsonStr = []byte(`{"useAsInfrastructureLabel":false,"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A"}`)
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -175,6 +177,7 @@ Options:
 
 ```json
 {
+  "useAsInfrastructureLabel": false,
   "useSpotNodes": false,
   "useOnDemandNodes": false,
   "sandboxing": {
@@ -219,6 +222,7 @@ await apiClient.patch.tag({
     "resourceTagId": "example-tag"
   },
   data: {
+    "useAsInfrastructureLabel": false,
     "useSpotNodes": false,
     "useOnDemandNodes": false,
     "sandboxing": {

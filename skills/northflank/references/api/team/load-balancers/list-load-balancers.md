@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/load-balancers/list-load-balance
 
 Gets a list of load balancers belonging to the team
 
-Required permission: Account > LoadBalancers > General > Read
+Required permission: Account > Networking > LoadBalancers > Read
 
 **Query parameters:**
 

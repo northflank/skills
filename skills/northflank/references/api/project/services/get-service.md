@@ -15,187 +15,614 @@ Required permission: Project > Services > General > Read
 **Response body:**
 
 {object}
-- `data`: {object}
-  - `id`: (string) (required) Identifier for the service
-  - `appId`: (string) (required) Full identifier used for service deployment
-  - `name`: (string) (required) Service name
-  - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-  - `description`: (string) A short description of the service
-  - `projectId`: (string) (required) ID of the project that the service belongs to
-  - `serviceType`: (string) (required) Type of the service (combined, build or deployment) (enum: combined, build, deployment)
-  - `createdAt`: (string) (required) The time the service was created. (format: date-time)
-  - `disabledCI`: (boolean) (required) Whether Continuous Integration is disabled
-  - `disabledCD`: (boolean) (required) Whether Continuous Deployment is disabled
-  - `billing`: {object}
-    - `deploymentPlan`: (string) (required) ID of the billing plan used by this service
-  - `status`: {object}
-    - `build`: {object}
-      - `status`: (string) (required) The current status of the build. (enum: QUEUED, PENDING, UNSCHEDULABLE, STARTING, CLONING, BUILDING, UPLOADING, ABORTED, FAILURE, SUBMISSION_FAILURE, SUCCESS, CRASHED, IN_PROGRESS)
-      - `lastTransitionTime`: (string) The timestamp of when the build reached this status. (format: date-time)
-    - `deployment`: {object}
-      - `status`: (string) (required) The current status of the deployment. (enum: PENDING, IN_PROGRESS, COMPLETED, FAILED)
-      - `reason`: (string) (required) The reason the current deployment was started. (enum: SCALING, DEPLOYING)
-      - `lastTransitionTime`: (string) The timestamp of when the deployment reached this status. (format: date-time)
-  - `servicePaused`: (boolean) (required) Is the service paused?
-  - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
-  - `vcsData`: {object}
-    - `projectUrl`: (string) (required) URL of the repository being built
-    - `projectType`: (string) (required) VCS provider for the repo being built (enum: bitbucket, gitlab, github, self-hosted, azure)
-    - `selfHostedVcsId`: (string) ID of the self-hosted VCS, if applicable.
-    - `projectBranch`: (string) Branch of the repo being built
-    - `publicRepo`: (boolean) Whether the repo is being accessed without authentication.
-    - `dockerWorkDir`: (string) (required) Working directory used by the dockerfile
-    - `dockerFilePath`: (string) (required) File path of the Dockerfile
-  - `bundleData`: {object}
-    - `bundleUrl`: (string) (required) URL of the bundle to be built
-    - `projectBranch`: (string) Branch of the bundle being built
-    - `dockerWorkDir`: (string) (required) Working directory used by the dockerfile
-    - `dockerFilePath`: (string) (required) File path of the Dockerfile
-  - `deployment`: {object}
-    - `region`: (string) Region where this service is deployed and/or built
-    - `instances`: (integer) Number of instances/replicas running
-    - `external`: {object}
-      - `imagePath`: (string) (required) Path of the external image excluding the hostname
-      - `registryProvider`: (string) (required) Registry provider hosting the external image (enum: acr, ecr, gar, dockerhub, dhi, github, gitlab, custom, legacy)
-      - `privateImage`: (boolean) (required) Does the image require authentication
-    - `internal`: {object}
-      - `nfObjectId`: (string) (required) Database ID of deployed entity
-      - `nfObjectType`: (string) (required) Type of deployed entity (enum: service)
-      - `repository`: (string) (required) URL of the repository being deployed
-      - `branch`: (string) (required) Branch of the repo being deployed
-      - `buildSHA`: (string) (required) Commit SHA to be deployed. `latest` means the latest commit is automatically being deployed.
-      - `deployedSHA`: (string) Currently deployed commit SHA. If buildSHA is set to `latest`, this will show the SHA of the latest commit.
-    - `docker`: {object}
-      - `configType`: (string) (required) Override configuration which is used at runtime. (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
-      - `customEntrypoint`: (string) The CMD to run instead of the default if entrypoint override is enabled.
-      - `customCommand`: (string) The CMD to run instead of the default if CMD override is enabled.
-    - `buildpack`: {object}
-      - `configType`: (string) (required) Type of buildpack run configuration. (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
-      - `customProcess`: (string) Custom process which should be run.
-      - `customEntrypoint`: (string) Custom entrypoint which should be run.
-      - `customCommand`: (string) Custom command which should be run.
-    - `storage`: {object}
-      - `ephemeralStorage`: {object}
-        - `storageSize`: (number) (required) Ephemeral storage per container in MB (format: float)
-      - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
-    - `strategy`: {object}
-      - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom)
-      - `settings`: {object}
-        - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
-        - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
-    - `zonalRedundancy`: {object}
-      - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required)
-      - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
-    - `gpu`: {object}
-      - `enabled`: (boolean)
-      - `configuration`: {object}
-        - `gpuType`: (string) (required)
-        - `gpuCount`: (integer)
-        - `timesliced`: (boolean)
-    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-    - `metadata`: {object}
-      - `labels`: {object}
-      - `annotations`: {object}
-    - `imageUrl`: (string) URL at which the service's deployed image is located
-  - `loadBalancing`: {object}
-    - `mode`: (string) (required) (enum: leastConnection, consistentHash, roundRobin, consistentReplicaRouting)
-    - `consistentHash`: {object}
-      - `mode`: (string) (required) (enum: ip, customHeader)
-      - `header`: (string)
-    - `consistentReplicaRouting`: {object}
-      - `mode`: (string) (required) (enum: path, header)
-  - `buildConfiguration`: {object}
-    - `prRestrictions`: [array of] (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
-    - `branchRestrictions`: [array of] (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
-    - `crossProjectAccess`: {object}
-      - `enabled`: (boolean) (required) Allow this build service to be referenced by resources in other projects.
-      - `projects`: [array of] (string) The ID of a project to include or exclude. (pattern: ^[A-Za-z0-9-]+$)
-      - `isAllowList`: (boolean) (required) If true, only the listed projects can use this build service. If false, all projects except the listed ones can use this build service.
-    - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
-    - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
-    - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
-    - `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
-    - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
-    - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
-    - `includeGitFolder`: (boolean) Include .git folder inside the build context
-    - `fullGitClone`: (boolean) Include the entire git history as part of the .git folder. Only relevant if "includeGitFolder" is set.
-    - `enableGitLfs`: (boolean) Enable Git LFS support for the build
-    - `storage`: {object}
-      - `ephemeralStorage`: {object}
-        - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-  - `buildEngineConfiguration`: {object}
-    - `buildEngine`: (string) The build engine used. (enum: buildpack, buildkit, kaniko)
-    - `buildpack`: {object}
-      - `builder`: (string) The Buildpack stack used. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
-      - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
-      - `useCache`: (boolean) Should build dependencies be cached?
-    - `buildkit`: {object}
-      - `useCache`: (boolean) Should intermediate image layers be cached?
-      - `useInternalCache`: (boolean) Should use persistent storage to store all layers?
-      - `internalCacheStorage`: (boolean) Storage size to use for internal cache
-    - `kaniko`: {object}
-      - `useCache`: (boolean) Should intermediate image layers be cached?
-  - `autoscaling`: {object}
-    - `horizontal`: {object}
-      - `enabled`: (boolean) (required) Whether horizontal autoscaling should be enabled
-      - `minReplicas`: (number) (required) Minimum number of replicas which should be running at any time (format: float)
-      - `maxReplicas`: (number) (required) Maximum number of replicas which can be running at any time (format: float)
-      - `cpu`: {object}
-        - `enabled`: (boolean) (required) Whether autoscaling should take into account cpu usage
-        - `thresholdPercentage`: (integer) (required) Threshold CPU usage percentage at which the workload will be scaled
-      - `memory`: {object}
-        - `enabled`: (boolean) (required) Whether autoscaling should take into account memory usage
-        - `thresholdPercentage`: (integer) (required) Threshold memory usage percentage at which the workload will be scaled
-      - `rps`: {object}
-        - `enabled`: (boolean) (required) Whether autoscaling should take into requests-per-second
-        - `thresholdValue`: (integer) (required) Threshold rps value on which the workload will be scaled
-      - `userMetrics`: {object}
-        - `enabled`: (boolean) (required) Whether to enable handling for custom metrics in the autoscaling configuration
-        - `exposedMetricsPath`: (string) (required) Path on which the metrics will be exposed by the service.. (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
-        - `exposedMetricsPort`: (integer) (required) Port on which the metrics will be exposed by the service.
-        - `metrics`: [array of] {object}
-            - `metricName`: (string) (required) Name of the custom metric (pattern: [a-zA-Z_:][a-zA-Z0-9_:]*$)
-            - `metricType`: (string) (required) Type of metric exposed, this will affect how it'll be queried by the autoscaler component: Gauge will be used as is, Counter will be used with rate() (enum: gauge, counter)
-            - `thresholdValue`: (number) (required) Threshold value on which the workload will be scaled. Represents the average value across all running pods. (format: float)
-  - `ports`: [array of] {object}
-     - `id`: (string) (required) The id used to identify the port across requests. (pattern: ^[a-z]-?[a-z0-9]+(-[a-z0-9]+)*$)
-     - `name`: (string) (required) The name of the port used in the public url and UI. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
-     - `internalPort`: (integer) (required) The port number.
-     - `protocol`: (string) (required) The protocol used by the port. (enum: HTTP, HTTP/2, TCP, UDP)
-     - `public`: (boolean) (required) If true, the port is exposed publicly.
-     - `dns`: (string) DNS entry for this port.
-     - `domains`: [array of] {object}
-         - `name`: (string) (required) The custom domain redirecting to this port.
-         - `certificate`: {object}
-           - `inProgress`: (boolean) Is the certificate in the process of being generated?
-           - `expiryDate`: (string) The timestamp when the TLS certificate will expire. (format: date-time)
-           - `refreshDate`: (string) The timestamp when a new TLS certificate will be generated. (format: date-time)
-     - `security`: {object}
-       - `credentials`: [array of] {object}
-           - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
-           - `password`: (string) (required) The password to access the service with this username.
-           - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-       - `policies`: [array of] {object}
-           - `addresses`: [array of] (string) An IP address used by this rule
-           - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-       - `sso`: {object}
-         - `organizationId`: (string) Organization ID of the work OS organization that should be validated.
-         - `directoryGroupIds`: [array of] (string)
-         - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
-         - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
-         - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
-         - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-       - `verificationMode`: (string) Mode used to verify multiple security features like ip policies and SSO authentication (enum: or, and)
-       - `headers`: [array of] {object}
-           - `regexMode`: (boolean)
-           - `name`: (multiple options) (string) | (string) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-           - `value`: (string) (required)
-     - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
-  - `cluster`: {object}
-    - `id`: (string) (required) The id of the cluster associated with this project.
-    - `name`: (string) (required) The name of the cluster associated with this project.
-    - `namespace`: (string) Namespace this resource is located within on the cluster.
-    - `loadBalancers`: [array of] (string)
+- `data`: (multiple options) {object}
+   - `name`: (string) (required) The name of the service. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
+   - `description`: (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
+   - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+   - `billing`: {object}
+     - `deploymentPlan`: (string) The ID of the deployment plan to use. (Deprecated - use buildPlan for build resources instead.). (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+     - `buildPlan`: (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+     - `gpu`: {object}
+       - `enabled`: (boolean)
+       - `configuration`: {object}
+         - `gpuType`: (string) (required)
+         - `gpuCount`: (integer)
+         - `timesliced`: (boolean)
+   - `infrastructure`: {object}
+     - `architecture`: (string) (enum: x86, arm)
+   - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
+   - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
+   - `buildSettings`: (multiple options) {object}
+      - `storage`: {object}
+        - `ephemeralStorage`: {object}
+          - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
+      - `dockerfile`: {object}
+        - `useCache`: (boolean) DEPRECATED: This field will be removed in the near future and currently has no effect.
+        - `buildEngine`: (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko)
+        - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
+        - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
+        - `buildkit`: {object}
+          - `useCache`: (boolean) Use persistent storage to cache build layers.
+          - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
+          - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
+          - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+      - `storage`: {object}
+        - `ephemeralStorage`: {object}
+          - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
+      - `buildpack`: {object}
+        - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
+        - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
+        - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
+        - `useCache`: (boolean) Should build dependencies be cached?
+   - `buildConfiguration`: {object}
+     - `prRestrictions`: [array of] (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
+     - `branchRestrictions`: [array of] (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
+     - `crossProjectAccess`: {object}
+       - `enabled`: (boolean) (required) Allow this build service to be referenced by resources in other projects.
+       - `projects`: [array of] (string) The ID of a project to include or exclude. (pattern: ^[A-Za-z0-9-]+$)
+       - `isAllowList`: (boolean) (required) If true, only the listed projects can use this build service. If false, all projects except the listed ones can use this build service.
+     - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+     - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
+     - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
+     - `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+     - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
+     - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
+     - `includeGitFolder`: (boolean) Include .git folder inside the build context
+     - `fullGitClone`: (boolean) Include the entire git history as part of the .git folder. Only relevant if "includeGitFolder" is set.
+     - `enableGitLfs`: (boolean) Enable Git LFS support for the build
+     - `storage`: {object}
+       - `ephemeralStorage`: {object}
+         - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
+   - `buildArguments`: {object}
+   - `buildFiles`: {object}
+   - `dockerSecretMounts`: {object}
+   - `serviceType`: (string) (required) Type of the service (combined, build or deployment) (enum: build)
+   - `id`: (string) (required) Identifier for the service
+   - `appId`: (string) (required) Full identifier used for service deployment
+   - `cluster`: {object}
+     - `id`: (string) (required) The id of the cluster associated with this project.
+     - `name`: (string) (required) The name of the cluster associated with this project.
+     - `namespace`: (string) Namespace this resource is located within on the cluster.
+     - `loadBalancers`: [array of] (string)
+   - `createdAt`: (string) time of creation (format: date-time)
+   - `updatedAt`: (string) time of update (format: date-time)
+   - `status`: {object}
+     - `build`: {object}
+       - `status`: (string) (required) The current status of the build. (enum: QUEUED, PENDING, UNSCHEDULABLE, STARTING, CLONING, BUILDING, UPLOADING, ABORTED, FAILURE, SUBMISSION_FAILURE, SUCCESS, CRASHED, IN_PROGRESS)
+       - `lastTransitionTime`: (string) The timestamp of when the build reached this status. (format: date-time)
+   - `buildEngineConfiguration`: {object}
+     - `buildEngine`: (string) The build engine used. (enum: buildpack, buildkit, kaniko)
+     - `buildpack`: {object}
+       - `builder`: (string) The Buildpack stack used. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
+       - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
+       - `useCache`: (boolean) Should build dependencies be cached?
+     - `buildkit`: {object}
+       - `useCache`: (boolean) Should intermediate image layers be cached?
+       - `useInternalCache`: (boolean) Should use persistent storage to store all layers?
+       - `internalCacheStorage`: (boolean) Storage size to use for internal cache
+     - `kaniko`: {object}
+       - `useCache`: (boolean) Should intermediate image layers be cached?
+   - `vcsData`: {object}
+     - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+     - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+     - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
+     - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
+     - `vcsLinkId`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24)
+     - `dockerWorkDir`: (string) (required) DEPRECATED. This field has been deprecated in favour of the field in `buildSettings.dockerfile`.
+     - `dockerFilePath`: (string) (required) DEPRECATED. This field has been deprecated in favour of the field in `buildSettings.dockerfile`. | {object}
+   - `name`: (string) (required) The name of the service. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
+   - `description`: (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
+   - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+   - `billing`: {object}
+     - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+     - `buildPlan`: (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+     - `gpu`: {object}
+       - `enabled`: (boolean)
+       - `configuration`: {object}
+         - `gpuType`: (string) (required)
+         - `gpuCount`: (integer)
+         - `timesliced`: (boolean)
+   - `infrastructure`: {object}
+     - `architecture`: (string) (enum: x86, arm)
+   - `ports`: [array of] {object}
+      - `name`: (string) (required) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8)
+      - `internalPort`: (integer) (required) The port number.
+      - `public`: (boolean) If true, the port will be exposed publicly.
+      - `security`: {object}
+        - `credentials`: [array of] {object}
+            - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+            - `password`: (string) (required) The password to access the service with this username.
+            - `type`: (string) (required) The type of authentication used (enum: basic-auth)
+        - `ip`: [array of] {object}
+            - `addresses`: [array of] (string) An IP address used by this rule
+            - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
+        - `policies`: [array of] {object}
+            - `addresses`: [array of] (string) An IP address used by this rule
+            - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
+        - `sso`: {object}
+          - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
+          - `directoryGroupIds`: [array of] (string)
+          - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
+          - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
+          - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+          - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
+        - `headers`: [array of] (multiple options) {object}
+              - `regexMode`: (boolean)
+              - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
+              - `value`: (string) (required) | {object}
+              - `regexMode`: (boolean)
+              - `name`: (string) (required)
+              - `value`: (string) (required)
+        - `verificationMode`: (string) Mode used to verify multiple security features like ip policies and SSO authentication (enum: or, and)
+        - `securePathConfiguration`: {object}
+          - `enabled`: (boolean) Enable security policies on a path-level style
+          - `skipSecurityPoliciesForInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip all security policies
+          - `rules`: [array of] {object}
+              - `paths`: [array of] (multiple options) {object}
+                    - `path`: (string) (required) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
+                    - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: prefix)
+                    - `priority`: (integer) (required) | {object}
+                    - `path`: (string) (required) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
+                    - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: exact)
+                    - `priority`: (integer) (required) | {object}
+                    - `path`: (string) (required)
+                    - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: regex)
+                    - `priority`: (integer) (required)
+              - `accessMode`: (string) (required) Specify the way the path rule will behave when processing policies. This enables an allow-list/deny-list approach for access control on each path (enum: protected, unprotected)
+              - `securityPolicies`: {object}
+                - `orPolicies`: {object}
+                  - `credentials`: [array of] {object}
+                      - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+                      - `password`: (string) (required) The password to access the service with this username.
+                      - `type`: (string) (required) The type of authentication used (enum: basic-auth)
+                  - `ip`: [array of] {object}
+                      - `addresses`: [array of] (string) An IP address used by this rule
+                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
+                  - `policies`: [array of] {object}
+                      - `addresses`: [array of] (string) An IP address used by this rule
+                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
+                  - `sso`: {object}
+                    - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
+                    - `directoryGroupIds`: [array of] (string)
+                    - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
+                    - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
+                    - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                    - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
+                  - `headers`: [array of] (multiple options) {object}
+                        - `regexMode`: (boolean)
+                        - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
+                        - `value`: (string) (required) | {object}
+                        - `regexMode`: (boolean)
+                        - `name`: (string) (required)
+                        - `value`: (string) (required)
+                - `requiredPolicies`: {object}
+                  - `credentials`: [array of] {object}
+                      - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+                      - `password`: (string) (required) The password to access the service with this username.
+                      - `type`: (string) (required) The type of authentication used (enum: basic-auth)
+                  - `ip`: [array of] {object}
+                      - `addresses`: [array of] (string) An IP address used by this rule
+                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
+                  - `policies`: [array of] {object}
+                      - `addresses`: [array of] (string) An IP address used by this rule
+                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
+                  - `sso`: {object}
+                    - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
+                    - `directoryGroupIds`: [array of] (string)
+                    - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
+                    - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
+                    - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                    - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
+                  - `headers`: [array of] (multiple options) {object}
+                        - `regexMode`: (boolean)
+                        - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
+                        - `value`: (string) (required) | {object}
+                        - `regexMode`: (boolean)
+                        - `name`: (string) (required)
+                        - `value`: (string) (required)
+      - `domains`: [array of] (string) A domain to redirect to this port.
+      - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
+      - `advancedOptions`: {object}
+        - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
+      - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+   - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
+   - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
+   - `bundleData`: {object}
+     - `bundleUrl`: (string) (required) URL of the bundle to be built
+     - `branch`: (string) (required) Branch identifier for the bundle. (pattern: ^[A-Za-z0-9-]+$)
+   - `buildSettings`: (multiple options) {object}
+      - `storage`: {object}
+        - `ephemeralStorage`: {object}
+          - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
+      - `dockerfile`: {object}
+        - `useCache`: (boolean) DEPRECATED: This field will be removed in the near future and currently has no effect.
+        - `buildEngine`: (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko)
+        - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
+        - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
+        - `buildkit`: {object}
+          - `useCache`: (boolean) Use persistent storage to cache build layers.
+          - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
+          - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
+          - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+      - `storage`: {object}
+        - `ephemeralStorage`: {object}
+          - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
+      - `buildpack`: {object}
+        - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
+        - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
+        - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
+        - `useCache`: (boolean) Should build dependencies be cached?
+   - `buildConfiguration`: {object}
+     - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+     - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
+     - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
+     - `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+     - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
+     - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
+     - `includeGitFolder`: (boolean) Include .git folder inside the build context
+     - `fullGitClone`: (boolean) Include the entire git history as part of the .git folder. Only relevant if "includeGitFolder" is set.
+     - `enableGitLfs`: (boolean) Enable Git LFS support for the build
+     - `storage`: {object}
+       - `ephemeralStorage`: {object}
+         - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
+   - `runtimeEnvironment`: {object}
+   - `runtimeFiles`: {object}
+   - `buildArguments`: {object}
+   - `buildFiles`: {object}
+   - `dockerSecretMounts`: {object}
+   - `healthChecks`: [array of] {object}
+      - `protocol`: (string) (required) The protocol to access the health check with. (enum: HTTP, CMD, TCP)
+      - `type`: (string) (required) The type of health check. (enum: livenessProbe, readinessProbe, startupProbe)
+      - `path`: (string) The path of the health check endpoint. Required when protocol is HTTP. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]*((\?([a-zA-Z0-9-._]+(=[a-zA-Z0-9-._]+)?)*)(&([a-zA-Z0-9-._]+(=[a-zA-Z0-9-._]+)?)*)*)?$)
+      - `cmd`: (string) The command to run for the health check. Required when protocol is CMD
+      - `port`: (integer) Port number for the health check endpoint. Required when protocol is HTTP.
+      - `initialDelaySeconds`: (integer) (required) Initial delay, in seconds, before the health check is first run.
+      - `periodSeconds`: (integer) (required) The time between each check, in seconds.
+      - `timeoutSeconds`: (integer) (required) The time to wait for a response before marking the health check as a failure.
+      - `failureThreshold`: (integer) (required) The maximum number of allowed failures.
+      - `successThreshold`: (integer) The number of successes required to mark the health check as a success.
+   - `loadBalancing`: {object}
+     - `mode`: (string) (required) (enum: leastConnection, consistentHash, roundRobin, consistentReplicaRouting)
+     - `consistentHash`: {object}
+       - `mode`: (string) (required) (enum: ip, customHeader)
+       - `header`: (string)
+     - `consistentReplicaRouting`: {object}
+       - `mode`: (string) (required) (enum: path, header)
+   - `autoscaling`: {object}
+     - `horizontal`: {object}
+       - `enabled`: (boolean) (required) Whether horizontal autoscaling should be enabled
+       - `minReplicas`: (number) (required) Minimum number of replicas which should be running at any time (format: float)
+       - `maxReplicas`: (number) (required) Maximum number of replicas which can be running at any time (format: float)
+       - `cpu`: {object}
+         - `enabled`: (boolean) (required) Whether autoscaling should take into account cpu usage
+         - `thresholdPercentage`: (integer) (required) Threshold CPU usage percentage at which the workload will be scaled
+       - `memory`: {object}
+         - `enabled`: (boolean) (required) Whether autoscaling should take into account memory usage
+         - `thresholdPercentage`: (integer) (required) Threshold memory usage percentage at which the workload will be scaled
+       - `rps`: {object}
+         - `enabled`: (boolean) (required) Whether autoscaling should take into requests-per-second
+         - `thresholdValue`: (integer) (required) Threshold rps value on which the workload will be scaled
+       - `userMetrics`: {object}
+         - `enabled`: (boolean) (required) Whether to enable handling for custom metrics in the autoscaling configuration
+         - `exposedMetricsPath`: (string) (required) Path on which the metrics will be exposed by the service.. (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
+         - `exposedMetricsPort`: (integer) (required) Port on which the metrics will be exposed by the service.
+         - `metrics`: [array of] {object}
+             - `metricName`: (string) (required) Name of the custom metric (pattern: [a-zA-Z_:][a-zA-Z0-9_:]*$)
+             - `metricType`: (string) (required) Type of metric exposed, this will affect how it'll be queried by the autoscaler component: Gauge will be used as is, Counter will be used with rate() (enum: gauge, counter)
+             - `thresholdValue`: (number) (required) Threshold value on which the workload will be scaled. Represents the average value across all running pods. (format: float)
+   - `createOptions`: {object}
+     - `volumesToAttach`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+     - `expiryTime`: (integer) Number of seconds from creation after which the service should automatically expire. Once reached, the service is paused and scheduled for deletion. Must be between 300 (5 minutes) and 604800 (7 days).
+   - `serviceType`: (string) (required) Type of the service (combined, build or deployment) (enum: combined)
+   - `deployment`: {object}
+     - `type`: (string) The way the service should be deployed. Either as a deployment (default), or as a stateful set. (enum: deployment, statefulSet)
+     - `instances`: (integer) (required) The number of instances to run the service on.
+     - `buildpack`: {object}
+       - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
+       - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
+       - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
+       - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
+     - `docker`: {object}
+       - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
+       - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
+       - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
+     - `storage`: {object}
+       - `useHdbStorage`: (boolean)
+       - `usePdSsdStorage`: (boolean)
+       - `ephemeralStorage`: {object}
+         - `storageSize`: (integer) Ephemeral storage per container in MB
+       - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
+     - `strategy`: {object}
+       - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom)
+       - `settings`: {object}
+         - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
+         - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
+     - `zonalRedundancy`: {object}
+       - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required)
+       - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
+     - `gpu`: {object}
+       - `enabled`: (boolean)
+       - `configuration`: {object}
+         - `gpuType`: (string) (required)
+         - `gpuCount`: (integer)
+         - `timesliced`: (boolean)
+     - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+     - `gradualRolloutStrategyId`: (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$)
+     - `ssh`: {object}
+       - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
+     - `metadata`: {object}
+       - `labels`: {object}
+       - `annotations`: {object}
+     - `imageUrl`: (string) Image registry url of the deployed image.
+   - `id`: (string) (required) Identifier for the service
+   - `appId`: (string) (required) Full identifier used for service deployment
+   - `cluster`: {object}
+     - `id`: (string) (required) The id of the cluster associated with this project.
+     - `name`: (string) (required) The name of the cluster associated with this project.
+     - `namespace`: (string) Namespace this resource is located within on the cluster.
+     - `loadBalancers`: [array of] (string)
+   - `createdAt`: (string) time of creation (format: date-time)
+   - `updatedAt`: (string) time of update (format: date-time)
+   - `expiryTime`: (string) Absolute time at which the service is scheduled to automatically expire. Resolved from createOptions.expiryTime on creation; cleared once the service has expired. (format: date-time)
+   - `expiredAt`: (string) Time at which the service expired and was paused. (format: date-time)
+   - `scheduledDeletion`: (string) Time at which the expired service is scheduled for deletion. (format: date-time)
+   - `status`: {object}
+     - `build`: {object}
+       - `status`: (string) (required) The current status of the build. (enum: QUEUED, PENDING, UNSCHEDULABLE, STARTING, CLONING, BUILDING, UPLOADING, ABORTED, FAILURE, SUBMISSION_FAILURE, SUCCESS, CRASHED, IN_PROGRESS)
+       - `lastTransitionTime`: (string) The timestamp of when the build reached this status. (format: date-time)
+     - `deployment`: {object}
+       - `status`: (string) (required) The current status of the deployment. (enum: PENDING, IN_PROGRESS, COMPLETED, FAILED)
+       - `reason`: (string) (required) The reason the current deployment was started. (enum: SCALING, DEPLOYING)
+       - `lastTransitionTime`: (string) The timestamp of when the deployment reached this status. (format: date-time)
+   - `buildEngineConfiguration`: {object}
+     - `buildEngine`: (string) The build engine used. (enum: buildpack, buildkit, kaniko)
+     - `buildpack`: {object}
+       - `builder`: (string) The Buildpack stack used. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
+       - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
+       - `useCache`: (boolean) Should build dependencies be cached?
+     - `buildkit`: {object}
+       - `useCache`: (boolean) Should intermediate image layers be cached?
+       - `useInternalCache`: (boolean) Should use persistent storage to store all layers?
+       - `internalCacheStorage`: (boolean) Storage size to use for internal cache
+     - `kaniko`: {object}
+       - `useCache`: (boolean) Should intermediate image layers be cached?
+   - `vcsData`: {object}
+     - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+     - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+     - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
+     - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
+     - `vcsLinkId`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24)
+     - `projectBranch`: (string) (required) The name of the branch to use.
+     - `dockerWorkDir`: (string) (required) DEPRECATED. This field has been deprecated in favour of the field in `buildSettings.dockerfile`.
+     - `dockerFilePath`: (string) (required) DEPRECATED. This field has been deprecated in favour of the field in `buildSettings.dockerfile`. | {object}
+   - `name`: (string) (required) The name of the service. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
+   - `description`: (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
+   - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+   - `billing`: {object}
+     - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+     - `gpu`: {object}
+       - `enabled`: (boolean)
+       - `configuration`: {object}
+         - `gpuType`: (string) (required)
+         - `gpuCount`: (integer)
+         - `timesliced`: (boolean)
+   - `infrastructure`: {object}
+     - `architecture`: (string) (enum: x86, arm)
+   - `ports`: [array of] {object}
+      - `name`: (string) (required) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8)
+      - `internalPort`: (integer) (required) The port number.
+      - `public`: (boolean) If true, the port will be exposed publicly.
+      - `security`: {object}
+        - `credentials`: [array of] {object}
+            - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+            - `password`: (string) (required) The password to access the service with this username.
+            - `type`: (string) (required) The type of authentication used (enum: basic-auth)
+        - `ip`: [array of] {object}
+            - `addresses`: [array of] (string) An IP address used by this rule
+            - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
+        - `policies`: [array of] {object}
+            - `addresses`: [array of] (string) An IP address used by this rule
+            - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
+        - `sso`: {object}
+          - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
+          - `directoryGroupIds`: [array of] (string)
+          - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
+          - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
+          - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+          - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
+        - `headers`: [array of] (multiple options) {object}
+              - `regexMode`: (boolean)
+              - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
+              - `value`: (string) (required) | {object}
+              - `regexMode`: (boolean)
+              - `name`: (string) (required)
+              - `value`: (string) (required)
+        - `verificationMode`: (string) Mode used to verify multiple security features like ip policies and SSO authentication (enum: or, and)
+        - `securePathConfiguration`: {object}
+          - `enabled`: (boolean) Enable security policies on a path-level style
+          - `skipSecurityPoliciesForInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip all security policies
+          - `rules`: [array of] {object}
+              - `paths`: [array of] (multiple options) {object}
+                    - `path`: (string) (required) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
+                    - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: prefix)
+                    - `priority`: (integer) (required) | {object}
+                    - `path`: (string) (required) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
+                    - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: exact)
+                    - `priority`: (integer) (required) | {object}
+                    - `path`: (string) (required)
+                    - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: regex)
+                    - `priority`: (integer) (required)
+              - `accessMode`: (string) (required) Specify the way the path rule will behave when processing policies. This enables an allow-list/deny-list approach for access control on each path (enum: protected, unprotected)
+              - `securityPolicies`: {object}
+                - `orPolicies`: {object}
+                  - `credentials`: [array of] {object}
+                      - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+                      - `password`: (string) (required) The password to access the service with this username.
+                      - `type`: (string) (required) The type of authentication used (enum: basic-auth)
+                  - `ip`: [array of] {object}
+                      - `addresses`: [array of] (string) An IP address used by this rule
+                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
+                  - `policies`: [array of] {object}
+                      - `addresses`: [array of] (string) An IP address used by this rule
+                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
+                  - `sso`: {object}
+                    - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
+                    - `directoryGroupIds`: [array of] (string)
+                    - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
+                    - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
+                    - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                    - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
+                  - `headers`: [array of] (multiple options) {object}
+                        - `regexMode`: (boolean)
+                        - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
+                        - `value`: (string) (required) | {object}
+                        - `regexMode`: (boolean)
+                        - `name`: (string) (required)
+                        - `value`: (string) (required)
+                - `requiredPolicies`: {object}
+                  - `credentials`: [array of] {object}
+                      - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+                      - `password`: (string) (required) The password to access the service with this username.
+                      - `type`: (string) (required) The type of authentication used (enum: basic-auth)
+                  - `ip`: [array of] {object}
+                      - `addresses`: [array of] (string) An IP address used by this rule
+                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
+                  - `policies`: [array of] {object}
+                      - `addresses`: [array of] (string) An IP address used by this rule
+                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
+                  - `sso`: {object}
+                    - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
+                    - `directoryGroupIds`: [array of] (string)
+                    - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
+                    - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
+                    - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                    - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
+                  - `headers`: [array of] (multiple options) {object}
+                        - `regexMode`: (boolean)
+                        - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
+                        - `value`: (string) (required) | {object}
+                        - `regexMode`: (boolean)
+                        - `name`: (string) (required)
+                        - `value`: (string) (required)
+      - `domains`: [array of] (string) A domain to redirect to this port.
+      - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
+      - `advancedOptions`: {object}
+        - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
+      - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+   - `runtimeEnvironment`: {object}
+   - `runtimeFiles`: {object}
+   - `healthChecks`: [array of] {object}
+      - `protocol`: (string) (required) The protocol to access the health check with. (enum: HTTP, CMD, TCP)
+      - `type`: (string) (required) The type of health check. (enum: livenessProbe, readinessProbe, startupProbe)
+      - `path`: (string) The path of the health check endpoint. Required when protocol is HTTP. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]*((\?([a-zA-Z0-9-._]+(=[a-zA-Z0-9-._]+)?)*)(&([a-zA-Z0-9-._]+(=[a-zA-Z0-9-._]+)?)*)*)?$)
+      - `cmd`: (string) The command to run for the health check. Required when protocol is CMD
+      - `port`: (integer) Port number for the health check endpoint. Required when protocol is HTTP.
+      - `initialDelaySeconds`: (integer) (required) Initial delay, in seconds, before the health check is first run.
+      - `periodSeconds`: (integer) (required) The time between each check, in seconds.
+      - `timeoutSeconds`: (integer) (required) The time to wait for a response before marking the health check as a failure.
+      - `failureThreshold`: (integer) (required) The maximum number of allowed failures.
+      - `successThreshold`: (integer) The number of successes required to mark the health check as a success.
+   - `loadBalancing`: {object}
+     - `mode`: (string) (required) (enum: leastConnection, consistentHash, roundRobin, consistentReplicaRouting)
+     - `consistentHash`: {object}
+       - `mode`: (string) (required) (enum: ip, customHeader)
+       - `header`: (string)
+     - `consistentReplicaRouting`: {object}
+       - `mode`: (string) (required) (enum: path, header)
+   - `autoscaling`: {object}
+     - `horizontal`: {object}
+       - `enabled`: (boolean) (required) Whether horizontal autoscaling should be enabled
+       - `minReplicas`: (number) (required) Minimum number of replicas which should be running at any time (format: float)
+       - `maxReplicas`: (number) (required) Maximum number of replicas which can be running at any time (format: float)
+       - `cpu`: {object}
+         - `enabled`: (boolean) (required) Whether autoscaling should take into account cpu usage
+         - `thresholdPercentage`: (integer) (required) Threshold CPU usage percentage at which the workload will be scaled
+       - `memory`: {object}
+         - `enabled`: (boolean) (required) Whether autoscaling should take into account memory usage
+         - `thresholdPercentage`: (integer) (required) Threshold memory usage percentage at which the workload will be scaled
+       - `rps`: {object}
+         - `enabled`: (boolean) (required) Whether autoscaling should take into requests-per-second
+         - `thresholdValue`: (integer) (required) Threshold rps value on which the workload will be scaled
+       - `userMetrics`: {object}
+         - `enabled`: (boolean) (required) Whether to enable handling for custom metrics in the autoscaling configuration
+         - `exposedMetricsPath`: (string) (required) Path on which the metrics will be exposed by the service.. (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
+         - `exposedMetricsPort`: (integer) (required) Port on which the metrics will be exposed by the service.
+         - `metrics`: [array of] {object}
+             - `metricName`: (string) (required) Name of the custom metric (pattern: [a-zA-Z_:][a-zA-Z0-9_:]*$)
+             - `metricType`: (string) (required) Type of metric exposed, this will affect how it'll be queried by the autoscaler component: Gauge will be used as is, Counter will be used with rate() (enum: gauge, counter)
+             - `thresholdValue`: (number) (required) Threshold value on which the workload will be scaled. Represents the average value across all running pods. (format: float)
+   - `createOptions`: {object}
+     - `volumesToAttach`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+     - `expiryTime`: (integer) Number of seconds from creation after which the service should automatically expire. Once reached, the service is paused and scheduled for deletion. Must be between 300 (5 minutes) and 604800 (7 days).
+   - `serviceType`: (string) (required) Type of the service (combined, build or deployment) (enum: deployment)
+   - `deployment`: {object}
+     - `type`: (string) The way the service should be deployed. Either as a deployment (default), or as a stateful set. (enum: deployment, statefulSet)
+     - `instances`: (integer) (required) The number of instances to run the service on.
+     - `buildpack`: {object}
+       - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
+       - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
+       - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
+       - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
+     - `docker`: {object}
+       - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
+       - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
+       - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
+     - `storage`: {object}
+       - `useHdbStorage`: (boolean)
+       - `usePdSsdStorage`: (boolean)
+       - `ephemeralStorage`: {object}
+         - `storageSize`: (integer) Ephemeral storage per container in MB
+       - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
+     - `strategy`: {object}
+       - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom)
+       - `settings`: {object}
+         - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
+         - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
+     - `zonalRedundancy`: {object}
+       - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required)
+       - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
+     - `gpu`: {object}
+       - `enabled`: (boolean)
+       - `configuration`: {object}
+         - `gpuType`: (string) (required)
+         - `gpuCount`: (integer)
+         - `timesliced`: (boolean)
+     - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+     - `gradualRolloutStrategyId`: (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$)
+     - `ssh`: {object}
+       - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
+     - `metadata`: {object}
+       - `labels`: {object}
+       - `annotations`: {object}
+     - `internal`: {object}
+       - `id`: (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string)
+       - `branch`: (string) Branch to deploy
+       - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
+       - `buildId`: (string) ID of the build that should be deployed
+     - `external`: {object}
+       - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$)
+       - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
+     - `imageUrl`: (string) Image registry url of the deployed image.
+   - `id`: (string) (required) Identifier for the service
+   - `appId`: (string) (required) Full identifier used for service deployment
+   - `cluster`: {object}
+     - `id`: (string) (required) The id of the cluster associated with this project.
+     - `name`: (string) (required) The name of the cluster associated with this project.
+     - `namespace`: (string) Namespace this resource is located within on the cluster.
+     - `loadBalancers`: [array of] (string)
+   - `createdAt`: (string) time of creation (format: date-time)
+   - `updatedAt`: (string) time of update (format: date-time)
+   - `expiryTime`: (string) Absolute time at which the service is scheduled to automatically expire. Resolved from createOptions.expiryTime on creation; cleared once the service has expired. (format: date-time)
+   - `expiredAt`: (string) Time at which the service expired and was paused. (format: date-time)
+   - `scheduledDeletion`: (string) Time at which the expired service is scheduled for deletion. (format: date-time)
+   - `status`: {object}
+     - `deployment`: {object}
+       - `status`: (string) (required) The current status of the deployment. (enum: PENDING, IN_PROGRESS, COMPLETED, FAILED)
+       - `reason`: (string) (required) The reason the current deployment was started. (enum: SCALING, DEPLOYING)
+       - `lastTransitionTime`: (string) The timestamp of when the deployment reached this status. (format: date-time)
 
 ### API reference
 
@@ -210,66 +637,26 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}
 ```json
 {
   "data": {
-    "id": "example-service",
-    "appId": "/example-user/default-project/example-service",
     "name": "Example Service",
-    "description": "This is the service description",
-    "projectId": "default-project",
-    "serviceType": "combined",
-    "createdAt": "2021-01-20T11:19:53.175Z",
-    "disabledCI": false,
-    "disabledCD": false,
+    "description": "A service description",
     "billing": {
-      "deploymentPlan": "nf-compute-20"
-    },
-    "status": {
-      "build": {
-        "status": "SUCCESS",
-        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
-      },
-      "deployment": {
-        "status": "COMPLETED",
-        "reason": "DEPLOYING",
-        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
-      }
+      "deploymentPlan": "nf-compute-20",
+      "buildPlan": "nf-compute-200-8"
     },
     "buildSource": "git",
-    "vcsData": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
-      "projectType": "github",
-      "selfHostedVcsId": "example-team/self-hosted-vcs",
-      "projectBranch": "master",
-      "publicRepo": false,
-      "dockerWorkDir": "/",
-      "dockerFilePath": "/Dockerfile"
-    },
-    "bundleData": {
-      "bundleUrl": "https://example.com/archive.tar",
-      "projectBranch": "main",
-      "dockerWorkDir": "/",
-      "dockerFilePath": "/Dockerfile"
-    },
-    "deployment": {
-      "region": "europe-west",
-      "instances": 1,
-      "internal": {
-        "nfObjectId": "example-service",
-        "nfObjectType": "service",
-        "repository": "https://github.com/northflank/gatsby-with-northflank",
-        "branch": "master",
-        "buildSHA": "latest",
-        "deployedSHA": "262ed9817b3cad5142fbceabe0c9e371e390d616"
-      },
-      "docker": {
-        "configType": "default",
-        "customCommand": "nginx -g"
-      },
-      "buildpack": {
-        "configType": "default"
-      },
+    "buildSettings": {
       "storage": {
         "ephemeralStorage": {
-          "storageSize": 1024
+          "storageSize": 16384
+        }
+      },
+      "dockerfile": {
+        "buildEngine": "buildkit",
+        "dockerFilePath": "/Dockerfile",
+        "dockerWorkDir": "/",
+        "buildkit": {
+          "useCache": true,
+          "cacheStorageSize": 32768
         }
       }
     },
@@ -302,6 +689,39 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}
         }
       }
     },
+    "buildArguments": {
+      "ARGUMENT_1": "abcdef",
+      "ARGUMENT_2": "12345"
+    },
+    "buildFiles": {
+      "/dir/fileName": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    },
+    "dockerSecretMounts": {
+      "example-secret-mount_1": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    },
+    "serviceType": "build",
+    "id": "example-service",
+    "appId": "/example-user/default-project/example-service",
+    "cluster": {
+      "id": "nf-europe-west",
+      "name": "nf-europe-west",
+      "namespace": "ns-8zy2mcjh9zn2",
+      "loadBalancers": [
+        "lb.659200800000000000000000.northflank.com"
+      ]
+    },
+    "status": {
+      "build": {
+        "status": "SUCCESS",
+        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+      }
+    },
     "buildEngineConfiguration": {
       "buildEngine": "buildpack",
       "buildpack": {
@@ -311,6 +731,226 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}
         ]
       }
     },
+    "vcsData": {
+      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectType": "github",
+      "accountLogin": "github-user",
+      "dockerWorkDir": "/",
+      "dockerFilePath": "/Dockerfile"
+    }
+  }
+}
+```
+
+OR
+
+```json
+{
+  "data": {
+    "name": "Example Service",
+    "description": "A service description",
+    "billing": {
+      "deploymentPlan": "nf-compute-20",
+      "buildPlan": "nf-compute-200-8"
+    },
+    "ports": [
+      {
+        "name": "p01",
+        "internalPort": 8080,
+        "public": true,
+        "security": {
+          "credentials": [
+            {
+              "username": "admin",
+              "password": "password123",
+              "type": "basic-auth"
+            }
+          ],
+          "ip": [
+            {
+              "addresses": [
+                "127.0.0.1"
+              ],
+              "action": "DENY"
+            }
+          ],
+          "policies": [
+            {
+              "addresses": [
+                "127.0.0.1"
+              ],
+              "action": "DENY"
+            }
+          ],
+          "headers": [
+            {
+              "regexMode": false,
+              "name": "headerName",
+              "value": "headerValue"
+            }
+          ],
+          "securePathConfiguration": {
+            "rules": [
+              {
+                "paths": [
+                  {
+                    "routingMode": "prefix",
+                    "priority": 80
+                  }
+                ],
+                "accessMode": "protected",
+                "securityPolicies": {
+                  "orPolicies": {
+                    "credentials": [
+                      {
+                        "username": "admin",
+                        "password": "password123",
+                        "type": "basic-auth"
+                      }
+                    ],
+                    "ip": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "policies": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "headers": [
+                      {
+                        "regexMode": false,
+                        "name": "headerName",
+                        "value": "headerValue"
+                      }
+                    ]
+                  },
+                  "requiredPolicies": {
+                    "credentials": [
+                      {
+                        "username": "admin",
+                        "password": "password123",
+                        "type": "basic-auth"
+                      }
+                    ],
+                    "ip": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "policies": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "headers": [
+                      {
+                        "regexMode": false,
+                        "name": "headerName",
+                        "value": "headerValue"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "domains": [
+          "app.example.com"
+        ]
+      }
+    ],
+    "buildSource": "git",
+    "bundleData": {
+      "bundleUrl": "https://example.com/archive.tar",
+      "branch": "main"
+    },
+    "buildSettings": {
+      "storage": {
+        "ephemeralStorage": {
+          "storageSize": 16384
+        }
+      },
+      "dockerfile": {
+        "buildEngine": "buildkit",
+        "dockerFilePath": "/Dockerfile",
+        "dockerWorkDir": "/",
+        "buildkit": {
+          "useCache": true,
+          "cacheStorageSize": 32768
+        }
+      }
+    },
+    "buildConfiguration": {
+      "pathIgnoreRules": [
+        "README.md"
+      ],
+      "isAllowList": false,
+      "ciIgnoreFlags": [
+        "[skip ci]"
+      ],
+      "dockerCredentials": [
+        "example-docker-credential"
+      ],
+      "storage": {
+        "ephemeralStorage": {
+          "storageSize": 16384
+        }
+      }
+    },
+    "runtimeEnvironment": {
+      "VARIABLE_1": "abcdef",
+      "VARIABLE_2": "12345"
+    },
+    "runtimeFiles": {
+      "/dir/fileName": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    },
+    "buildArguments": {
+      "ARGUMENT_1": "abcdef",
+      "ARGUMENT_2": "12345"
+    },
+    "buildFiles": {
+      "/dir/fileName": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    },
+    "dockerSecretMounts": {
+      "example-secret-mount_1": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    },
+    "healthChecks": [
+      {
+        "protocol": "HTTP",
+        "type": "readinessProbe",
+        "path": "/health-check",
+        "port": 8080,
+        "initialDelaySeconds": 10,
+        "periodSeconds": 60,
+        "timeoutSeconds": 1,
+        "failureThreshold": 3,
+        "successThreshold": 1
+      }
+    ],
     "autoscaling": {
       "horizontal": {
         "enabled": true,
@@ -330,30 +970,96 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}
         }
       }
     },
+    "createOptions": {
+      "expiryTime": 86400
+    },
+    "serviceType": "combined",
+    "deployment": {
+      "instances": 1,
+      "docker": {
+        "configType": "default"
+      },
+      "storage": {
+        "ephemeralStorage": {
+          "storageSize": 1024
+        }
+      },
+      "gradualRolloutStrategyId": "strategy-id"
+    },
+    "id": "example-service",
+    "appId": "/example-user/default-project/example-service",
+    "cluster": {
+      "id": "nf-europe-west",
+      "name": "nf-europe-west",
+      "namespace": "ns-8zy2mcjh9zn2",
+      "loadBalancers": [
+        "lb.659200800000000000000000.northflank.com"
+      ]
+    },
+    "expiryTime": "2024-01-01T00:00:00.000Z",
+    "expiredAt": "2024-01-01T00:00:00.000Z",
+    "scheduledDeletion": "2024-01-31T00:00:00.000Z",
+    "status": {
+      "build": {
+        "status": "SUCCESS",
+        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+      },
+      "deployment": {
+        "status": "COMPLETED",
+        "reason": "DEPLOYING",
+        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+      }
+    },
+    "buildEngineConfiguration": {
+      "buildEngine": "buildpack",
+      "buildpack": {
+        "builder": "HEROKU_24",
+        "buildpackLocators": [
+          "https://buildpack-registry.heroku.com/cnb/mars/create-react-app"
+        ]
+      }
+    },
+    "vcsData": {
+      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectType": "github",
+      "accountLogin": "github-user",
+      "projectBranch": "master",
+      "dockerWorkDir": "/",
+      "dockerFilePath": "/Dockerfile"
+    }
+  }
+}
+```
+
+OR
+
+```json
+{
+  "data": {
+    "name": "Example Service",
+    "description": "A service description",
+    "billing": {
+      "deploymentPlan": "nf-compute-20"
+    },
     "ports": [
       {
-        "id": "eonyui",
         "name": "p01",
         "internalPort": 8080,
-        "protocol": "HTTP",
         "public": true,
-        "dns": "p01--example-service--default-service--user-abc1.salvo.code.run",
-        "domains": [
-          {
-            "name": "app.example.com",
-            "certificate": {
-              "inProgress": false,
-              "expiryDate": "2022-04-26T09:25:02.000Z",
-              "refreshDate": "2022-03-27T09:25:02.000Z"
-            }
-          }
-        ],
         "security": {
           "credentials": [
             {
               "username": "admin",
               "password": "password123",
               "type": "basic-auth"
+            }
+          ],
+          "ip": [
+            {
+              "addresses": [
+                "127.0.0.1"
+              ],
+              "action": "DENY"
             }
           ],
           "policies": [
@@ -364,16 +1070,167 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}
               "action": "DENY"
             }
           ],
-          "sso": {
-            "organizationId": "org_uniquestringidentifier",
-            "directoryGroupIds": [
-              "directory_group_uniquestringidentifier"
+          "headers": [
+            {
+              "regexMode": false,
+              "name": "headerName",
+              "value": "headerValue"
+            }
+          ],
+          "securePathConfiguration": {
+            "rules": [
+              {
+                "paths": [
+                  {
+                    "routingMode": "prefix",
+                    "priority": 80
+                  }
+                ],
+                "accessMode": "protected",
+                "securityPolicies": {
+                  "orPolicies": {
+                    "credentials": [
+                      {
+                        "username": "admin",
+                        "password": "password123",
+                        "type": "basic-auth"
+                      }
+                    ],
+                    "ip": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "policies": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "headers": [
+                      {
+                        "regexMode": false,
+                        "name": "headerName",
+                        "value": "headerValue"
+                      }
+                    ]
+                  },
+                  "requiredPolicies": {
+                    "credentials": [
+                      {
+                        "username": "admin",
+                        "password": "password123",
+                        "type": "basic-auth"
+                      }
+                    ],
+                    "ip": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "policies": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "headers": [
+                      {
+                        "regexMode": false,
+                        "name": "headerName",
+                        "value": "headerValue"
+                      }
+                    ]
+                  }
+                }
+              }
             ]
           }
         },
-        "disableNfDomain": false
+        "domains": [
+          "app.example.com"
+        ]
       }
     ],
+    "runtimeEnvironment": {
+      "VARIABLE_1": "abcdef",
+      "VARIABLE_2": "12345"
+    },
+    "runtimeFiles": {
+      "/dir/fileName": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    },
+    "healthChecks": [
+      {
+        "protocol": "HTTP",
+        "type": "readinessProbe",
+        "path": "/health-check",
+        "port": 8080,
+        "initialDelaySeconds": 10,
+        "periodSeconds": 60,
+        "timeoutSeconds": 1,
+        "failureThreshold": 3,
+        "successThreshold": 1
+      }
+    ],
+    "autoscaling": {
+      "horizontal": {
+        "enabled": true,
+        "minReplicas": 1,
+        "maxReplicas": 3,
+        "userMetrics": {
+          "enabled": true,
+          "exposedMetricsPath": "/metrics",
+          "exposedMetricsPort": 8080,
+          "metrics": [
+            {
+              "metricName": "example-metric",
+              "metricType": "gauge",
+              "thresholdValue": 2
+            }
+          ]
+        }
+      }
+    },
+    "createOptions": {
+      "expiryTime": 86400
+    },
+    "serviceType": "deployment",
+    "deployment": {
+      "instances": 1,
+      "docker": {
+        "configType": "default"
+      },
+      "storage": {
+        "ephemeralStorage": {
+          "storageSize": 1024
+        }
+      },
+      "gradualRolloutStrategyId": "strategy-id",
+      "internal": {
+        "id": "example-build-service",
+        "branch": "master",
+        "buildId": "premium-guide-6393"
+      },
+      "external": {
+        "imagePath": "nginx:latest",
+        "credentials": "example-credentials"
+      }
+    },
+    "id": "example-service",
+    "appId": "/example-user/default-project/example-service",
     "cluster": {
       "id": "nf-europe-west",
       "name": "nf-europe-west",
@@ -381,6 +1238,16 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}
       "loadBalancers": [
         "lb.659200800000000000000000.northflank.com"
       ]
+    },
+    "expiryTime": "2024-01-01T00:00:00.000Z",
+    "expiredAt": "2024-01-01T00:00:00.000Z",
+    "scheduledDeletion": "2024-01-31T00:00:00.000Z",
+    "status": {
+      "deployment": {
+        "status": "COMPLETED",
+        "reason": "DEPLOYING",
+        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+      }
     }
   }
 }
@@ -408,66 +1275,26 @@ Options:
 
 ```json
 {
-  "id": "example-service",
-  "appId": "/example-user/default-project/example-service",
   "name": "Example Service",
-  "description": "This is the service description",
-  "projectId": "default-project",
-  "serviceType": "combined",
-  "createdAt": "2021-01-20T11:19:53.175Z",
-  "disabledCI": false,
-  "disabledCD": false,
+  "description": "A service description",
   "billing": {
-    "deploymentPlan": "nf-compute-20"
-  },
-  "status": {
-    "build": {
-      "status": "SUCCESS",
-      "lastTransitionTime": "2021-11-29T11:47:16.624Z"
-    },
-    "deployment": {
-      "status": "COMPLETED",
-      "reason": "DEPLOYING",
-      "lastTransitionTime": "2021-11-29T11:47:16.624Z"
-    }
+    "deploymentPlan": "nf-compute-20",
+    "buildPlan": "nf-compute-200-8"
   },
   "buildSource": "git",
-  "vcsData": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
-    "projectType": "github",
-    "selfHostedVcsId": "example-team/self-hosted-vcs",
-    "projectBranch": "master",
-    "publicRepo": false,
-    "dockerWorkDir": "/",
-    "dockerFilePath": "/Dockerfile"
-  },
-  "bundleData": {
-    "bundleUrl": "https://example.com/archive.tar",
-    "projectBranch": "main",
-    "dockerWorkDir": "/",
-    "dockerFilePath": "/Dockerfile"
-  },
-  "deployment": {
-    "region": "europe-west",
-    "instances": 1,
-    "internal": {
-      "nfObjectId": "example-service",
-      "nfObjectType": "service",
-      "repository": "https://github.com/northflank/gatsby-with-northflank",
-      "branch": "master",
-      "buildSHA": "latest",
-      "deployedSHA": "262ed9817b3cad5142fbceabe0c9e371e390d616"
-    },
-    "docker": {
-      "configType": "default",
-      "customCommand": "nginx -g"
-    },
-    "buildpack": {
-      "configType": "default"
-    },
+  "buildSettings": {
     "storage": {
       "ephemeralStorage": {
-        "storageSize": 1024
+        "storageSize": 16384
+      }
+    },
+    "dockerfile": {
+      "buildEngine": "buildkit",
+      "dockerFilePath": "/Dockerfile",
+      "dockerWorkDir": "/",
+      "buildkit": {
+        "useCache": true,
+        "cacheStorageSize": 32768
       }
     }
   },
@@ -500,6 +1327,39 @@ Options:
       }
     }
   },
+  "buildArguments": {
+    "ARGUMENT_1": "abcdef",
+    "ARGUMENT_2": "12345"
+  },
+  "buildFiles": {
+    "/dir/fileName": {
+      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+      "encoding": "utf-8"
+    }
+  },
+  "dockerSecretMounts": {
+    "example-secret-mount_1": {
+      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+      "encoding": "utf-8"
+    }
+  },
+  "serviceType": "build",
+  "id": "example-service",
+  "appId": "/example-user/default-project/example-service",
+  "cluster": {
+    "id": "nf-europe-west",
+    "name": "nf-europe-west",
+    "namespace": "ns-8zy2mcjh9zn2",
+    "loadBalancers": [
+      "lb.659200800000000000000000.northflank.com"
+    ]
+  },
+  "status": {
+    "build": {
+      "status": "SUCCESS",
+      "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+    }
+  },
   "buildEngineConfiguration": {
     "buildEngine": "buildpack",
     "buildpack": {
@@ -509,6 +1369,224 @@ Options:
       ]
     }
   },
+  "vcsData": {
+    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectType": "github",
+    "accountLogin": "github-user",
+    "dockerWorkDir": "/",
+    "dockerFilePath": "/Dockerfile"
+  }
+}
+```
+
+OR
+
+```json
+{
+  "name": "Example Service",
+  "description": "A service description",
+  "billing": {
+    "deploymentPlan": "nf-compute-20",
+    "buildPlan": "nf-compute-200-8"
+  },
+  "ports": [
+    {
+      "name": "p01",
+      "internalPort": 8080,
+      "public": true,
+      "security": {
+        "credentials": [
+          {
+            "username": "admin",
+            "password": "password123",
+            "type": "basic-auth"
+          }
+        ],
+        "ip": [
+          {
+            "addresses": [
+              "127.0.0.1"
+            ],
+            "action": "DENY"
+          }
+        ],
+        "policies": [
+          {
+            "addresses": [
+              "127.0.0.1"
+            ],
+            "action": "DENY"
+          }
+        ],
+        "headers": [
+          {
+            "regexMode": false,
+            "name": "headerName",
+            "value": "headerValue"
+          }
+        ],
+        "securePathConfiguration": {
+          "rules": [
+            {
+              "paths": [
+                {
+                  "routingMode": "prefix",
+                  "priority": 80
+                }
+              ],
+              "accessMode": "protected",
+              "securityPolicies": {
+                "orPolicies": {
+                  "credentials": [
+                    {
+                      "username": "admin",
+                      "password": "password123",
+                      "type": "basic-auth"
+                    }
+                  ],
+                  "ip": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "policies": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "headers": [
+                    {
+                      "regexMode": false,
+                      "name": "headerName",
+                      "value": "headerValue"
+                    }
+                  ]
+                },
+                "requiredPolicies": {
+                  "credentials": [
+                    {
+                      "username": "admin",
+                      "password": "password123",
+                      "type": "basic-auth"
+                    }
+                  ],
+                  "ip": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "policies": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "headers": [
+                    {
+                      "regexMode": false,
+                      "name": "headerName",
+                      "value": "headerValue"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "domains": [
+        "app.example.com"
+      ]
+    }
+  ],
+  "buildSource": "git",
+  "bundleData": {
+    "bundleUrl": "https://example.com/archive.tar",
+    "branch": "main"
+  },
+  "buildSettings": {
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 16384
+      }
+    },
+    "dockerfile": {
+      "buildEngine": "buildkit",
+      "dockerFilePath": "/Dockerfile",
+      "dockerWorkDir": "/",
+      "buildkit": {
+        "useCache": true,
+        "cacheStorageSize": 32768
+      }
+    }
+  },
+  "buildConfiguration": {
+    "pathIgnoreRules": [
+      "README.md"
+    ],
+    "isAllowList": false,
+    "ciIgnoreFlags": [
+      "[skip ci]"
+    ],
+    "dockerCredentials": [
+      "example-docker-credential"
+    ],
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 16384
+      }
+    }
+  },
+  "runtimeEnvironment": {
+    "VARIABLE_1": "abcdef",
+    "VARIABLE_2": "12345"
+  },
+  "runtimeFiles": {
+    "/dir/fileName": {
+      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+      "encoding": "utf-8"
+    }
+  },
+  "buildArguments": {
+    "ARGUMENT_1": "abcdef",
+    "ARGUMENT_2": "12345"
+  },
+  "buildFiles": {
+    "/dir/fileName": {
+      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+      "encoding": "utf-8"
+    }
+  },
+  "dockerSecretMounts": {
+    "example-secret-mount_1": {
+      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+      "encoding": "utf-8"
+    }
+  },
+  "healthChecks": [
+    {
+      "protocol": "HTTP",
+      "type": "readinessProbe",
+      "path": "/health-check",
+      "port": 8080,
+      "initialDelaySeconds": 10,
+      "periodSeconds": 60,
+      "timeoutSeconds": 1,
+      "failureThreshold": 3,
+      "successThreshold": 1
+    }
+  ],
   "autoscaling": {
     "horizontal": {
       "enabled": true,
@@ -528,30 +1606,94 @@ Options:
       }
     }
   },
+  "createOptions": {
+    "expiryTime": 86400
+  },
+  "serviceType": "combined",
+  "deployment": {
+    "instances": 1,
+    "docker": {
+      "configType": "default"
+    },
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 1024
+      }
+    },
+    "gradualRolloutStrategyId": "strategy-id"
+  },
+  "id": "example-service",
+  "appId": "/example-user/default-project/example-service",
+  "cluster": {
+    "id": "nf-europe-west",
+    "name": "nf-europe-west",
+    "namespace": "ns-8zy2mcjh9zn2",
+    "loadBalancers": [
+      "lb.659200800000000000000000.northflank.com"
+    ]
+  },
+  "expiryTime": "2024-01-01T00:00:00.000Z",
+  "expiredAt": "2024-01-01T00:00:00.000Z",
+  "scheduledDeletion": "2024-01-31T00:00:00.000Z",
+  "status": {
+    "build": {
+      "status": "SUCCESS",
+      "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+    },
+    "deployment": {
+      "status": "COMPLETED",
+      "reason": "DEPLOYING",
+      "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+    }
+  },
+  "buildEngineConfiguration": {
+    "buildEngine": "buildpack",
+    "buildpack": {
+      "builder": "HEROKU_24",
+      "buildpackLocators": [
+        "https://buildpack-registry.heroku.com/cnb/mars/create-react-app"
+      ]
+    }
+  },
+  "vcsData": {
+    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectType": "github",
+    "accountLogin": "github-user",
+    "projectBranch": "master",
+    "dockerWorkDir": "/",
+    "dockerFilePath": "/Dockerfile"
+  }
+}
+```
+
+OR
+
+```json
+{
+  "name": "Example Service",
+  "description": "A service description",
+  "billing": {
+    "deploymentPlan": "nf-compute-20"
+  },
   "ports": [
     {
-      "id": "eonyui",
       "name": "p01",
       "internalPort": 8080,
-      "protocol": "HTTP",
       "public": true,
-      "dns": "p01--example-service--default-service--user-abc1.salvo.code.run",
-      "domains": [
-        {
-          "name": "app.example.com",
-          "certificate": {
-            "inProgress": false,
-            "expiryDate": "2022-04-26T09:25:02.000Z",
-            "refreshDate": "2022-03-27T09:25:02.000Z"
-          }
-        }
-      ],
       "security": {
         "credentials": [
           {
             "username": "admin",
             "password": "password123",
             "type": "basic-auth"
+          }
+        ],
+        "ip": [
+          {
+            "addresses": [
+              "127.0.0.1"
+            ],
+            "action": "DENY"
           }
         ],
         "policies": [
@@ -562,16 +1704,167 @@ Options:
             "action": "DENY"
           }
         ],
-        "sso": {
-          "organizationId": "org_uniquestringidentifier",
-          "directoryGroupIds": [
-            "directory_group_uniquestringidentifier"
+        "headers": [
+          {
+            "regexMode": false,
+            "name": "headerName",
+            "value": "headerValue"
+          }
+        ],
+        "securePathConfiguration": {
+          "rules": [
+            {
+              "paths": [
+                {
+                  "routingMode": "prefix",
+                  "priority": 80
+                }
+              ],
+              "accessMode": "protected",
+              "securityPolicies": {
+                "orPolicies": {
+                  "credentials": [
+                    {
+                      "username": "admin",
+                      "password": "password123",
+                      "type": "basic-auth"
+                    }
+                  ],
+                  "ip": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "policies": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "headers": [
+                    {
+                      "regexMode": false,
+                      "name": "headerName",
+                      "value": "headerValue"
+                    }
+                  ]
+                },
+                "requiredPolicies": {
+                  "credentials": [
+                    {
+                      "username": "admin",
+                      "password": "password123",
+                      "type": "basic-auth"
+                    }
+                  ],
+                  "ip": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "policies": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "headers": [
+                    {
+                      "regexMode": false,
+                      "name": "headerName",
+                      "value": "headerValue"
+                    }
+                  ]
+                }
+              }
+            }
           ]
         }
       },
-      "disableNfDomain": false
+      "domains": [
+        "app.example.com"
+      ]
     }
   ],
+  "runtimeEnvironment": {
+    "VARIABLE_1": "abcdef",
+    "VARIABLE_2": "12345"
+  },
+  "runtimeFiles": {
+    "/dir/fileName": {
+      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+      "encoding": "utf-8"
+    }
+  },
+  "healthChecks": [
+    {
+      "protocol": "HTTP",
+      "type": "readinessProbe",
+      "path": "/health-check",
+      "port": 8080,
+      "initialDelaySeconds": 10,
+      "periodSeconds": 60,
+      "timeoutSeconds": 1,
+      "failureThreshold": 3,
+      "successThreshold": 1
+    }
+  ],
+  "autoscaling": {
+    "horizontal": {
+      "enabled": true,
+      "minReplicas": 1,
+      "maxReplicas": 3,
+      "userMetrics": {
+        "enabled": true,
+        "exposedMetricsPath": "/metrics",
+        "exposedMetricsPort": 8080,
+        "metrics": [
+          {
+            "metricName": "example-metric",
+            "metricType": "gauge",
+            "thresholdValue": 2
+          }
+        ]
+      }
+    }
+  },
+  "createOptions": {
+    "expiryTime": 86400
+  },
+  "serviceType": "deployment",
+  "deployment": {
+    "instances": 1,
+    "docker": {
+      "configType": "default"
+    },
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 1024
+      }
+    },
+    "gradualRolloutStrategyId": "strategy-id",
+    "internal": {
+      "id": "example-build-service",
+      "branch": "master",
+      "buildId": "premium-guide-6393"
+    },
+    "external": {
+      "imagePath": "nginx:latest",
+      "credentials": "example-credentials"
+    }
+  },
+  "id": "example-service",
+  "appId": "/example-user/default-project/example-service",
   "cluster": {
     "id": "nf-europe-west",
     "name": "nf-europe-west",
@@ -579,6 +1872,16 @@ Options:
     "loadBalancers": [
       "lb.659200800000000000000000.northflank.com"
     ]
+  },
+  "expiryTime": "2024-01-01T00:00:00.000Z",
+  "expiredAt": "2024-01-01T00:00:00.000Z",
+  "scheduledDeletion": "2024-01-31T00:00:00.000Z",
+  "status": {
+    "deployment": {
+      "status": "COMPLETED",
+      "reason": "DEPLOYING",
+      "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+    }
   }
 }
 ```
@@ -603,66 +1906,26 @@ await apiClient.get.service({
 ```json
 {
   "data": {
-    "id": "example-service",
-    "appId": "/example-user/default-project/example-service",
     "name": "Example Service",
-    "description": "This is the service description",
-    "projectId": "default-project",
-    "serviceType": "combined",
-    "createdAt": "2021-01-20T11:19:53.175Z",
-    "disabledCI": false,
-    "disabledCD": false,
+    "description": "A service description",
     "billing": {
-      "deploymentPlan": "nf-compute-20"
-    },
-    "status": {
-      "build": {
-        "status": "SUCCESS",
-        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
-      },
-      "deployment": {
-        "status": "COMPLETED",
-        "reason": "DEPLOYING",
-        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
-      }
+      "deploymentPlan": "nf-compute-20",
+      "buildPlan": "nf-compute-200-8"
     },
     "buildSource": "git",
-    "vcsData": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
-      "projectType": "github",
-      "selfHostedVcsId": "example-team/self-hosted-vcs",
-      "projectBranch": "master",
-      "publicRepo": false,
-      "dockerWorkDir": "/",
-      "dockerFilePath": "/Dockerfile"
-    },
-    "bundleData": {
-      "bundleUrl": "https://example.com/archive.tar",
-      "projectBranch": "main",
-      "dockerWorkDir": "/",
-      "dockerFilePath": "/Dockerfile"
-    },
-    "deployment": {
-      "region": "europe-west",
-      "instances": 1,
-      "internal": {
-        "nfObjectId": "example-service",
-        "nfObjectType": "service",
-        "repository": "https://github.com/northflank/gatsby-with-northflank",
-        "branch": "master",
-        "buildSHA": "latest",
-        "deployedSHA": "262ed9817b3cad5142fbceabe0c9e371e390d616"
-      },
-      "docker": {
-        "configType": "default",
-        "customCommand": "nginx -g"
-      },
-      "buildpack": {
-        "configType": "default"
-      },
+    "buildSettings": {
       "storage": {
         "ephemeralStorage": {
-          "storageSize": 1024
+          "storageSize": 16384
+        }
+      },
+      "dockerfile": {
+        "buildEngine": "buildkit",
+        "dockerFilePath": "/Dockerfile",
+        "dockerWorkDir": "/",
+        "buildkit": {
+          "useCache": true,
+          "cacheStorageSize": 32768
         }
       }
     },
@@ -695,6 +1958,39 @@ await apiClient.get.service({
         }
       }
     },
+    "buildArguments": {
+      "ARGUMENT_1": "abcdef",
+      "ARGUMENT_2": "12345"
+    },
+    "buildFiles": {
+      "/dir/fileName": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    },
+    "dockerSecretMounts": {
+      "example-secret-mount_1": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    },
+    "serviceType": "build",
+    "id": "example-service",
+    "appId": "/example-user/default-project/example-service",
+    "cluster": {
+      "id": "nf-europe-west",
+      "name": "nf-europe-west",
+      "namespace": "ns-8zy2mcjh9zn2",
+      "loadBalancers": [
+        "lb.659200800000000000000000.northflank.com"
+      ]
+    },
+    "status": {
+      "build": {
+        "status": "SUCCESS",
+        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+      }
+    },
     "buildEngineConfiguration": {
       "buildEngine": "buildpack",
       "buildpack": {
@@ -704,6 +2000,229 @@ await apiClient.get.service({
         ]
       }
     },
+    "vcsData": {
+      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectType": "github",
+      "accountLogin": "github-user",
+      "dockerWorkDir": "/",
+      "dockerFilePath": "/Dockerfile"
+    }
+  },
+  "rawResponse": "...",
+  "request": "...",
+  "error": "..."
+}
+```
+
+OR
+
+```json
+{
+  "data": {
+    "name": "Example Service",
+    "description": "A service description",
+    "billing": {
+      "deploymentPlan": "nf-compute-20",
+      "buildPlan": "nf-compute-200-8"
+    },
+    "ports": [
+      {
+        "name": "p01",
+        "internalPort": 8080,
+        "public": true,
+        "security": {
+          "credentials": [
+            {
+              "username": "admin",
+              "password": "password123",
+              "type": "basic-auth"
+            }
+          ],
+          "ip": [
+            {
+              "addresses": [
+                "127.0.0.1"
+              ],
+              "action": "DENY"
+            }
+          ],
+          "policies": [
+            {
+              "addresses": [
+                "127.0.0.1"
+              ],
+              "action": "DENY"
+            }
+          ],
+          "headers": [
+            {
+              "regexMode": false,
+              "name": "headerName",
+              "value": "headerValue"
+            }
+          ],
+          "securePathConfiguration": {
+            "rules": [
+              {
+                "paths": [
+                  {
+                    "routingMode": "prefix",
+                    "priority": 80
+                  }
+                ],
+                "accessMode": "protected",
+                "securityPolicies": {
+                  "orPolicies": {
+                    "credentials": [
+                      {
+                        "username": "admin",
+                        "password": "password123",
+                        "type": "basic-auth"
+                      }
+                    ],
+                    "ip": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "policies": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "headers": [
+                      {
+                        "regexMode": false,
+                        "name": "headerName",
+                        "value": "headerValue"
+                      }
+                    ]
+                  },
+                  "requiredPolicies": {
+                    "credentials": [
+                      {
+                        "username": "admin",
+                        "password": "password123",
+                        "type": "basic-auth"
+                      }
+                    ],
+                    "ip": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "policies": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "headers": [
+                      {
+                        "regexMode": false,
+                        "name": "headerName",
+                        "value": "headerValue"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "domains": [
+          "app.example.com"
+        ]
+      }
+    ],
+    "buildSource": "git",
+    "bundleData": {
+      "bundleUrl": "https://example.com/archive.tar",
+      "branch": "main"
+    },
+    "buildSettings": {
+      "storage": {
+        "ephemeralStorage": {
+          "storageSize": 16384
+        }
+      },
+      "dockerfile": {
+        "buildEngine": "buildkit",
+        "dockerFilePath": "/Dockerfile",
+        "dockerWorkDir": "/",
+        "buildkit": {
+          "useCache": true,
+          "cacheStorageSize": 32768
+        }
+      }
+    },
+    "buildConfiguration": {
+      "pathIgnoreRules": [
+        "README.md"
+      ],
+      "isAllowList": false,
+      "ciIgnoreFlags": [
+        "[skip ci]"
+      ],
+      "dockerCredentials": [
+        "example-docker-credential"
+      ],
+      "storage": {
+        "ephemeralStorage": {
+          "storageSize": 16384
+        }
+      }
+    },
+    "runtimeEnvironment": {
+      "VARIABLE_1": "abcdef",
+      "VARIABLE_2": "12345"
+    },
+    "runtimeFiles": {
+      "/dir/fileName": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    },
+    "buildArguments": {
+      "ARGUMENT_1": "abcdef",
+      "ARGUMENT_2": "12345"
+    },
+    "buildFiles": {
+      "/dir/fileName": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    },
+    "dockerSecretMounts": {
+      "example-secret-mount_1": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    },
+    "healthChecks": [
+      {
+        "protocol": "HTTP",
+        "type": "readinessProbe",
+        "path": "/health-check",
+        "port": 8080,
+        "initialDelaySeconds": 10,
+        "periodSeconds": 60,
+        "timeoutSeconds": 1,
+        "failureThreshold": 3,
+        "successThreshold": 1
+      }
+    ],
     "autoscaling": {
       "horizontal": {
         "enabled": true,
@@ -723,30 +2242,99 @@ await apiClient.get.service({
         }
       }
     },
+    "createOptions": {
+      "expiryTime": 86400
+    },
+    "serviceType": "combined",
+    "deployment": {
+      "instances": 1,
+      "docker": {
+        "configType": "default"
+      },
+      "storage": {
+        "ephemeralStorage": {
+          "storageSize": 1024
+        }
+      },
+      "gradualRolloutStrategyId": "strategy-id"
+    },
+    "id": "example-service",
+    "appId": "/example-user/default-project/example-service",
+    "cluster": {
+      "id": "nf-europe-west",
+      "name": "nf-europe-west",
+      "namespace": "ns-8zy2mcjh9zn2",
+      "loadBalancers": [
+        "lb.659200800000000000000000.northflank.com"
+      ]
+    },
+    "expiryTime": "2024-01-01T00:00:00.000Z",
+    "expiredAt": "2024-01-01T00:00:00.000Z",
+    "scheduledDeletion": "2024-01-31T00:00:00.000Z",
+    "status": {
+      "build": {
+        "status": "SUCCESS",
+        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+      },
+      "deployment": {
+        "status": "COMPLETED",
+        "reason": "DEPLOYING",
+        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+      }
+    },
+    "buildEngineConfiguration": {
+      "buildEngine": "buildpack",
+      "buildpack": {
+        "builder": "HEROKU_24",
+        "buildpackLocators": [
+          "https://buildpack-registry.heroku.com/cnb/mars/create-react-app"
+        ]
+      }
+    },
+    "vcsData": {
+      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectType": "github",
+      "accountLogin": "github-user",
+      "projectBranch": "master",
+      "dockerWorkDir": "/",
+      "dockerFilePath": "/Dockerfile"
+    }
+  },
+  "rawResponse": "...",
+  "request": "...",
+  "error": "..."
+}
+```
+
+OR
+
+```json
+{
+  "data": {
+    "name": "Example Service",
+    "description": "A service description",
+    "billing": {
+      "deploymentPlan": "nf-compute-20"
+    },
     "ports": [
       {
-        "id": "eonyui",
         "name": "p01",
         "internalPort": 8080,
-        "protocol": "HTTP",
         "public": true,
-        "dns": "p01--example-service--default-service--user-abc1.salvo.code.run",
-        "domains": [
-          {
-            "name": "app.example.com",
-            "certificate": {
-              "inProgress": false,
-              "expiryDate": "2022-04-26T09:25:02.000Z",
-              "refreshDate": "2022-03-27T09:25:02.000Z"
-            }
-          }
-        ],
         "security": {
           "credentials": [
             {
               "username": "admin",
               "password": "password123",
               "type": "basic-auth"
+            }
+          ],
+          "ip": [
+            {
+              "addresses": [
+                "127.0.0.1"
+              ],
+              "action": "DENY"
             }
           ],
           "policies": [
@@ -757,16 +2345,167 @@ await apiClient.get.service({
               "action": "DENY"
             }
           ],
-          "sso": {
-            "organizationId": "org_uniquestringidentifier",
-            "directoryGroupIds": [
-              "directory_group_uniquestringidentifier"
+          "headers": [
+            {
+              "regexMode": false,
+              "name": "headerName",
+              "value": "headerValue"
+            }
+          ],
+          "securePathConfiguration": {
+            "rules": [
+              {
+                "paths": [
+                  {
+                    "routingMode": "prefix",
+                    "priority": 80
+                  }
+                ],
+                "accessMode": "protected",
+                "securityPolicies": {
+                  "orPolicies": {
+                    "credentials": [
+                      {
+                        "username": "admin",
+                        "password": "password123",
+                        "type": "basic-auth"
+                      }
+                    ],
+                    "ip": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "policies": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "headers": [
+                      {
+                        "regexMode": false,
+                        "name": "headerName",
+                        "value": "headerValue"
+                      }
+                    ]
+                  },
+                  "requiredPolicies": {
+                    "credentials": [
+                      {
+                        "username": "admin",
+                        "password": "password123",
+                        "type": "basic-auth"
+                      }
+                    ],
+                    "ip": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "policies": [
+                      {
+                        "addresses": [
+                          "127.0.0.1"
+                        ],
+                        "action": "DENY"
+                      }
+                    ],
+                    "headers": [
+                      {
+                        "regexMode": false,
+                        "name": "headerName",
+                        "value": "headerValue"
+                      }
+                    ]
+                  }
+                }
+              }
             ]
           }
         },
-        "disableNfDomain": false
+        "domains": [
+          "app.example.com"
+        ]
       }
     ],
+    "runtimeEnvironment": {
+      "VARIABLE_1": "abcdef",
+      "VARIABLE_2": "12345"
+    },
+    "runtimeFiles": {
+      "/dir/fileName": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    },
+    "healthChecks": [
+      {
+        "protocol": "HTTP",
+        "type": "readinessProbe",
+        "path": "/health-check",
+        "port": 8080,
+        "initialDelaySeconds": 10,
+        "periodSeconds": 60,
+        "timeoutSeconds": 1,
+        "failureThreshold": 3,
+        "successThreshold": 1
+      }
+    ],
+    "autoscaling": {
+      "horizontal": {
+        "enabled": true,
+        "minReplicas": 1,
+        "maxReplicas": 3,
+        "userMetrics": {
+          "enabled": true,
+          "exposedMetricsPath": "/metrics",
+          "exposedMetricsPort": 8080,
+          "metrics": [
+            {
+              "metricName": "example-metric",
+              "metricType": "gauge",
+              "thresholdValue": 2
+            }
+          ]
+        }
+      }
+    },
+    "createOptions": {
+      "expiryTime": 86400
+    },
+    "serviceType": "deployment",
+    "deployment": {
+      "instances": 1,
+      "docker": {
+        "configType": "default"
+      },
+      "storage": {
+        "ephemeralStorage": {
+          "storageSize": 1024
+        }
+      },
+      "gradualRolloutStrategyId": "strategy-id",
+      "internal": {
+        "id": "example-build-service",
+        "branch": "master",
+        "buildId": "premium-guide-6393"
+      },
+      "external": {
+        "imagePath": "nginx:latest",
+        "credentials": "example-credentials"
+      }
+    },
+    "id": "example-service",
+    "appId": "/example-user/default-project/example-service",
     "cluster": {
       "id": "nf-europe-west",
       "name": "nf-europe-west",
@@ -774,6 +2513,16 @@ await apiClient.get.service({
       "loadBalancers": [
         "lb.659200800000000000000000.northflank.com"
       ]
+    },
+    "expiryTime": "2024-01-01T00:00:00.000Z",
+    "expiredAt": "2024-01-01T00:00:00.000Z",
+    "scheduledDeletion": "2024-01-31T00:00:00.000Z",
+    "status": {
+      "deployment": {
+        "status": "COMPLETED",
+        "reason": "DEPLOYING",
+        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+      }
     }
   },
   "rawResponse": "...",

@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/get-domain.md
 
 Gets details about domain
 
-Required permission: Account > Domains > General > Read
+Required permission: Account > Networking > Domains > Read
 
 **Path parameters:**
 

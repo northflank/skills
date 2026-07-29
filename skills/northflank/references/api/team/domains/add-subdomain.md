@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/add-subdomain.md
 
 Adds a new subdomain to the domain.
 
-Required permission: Account > Subdomains > General > Update
+Required permission: Account > Networking > Subdomains > Update
 
 **Path parameters:**
 
@@ -34,6 +34,11 @@ Required permission: Account > Subdomains > General > Update
   - `fullName`: (string) (required) The full domain name with subdomain
   - `content`: (string) (required) The content to set the DNS record to
   - `verified`: (boolean) (required) Whether the subdomain has been verified successfully and can be used.
+  - `options`: {object}
+    - `tlsMode`: (string) Desired TLS mode for the subdomain. (enum: default, passthrough)
+    - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
+    - `autoVerify`: (boolean) The domain will be automatically verified on creation. Only configurable if the relevant feature flag is enabled for you account.
+    - `aliasDomains`: [array of] (string)
   - `routingMode`: (string) The routing mode for the subdomain. (enum: paths, geoRouting, loadBalancerSubdomain)
 
 ### API reference
@@ -128,8 +133,7 @@ func main() {
     "name": "site",
     "fullName": "site.example.com",
     "content": "site.example.com.user-1234.dns.northflank.app",
-    "verified": false,
-    "routingMode": "paths"
+    "verified": false
   }
 }
 ```
@@ -176,8 +180,7 @@ Options:
   "name": "site",
   "fullName": "site.example.com",
   "content": "site.example.com.user-1234.dns.northflank.app",
-  "verified": false,
-  "routingMode": "paths"
+  "verified": false
 }
 ```
 
@@ -209,8 +212,7 @@ await apiClient.add.domain.subdomain({
     "name": "site",
     "fullName": "site.example.com",
     "content": "site.example.com.user-1234.dns.northflank.app",
-    "verified": false,
-    "routingMode": "paths"
+    "verified": false
   },
   "rawResponse": "...",
   "request": "...",

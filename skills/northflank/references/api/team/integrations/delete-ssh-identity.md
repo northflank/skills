@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/delete-ssh-identity
 
 Deletes an SSH identity.
 
-Required permission: Account > Ssh > General > Delete
+Required permission: Account > Platform > Ssh > Delete
 
 **Path parameters:**
 

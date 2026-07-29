@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/rollout-strategies/update-gradua
 
 Updates a gradual rollout strategy.
 
-Required permission: Account > GradualRollouts > General > Update
+Required permission: Account > Platform > GradualRollouts > Update
 
 **Path parameters:**
 

@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/jobs/list-job-containers.md
 
 Gets a list of containers for the given job.
 
-Required permission: Project > Jobs > Deployment > View Instance Logs
+Required permission: Project > Jobs > Deployment > View Observability
 
 **Path parameters:**
 

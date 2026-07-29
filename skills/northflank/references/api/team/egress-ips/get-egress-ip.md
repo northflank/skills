@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/egress-ips/get-egress-ip.md
 
 Gets information about the given egress IP
 
-Required permission: Account > EgressIps > General > Read
+Required permission: Account > Networking > EgressIps > Read
 
 **Path parameters:**
 
@@ -21,7 +21,7 @@ Required permission: Account > EgressIps > General > Read
   - `spec`: {object}
     - `provisioningMode`: (string) (required) Provisioning mode for the egress IP: shared (uses pre-provisioned infrastructure) or dedicated (enum: shared, dedicated)
     - `region`: (string) (required) Target region name (pattern: ^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$)
-    - `mode`: (string) Mode: include (only these projects/resources use this egress IP) or exclude (all except these use this egress IP) (enum: include, exclude)
+    - `mode`: (string) Mode: 'include' (only these projects/resources use this egress IP), 'exclude' (all except these use it), or 'selector' (network-policy-style selector targeting). The selector/rules distinction is immutable after creation. (enum: include, exclude, selector)
     - `rules`: [array of] {object}
         - `id`: (string) (required) Project internal ID
         - `restrictions`: {object}
@@ -29,6 +29,15 @@ Required permission: Account > EgressIps > General > Read
           - `resources`: [array of] {object}
               - `type`: (string) (required) Resource type (enum: service, job)
               - `id`: (string) (required) Resource internal ID
+    - `selector`: {object}
+      - `projects`: {object}
+        - `enabled`: (boolean) (required) Whether to scope the selector to specific projects
+        - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+        - `restrictionMode`: (string) (required) Whether listed projects are included (in) or excluded (notIn) (enum: in, notIn)
+      - `tags`: {object}
+        - `enabled`: (boolean) (required) Whether to scope to workloads carrying the given tags
+        - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+        - `matchCondition`: (string) (required) Match any (or) or all (and) of the given tags (enum: or, and)
   - `state`: {object}
     - `ipAddress`: (string) Assigned public IP address
     - `status`: (string) (required) Current status of the egress IP (enum: staging, loading, active, error, deleting, deleted)

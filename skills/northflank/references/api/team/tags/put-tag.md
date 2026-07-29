@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/tags/put-tag.md
 
 Update or create a resource tag.
 
-Required permission: Account > Tags > General > Update
+Required permission: Account > Platform > Tags > Update
 
 **Path parameters:**
 
@@ -14,6 +14,7 @@ Required permission: Account > Tags > General > Update
 **Request body:**
 
 {object}
+- `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service and job workloads after their next deployment. Required for usage in egress IP selectors.
 - `useSpotNodes`: (boolean) Schedule workloads to spot nodes
 - `useOnDemandNodes`: (boolean) Also allow workloads to schedule to on demand nodes. Only relevant if you want workloads to schedule across both spot and on demand nodes
 - `nodeAffinities`: [array of] {object}
@@ -59,12 +60,13 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
-  --data '{"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A","name":"Example Tag"}' \
+  --data '{"useAsInfrastructureLabel":false,"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A","name":"Example Tag"}' \
   https://api.northflank.com/v1/tags
 ```
 
 ```javascript
 const payload = {
+  "useAsInfrastructureLabel": false,
   "useSpotNodes": false,
   "useOnDemandNodes": false,
   "sandboxing": {
@@ -107,7 +109,7 @@ import requests
 
 url = "https://api.northflank.com/v1/tags"
 
-payload = {"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A","name":"Example Tag"}
+payload = {"useAsInfrastructureLabel":false,"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A","name":"Example Tag"}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PUT", url, headers = headers, json = payload)
@@ -128,7 +130,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/tags"
 
-  var jsonStr = []byte(`{"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A","name":"Example Tag"}`)
+  var jsonStr = []byte(`{"useAsInfrastructureLabel":false,"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A","name":"Example Tag"}`)
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -177,6 +179,7 @@ Options:
 
 ```json
 {
+  "useAsInfrastructureLabel": false,
   "useSpotNodes": false,
   "useOnDemandNodes": false,
   "sandboxing": {
@@ -222,6 +225,7 @@ await apiClient.put.tag({
     "resourceTagId": "example-tag"
   },
   data: {
+    "useAsInfrastructureLabel": false,
     "useSpotNodes": false,
     "useOnDemandNodes": false,
     "sandboxing": {

@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/update-registry.md
 
 Updates a set of registry credential data.
 
-Required permission: Account > Credentials > General > Update
+Required permission: Account > Cloud > Registries > Update
 
 **Path parameters:**
 

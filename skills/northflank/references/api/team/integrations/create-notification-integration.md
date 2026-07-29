@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/create-notification
 
 Create a new notification integration.
 
-Required permission: Account > Team > Notifications > Manage
+Required permission: Account > Observability > Notifications > Create
 
 **Path parameters:**
 

@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/services/list-service-contain
 
 Gets a list of containers for the given service.
 
-Required permission: Project > Services > Deployment > View Instances
+Required permission: Project > Services > General > Read
 
 **Path parameters:**
 

@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/get-registry.md
 
 Views a set of registry credential data.
 
-Required permission: Account > Credentials > General > Read Encrypted
+Required permission: Account > Cloud > Registries > Read
 
 **Path parameters:**
 

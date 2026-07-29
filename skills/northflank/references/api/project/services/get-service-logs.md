@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/services/get-service-logs.md
 
 Get logs for a service
 
-Required permission: Project > Services > Deployment > View Instance Logs
+Required permission: Project > Services > Deployment > View Observability
 
 **Path parameters:**
 

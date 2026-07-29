@@ -10,7 +10,7 @@ Requests should instead use the relevant PATCH endpoint.
 
 Modifies the scaling settings for the given service.
 
-Required permission: Project > Services > Deployment > Scale Service
+Required permission: Project > Services > General > Update
 
 **Path parameters:**
 

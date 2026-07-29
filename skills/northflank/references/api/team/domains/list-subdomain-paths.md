@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/list-subdomain-paths.md
 
 List paths for a given subdomain.
 
-Required permission: Account > SubdomainPaths > General > Read
+Required permission: Account > Networking > SubdomainPaths > Read
 
 **Path parameters:**
 

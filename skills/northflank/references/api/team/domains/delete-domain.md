@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/delete-domain.md
 
 Deletes a domain and each of its registered subdomains.
 
-Required permission: Account > Domains > General > Delete
+Required permission: Account > Networking > Domains > Delete
 
 **Path parameters:**
 

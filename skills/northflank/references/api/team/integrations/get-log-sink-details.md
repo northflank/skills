@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/get-log-sink-detail
 
 Gets details about a given log sink.
 
-Required permission: Account > Sinks > General > Read
+Required permission: Account > Observability > LogSinks > Read
 
 **Path parameters:**
 

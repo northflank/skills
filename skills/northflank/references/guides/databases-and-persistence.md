@@ -1177,8 +1177,8 @@ Your database will be accessible by workloads within the same project using the 
 
 | Addon | Versions | Description | Backups | TLS |
 | --- | --- | --- | --- | --- |
-| [MongoDB](https://www.mongodb.com/docs/manual/) | 8.0.20, 8.0.17, 8.0.10, 7.0.31, 7.0.28, 7.0.21, 6.0.27, 6.0.24, 5.0.31, 4.4.15, 4.2.21 | MongoDB® is a document-oriented database program that uses JSON-like documents with schema. | Native or disk | Yes |
-| [Redis](https://redis.io/) | 8.6.1, 8.4.2, 8.4.0, 7.2.13, 7.2.12, 7.2.4, 6.2.21 | Redis® implements a distributed, in-memory key-value database with optional durability. | Disk | Yes |
+| [MongoDB](https://www.mongodb.com/docs/manual/) | 8.0.26, 8.0.20, 8.0.17, 7.0.37, 7.0.31, 7.0.28, 7.0.21, 6.0.27, 6.0.24, 5.0.31, 4.4.15, 4.2.21 | MongoDB® is a document-oriented database program that uses JSON-like documents with schema. | Native or disk | Yes |
+| [Redis](https://redis.io/) | 8.8.0, 8.6.4, 8.6.1, 8.4.4, 8.4.2, 8.4.0, 7.2.14, 7.2.13, 7.2.12, 7.2.4, 6.2.21 | Redis® implements a distributed, in-memory key-value database with optional durability. | Disk | Yes |
 | [MySQL](https://www.mysql.com/) | 9.6.0, 8.4.9, 8.4.8, 8.0.46, 8.0.45 | MySQL is a fast, reliable, scalable, and easy to use open-source relational database system. | Native or disk | Yes (cannot be changed after creation) |
 | [PostgreSQL](https://www.postgresql.org/) | 18, 17, 16, 15, 14, 13, 12 | PostgreSQL is a free and open-source relational database management system. High availability with Patroni | Native or disk | Yes |
 | [MinIO](https://min.io/) | 2025.10.15 | MinIO® is a High Performance Object Storage with an Amazon S3 cloud storage service compatible API. | Disk | Yes |
@@ -1339,7 +1339,7 @@ This guide explains how to quickly and easily deploy and use [MongoDB®](https:/
 
 | Available versions | Description | Backups | TLS |
 | --- | --- | --- | --- |
-| 8.0.20, 8.0.17, 8.0.10, 7.0.31, 7.0.28, 7.0.21, 6.0.27, 6.0.24, 5.0.31, 4.4.15, 4.2.21 | MongoDB® is a document-oriented database program that uses JSON-like documents with schema. | Native or disk | Yes |
+| 8.0.26, 8.0.20, 8.0.17, 7.0.37, 7.0.31, 7.0.28, 7.0.21, 6.0.27, 6.0.24, 5.0.31, 4.4.15, 4.2.21 | MongoDB® is a document-oriented database program that uses JSON-like documents with schema. | Native or disk | Yes |
 
 ### Deploy MongoDB® on Northflank: Deploy MongoDB
 
@@ -1923,7 +1923,7 @@ This guide explains how to quickly and easily deploy and use [Redis®*](https://
 
 | Available versions | Description | Backups | TLS |
 | --- | --- | --- | --- |
-| 8.6.1, 8.4.2, 8.4.0, 7.2.13, 7.2.12, 7.2.4, 6.2.21 | Redis® implements a distributed, in-memory key-value database with optional durability. | Disk | Yes |
+| 8.8.0, 8.6.4, 8.6.1, 8.4.4, 8.4.2, 8.4.0, 7.2.14, 7.2.13, 7.2.12, 7.2.4, 6.2.21 | Redis® implements a distributed, in-memory key-value database with optional durability. | Disk | Yes |
 
 ### Deploy Redis® on Northflank: Deploy Redis
 

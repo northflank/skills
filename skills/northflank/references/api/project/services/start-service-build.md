@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/services/start-service-build.
 
 Start a new build for the given combined or build service. If given a commit sha, it will build that commit. Otherwise, the most recent relevant commit will be built. If the service provided is a build service, a branch name or pull request to build from is required.
 
-Required permission: Project > Services > Deployment > Deploy Build
+Required permission: Project > Services > General > Update
 
 **Path parameters:**
 
@@ -26,8 +26,8 @@ Required permission: Project > Services > Deployment > Deploy Build
    - `buildFiles`: {object}
    - `dockerSecretMounts`: {object}
    - `docker`: {object}
-     - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]+$)
-     - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]*$)
+     - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
+     - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
      - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: ^[a-zA-Z0-9-_]+$)
 
 **Response body:**

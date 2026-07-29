@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/backup-destinations/patch-backup
 
 Updates a backup destination.
 
-Required permission: Account > BackupDestinations > General > Update
+Required permission: Account > Platform > BackupDestinations > Update
 
 **Path parameters:**
 
@@ -17,11 +17,15 @@ Required permission: Account > BackupDestinations > General > Update
 - `name`: (string) The name of the backup destination. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `credentials`: {object}
-  - `accessKey`: (string) (required)
-  - `secretKey`: (string) (required)
+  - `authMode`: (string) Whether the destination authenticates with static AWS credentials or a workload identity. (enum: staticCreds, workloadIdentity)
+  - `workloadIdentityId`: (multiple options) (string) | (string)
+  - `accessKey`: (multiple options) (string)
+  - `secretKey`: (multiple options) (string)
   - `bucketName`: (string) (required)
   - `region`: (string) (required)
   - `endpoint`: (string) (required) S3 destination including region, fe s3.us-west-2.amazonaws.com
+  - `enableObjectLock`: (boolean) Enable S3 Object Lock (WORM) for this destination. Immutable after creation. Bucket must have Object Lock enabled.
+  - `objectLockRetentionDays`: (integer) Retention period in days for object-locked blobs. Required if enableObjectLock is true. Immutable after creation.
 
 **Response body:**
 

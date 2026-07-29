@@ -58,7 +58,7 @@ You can now connect to your deployment locally on the available ports.
 
 ### Access running containers locally: Execute commands in an action node
 
-You can execute commands in a service in a [template](infrastructure-as-code.md#template-nodes-action-nodes) or [release flow](release.md#configure-a-release-flow-run-action) by using an action node.
+You can execute commands in a service in a [template](infrastructure-as-code.md#template-nodes-action-nodes) or [release flow](https://northflank.com/docs/v1/application/release/configure-a-release-flow#run-action) by using an action node.
 
 Commands supplied in an action node will not be executed with a shell by default. This means commands executed without a shell will not be able to use any shell features, and will directly pass all strings after the specified executable as parameters without any evaluation.
 
@@ -329,6 +329,7 @@ Northflank currently supports the following regions:
 | Africa South | `africa-south` | EMEA |
 | Asia East | `asia-east` | Asia Pacific |
 | Asia Northeast | `asia-northeast` | Asia Pacific |
+| Asia South Delhi | `asia-south-delhi` | Asia Pacific |
 | Asia Southeast | `asia-southeast` | Asia Pacific |
 | Australia Southeast | `australia-southeast` | Asia Pacific |
 | Canada Central | `canada-central` | Americas |
@@ -564,7 +565,7 @@ Navigate to an existing deployment service and select configure deployment from 
 
 #### Run an image continuously: Deploy builds using a pipeline and release flow
 
-You can also [create a pipeline](release.md#create-a-pipeline-and-release-flow) with a [release flow](release.md#create-a-pipeline-and-release-flow-create-a-release-flow) to deploy builds when the release flow is run. You can configure the release flow to deploy either specific images, such as promoting a build deployed in a previous stage of the pipeline, or the latest image from a build service or container registry.
+You can also [create a pipeline](https://northflank.com/docs/v1/application/release/create-a-pipeline-and-release-flow) with a [release flow](https://northflank.com/docs/v1/application/release/create-a-pipeline-and-release-flow#create-a-release-flow) to deploy builds when the release flow is run. You can configure the release flow to deploy either specific images, such as promoting a build deployed in a previous stage of the pipeline, or the latest image from a build service or container registry.
 
 ### Run an image continuously: Build and run an image in one service
 
@@ -668,9 +669,9 @@ You can configure a job to run automatically when the source image is changed, i
 
 - Never: the job will not automatically run when the image changes. The job will continue to run on a schedule, or when run manually, and the image deployed will be according to the CI/CD configuration
 
-- CD & pipeline promotion: the job will be triggered to run if a build finishes and CD is enabled, or if an image is promoted to the job [via a pipeline](release.md#create-a-pipeline-and-release-flow)
+- CD & environment promotion: the job will be triggered to run if a build finishes and CD is enabled, or if an image is promoted to the job [via a workflow](release.md#configure-workflows)
 
-- Always: the job will run every time the image is deployed via the UI, if a build finishes and CD is enabled, or if an image is promoted via a pipeline
+- Always: the job will run every time the image is deployed via the UI, if a build finishes and CD is enabled, or if an image is promoted via a workflow
 
 ### Run an image once or on a schedule: Set the cron schedule and concurrency policy
 
@@ -722,7 +723,7 @@ For example, if you set a Retry Limit of 6 and a Time Limit of 480, the job will
 
 You can preview and override a job's configuration when manually triggering a job run. This allows you to quickly change a job's configuration for the current run only. The configuration override section also includes a button to copy a shareable URL. You can send this URL to colleagues with access to the job, and it will open the job run modal with the configuration overrides you have set.
 
-You can also configure job run overrides in a [job run node in a release flow](release.md#configure-a-release-flow-run-job).
+You can also configure job run overrides in a [job run node in a release flow](https://northflank.com/docs/v1/application/release/configure-a-release-flow#run-job).
 
 You can override the following settings:
 

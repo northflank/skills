@@ -4,6 +4,8 @@ Source: https://northflank.com/docs/v1/api/project/secrets/list-project-secrets.
 
 Gets a list of project secrets belonging to the project
 
+Required permission: Project > Secrets > SecretGroups > List
+
 **Path parameters:**
 
 {object}

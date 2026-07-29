@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/import-domain-certificat
 
 Import a certificate for the domain
 
-Required permission: Account > Domains > General > Update
+Required permission: Account > Networking > Domains > Update
 
 **Path parameters:**
 

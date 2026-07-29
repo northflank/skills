@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/delete-log-sink.md
 
 Deletes a log sink.
 
-Required permission: Account > Sinks > General > Delete
+Required permission: Account > Observability > LogSinks > Delete
 
 **Path parameters:**
 

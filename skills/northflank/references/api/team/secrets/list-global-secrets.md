@@ -4,6 +4,8 @@ Source: https://northflank.com/docs/v1/api/team/secrets/list-global-secrets.md
 
 Gets a list of global secrets
 
+Required permission: Account > GlobalSecrets > Secrets > Read
+
 **Query parameters:**
 
 {object}

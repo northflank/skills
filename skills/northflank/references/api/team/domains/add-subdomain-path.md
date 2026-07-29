@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/add-subdomain-path.md
 
 Adds a new path to the subdomain.
 
-Required permission: Account > SubdomainPaths > General > Create
+Required permission: Account > Networking > SubdomainPaths > Create
 
 **Path parameters:**
 

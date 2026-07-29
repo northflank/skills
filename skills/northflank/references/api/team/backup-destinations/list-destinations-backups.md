@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/backup-destinations/list-destina
 
 Lists the backups associated with a backup destinations.
 
-Required permission: Account > BackupDestinations > General > Read
+Required permission: Account > Platform > BackupDestinations > Read
 
 **Path parameters:**
 

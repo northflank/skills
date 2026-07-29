@@ -41,7 +41,7 @@ Required permission: Project > Pipelines > General > Update
   - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
   - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
   - `branch`: (string) (required) The name of the branch to use.
-  - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]+$)
+  - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
 - `$schema`: (string)
 - `richInputs`: [array of] (multiple options) {object}
     - `kind`: (string) (required) The kind of input. (enum: BranchCommitSelector)
@@ -69,10 +69,13 @@ Required permission: Project > Pipelines > General > Update
   - `spec`: (multiple options) {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Workflow)
-     - `spec`: (undefined) (required)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*) | {object}
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `spec`: (undefined) (required) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: JobRun)
+     - `condition`: (string) (enum: success)
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
        - `runtimeEnvironment`: (multiple options) {object} | (string) (pattern: .*\${.*}.*)
@@ -119,17 +122,17 @@ Required permission: Project > Pipelines > General > Update
            - `external`: {object}
              - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
              - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
-       - `jobId`: (multiple options) (string) The ID of the job to run. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the ID of the job to run. (pattern: .*\${.*}.*)
-     - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*) | {object}
+       - `jobId`: (multiple options) (string) The ID of the job to run. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the ID of the job to run. (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: LoopWorkflow)
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `iterations`: (multiple options) [array of] (multiple options) {object} | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
-       - `steps`: [array of] (undefined)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*) | {object}
+       - `steps`: [array of] (undefined) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Action)
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `spec`: (multiple options) {object}
          - `kind`: (string) (required) The kind of action. (enum: Addon)
          - `spec`: (multiple options) {object}
@@ -185,7 +188,10 @@ Required permission: Project > Pipelines > General > Update
                  - `vcsService`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
                  - `oauthProvider`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
                  - `repoUrl`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                 - `branch`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
                  - `accountLogin`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                 - `commitSha`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                 - `directory`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
                  - `vcsLinkId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
                  - `selfHostedVcsId`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
                - `targetData`: {object}
@@ -198,10 +204,10 @@ Required permission: Project > Pipelines > General > Update
                  - `vcsLinkId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
                  - `oauthProvider`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
                  - `vcsService`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `selfHostedVcsId`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*) | {object}
+                 - `selfHostedVcsId`: (multiple options) (string) | (string) (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Condition)
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `spec`: (multiple options) {object}
          - `kind`: (string) (required) The kind of condition. (enum: Addon)
          - `spec`: (multiple options) {object}
@@ -254,10 +260,11 @@ Required permission: Project > Pipelines > General > Update
          - `spec`: (multiple options) {object}
              - `type`: (string) (required) The type of condition. (enum: createRepoFromSourceSuccess)
              - `data`: {object}
-               - `trackerId`: (multiple options) (string) The tracker id outputted from the 'createRepoFromSource' action to monitor. | (string) A string containing one or more references that resolve to the tracker id outputted from the 'createRepoFromSource' action to monitor. (pattern: .*\${.*}.*)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*) | {object}
+               - `trackerId`: (multiple options) (string) The tracker id outputted from the 'createRepoFromSource' action to monitor. | (string) A string containing one or more references that resolve to the tracker id outputted from the 'createRepoFromSource' action to monitor. (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Message)
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `spec`: (multiple options) {object}
          - `kind`: (string) (required) The kind of message to send. (enum: VCS)
          - `spec`: {object}
@@ -275,23 +282,22 @@ Required permission: Project > Pipelines > General > Update
          - `kind`: (string) (required) The kind of message to send. (enum: RAW_WEBHOOK)
          - `spec`: {object}
            - `webhookUrl`: (multiple options) (string) The webhook URL to send messages to. | (string) A string containing one or more references that resolve to the webhook URL to send messages to. (pattern: .*\${.*}.*)
-           - `message`: (multiple options) (string) The message content to send to the webhook. | (string) A string containing one or more references that resolve to the message content to send to the webhook. (pattern: .*\${.*}.*)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*) | {object}
+           - `message`: (multiple options) (string) The message content to send to the webhook. | (string) A string containing one or more references that resolve to the message content to send to the webhook. (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: LoopData)
-     - `spec`: {object}
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*) | {object}
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `spec`: {object} | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: OpenTofuDestroy)
-     - `spec`: {object}
-       - `nodeRef`: (string) (required) The `ref` value of the `OpenTofu` node in the parent template whose state should be destroyed.
      - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*) | {object}
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `spec`: {object}
+       - `nodeRef`: (string) (required) The `ref` value of the `OpenTofu` node in the parent template whose state should be destroyed. | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Approval)
+     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `amount`: (integer) (required)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
   - `failurePolicy`: (string) Controls what happens if the teardown spec fails or times out. `ignore` (default) — proceed with resource deletion regardless. `block` — halt deletion and set the environment to `teardown_failed` (enum: ignore, block)
 - `apiVersion`: (string) (required)
 - `project`: {object}

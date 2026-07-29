@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/tags/delete-tag.md
 
 Delete a resource tag.
 
-Required permission: Account > Tags > General > Delete
+Required permission: Account > Platform > Tags > Delete
 
 **Path parameters:**
 

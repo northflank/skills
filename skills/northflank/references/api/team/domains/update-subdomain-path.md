@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/update-subdomain-path.md
 
 Update a subdomain path.
 
-Required permission: Account > SubdomainPaths > General > Update
+Required permission: Account > Networking > SubdomainPaths > Update
 
 **Path parameters:**
 

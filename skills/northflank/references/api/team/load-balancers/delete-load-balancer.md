@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/load-balancers/delete-load-balan
 
 Deletes the given load balancer.
 
-Required permission: Account > LoadBalancers > General > Delete
+Required permission: Account > Networking > LoadBalancers > Delete
 
 **Path parameters:**
 

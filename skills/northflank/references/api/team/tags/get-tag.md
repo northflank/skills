@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/tags/get-tag.md
 
 View details for a given resource tag.
 
-Required permission: Account > Tags > General > Read
+Required permission: Account > Platform > Tags > Read
 
 **Path parameters:**
 
@@ -15,6 +15,7 @@ Required permission: Account > Tags > General > Read
 
 {object}
 - `data`: {object}
+  - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service and job workloads after their next deployment. Required for usage in egress IP selectors.
   - `useSpotNodes`: (boolean) Schedule workloads to spot nodes
   - `useOnDemandNodes`: (boolean) Also allow workloads to schedule to on demand nodes. Only relevant if you want workloads to schedule across both spot and on demand nodes
   - `nodeAffinities`: [array of] {object}
@@ -56,6 +57,7 @@ GET /v1/teams/{teamId}/tags/{resourceTagId}
 ```json
 {
   "data": {
+    "useAsInfrastructureLabel": false,
     "useSpotNodes": false,
     "useOnDemandNodes": false,
     "sandboxing": {
@@ -104,6 +106,7 @@ Options:
 
 ```json
 {
+  "useAsInfrastructureLabel": false,
   "useSpotNodes": false,
   "useOnDemandNodes": false,
   "sandboxing": {
@@ -150,6 +153,7 @@ await apiClient.get.tag({
 ```json
 {
   "data": {
+    "useAsInfrastructureLabel": false,
     "useSpotNodes": false,
     "useOnDemandNodes": false,
     "sandboxing": {

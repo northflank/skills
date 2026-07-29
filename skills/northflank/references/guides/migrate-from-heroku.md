@@ -232,7 +232,7 @@ For your first pipeline stage (`development`) you will need to deploy an image f
 
 5. Exit the release flow editor by clicking the  close button in the top-right corner
 
-Note: if CI is not enabled on your build service, you can add a [build node](getting-started.md#set-up-a-pipeline-add-a-release-flow) before the deploy build node to start a new build to deploy.
+Note: if CI is not enabled on your build service, you can add a [build node](getting-started.md#>-note-add-a-release-flow) before the deploy build node to start a new build to deploy.
 
 ##### Create release flows for your staging and production stages
 

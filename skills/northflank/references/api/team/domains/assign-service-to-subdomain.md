@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/assign-service-to-subdom
 
 Assigns a service port to the given subdomain
 
-Required permission: Account > Subdomains > General > Update
+Required permission: Account > Networking > Subdomains > Update
 
 **Path parameters:**
 

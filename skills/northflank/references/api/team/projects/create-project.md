@@ -28,6 +28,12 @@ Required permission: Project > Projects > Manage > Create
       - `autoRedeployOnRegeneration`: (boolean) Automatically restart applicable services when the auth key is regenerated
     - `tailscaleOptions`: {object}
       - `acceptRoutes`: (boolean) Accept advertised routes from the Tailscale network
+      - `tailnetServicesEnabled`: (boolean) Enable automatic creation of Tailnet services for resources in this project
+      - `useUnscopedServiceNames`: (boolean) Use the service internal ID as the Tailnet Service name without the project UID. This causes undefined behavior when two services in the tailnet have matching internal IDs.
+      - `tailnetServicesRestrictions`: {object}
+        - `enabled`: (boolean) (required) Whether or not to restrict the settings to resources with specific tags
+        - `tags`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+        - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
     - `secrets`: {object}
       - `clientId`: (string) (required) Tailscale OAuth client ID (required for generating auth keys for Tailscale)
       - `clientSecret`: (string) (required) Tailscale OAuth client secret (required for generating auth keys for Tailscale)
@@ -63,6 +69,12 @@ OR
       - `autoRedeployOnRegeneration`: (boolean) Automatically restart applicable services when the auth key is regenerated
     - `tailscaleOptions`: {object}
       - `acceptRoutes`: (boolean) Accept advertised routes from the Tailscale network
+      - `tailnetServicesEnabled`: (boolean) Enable automatic creation of Tailnet services for resources in this project
+      - `useUnscopedServiceNames`: (boolean) Use the service internal ID as the Tailnet Service name without the project UID. This causes undefined behavior when two services in the tailnet have matching internal IDs.
+      - `tailnetServicesRestrictions`: {object}
+        - `enabled`: (boolean) (required) Whether or not to restrict the settings to resources with specific tags
+        - `tags`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+        - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
     - `secrets`: {object}
       - `clientId`: (string) (required) Tailscale OAuth client ID (required for generating auth keys for Tailscale)
       - `clientSecret`: (string) (required) Tailscale OAuth client secret (required for generating auth keys for Tailscale)
@@ -106,6 +118,12 @@ OR
         - `autoRedeployOnRegeneration`: (boolean) Automatically restart applicable services when the auth key is regenerated
       - `tailscaleOptions`: {object}
         - `acceptRoutes`: (boolean) Accept advertised routes from the Tailscale network
+        - `tailnetServicesEnabled`: (boolean) Enable automatic creation of Tailnet services for resources in this project
+        - `useUnscopedServiceNames`: (boolean) Use the service internal ID as the Tailnet Service name without the project UID. This causes undefined behavior when two services in the tailnet have matching internal IDs.
+        - `tailnetServicesRestrictions`: {object}
+          - `enabled`: (boolean) (required) Whether or not to restrict the settings to resources with specific tags
+          - `tags`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+          - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
       - `secrets`: {object}
         - `clientId`: (string) (required) Tailscale OAuth client ID (required for generating auth keys for Tailscale)
         - `clientSecret`: (string) (required) Tailscale OAuth client secret (required for generating auth keys for Tailscale)
@@ -137,7 +155,7 @@ Create a project in a Northflank region
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"New Project","description":"This is a new project.","color":"#EF233C","region":"europe-west","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}' \
+  --data '{"name":"New Project","description":"This is a new project.","color":"#EF233C","region":"europe-west","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or"}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}' \
   https://api.northflank.com/v1/projects
 ```
 
@@ -151,6 +169,11 @@ const payload = {
     "tailscale": {
       "restrictions": {
         "tagMatchCondition": "or"
+      },
+      "tailscaleOptions": {
+        "tailnetServicesRestrictions": {
+          "tagMatchCondition": "or"
+        }
       }
     },
     "hostAliases": {
@@ -179,7 +202,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects"
 
-payload = {"name":"New Project","description":"This is a new project.","color":"#EF233C","region":"europe-west","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}
+payload = {"name":"New Project","description":"This is a new project.","color":"#EF233C","region":"europe-west","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or"}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -200,7 +223,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects"
 
-  var jsonStr = []byte(`{"name":"New Project","description":"This is a new project.","color":"#EF233C","region":"europe-west","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}`)
+  var jsonStr = []byte(`{"name":"New Project","description":"This is a new project.","color":"#EF233C","region":"europe-west","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or"}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -227,7 +250,7 @@ Create a project in a BYOC cluster
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"New Project","description":"This is a new project.","color":"#EF233C","clusterId":"gcp-cluster-1","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}' \
+  --data '{"name":"New Project","description":"This is a new project.","color":"#EF233C","clusterId":"gcp-cluster-1","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or"}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}' \
   https://api.northflank.com/v1/projects
 ```
 
@@ -241,6 +264,11 @@ const payload = {
     "tailscale": {
       "restrictions": {
         "tagMatchCondition": "or"
+      },
+      "tailscaleOptions": {
+        "tailnetServicesRestrictions": {
+          "tagMatchCondition": "or"
+        }
       }
     },
     "hostAliases": {
@@ -269,7 +297,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects"
 
-payload = {"name":"New Project","description":"This is a new project.","color":"#EF233C","clusterId":"gcp-cluster-1","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}
+payload = {"name":"New Project","description":"This is a new project.","color":"#EF233C","clusterId":"gcp-cluster-1","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or"}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -290,7 +318,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects"
 
-  var jsonStr = []byte(`{"name":"New Project","description":"This is a new project.","color":"#EF233C","clusterId":"gcp-cluster-1","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}`)
+  var jsonStr = []byte(`{"name":"New Project","description":"This is a new project.","color":"#EF233C","clusterId":"gcp-cluster-1","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or"}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -326,6 +354,11 @@ func main() {
       "tailscale": {
         "restrictions": {
           "tagMatchCondition": "or"
+        },
+        "tailscaleOptions": {
+          "tailnetServicesRestrictions": {
+            "tagMatchCondition": "or"
+          }
         }
       },
       "hostAliases": {
@@ -368,6 +401,11 @@ Create a project in a Northflank region
     "tailscale": {
       "restrictions": {
         "tagMatchCondition": "or"
+      },
+      "tailscaleOptions": {
+        "tailnetServicesRestrictions": {
+          "tagMatchCondition": "or"
+        }
       }
     },
     "hostAliases": {
@@ -393,6 +431,11 @@ Create a project in a BYOC cluster
     "tailscale": {
       "restrictions": {
         "tagMatchCondition": "or"
+      },
+      "tailscaleOptions": {
+        "tailnetServicesRestrictions": {
+          "tagMatchCondition": "or"
+        }
       }
     },
     "hostAliases": {
@@ -420,6 +463,11 @@ Create a project in a BYOC cluster
     "tailscale": {
       "restrictions": {
         "tagMatchCondition": "or"
+      },
+      "tailscaleOptions": {
+        "tailnetServicesRestrictions": {
+          "tagMatchCondition": "or"
+        }
       }
     },
     "hostAliases": {
@@ -452,6 +500,11 @@ await apiClient.create.project({
       "tailscale": {
         "restrictions": {
           "tagMatchCondition": "or"
+        },
+        "tailscaleOptions": {
+          "tailnetServicesRestrictions": {
+            "tagMatchCondition": "or"
+          }
         }
       },
       "hostAliases": {
@@ -479,6 +532,11 @@ await apiClient.create.project({
       "tailscale": {
         "restrictions": {
           "tagMatchCondition": "or"
+        },
+        "tailscaleOptions": {
+          "tailnetServicesRestrictions": {
+            "tagMatchCondition": "or"
+          }
         }
       },
       "hostAliases": {
@@ -508,6 +566,11 @@ await apiClient.create.project({
       "tailscale": {
         "restrictions": {
           "tagMatchCondition": "or"
+        },
+        "tailscaleOptions": {
+          "tailnetServicesRestrictions": {
+            "tagMatchCondition": "or"
+          }
         }
       },
       "hostAliases": {

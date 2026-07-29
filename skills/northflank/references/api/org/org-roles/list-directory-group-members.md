@@ -26,6 +26,7 @@ Required permission: Organisation > Admin > Members > Read
      - `id`: (string) (required) ID (username) of the directory member.
      - `name`: (string) Display name from the member profile.
      - `emails`: [array of] (string) (format: email)
+     - `lastLoginTime`: (string) The time the member last logged in. (format: date-time)
 - `pagination`: {object}
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
@@ -45,7 +46,8 @@ GET /v1/directory-groups/{groupId}/members
     "members": [
       {
         "id": "john-doe",
-        "name": "John Doe"
+        "name": "John Doe",
+        "lastLoginTime": "2021-01-20T11:19:53.175Z"
       }
     ]
   },
@@ -85,7 +87,8 @@ Options:
   "members": [
     {
       "id": "john-doe",
-      "name": "John Doe"
+      "name": "John Doe",
+      "lastLoginTime": "2021-01-20T11:19:53.175Z"
     }
   ]
 }
@@ -117,7 +120,8 @@ await apiClient.list.orgDirectoryGroupMembers({
     "members": [
       {
         "id": "john-doe",
-        "name": "John Doe"
+        "name": "John Doe",
+        "lastLoginTime": "2021-01-20T11:19:53.175Z"
       }
     ]
   },

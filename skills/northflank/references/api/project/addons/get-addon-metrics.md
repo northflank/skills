@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/addons/get-addon-metrics.md
 
 Get metrics for an addon
 
-Required permission: Project > Addons > Deployment > View Instance Metrics
+Required permission: Project > Addons > Deployment > View Observability
 
 **Path parameters:**
 

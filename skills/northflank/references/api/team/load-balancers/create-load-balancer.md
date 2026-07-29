@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/load-balancers/create-load-balan
 
 Creates a new load balancer
 
-Required permission: Account > LoadBalancers > General > Create
+Required permission: Account > Networking > LoadBalancers > Create
 
 **Request body:**
 

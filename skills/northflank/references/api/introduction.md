@@ -21,8 +21,8 @@ Build via command line
 Create a database and connect immediately
 [Create a database addon](project/addons/create-addon.md) and [retrieve the credentials](project/addons/get-addon-credentials.md) to begin using it as soon as it's spun up.
 Manage secrets
-[Add](project/secrets/create-project-secret.md) groups of build arguments and runtime variables to securely manage secrets for your services. [Link](project/secrets/update-project-secret-addon-link.md) credentials from a database or storage addon for immediate and easy access in your project.
+[Add](https://northflank.com/docs/v1/api/secrets/create-secret) groups of build arguments and runtime variables to securely manage secrets for your services. [Link](project/secrets/update-project-secret-addon-link.md) credentials from a database or storage addon for immediate and easy access in your project.
 Build a managed hosting platform for your OSS or SaaS
-Build your own hosting platform on top of Northflank. Include as many Northflank features and options as you want while implementing your own UI, RBAC, billing, or any other features you require. Create, update, and delete [projects](team/projects/create-project.md), [services](project/services/create-combined-service.md), [configurations](project/secrets/create-project-secret.md), and everything else on behalf of your users.
+Build your own hosting platform on top of Northflank. Include as many Northflank features and options as you want while implementing your own UI, RBAC, billing, or any other features you require. Create, update, and delete [projects](team/projects/create-project.md), [services](project/services/create-combined-service.md), [configurations](https://northflank.com/docs/v1/api/secrets/create-secret), and everything else on behalf of your users.
 And much, much more...
 Northflank is a developer tools sandbox where you can unleash your potential. Programmatically combine features to build whatever you can imagine!

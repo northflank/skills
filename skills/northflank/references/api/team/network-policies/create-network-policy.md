@@ -30,6 +30,11 @@ Required permission: Account > Networking > NetworkPolicies > Create
     - `denyAll`: (boolean)
     - `allowFromTags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `allowFromProjects`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `egressSecretInjection`: [array of] {object}
+     - `name`: (string) (required) (pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$) (max length: 63)
+     - `header`: (string) (required) (pattern: ^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$) (max length: 256)
+     - `hosts`: [array of] (string) (max length: 253)
+     - `value`: (multiple options) (string) | {object}
 
 ### API reference
 

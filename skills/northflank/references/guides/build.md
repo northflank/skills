@@ -694,21 +694,42 @@ Build services can only be referenced by projects in the same team. Access can b
 
 Source: https://northflank.com/docs/v1/application/build/use-custom-build-registry.md
 
-Use your cloud provider's Docker registry to store build images instead of Northflank's managed registry. Supported providers are Azure, AWS, and GCP.
+By default, Northflank stores all build images in Northflank's managed Docker registry. If your organization requires builds to push to your own Docker registry instead, you can use a custom build registry integration.
 
-This can only be configured when creating a new project.
+This feature lets you store built images in your cloud provider's container registry (Azure, AWS, or GCP) instead of Northflank's managed registry. This is useful if you need to maintain images in your own infrastructure, comply with internal policies, or integrate with existing registry workflows.
 
 ### Use custom build registry: Prerequisites
 
-Your BYOC provider integration must have these features enabled:
+Before setting up a custom build registry, you need:
 
-- **Docker Registries**: Allows pulling images from your registry
+- **A provider link**: You must have created a provider link with your cloud provider (Azure, AWS, or GCP) in your team integrations. [Learn how to set up a provider link](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank)
 
-- **Docker Registry Push**: Allows pushing built images to your registry
+- **Required permissions enabled**: Your cloud provider integration must have these features enabled:
 
-If these features are not enabled, you cannot create a custom registry integration.
+  - **Docker Registries**: Allows pulling images from your registry
+
+  - **Docker Registry Push**: Allows pushing built images to your registry
+
+  If these features are not enabled, you cannot use that provider link for custom build registries.
+
+- **New project**: Custom build registries can only be configured when creating a new project, not on existing projects. This is because the registry setting is applied at the project level during creation.
+
+### Use custom build registry: How it works
+
+When you configure a custom build registry in a project:
+
+1. Northflank builds your code using your Dockerfile or buildpacks
+
+2. Instead of pushing the built image to Northflank's managed registry, it pushes directly to your cloud provider's Docker registry
+
+3. Your deployments pull from your custom registry instead of Northflank's
+
+This gives you full control over where your built images are stored and who can access them through your cloud provider's access controls.
 
 ### Use custom build registry: Add a custom Docker registry
+
+> [!note]
+> [Click here](https://app.northflank.com/s/account/integrations/registry-credentials/new) to add a custom Docker registry.
 
 1. Navigate to **Integrations** in your team settings
 
@@ -716,7 +737,7 @@ If these features are not enabled, you cannot create a custom registry integrati
 
 3. Enter a registry name and select your container registry provider (Azure, AWS, or GCP)
 
-4. Select an existing BYOC integration or create a new one for Azure, AWS, or GCP
+4. Select an existing provider integration or create a new one for Azure, AWS, or GCP [Learn how to set up a provider integration](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank)
 
 5. Enter the provider-specific registry settings:
 
@@ -734,6 +755,9 @@ The registry is now available for use in new projects.
 
 ### Use custom build registry: Use in a project
 
+> [!note]
+> [Click here](https://app.northflank.com/s/account/projects/new) to create a new project.
+
 1. Create a new project
 
 2. Under **Advanced options**, expand **Docker Registry settings**
@@ -744,7 +768,7 @@ The registry is now available for use in new projects.
 
 5. Click **Create project**
 
-All builds in this project will now push images to your custom registry.
+All builds in this project will now push images to your custom registry instead of Northflank's managed registry. When you deploy these images, Northflank automatically pulls from your custom registry. [Learn more about creating a project](getting-started.md#create-a-project)
 
 ### Use custom build registry: Next steps
 

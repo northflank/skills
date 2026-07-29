@@ -4,6 +4,8 @@ Source: https://northflank.com/docs/v1/api/project/secrets/put-project-secret.md
 
 Creates or updates a project secret with the specified payload
 
+Required permission: Project > Secrets > SecretGroups > Create
+
 **Path parameters:**
 
 {object}

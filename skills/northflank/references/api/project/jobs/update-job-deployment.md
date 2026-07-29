@@ -10,7 +10,7 @@ Requests should instead use the relevant PATCH endpoint.
 
 Updates the deployment settings of the given job.
 
-Required permission: Project > Services > Deployment > Update Deployment
+Required permission: Project > Jobs > General > Update
 
 **Path parameters:**
 

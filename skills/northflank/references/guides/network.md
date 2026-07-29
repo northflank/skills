@@ -1,12 +1,13 @@
 # Network
 
-Generated from 10 application pages listed in `llms.txt`.
+Generated from 11 application pages listed in `llms.txt`.
 
 ## Pages
 
 - [Add security policies for ports](#add-security-policies-for-ports)
 - [Configure egress IPs](#configure-egress-ips)
 - [Configure load balancers](#configure-load-balancers)
+- [Configure network policies](#configure-network-policies)
 - [Configure ports](#configure-ports)
 - [Create path-based security policies](#create-path-based-security-policies)
 - [Enable multi-project networking](#enable-multi-project-networking)
@@ -467,6 +468,137 @@ Load balancers can be included in Northflank templates for infrastructure as cod
 **BYOC and BYOK clusters:** Load balancers use the Kubernetes Gateway API with automated provisioning on the cloud provider side. BYOC clusters support load balancers (on AWS, provisioned as Network Load Balancers). For BYOK clusters, contact support to confirm whether your cloud provider supports this feature.
 
 ### Configure load balancers: Next steps
+
+- [Add a domain: Add your domain name to your Northflank account.](domains.md#add-a-domain-to-your-account)
+- [Link a domain to a port: How to link and unlink domains and subdomains with specific ports on your deployments.](domains.md#link-a-domain-to-a-port)
+- [Set IP policies: Allow or deny access to services based on IP addresses.](network.md#add-security-policies-for-ports-set-ip-policies)
+- [Configure basic authentication: Require users to enter a username and password to access your site.](network.md#add-security-policies-for-ports-require-credentials)
+
+## Configure network policies
+
+Source: https://northflank.com/docs/v1/application/network/configure-network-policies.md
+
+Network policies allow you to control inbound and outbound traffic between workloads and projects on your BYOC cluster. You can create fine-grained rules to restrict communication, enforce security boundaries, and implement zero-trust networking patterns.
+
+### Configure network policies: How it works
+
+Network policies define allow and deny rules for ingress (inbound) and egress (outbound) traffic. By default, if no rules are defined, all traffic is allowed in that direction.
+
+Understanding the default behavior:
+
+- If no ingress rules exist, all inbound traffic from resources in the same project is allowed. If you add any ingress rule, it becomes an allow-list and only specified traffic is permitted.
+
+- If no egress rules exist, all outbound traffic is allowed. If you add any egress rule, it becomes an allow-list and only specified traffic is permitted.
+
+- The **Deny all traffic** option blocks all inbound or outbound traffic.
+
+### Configure network policies: Create a network policy
+
+To create a network policy:
+
+1. Navigate to [**Cloud** → **Network policies**](https://app.northflank.com/s/team/cloud/network-policies/new)
+
+#### Configure network policies: Basic information
+
+1. **Name**: Provide a name for the network policy (e.g., `backend-to-database`)
+
+2. **Description**: (Optional) Describe what this policy controls
+
+#### Configure network policies: Rules
+
+Configure ingress and egress rules for your policy.
+
+1. **Ingress**: Define which traffic can reach your workloads
+
+  - **Deny all traffic**: Toggle to block all inbound traffic to the targeted workloads
+
+  - **Allow traffic from tags**: Select tags of workloads allowed to send traffic to your workloads
+
+  - **Allow traffic from projects**: Select projects allowed to send traffic to your workloads
+
+2. **Egress**: Define where your workloads can send traffic
+
+  - **Deny all traffic**: Toggle to block all outbound traffic from the targeted workloads
+
+  - **Allow traffic to tags**: Select tags of workloads your workloads can reach
+
+  - **Allow traffic to projects**: Select projects your workloads can reach
+
+  - **Allow traffic to IP/CIDR/FQDN**: Add external destinations (IP addresses, CIDR ranges, FQDNs, or hostnames) your workloads can reach
+
+**Note:** After configuring your rules and restrictions, the UI displays a summary of your network policy configuration.
+
+#### Configure network policies: Restrictions
+
+Choose which projects and workloads this network policy applies to.
+
+**Project restriction:**
+
+- **Restrict to specific projects**: Enable to restrict the policy to specific projects
+
+- Select which projects the policy applies to
+
+- **Use as exclusion rule**: Enable to apply the policy to all projects except those selected
+
+- Disable **Restrict to specific projects** to apply the policy to all projects
+
+**Tag restriction:**
+
+- **Restrict by tags of the workload's resources**: Enable to restrict the policy by workload tags
+
+- Add tags that workloads must have to be affected by this policy
+
+- **Force matching all tags**: Enable to require workloads to have ALL specified tags (not just one)
+
+- Disable **Restrict by tags of the workload's resources** to apply the policy to all workloads in the selected projects
+
+#### Configure network policies: Create
+
+Click **Create network policy** to create and apply the policy.
+
+### Configure network policies: Update network policy
+
+To change an existing network policy:
+
+1. Navigate to [**Cloud** → **Network policies**](https://app.northflank.com/s/team/cloud/network-policies)
+
+2. Select the network policy
+
+3. Update the **Rules** and **Restrictions** details
+
+4. Click **Update network policy** to save changes
+
+### Configure network policies: Best practices
+
+**Project restrictions:**
+
+- If you disable **Restrict to specific projects**, the policy applies to all projects in your team
+
+- Only disable this if you intend to affect multiple projects, as it can impact networking behaviour across all projects in your team
+
+**Tag restrictions:**
+
+- Use tags strategically to organize workloads by tier (frontend, backend, database) or function (auth, logging, cache)
+
+- Enable **Force matching all tags** when you need workloads to have multiple specific tags before the policy applies
+
+- Consider your tag naming convention to keep policies simple and maintainable
+
+**Rules behavior:**
+
+- Remember that ingress and egress rules become allow-lists once you add any rule
+
+- Once an allow-list is created in a project, traffic not explicitly allowed is blocked
+
+- Test allow-list behavior in development/staging first to avoid unexpected blocked traffic
+
+**Testing and deployment:**
+
+- Create policies in a development/staging project first to verify they don't break expected communication
+
+- Use meaningful policy names that clearly indicate what traffic they control (e.g., `backend-to-database` instead of `policy-1`)
+
+### Configure network policies: Next steps
 
 - [Add a domain: Add your domain name to your Northflank account.](domains.md#add-a-domain-to-your-account)
 - [Link a domain to a port: How to link and unlink domains and subdomains with specific ports on your deployments.](domains.md#link-a-domain-to-a-port)

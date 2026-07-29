@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/add-registry.md
 
 Adds a new set of container registry credentials to this account.
 
-Required permission: Account > Credentials > General > Create
+Required permission: Account > Cloud > Registries > Create
 
 **Request body:**
 

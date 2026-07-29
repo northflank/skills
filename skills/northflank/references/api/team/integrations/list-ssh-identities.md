@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/list-ssh-identities
 
 Lists the SSH identities saved to this account. Does not display SSH public keys.
 
-Required permission: Account > Ssh > General > Read
+Required permission: Account > Platform > Ssh > Read
 
 **Query parameters:**
 

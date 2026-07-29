@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/addons/get-addon-restore-logs
 
 Get logs for an addon restore
 
-Required permission: Project > Addons > Deployment > View Instance Logs
+Required permission: Project > Addons > Deployment > View Observability
 
 **Path parameters:**
 

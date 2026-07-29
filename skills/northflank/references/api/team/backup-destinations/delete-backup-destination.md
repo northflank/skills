@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/backup-destinations/delete-backu
 
 Delete a backup destination.
 
-Required permission: Account > BackupDestinations > General > Delete
+Required permission: Account > Platform > BackupDestinations > Delete
 
 **Path parameters:**
 

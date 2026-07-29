@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/rollout-strategies/delete-gradua
 
 Deletes a gradual rollout strategy.
 
-Required permission: Account > GradualRollouts > General > Delete
+Required permission: Account > Platform > GradualRollouts > Delete
 
 **Path parameters:**
 

@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/enable-cdn-on-a-subdomai
 
 Enables a CDN integration on the given subdomain
 
-Required permission: Account > Subdomains > General > Update
+Required permission: Account > Networking > Subdomains > Update
 
 **Path parameters:**
 
@@ -23,11 +23,15 @@ Required permission: Account > Subdomains > General > Update
      - `staleIfError`: (boolean)
      - `staleIfErrorTtl`: (number) (format: float)
      - `defaultTtl`: (number) (format: float)
+     - `passThrough`: (boolean)
+     - `bypassCredentialedRequests`: (boolean)
    - `logging`: {object}
      - `enabled`: (boolean)
    - `http3`: {object}
      - `enabled`: (boolean)
    - `websockets`: {object}
+     - `enabled`: (boolean)
+   - `ddosProtection`: {object}
      - `enabled`: (boolean)
    - `compression`: {object}
      - `enabled`: (boolean)
@@ -37,13 +41,13 @@ Required permission: Account > Subdomains > General > Update
       - `name`: (string) (required) (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
       - `type`: (string) (required) (enum: init, recv, hash, hit, miss, pass, fetch, error, deliver, log, none)
       - `dynamic`: (string) (required) (enum: 0, 1)
-      - `priority`: (number) (required) (format: float)
+      - `priority`: (multiple options) (number) (format: float)
       - `content`: (string) (required)
    - `cacheSettings`: [array of] {object}
       - `id`: (string)
       - `name`: (string) (required) (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
       - `action`: (string) (enum: pass, cache, restart)
-      - `cacheCondition`: (string)
+      - `cacheCondition`: (string) (max length: 512)
       - `staleTtl`: (number) (required) (format: float)
       - `ttl`: (number) (required) (format: float)
 

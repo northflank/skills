@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/jobs/start-job-build.md
 
 Start a new build for the given job. Given a commit sha, it will build that commit.
 
-Required permission: Project > Jobs > Deployment > Deploy Build
+Required permission: Project > Jobs > General > Update
 
 **Path parameters:**
 
@@ -26,8 +26,8 @@ OR
   - `buildFiles`: {object}
   - `dockerSecretMounts`: {object}
   - `docker`: {object}
-    - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]+$)
-    - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]*$)
+    - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
+    - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
     - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: ^[a-zA-Z0-9-_]+$)
 
 **Response body:**

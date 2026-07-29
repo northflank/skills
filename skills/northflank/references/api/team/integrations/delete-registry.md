@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/delete-registry.md
 
 Deletes a set of registry credential data.
 
-Required permission: Account > Credentials > General > Delete
+Required permission: Account > Cloud > Registries > Delete
 
 **Path parameters:**
 

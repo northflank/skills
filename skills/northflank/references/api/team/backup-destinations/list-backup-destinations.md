@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/backup-destinations/list-backup-
 
 Lists the backup destinations saved to this account. Does not display secrets.
 
-Required permission: Account > BackupDestinations > General > Read
+Required permission: Account > Platform > BackupDestinations > Read
 
 **Query parameters:**
 
@@ -23,11 +23,15 @@ Required permission: Account > BackupDestinations > General > Read
      - `type`: (string) (required) Type of the backup destination. (enum: s3)
      - `prefix`: (string) (required) A prefix path to add to the bucket objects if not writing to / (pattern: ^([a-zA-Z0-9-_]+)\/$)
      - `credentials`: {object}
-       - `accessKey`: (string) (required)
-       - `secretKey`: (string) (required)
+       - `authMode`: (string) Whether the destination authenticates with static AWS credentials or a workload identity. (enum: staticCreds, workloadIdentity)
+       - `workloadIdentityId`: (multiple options) (string) | (string)
+       - `accessKey`: (multiple options) (string)
+       - `secretKey`: (multiple options) (string)
        - `bucketName`: (string) (required)
        - `region`: (string) (required)
        - `endpoint`: (string) (required) S3 destination including region, fe s3.us-west-2.amazonaws.com
+       - `enableObjectLock`: (boolean) Enable S3 Object Lock (WORM) for this destination. Immutable after creation. Bucket must have Object Lock enabled.
+       - `objectLockRetentionDays`: (integer) Retention period in days for object-locked blobs. Required if enableObjectLock is true. Immutable after creation.
 - `pagination`: {object}
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.

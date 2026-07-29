@@ -9,7 +9,7 @@ Generated from 7 application pages listed in `llms.txt`.
 - [Create a project](#create-a-project)
 - [Introduction to Northflank](#introduction-to-northflank)
 - [Link your Git account](#link-your-git-account)
-- [Set up a pipeline](#set-up-a-pipeline)
+- [> [!note]](#>-note)
 - [Set up environments](#set-up-environments)
 
 ## Add and verify a domain
@@ -103,7 +103,7 @@ Combined services are a self-contained continuous integration and continuous del
 
 It's as easy as choosing a branch from a Git repository to automatically build and deploy from.
 
-Combined services cannot be added to a pipeline as they act as a self-contained pipeline. If you want to create a more complex workflow, the [set up a pipeline](getting-started.md#set-up-a-pipeline) walkthrough will take you through all the steps.
+Combined services cannot be added to a pipeline as they act as a self-contained pipeline. If you want to create a more complex workflow, the [set up a pipeline](getting-started.md#>-note) walkthrough will take you through all the steps.
 
 ### Build and deploy your code: Create a combined service
 
@@ -241,7 +241,7 @@ Now you have built and run your first service on Northflank, made it available o
 
 Next you can learn about the other features and options available on your services, or learn how to create and manage development pipelines to enjoy a seamless devops experience.
 
-- [Set up a pipeline: Manage your workflow and release your code in an intuitive pipeline.](getting-started.md#set-up-a-pipeline)
+- [Set up a pipeline: Manage your workflow and release your code in an intuitive pipeline.](getting-started.md#>-note)
 - [Add and verify domain: Add your domain name to your Northflank account and link it to a public port.](getting-started.md#add-and-verify-a-domain)
 - [Configure health checks: Monitor the uptime and success of your deployed services and builds to ensure your code runs correctly and is always available.](observe.md#configure-health-checks)
 - [View logs: View detailed, real-time logs from builds, deployments, and more.](observe.md#view-logs)
@@ -306,6 +306,7 @@ Northflank currently supports the following regions:
 | Africa South | `africa-south` | EMEA |
 | Asia East | `asia-east` | Asia Pacific |
 | Asia Northeast | `asia-northeast` | Asia Pacific |
+| Asia South Delhi | `asia-south-delhi` | Asia Pacific |
 | Asia Southeast | `asia-southeast` | Asia Pacific |
 | Australia Southeast | `australia-southeast` | Asia Pacific |
 | Canada Central | `canada-central` | Americas |
@@ -335,7 +336,7 @@ You will still be billed for all resources consumed up to the project's deletion
 ### Create a project: Next steps
 
 - [Build and deploy your code: Quickly and easily build and run code from a Git repository using a Dockerfile or buildpack.](getting-started.md#build-and-deploy-your-code)
-- [Set up a pipeline: Manage your workflow and release your code in an intuitive pipeline.](getting-started.md#set-up-a-pipeline)
+- [Set up a pipeline: Manage your workflow and release your code in an intuitive pipeline.](getting-started.md#>-note)
 - [Add and verify domain: Add your domain name to your Northflank account and link it to a public port.](getting-started.md#add-and-verify-a-domain)
 
 ## Introduction to Northflank
@@ -380,6 +381,17 @@ See our [pricing page](https://northflank.com/pricing) for more information on p
 
 ![Creating a team in the Northflank application](https://assets.northflank.com/documentation/v1/application/collaborate/create-a-team/create-team.png)
 
+### Introduction to Northflank: Automate with Northflank Skills
+
+Northflank Skills provide AI coding agents with Northflank-specific knowledge for deploying, operating, and automating workloads on the platform.
+
+They help agents understand Northflank primitives such as services, jobs, add-ons, preview environments, release workflows, sandboxes, GPU workloads, templates, and the API/CLI.
+
+Skills can be used with agentic coding tools like Claude Code, Codex, and Cursor to create, configure, deploy, and troubleshoot applications on Northflank using the right platform concepts and commands.
+
+> [!note]
+> [Click here](https://github.com/northflank/skills) to explore Northflank Skills on GitHub.
+
 ### Introduction to Northflank: Getting started
 
 The getting started section contains walkthrough guides to get you up-and-running on Northflank. They follow the in-app onboarding achievements, which can be found under the rocket button  in the top-right of the application.
@@ -388,7 +400,7 @@ The getting started section contains walkthrough guides to get you up-and-runnin
 - [Create a project: Create a project to contain your services, persistent data, secrets, and more.](getting-started.md#create-a-project)
 - [Create a team and invite members: Create a team and invite members to collaborate on projects.](collaborate.md#create-a-team)
 - [Build and deploy your code: Quickly and easily build and run code from a Git repository using a Dockerfile or buildpack.](getting-started.md#build-and-deploy-your-code)
-- [Set up a pipeline: Manage your workflow and release your code in an intuitive pipeline.](getting-started.md#set-up-a-pipeline)
+- [Set up a pipeline: Manage your workflow and release your code in an intuitive pipeline.](getting-started.md#>-note)
 - [Add and verify domain: Add your domain name to your Northflank account and link it to a public port.](getting-started.md#add-and-verify-a-domain)
 
 ## Link your Git account
@@ -576,11 +588,10 @@ Unrestricted access means team members will be able to create services and jobs 
 - [Add a self-hosted VCS: Add your own self-hosted Git provider and build from its repositories.](collaborate.md#manage-git-integrations-add-a-self-hosted-vcs)
 - [Save registry credentials: Save your credentials for a container registry to access private images.](run.md#save-registry-credentials)
 
-## Set up a pipeline
+## > [!note]
 
 Source: https://northflank.com/docs/v1/application/getting-started/set-up-a-pipeline.md
 
-> [!note]
 > Northflank recommends using [Environments](getting-started.md#set-up-environments) for CI/CD. Pipelines are still supported but may be deprecated in future.
 
 Pipelines on Northflank allow you to create and manage complex continuous integration and continuous delivery (CI/CD) workflows.
@@ -591,7 +602,7 @@ Pipelines and release flows allow you to manage building and deploying your code
 
 This guide will take you through creating a pipeline, a build service, and a deployment service, and then populating a pipeline stage and configuring a simple release flow to deploy code built on Northflank.
 
-### Set up a pipeline: Create a pipeline
+### > [!note]: Create a pipeline
 
 To create a pipeline:
 
@@ -601,7 +612,7 @@ To create a pipeline:
 
 3. Click create pipeline
 
-### Set up a pipeline: Create a build service
+### > [!note]: Create a build service
 
 You can configure most aspects of a build service after it is created - except the name.
 
@@ -623,7 +634,7 @@ You can configure most aspects of a build service after it is created - except t
 
 9. Click create service
 
-### Set up a pipeline: Create deployment services
+### > [!note]: Create deployment services
 
 You can configure most aspects of a deployment service after it is created - except the name.
 
@@ -645,7 +656,7 @@ You can configure most aspects of a deployment service after it is created - exc
 
 9. Click create service
 
-### Set up a pipeline: Add resources to your pipeline
+### > [!note]: Add resources to your pipeline
 
 1. Select the pipeline you want to use from the project pipelines page
 
@@ -659,7 +670,7 @@ You can add multiple deployment services, jobs, and addons to a pipeline stage.
 
 Removing a deployment service from a pipeline will not unlink its build service or external image, nor pause the deployment service. You can edit or disable the deployment service itself from its own dashboard.
 
-### Set up a pipeline: Add a release flow
+### > [!note]: Add a release flow
 
 Now you can create a release flow for the development stage of your pipeline, which you have populated with your deployment service.
 
@@ -681,7 +692,7 @@ Now you can create a release flow for the development stage of your pipeline, wh
 
 ![Editing a node in a release flow in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/set-up-a-pipeline/release-flow-edit-node.png)
 
-### Set up a pipeline: Run a release flow
+### > [!note]: Run a release flow
 
 After you have configured a release flow for your pipeline stage, you can now run it and Northflank will execute the workflow as you have specified it.
 
@@ -695,7 +706,7 @@ After you have configured a release flow for your pipeline stage, you can now ru
 
 ![A release flow run in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/set-up-a-pipeline/release-flow-run-success.png)
 
-### Set up a pipeline: Promote a deployed image
+### > [!note]: Promote a deployed image
 
 You can configure a release flow to promote images deployed in the preceding stage to the stage that contains the release flow. You can promote any image deployed to a deployment service or job, whether they are built on Northflank or deployed from an external container registry.
 
@@ -715,7 +726,7 @@ To deploy images from a previous stage:
 
 ![A release flow node to promote a deployment in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/set-up-a-pipeline/release-flow-promote-deployment.png)
 
-### Set up a pipeline: Learn more about using pipelines and release flows on Northflank
+### > [!note]: Learn more about using pipelines and release flows on Northflank
 
 - [Set up a pipeline and release flow: Manage your deployments and release your updates in an intuitive pipeline with release flows.](release.md#create-a-pipeline-and-release-flow)
 - [Configure a release flow: Learn how to use the visual editor or code to configure a release flow.](release.md#configure-a-release-flow)
@@ -724,7 +735,7 @@ To deploy images from a previous stage:
 - [Roll back a release: Roll back a release to a previous version.](release.md#run-and-manage-releases-roll-back-a-release)
 - [Manage CI/CD: Configure continuous integration and continuous delivery on your Northflank services.](release.md#manage-cicd)
 - [Run migrations: Run database migrations and update your deployments simultaneously when you update your schema.](release.md#run-migrations)
-- [GitOps on Northflank: Use templates and release flows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
+- [GitOps on Northflank: Use templates and workflows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
 
 ## Set up environments
 
@@ -852,7 +863,7 @@ Workflows are automated release processes that execute when triggered manually o
 
 Create a workflow in an environment to automate deployments to that stage. For example, a production workflow might build from your main branch and deploy to production services, while a development workflow deploys feature branches to development services.
 
-1. In the environment column, click **Workflow**
+1. In the environment column, click **(+ Workflow)**
 
 2. Enter a name (e.g., `Deploy to prod`)
 
@@ -935,3 +946,11 @@ To add a cron trigger:
 4. Enter a cron expression in the **Schedule** field (times are UTC, minimum interval is 10 minutes)
 
 Each workflow or preview blueprint can have one cron trigger.
+
+### Set up environments: Next steps
+
+- [Set up environments: Create environments to organize your release process by deployment stage.](release.md#set-up-environments)
+- [Configure a workflow: Learn how to use the visual editor or code to configure a workflow.](release.md#configure-workflows)
+- [Run and manage workflows: Run and manage workflows for different environments.](release.md#run-and-manage-workflows)
+- [Set up preview blueprints: Create preview blueprints to automatically create preview environments for your branches and pull requests.](release.md#set-up-preview-blueprints)
+- [Manage preview blueprints: Manage active previews, manually create test environments, and configure automatic cleanup.](release.md#manage-preview-blueprints)

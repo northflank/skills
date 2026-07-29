@@ -73,6 +73,17 @@ When creating resources on Northflank, you can do so interactively, or you can s
 
 The resource definitions are equivalent to the API request bodies you will find in this documentation.
 
+### Use Northflank Skills with the CLI
+
+Northflank Skills provide AI coding agents with Northflank-specific knowledge for deploying, operating, and automating workloads on the platform.
+
+They help agents understand Northflank primitives such as services, jobs, add-ons, preview environments, release workflows, sandboxes, GPU workloads, templates, and the API/CLI.
+
+Skills can be used with agentic coding tools like Claude Code, Codex, and Cursor to create, configure, deploy, and troubleshoot applications on Northflank using the right platform concepts and commands.
+
+> [!note]
+> [Click here](https://github.com/northflank/skills) to explore Northflank Skills on GitHub.
+
 ### Help
 
 You can get help at any time by using the `--help` flag. This includes getting help with specific commands, for example `northflank create project --help` will return helpful information about creating a project.

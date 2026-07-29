@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/services/get-service-build-me
 
 Get metrics for a service build
 
-Required permission: Project > Services > Deployment > View Instance Metrics
+Required permission: Project > Services > Deployment > View Observability
 
 **Path parameters:**
 

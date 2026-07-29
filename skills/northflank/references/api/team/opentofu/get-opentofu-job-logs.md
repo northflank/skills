@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/opentofu/get-opentofu-job-logs.m
 
 Get logs for an OpenTofu job
 
-Required permission: Account > Templates > Runs > Read
+Required permission: Account > Templates > General > Read
 
 **Path parameters:**
 

@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/list-registries.md
 
 Lists the container registry credentials saved to this account. Does not display secrets.
 
-Required permission: Account > Credentials > General > Read
+Required permission: Account > Cloud > Registries > Read
 
 **Query parameters:**
 

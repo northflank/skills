@@ -15,7 +15,7 @@ Required permission: Account > Cloud > Integrations > Update
 
 {object}
 - `description`: (string) The description of the integration. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-- `features`: [array of] (string) The type of provider integration. (enum: byoc, byoc-static-egress, byoc-custom-launch-templates, byoc-custom-vpc, byoc-logs, cloudfront, route53, registry-pull, registry-push, opentofu, workload-identity)
+- `features`: [array of] (string) The type of provider integration. (enum: byoc, byoc-static-egress, byoc-custom-launch-templates, byoc-custom-vpc, byoc-logs, cloudfront, route53, registry-pull, registry-push, opentofu, workload-identity, workload-identity-managed)
 - `restrictions`: {object}
   - `enabled`: (boolean) (required) Enable or disable BYOC restrictions for this entity
   - `teams`: [array of] {object}
@@ -40,6 +40,9 @@ Required permission: Account > Cloud > Integrations > Update
   - `privateKey`: (string) OCI Private Key
   - `passphrase`: (string) Passphrase
   - `compartmentId`: (string) OCI Compartment ID
+  - `serviceAccountId`: (string) Nebius service account ID
+  - `publicKeyId`: (string) Nebius authorized public key ID
+  - `privateKeyPem`: (string) Nebius private key in PEM format
   - `kubeconfig`: (string) Kubeconfig
   - `applicationKeyId`: (string) Backblaze Application Key ID
   - `applicationKey`: (string) Backblaze Application Key
@@ -56,8 +59,8 @@ Required permission: Account > Cloud > Integrations > Update
   - `id`: (string) (required) ID of the integration (pattern: ^[A-Za-z0-9-]+$)
   - `name`: (string) (required) The name of the cloud provider integration. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `description`: (string) The description of the integration. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, aiven, backblaze, akamai, byok)
-  - `features`: [array of] (string) The type of provider integration. (enum: byoc, byoc-static-egress, byoc-custom-launch-templates, byoc-custom-vpc, byoc-logs, cloudfront, route53, registry-pull, registry-push, opentofu, workload-identity)
+  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, byok)
+  - `features`: [array of] (string) The type of provider integration. (enum: byoc, byoc-static-egress, byoc-custom-launch-templates, byoc-custom-vpc, byoc-logs, cloudfront, route53, registry-pull, registry-push, opentofu, workload-identity, workload-identity-managed)
   - `restrictions`: {object}
     - `enabled`: (boolean) (required) Enable or disable BYOC restrictions for this entity
     - `teams`: [array of] {object}
@@ -82,6 +85,9 @@ Required permission: Account > Cloud > Integrations > Update
     - `privateKey`: (string) OCI Private Key
     - `passphrase`: (string) Passphrase
     - `compartmentId`: (string) OCI Compartment ID
+    - `serviceAccountId`: (string) Nebius service account ID
+    - `publicKeyId`: (string) Nebius authorized public key ID
+    - `privateKeyPem`: (string) Nebius private key in PEM format
     - `kubeconfig`: (string) Kubeconfig
     - `applicationKeyId`: (string) Backblaze Application Key ID
     - `applicationKey`: (string) Backblaze Application Key

@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/jobs/abort-job-build.md
 
 Aborts the given job build
 
-Required permission: Project > Jobs > Deployment > Deploy Build
+Required permission: Project > Jobs > General > Update
 
 **Path parameters:**
 

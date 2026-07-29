@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/assign-subdomain-path.md
 
 Assign a subdomain path to a port.
 
-Required permission: Account > SubdomainPaths > General > Update
+Required permission: Account > Networking > SubdomainPaths > Update
 
 **Path parameters:**
 

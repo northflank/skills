@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/load-balancers/patch-load-balanc
 
 Updates a load balancer
 
-Required permission: Account > LoadBalancers > General > Update
+Required permission: Account > Networking > LoadBalancers > Update
 
 **Path parameters:**
 

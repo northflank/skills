@@ -31,6 +31,7 @@ Required permission: Account > Admin > Roles > Read
          - `address`: (string) (required) (format: email)
          - `verified`: (boolean) (required)
      - `joinedAt`: (string) The time the member joined the team. (format: date-time)
+     - `lastLoginTime`: (string) The time the member last logged in. (format: date-time)
      - `finalized`: (boolean) Whether the account has been fully set up by the user.
 - `pagination`: {object}
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
@@ -58,7 +59,8 @@ GET /v1/teams/{teamId}/roles/{roleId}/members
             "verified": true
           }
         ],
-        "joinedAt": "2021-01-20T11:19:53.175Z"
+        "joinedAt": "2021-01-20T11:19:53.175Z",
+        "lastLoginTime": "2021-01-20T11:19:53.175Z"
       }
     ]
   },
@@ -109,7 +111,8 @@ Options:
           "verified": true
         }
       ],
-      "joinedAt": "2021-01-20T11:19:53.175Z"
+      "joinedAt": "2021-01-20T11:19:53.175Z",
+      "lastLoginTime": "2021-01-20T11:19:53.175Z"
     }
   ]
 }
@@ -150,7 +153,8 @@ await apiClient.list.teamRoleMembers({
             "verified": true
           }
         ],
-        "joinedAt": "2021-01-20T11:19:53.175Z"
+        "joinedAt": "2021-01-20T11:19:53.175Z",
+        "lastLoginTime": "2021-01-20T11:19:53.175Z"
       }
     ]
   },

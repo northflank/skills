@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/unassign-subdomain.md
 
 Removes a subdomain from its assigned service
 
-Required permission: Account > Subdomains > General > Update
+Required permission: Account > Networking > Subdomains > Update
 
 **Path parameters:**
 

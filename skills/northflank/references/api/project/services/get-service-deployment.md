@@ -10,7 +10,7 @@ Requests should instead use the relevant GET endpoint.
 
 Gets information about the deployment of the given service.
 
-Required permission: Project > Services > Deployment > View Instances
+Required permission: Project > Services > General > Read
 
 **Path parameters:**
 

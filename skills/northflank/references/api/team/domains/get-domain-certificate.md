@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/get-domain-certificate.m
 
 Retrieve certificate data for a domain to verify its contents.
 
-Required permission: Account > Domains > General > Read
+Required permission: Account > Networking > Domains > Read
 
 **Path parameters:**
 

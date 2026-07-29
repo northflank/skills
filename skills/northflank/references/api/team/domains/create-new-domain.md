@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/create-new-domain.md
 
 Registers a new domain
 
-Required permission: Account > Domains > General > Create
+Required permission: Account > Networking > Domains > Create
 
 **Request body:**
 

@@ -34,6 +34,11 @@ Required permission: Account > Cloud > Clusters > Update
       - `launchTemplate`: {object}
         - `id`: (string) (required) ID of the launch template to use.
         - `version`: (integer) (required) Version of the launch template that should be used.
+    - `nebius`: {object}
+      - `enablePublicNodeIps`: (boolean) Set this flag to assign public IPs to nodes in this node pool.
+      - `osVersion`: (string) OS image version for nodes in this node pool.
+      - `gpuDriverVersion`: (string) GPU driver version for nodes in this node pool.
+      - `gpuClusterId`: (string) Nebius GPU cluster to attach the node pool to.
     - `nodeCount`: (integer) (required) Number of nodes to the node pool should be provisioned with.
     - `autoscaling`: {object}
       - `enabled`: (boolean)
@@ -208,7 +213,7 @@ Required permission: Account > Cloud > Clusters > Update
   - `name`: (string) (required) The name of the cluster. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 20)
   - `entityType`: (string) (enum: org, team)
   - `description`: (string) The description of the cluster. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, aiven, backblaze, akamai, byok)
+  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, byok)
   - `region`: (string) Region of the cluster. Can only be updated for BYOK clusters.
   - `status`: {object}
     - `state`: {object}
@@ -259,6 +264,11 @@ Required permission: Account > Cloud > Clusters > Update
         - `launchTemplate`: {object}
           - `id`: (string) (required) ID of the launch template to use.
           - `version`: (integer) (required) Version of the launch template that should be used.
+      - `nebius`: {object}
+        - `enablePublicNodeIps`: (boolean) Set this flag to assign public IPs to nodes in this node pool.
+        - `osVersion`: (string) OS image version for nodes in this node pool.
+        - `gpuDriverVersion`: (string) GPU driver version for nodes in this node pool.
+        - `gpuClusterId`: (string) Nebius GPU cluster to attach the node pool to.
       - `nodeCount`: (integer) (required) Number of nodes to the node pool should be provisioned with.
       - `autoscaling`: {object}
         - `enabled`: (boolean)
@@ -438,6 +448,9 @@ Required permission: Account > Cloud > Clusters > Update
         - `podCidrName`: (string) (required)
         - `serviceCidrName`: (string) (required)
         - `internalLbCidrNames`: [array of] (string)
+  - `nebius`: {object}
+    - `projectId`: (string) (required) Nebius project ID to place the cluster in.
+    - `subnetId`: (string) (required) Nebius VPC subnet ID for the cluster.
   - `byok`: {object}
     - `nodePoolProviderIdLabel`: (string) (required)
   - `coordinates`: {object}

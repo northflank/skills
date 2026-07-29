@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/billing/list-usage.md
 
 Lists hourly usage entries.
 
-Required permission: Account > Billing > General > Read
+Required permission: Organisation > Admin > Billing > Read
 
 **Query parameters:**
 

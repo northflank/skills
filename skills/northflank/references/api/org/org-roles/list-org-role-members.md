@@ -31,6 +31,7 @@ Required permission: Organisation > Admin > Roles > Read
          - `address`: (string)
          - `verified`: (boolean)
      - `joinedAt`: (string) The time the member joined the org. (format: date-time)
+     - `lastLoginTime`: (string) The time the member last logged in. (format: date-time)
      - `finalized`: (boolean) (required) Whether the account has been fully set up by the user.
      - `type`: (string) (required) How the member was added to the role. `explicit` means manually added; `implicit` means provisioned via Directory Sync. (enum: explicit, implicit)
 - `pagination`: {object}
@@ -60,6 +61,7 @@ GET /v1/org-roles/{roleId}/members
           }
         ],
         "joinedAt": "2021-01-20T11:19:53.175Z",
+        "lastLoginTime": "2021-01-20T11:19:53.175Z",
         "type": "explicit"
       }
     ]
@@ -112,6 +114,7 @@ Options:
         }
       ],
       "joinedAt": "2021-01-20T11:19:53.175Z",
+      "lastLoginTime": "2021-01-20T11:19:53.175Z",
       "type": "explicit"
     }
   ]
@@ -154,6 +157,7 @@ await apiClient.list.orgRoleMembers({
           }
         ],
         "joinedAt": "2021-01-20T11:19:53.175Z",
+        "lastLoginTime": "2021-01-20T11:19:53.175Z",
         "type": "explicit"
       }
     ]

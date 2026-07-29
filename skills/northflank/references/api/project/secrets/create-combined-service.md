@@ -1,8 +1,10 @@
-# Create project secret
+# Create combined service
 
-Source: https://northflank.com/docs/v1/api/project/secrets/create-project-secret.md
+Source: https://northflank.com/docs/v1/api/project/secrets/create-combined-service.md
 
 Creates a project secret with the specified payload
+
+Required permission: Project > Secrets > SecretGroups > Create
 
 **Path parameters:**
 

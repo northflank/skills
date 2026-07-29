@@ -203,17 +203,49 @@ Check the [pricing page](https://northflank.com/pricing) to find out more about 
 
 ### Deploy GPUs on Northflank's managed cloud: Deploy a GPU-enabled project
 
-To deploy GPU workloads on Northflank's managed cloud, you'll first need to [create a new project](https://app.northflank.com/s/account/projects/new) in a GPU-enabled region.
+To deploy GPU workloads on Northflank's managed cloud, you'll first need to create a new project in a GPU-enabled region.
 
-Select your desired region from the list under GPU, and create your project as normal. Any services or jobs deployed in this project will have a GPU option available in resources.
+> [!note]
+> [Click here](https://app.northflank.com/s/account/projects/new) to create a project.
 
-Different regions may have different availability of specific GPU models.
+1. Navigate to the Northflank dashboard and click **Create Project**
+
+2. Enter a project name
+
+3. Choose **Northflank Cloud** as the deployment target
+
+4. Select a region with GPU enabled
+
+5. Click **Create project**
+
+Any services or jobs deployed in this project will have GPU options available in resources. Different regions may have different availability of specific GPU models.
 
 ### Deploy GPUs on Northflank's managed cloud: Deploy a GPU workload on Northflank
 
-To deploy workloads with GPU access, [create a new service or job](https://app.northflank.com/s/project/create/service) as normal, or navigate to the resources page of an existing service or job.
+To deploy workloads with GPU access:
 
-Select an available GPU from the drop-down list as well as the number of GPUs to deploy with. Each instance of a service will have access to the number of GPU models selected.
+> [!note]
+> [Click here](https://app.northflank.com/s/project/create/service) to create a service.
+
+1. Navigate to the **Services** tab in your project dashboard and click **Create service**
+
+2. Enter a service name and configure your deployment source as described in [Build and deploy your code](getting-started.md#build-and-deploy-your-code)
+
+3. Scroll to the **Resources** section and click the **GPU** tab
+
+4. Select an available GPU model from the dropdown (e.g., NVIDIA L4). Each model shows VRAM and hourly pricing
+
+5. Choose the number of GPUs per instance: 1, 2, 4, or 8
+
+6. Review the pricing estimate displayed (billed by the second once provisioned)
+
+7. Configure your **Compute plan** with appropriate CPU and memory for your workload
+
+8. Set the number of **Instances** and autoscaling settings
+
+9. Click **Create service**
+
+Note: GPU deployments require account credit. Ensure you have at least $50 in credit before deploying. Each instance will have access to the GPU count you selected.
 
 | GPU Count | Instances deployed | GPUs per instance | Total GPUs in the service |
 | --- | --- | --- | --- |

@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/rollout-strategies/create-or-upd
 
 Creates or updates a gradual rollout strategy.
 
-Required permission: Account > GradualRollouts > General > Create
+Required permission: Account > Platform > GradualRollouts > Create
 
 **Request body:**
 

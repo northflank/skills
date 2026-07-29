@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/jobs/get-job-metrics.md
 
 Get metrics for a job
 
-Required permission: Project > Jobs > Deployment > View Instance Metrics
+Required permission: Project > Jobs > Deployment > View Observability
 
 **Path parameters:**
 

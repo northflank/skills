@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/get-subdomain.md
 
 Gets details about the given subdomain
 
-Required permission: Account > Subdomains > General > Read
+Required permission: Account > Networking > Subdomains > Read
 
 **Path parameters:**
 
@@ -21,12 +21,27 @@ Required permission: Account > Subdomains > General > Read
   - `fullName`: (string) (required) The full domain name with subdomain
   - `content`: (string) (required) The content to set the DNS record to
   - `verified`: (boolean) (required) Whether the subdomain has been verified successfully and can be used.
-  - `routingMode`: (string) The routing mode for the subdomain. (enum: paths, geoRouting, loadBalancerSubdomain)
   - `loadBalancer`: (string) Name of the load balancer linked to this subdomain, if any.
   - `certificate`: {object}
     - `inProgress`: (boolean) Whether a certificate is in the process of being generated
     - `expiryDate`: (string) Expiry date of the current certificate (format: date-time)
     - `refreshDare`: (string) Refresh date of the current certificate (format: date-time)
+  - `options`: {object}
+    - `tlsMode`: (string) Desired TLS mode for the subdomain. (enum: default, passthrough)
+    - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
+    - `autoVerify`: (boolean) The domain will be automatically verified on creation. Only configurable if the relevant feature flag is enabled for you account.
+    - `aliasDomains`: [array of] (string)
+  - `routingMode`: (string) The routing mode for the subdomain. (enum: paths, geoRouting, loadBalancerSubdomain)
+  - `geoRouting`: {object}
+    - `strategy`: (string) The geo routing strategy. (enum: continent, closest)
+    - `rules`: [array of] {object}
+        - `continents`: [array of] (string) (enum: NA, SA, EU, AF, AS, OC, AN)
+        - `backend`: {object}
+          - `id`: (string) (required) Backend reference in format {projectInternalId}/{serviceInternalId} (pattern: ^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$)
+          - `port`: (string) (required) Port name on the backend service
+    - `defaultBackend`: {object}
+      - `id`: (string) (required) Backend reference in format {projectInternalId}/{serviceInternalId} (pattern: ^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$)
+      - `port`: (string) (required) Port name on the backend service
   - `cdn`: {object}
     - `northflank`: {object}
       - `enabled`: (boolean)
@@ -38,11 +53,15 @@ Required permission: Account > Subdomains > General > Read
           - `staleIfError`: (boolean)
           - `staleIfErrorTtl`: (number) (format: float)
           - `defaultTtl`: (number) (format: float)
+          - `passThrough`: (boolean)
+          - `bypassCredentialedRequests`: (boolean)
         - `logging`: {object}
           - `enabled`: (boolean)
         - `http3`: {object}
           - `enabled`: (boolean)
         - `websockets`: {object}
+          - `enabled`: (boolean)
+        - `ddosProtection`: {object}
           - `enabled`: (boolean)
         - `compression`: {object}
           - `enabled`: (boolean)
@@ -52,13 +71,13 @@ Required permission: Account > Subdomains > General > Read
             - `name`: (string) (required) (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
             - `type`: (string) (required) (enum: init, recv, hash, hit, miss, pass, fetch, error, deliver, log, none)
             - `dynamic`: (string) (required) (enum: 0, 1)
-            - `priority`: (number) (required) (format: float)
+            - `priority`: (multiple options) (number) (format: float)
             - `content`: (string) (required)
         - `cacheSettings`: [array of] {object}
             - `id`: (string)
             - `name`: (string) (required) (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
             - `action`: (string) (enum: pass, cache, restart)
-            - `cacheCondition`: (string)
+            - `cacheCondition`: (string) (max length: 512)
             - `staleTtl`: (number) (required) (format: float)
             - `ttl`: (number) (required) (format: float)
       - `deployedAt`: (string) (format: date-time)
@@ -81,8 +100,21 @@ GET /v1/teams/{teamId}/domains/{domain}/subdomains/{subdomain}
     "fullName": "site.example.com",
     "content": "site.example.com.user-1234.dns.northflank.app",
     "verified": true,
-    "routingMode": "loadBalancerSubdomain",
-    "loadBalancer": "my-load-balancer"
+    "loadBalancer": "my-load-balancer",
+    "geoRouting": {
+      "rules": [
+        {
+          "backend": {
+            "id": "my-project/my-service",
+            "port": "http"
+          }
+        }
+      ],
+      "defaultBackend": {
+        "id": "my-project/my-service",
+        "port": "http"
+      }
+    }
   }
 }
 ```
@@ -114,8 +146,21 @@ Options:
   "fullName": "site.example.com",
   "content": "site.example.com.user-1234.dns.northflank.app",
   "verified": true,
-  "routingMode": "loadBalancerSubdomain",
-  "loadBalancer": "my-load-balancer"
+  "loadBalancer": "my-load-balancer",
+  "geoRouting": {
+    "rules": [
+      {
+        "backend": {
+          "id": "my-project/my-service",
+          "port": "http"
+        }
+      }
+    ],
+    "defaultBackend": {
+      "id": "my-project/my-service",
+      "port": "http"
+    }
+  }
 }
 ```
 
@@ -144,8 +189,21 @@ await apiClient.get.subdomain({
     "fullName": "site.example.com",
     "content": "site.example.com.user-1234.dns.northflank.app",
     "verified": true,
-    "routingMode": "loadBalancerSubdomain",
-    "loadBalancer": "my-load-balancer"
+    "loadBalancer": "my-load-balancer",
+    "geoRouting": {
+      "rules": [
+        {
+          "backend": {
+            "id": "my-project/my-service",
+            "port": "http"
+          }
+        }
+      ],
+      "defaultBackend": {
+        "id": "my-project/my-service",
+        "port": "http"
+      }
+    }
   },
   "rawResponse": "...",
   "request": "...",

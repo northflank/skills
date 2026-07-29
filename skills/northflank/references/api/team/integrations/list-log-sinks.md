@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/list-log-sinks.md
 
 Gets a list of log sinks added to this account.
 
-Required permission: Account > Sinks > General > Read
+Required permission: Account > Observability > LogSinks > Read
 
 **Query parameters:**
 

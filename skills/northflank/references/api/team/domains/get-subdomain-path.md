@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/get-subdomain-path.md
 
 Get subdomain path details.
 
-Required permission: Account > SubdomainPaths > General > Read
+Required permission: Account > Networking > SubdomainPaths > Read
 
 **Path parameters:**
 

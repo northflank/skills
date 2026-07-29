@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/org/billing/get-invoice.md
 
 Gets details about a given invoice.
 
-Required permission: Account > Billing > General > Read
+Required permission: Organisation > Admin > Billing > Read
 
 **Path parameters:**
 

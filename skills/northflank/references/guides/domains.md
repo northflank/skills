@@ -107,7 +107,7 @@ Your custom domains will be subject to Let's Encrypt's [rate limits](https://let
 
 Please keep these limits in mind when creating new subdomains on Northflank and generating Let's Encrypt certificates for your domains via other channels.
 
-You can reduce the number of certificates you need to generate by configuring a domain to use [wildcard certificates](domains.md#wildcard-domains-and-certificates-wildcard-certificate-generation). Wildcard certificates allow your subdomains to share a certificate, and are ideal for dynamically generating subdomains in Northflank [templates](infrastructure-as-code.md#infrastructure-as-code-on-northflank) and [preview environments](release.md#set-up-a-preview-environment).
+You can reduce the number of certificates you need to generate by configuring a domain to use [wildcard certificates](domains.md#wildcard-domains-and-certificates-wildcard-certificate-generation). Wildcard certificates allow your subdomains to share a certificate, and are ideal for dynamically generating subdomains in Northflank [templates](infrastructure-as-code.md#infrastructure-as-code-on-northflank) and [preview environments](https://northflank.com/docs/v1/application/release/set-up-a-preview-environment).
 
 > [!note] Cloudflare and certificates
 > Cloudflare's advanced security features may cause issues when generating or renewing certificates. Read the [Cloudflare guide](domains.md#add-a-cloudflare-domain-to-northflank) on how to add and configure domains managed with Cloudflare.
@@ -461,7 +461,7 @@ You can reduce the number of certificates you need to generate by configuring a 
 
 You can configure wildcard redirect routing to add subdomains without adding DNS records for each new subdomain.
 
-You can combine this with wildcard certificate generation to dynamically add subdomains in [Northflank templates](release.md#configure-a-release-flow) and [preview environments](release.md#set-up-a-preview-environment).
+You can combine this with wildcard certificate generation to dynamically add subdomains in [Northflank templates](https://northflank.com/docs/v1/application/release/configure-a-release-flow) and [preview environments](https://northflank.com/docs/v1/application/release/set-up-a-preview-environment).
 
 - [Use wildcard redirect routing: Configure your domains to use wildcard redirect routing to automatically verify subdomains added to Northflank.](domains.md#wildcard-domains-and-certificates-domain-routing)
 - [Redirect all subdomains: Create wildcard subdomains to redirect all requests to a single domain or subdomain.](domains.md#wildcard-domains-and-certificates-redirect-all-subdomains)
@@ -777,7 +777,7 @@ Source: https://northflank.com/docs/v1/application/domains/wildcard-domains-and-
 
 You can configure your domains on Northflank to use wildcard redirect routing, which allows you to add subdomains without the need to add an individual DNS record for each new subdomain, and to use wildcard certificate generation, which allows you to add subdomains without requiring an individual certificate to be generated for each one, or to import and use your own certificate for your subdomains on Northflank.
 
-You can use wildcard redirect routing in combination with wildcard certificate generation to allow the dynamic provisioning of subdomains in [templates](infrastructure-as-code.md#infrastructure-as-code-on-northflank) and [preview environments](release.md#set-up-a-preview-environment).
+You can use wildcard redirect routing in combination with wildcard certificate generation to allow the dynamic provisioning of subdomains in [templates](infrastructure-as-code.md#infrastructure-as-code-on-northflank) and [preview environments](https://northflank.com/docs/v1/application/release/set-up-a-preview-environment).
 
 > [!note]
 > [Click here](https://app.northflank.com/s/account/domains) to view your account domains page.
@@ -801,7 +801,7 @@ You can choose to enable wildcard certificate generation when adding a domain to
 
 Wildcard certificates generate a certificate for the entire subdomain level. For example, enabling wildcard generation for `*.example.com` would provide the same certificate for any subdomains added to `example.com`, such as `a.example.com` and `b.example.com`.
 
-You must configure wildcard certificate generation and domain redirect routing for a domain to dynamically generate subdomains in Northflank [templates](infrastructure-as-code.md#infrastructure-as-code-on-northflank) and [preview environments](release.md#set-up-a-preview-environment).
+You must configure wildcard certificate generation and domain redirect routing for a domain to dynamically generate subdomains in Northflank [templates](infrastructure-as-code.md#infrastructure-as-code-on-northflank) and [preview environments](https://northflank.com/docs/v1/application/release/set-up-a-preview-environment).
 
 > [!note]
 > Chromium-based browsers may return a 404 error if a user tries to access multiple subdomains that share the same certificate, at the same time, on a service.

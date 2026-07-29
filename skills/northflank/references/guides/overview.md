@@ -15,7 +15,7 @@ Find guides on how to build, deploy, and scale your code on Northflank.
 
 - [Build your code: Build your code from your Git repositories using Docker or buildpacks, inject build arguments, and configure build triggers for CI.](build.md#build-your-code-on-northflank)
 - [Run your code: Deploy services and run jobs from your Northflank builds and images from container registries.](run.md#run-containers-and-micro-services-on-northflank)
-- [Manage releases: Configure continuous integration and deployment for builds and deployment services, and create pipelines with release flows to manage your release workflows.](release.md#continuous-integration-and-delivery-on-northflank)
+- [Manage releases: Configure continuous integration and deployment for builds and deployment services, and create pipelines with release flows to manage your release workflows.](https://northflank.com/docs/v1/application/release/continuous-integration-and-delivery-on-northflank)
 - [Infrastructure as code: Automate workflows, share deployments, and automate complex tasks using Northflank templates.](infrastructure-as-code.md#infrastructure-as-code-on-northflank)
 - [Bring your own cloud to Northflank: Use all the features of the Northflank platform on other cloud hosting providers, with control over your own infrastructure.](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank)
 - [Run GPU workloads: Deploy GPU workloads on Northflank for AI, machine learning, HPC workloads, and other tasks.](gpu-workloads.md#gpus-on-northflank)

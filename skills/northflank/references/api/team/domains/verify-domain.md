@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/verify-domain.md
 
 Attempts to verify the domain
 
-Required permission: Account > Domains > General > Create
+Required permission: Account > Networking > Domains > Create
 
 **Path parameters:**
 

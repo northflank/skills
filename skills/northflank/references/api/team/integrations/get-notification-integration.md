@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/get-notification-in
 
 Get details about a notification integration.
 
-Required permission: Account > Team > Notifications > Read
+Required permission: Account > Observability > Notifications > Read
 
 **Path parameters:**
 

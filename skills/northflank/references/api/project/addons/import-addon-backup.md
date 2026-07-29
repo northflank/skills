@@ -32,6 +32,8 @@ OR
 
 POST /v1/projects/{projectId}/addons/{addonId}/import
 
+POST /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}/import
+
 #### Example request
 
 Request body

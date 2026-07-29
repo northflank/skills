@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/create-or-update-ss
 
 Creates or updates SSH identity data.
 
-Required permission: Account > Ssh > General > Update
+Required permission: Account > Platform > Ssh > Update
 
 **Path parameters:**
 

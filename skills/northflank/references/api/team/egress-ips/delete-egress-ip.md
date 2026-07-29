@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/egress-ips/delete-egress-ip.md
 
 Deletes the given egress IP.
 
-Required permission: Account > EgressIps > General > Delete
+Required permission: Account > Networking > EgressIps > Delete
 
 **Path parameters:**
 

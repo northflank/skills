@@ -22,7 +22,7 @@ Required permission: Project > Workflows > General > Create
   - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
   - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
   - `branch`: (string) (required) The name of the branch to use.
-  - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]+$)
+  - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
 - `$schema`: (string)
 - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
@@ -78,7 +78,8 @@ Required permission: Project > Workflows > General > Create
         - `allowList`: (boolean)
         - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
-    - `id`: (string) | {object}
+    - `id`: (string)
+    - `paused`: (boolean) | {object}
     - `kind`: (string) (required) (enum: vcs-pr)
     - `spec`: {object}
       - `vcs`: {object}
@@ -97,12 +98,14 @@ Required permission: Project > Workflows > General > Create
         - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
       - `ignoreDrafts`: (boolean) If `true`, draft pull requests from this repo will not trigger the template.
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
-    - `id`: (string) | {object}
+    - `id`: (string)
+    - `paused`: (boolean) | {object}
     - `kind`: (string) (required) (enum: webhook)
     - `spec`: {object}
       - `token`: (string) (required)
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
-    - `id`: (string) | {object}
+    - `id`: (string)
+    - `paused`: (boolean) | {object}
     - `kind`: (string) (required) (enum: vcs-release)
     - `spec`: {object}
       - `vcs`: {object}
@@ -112,7 +115,8 @@ Required permission: Project > Workflows > General > Create
         - `vcsLinkId`: (string)
         - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
-    - `id`: (string) | {object}
+    - `id`: (string)
+    - `paused`: (boolean) | {object}
     - `kind`: (string) (required) (enum: vcs-pr-label)
     - `spec`: {object}
       - `vcs`: {object}
@@ -134,7 +138,8 @@ Required permission: Project > Workflows > General > Create
         - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
       - `ignoreDrafts`: (boolean) If `true`, draft pull requests from this repo will not trigger the template.
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
-    - `id`: (string) | {object}
+    - `id`: (string)
+    - `paused`: (boolean) | {object}
     - `kind`: (string) (required) (enum: vcs-check-suite)
     - `spec`: {object}
       - `vcs`: {object}
@@ -152,12 +157,14 @@ Required permission: Project > Workflows > General > Create
         - `allowList`: (boolean)
         - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
-    - `id`: (string) | {object}
+    - `id`: (string)
+    - `paused`: (boolean) | {object}
     - `kind`: (string) (required) (enum: cron)
     - `spec`: {object}
       - `cron`: (string) (required) A cron expression that defines the schedule on which the template will be executed.
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
     - `id`: (string)
+    - `paused`: (boolean)
 - `apiVersion`: (string) (required)
 - `project`: {object}
 - `spec`: {object}

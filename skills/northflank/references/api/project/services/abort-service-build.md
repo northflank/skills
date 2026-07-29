@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/services/abort-service-build.
 
 Aborts the given service build
 
-Required permission: Project > Services > Deployment > Deploy Build
+Required permission: Project > Services > General > Update
 
 **Path parameters:**
 

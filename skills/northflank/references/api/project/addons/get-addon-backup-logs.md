@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/addons/get-addon-backup-logs.
 
 Get logs for an addon backup
 
-Required permission: Project > Addons > Deployment > View Instance Logs
+Required permission: Project > Addons > Deployment > View Observability
 
 **Path parameters:**
 

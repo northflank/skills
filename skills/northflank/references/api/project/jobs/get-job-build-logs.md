@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/jobs/get-job-build-logs.md
 
 Get logs for a job build
 
-Required permission: Project > Jobs > Deployment > View Instance Logs
+Required permission: Project > Jobs > Deployment > View Observability
 
 **Path parameters:**
 

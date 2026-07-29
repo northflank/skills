@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/get-ssh-identity.md
 
 Views SSH identity data including public keys.
 
-Required permission: Account > Ssh > General > Read
+Required permission: Account > Platform > Ssh > Read
 
 **Path parameters:**
 

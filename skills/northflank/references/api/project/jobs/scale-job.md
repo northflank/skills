@@ -10,7 +10,7 @@ Requests should instead use the relevant PATCH endpoint.
 
 Modifies the scaling settings for the given job.
 
-Required permission: Project > Jobs > Deployment > Scale Job
+Required permission: Project > Jobs > General > Update
 
 **Path parameters:**
 

@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/put-subdomain.md
 
 Updates subdomain to the domain.
 
-Required permission: Account > Subdomains > General > Update
+Required permission: Account > Networking > Subdomains > Update
 
 **Path parameters:**
 
@@ -30,11 +30,15 @@ Required permission: Account > Subdomains > General > Update
         - `staleIfError`: (boolean)
         - `staleIfErrorTtl`: (number) (format: float)
         - `defaultTtl`: (number) (format: float)
+        - `passThrough`: (boolean)
+        - `bypassCredentialedRequests`: (boolean)
       - `logging`: {object}
         - `enabled`: (boolean)
       - `http3`: {object}
         - `enabled`: (boolean)
       - `websockets`: {object}
+        - `enabled`: (boolean)
+      - `ddosProtection`: {object}
         - `enabled`: (boolean)
       - `compression`: {object}
         - `enabled`: (boolean)
@@ -44,13 +48,13 @@ Required permission: Account > Subdomains > General > Update
           - `name`: (string) (required) (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
           - `type`: (string) (required) (enum: init, recv, hash, hit, miss, pass, fetch, error, deliver, log, none)
           - `dynamic`: (string) (required) (enum: 0, 1)
-          - `priority`: (number) (required) (format: float)
+          - `priority`: (multiple options) (number) (format: float) | (number) (format: float)
           - `content`: (string) (required)
       - `cacheSettings`: [array of] {object}
           - `id`: (string)
           - `name`: (string) (required) (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
           - `action`: (string) (enum: pass, cache, restart)
-          - `cacheCondition`: (string)
+          - `cacheCondition`: (string) (required) (min length: 1) (max length: 512)
           - `staleTtl`: (number) (required) (format: float)
           - `ttl`: (number) (required) (format: float)
 
@@ -63,6 +67,11 @@ Required permission: Account > Subdomains > General > Update
   - `fullName`: (string) (required) The full domain name with subdomain
   - `content`: (string) (required) The content to set the DNS record to
   - `verified`: (boolean) (required) Whether the subdomain has been verified successfully and can be used.
+  - `options`: {object}
+    - `tlsMode`: (string) Desired TLS mode for the subdomain. (enum: default, passthrough)
+    - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
+    - `autoVerify`: (boolean) The domain will be automatically verified on creation. Only configurable if the relevant feature flag is enabled for you account.
+    - `aliasDomains`: [array of] (string)
   - `routingMode`: (string) The routing mode for the subdomain. (enum: paths, geoRouting, loadBalancerSubdomain)
 
 ### API reference
@@ -157,8 +166,7 @@ func main() {
     "name": "site",
     "fullName": "site.example.com",
     "content": "site.example.com.user-1234.dns.northflank.app",
-    "verified": false,
-    "routingMode": "paths"
+    "verified": false
   }
 }
 ```
@@ -205,8 +213,7 @@ Options:
   "name": "site",
   "fullName": "site.example.com",
   "content": "site.example.com.user-1234.dns.northflank.app",
-  "verified": false,
-  "routingMode": "paths"
+  "verified": false
 }
 ```
 
@@ -238,8 +245,7 @@ await apiClient.put.domain.subdomain({
     "name": "site",
     "fullName": "site.example.com",
     "content": "site.example.com.user-1234.dns.northflank.app",
-    "verified": false,
-    "routingMode": "paths"
+    "verified": false
   },
   "rawResponse": "...",
   "request": "...",

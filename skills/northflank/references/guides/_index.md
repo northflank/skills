@@ -13,10 +13,10 @@ Generated from the application pages listed in `https://northflank.com/docs/llms
 - [Getting Started](getting-started.md) — 7 pages
 - [GPU Workloads](gpu-workloads.md) — 4 pages
 - [Infrastructure As Code](infrastructure-as-code.md) — 12 pages
-- [Network](network.md) — 10 pages
+- [Network](network.md) — 11 pages
 - [Observe](observe.md) — 10 pages
 - [Production Workloads](production-workloads.md) — 4 pages
-- [Release](release.md) — 9 pages
+- [Release](release.md) — 15 pages
 - [Run](run.md) — 13 pages
 - [Sandboxes](sandboxes.md) — 3 pages
 - [Scale](scale.md) — 5 pages

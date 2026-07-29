@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/domains/list-domains.md
 
 Lists available domains
 
-Required permission: Account > Domains > General > Read
+Required permission: Account > Networking > Domains > Read
 
 **Query parameters:**
 

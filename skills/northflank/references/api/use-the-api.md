@@ -455,6 +455,17 @@ The response for a successful request will be an object containing the backup ID
 
 You can retrieve details about a backup by sending a [GET request to the `/v1/projects/{projectId}/addons/{addonId}/backups/{backupId}` endpoint](project/addons/get-addon-backup.md), supplying the project, addon, and backup IDs. The response will include the status, and, if completed, the completion time and size. If the backup has been used to restore the addon, it will also include a `lastRestore` object containing the details.
 
+### Use Northflank Skills with the API
+
+Northflank Skills provide AI coding agents with Northflank-specific knowledge for deploying, operating, and automating workloads on the platform.
+
+They help agents understand Northflank primitives such as services, jobs, add-ons, preview environments, release workflows, sandboxes, GPU workloads, templates, and the API/CLI.
+
+Skills can be used with agentic coding tools like Claude Code, Codex, and Cursor to create, configure, deploy, and troubleshoot applications on Northflank using the right platform concepts and commands.
+
+> [!note]
+> [Click here](https://github.com/northflank/skills) to explore Northflank Skills on GitHub.
+
 ### Next steps
 
 These examples provide a brief introduction to managing your Northflank projects with the Northflank API. Explore the API reference to find all the API endpoints, associated methods, and expected parameters and responses to manage your projects and certain account features.

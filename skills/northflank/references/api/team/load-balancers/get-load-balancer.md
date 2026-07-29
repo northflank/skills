@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/load-balancers/get-load-balancer
 
 Gets information about the given load balancer
 
-Required permission: Account > LoadBalancers > General > Read
+Required permission: Account > Networking > LoadBalancers > Read
 
 **Path parameters:**
 

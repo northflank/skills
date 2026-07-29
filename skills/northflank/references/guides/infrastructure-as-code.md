@@ -171,7 +171,7 @@ Use `block` when teardown failures could leave orphaned resources on third-party
 - [Write a template: Learn how to structure a Northflank template, define workflows, create resources, and perform actions.](infrastructure-as-code.md#write-a-template)
 - [Run a template: Run templates manually or automatically.](infrastructure-as-code.md#run-a-template)
 - [Share a template: Share templates with your team or the public.](infrastructure-as-code.md#share-a-template)
-- [GitOps on Northflank: Use templates and release flows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
+- [GitOps on Northflank: Use templates and workflows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
 - [Update a template: Update a template and resources within a project.](infrastructure-as-code.md#run-a-template-update-a-template)
 
 ## Create a template
@@ -182,7 +182,7 @@ You can create and configure Northflank templates to manage your team integratio
 
 You can create a new template from the templates page in your team dashboard, or from the templates page in a project. You can then define the template using the visual or code editor, or copy the resources [from an existing project](infrastructure-as-code.md#create-a-template-create-from-an-existing-project-or-resource).
 
-For the specifics of creating and configuring [release flow](release.md#configure-a-release-flow) and [preview environment](release.md#set-up-a-preview-environment) templates, see the relevant pages in the [release section](release.md#continuous-integration-and-delivery-on-northflank).
+For the specifics of creating and configuring [release flow](https://northflank.com/docs/v1/application/release/configure-a-release-flow) and [preview environment](https://northflank.com/docs/v1/application/release/set-up-a-preview-environment) templates, see the relevant pages in the [release section](https://northflank.com/docs/v1/application/release/continuous-integration-and-delivery-on-northflank).
 
 > [!note]
 > [Click here](https://app.northflank.com/s/account/templates) to create a new template.
@@ -349,7 +349,7 @@ These separate views are only to make it easier to navigate to relevant template
 - [Write a template: Learn how to structure a Northflank template, define workflows, create resources, and perform actions.](infrastructure-as-code.md#write-a-template)
 - [Run a template: Run templates manually or automatically.](infrastructure-as-code.md#run-a-template)
 - [Share a template: Share templates with your team or the public.](infrastructure-as-code.md#share-a-template)
-- [GitOps on Northflank: Use templates and release flows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
+- [GitOps on Northflank: Use templates and workflows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
 - [Update a template: Update a template and resources within a project.](infrastructure-as-code.md#run-a-template-update-a-template)
 
 ## Manage external infrastructure
@@ -586,7 +586,7 @@ You can enable run automatically when the template is updated so that any change
 
 #### GitOps on Northflank: Run a release flow on change
 
-You can run a release flow when changes are pushed to your repository, by configuring [Git triggers](release.md#create-a-pipeline-and-release-flow-release-flow-settings).
+You can run a release flow when changes are pushed to your repository, by configuring [Git triggers](https://northflank.com/docs/v1/application/release/create-a-pipeline-and-release-flow#release-flow-settings).
 
 You can configure Git triggers to run a release only on commits to specific branches or pull requests with branch and pull request rules. You can also only run a release flow when either specific files or directories are changed, or ignore certain files or directories so releases are not triggered by, for example, documentation files.
 
@@ -819,7 +819,7 @@ Northflank's bidirectional GitOps helps you maintain a single source of truth fo
 
 You can also set your template to run automatically when it is updated, meaning you can manage your infrastructure and configuration using Git.
 
-- [GitOps on Northflank: Use templates and release flows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
+- [GitOps on Northflank: Use templates and workflows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
 - [Use Git Actions on Northflank: Create workflows and publish GitHub Actions that interact with Northflank.](infrastructure-as-code.md#use-github-actions-with-northflank)
 
 ### Infrastructure as code on Northflank: Define release flows and preview environments
@@ -828,7 +828,7 @@ Release flows are templates for specific pipeline stages that can automate relea
 
 You can create a release flow either in an existing project's pipeline, or by configuring it in a pipeline node in a Northflank template. You can add Git or webhook triggers to run a release automatically.
 
-- [Release flows and preview environments within templates: Create and manage pipelines with release flow and preview environment templates within Northflank templates.](infrastructure-as-code.md#write-a-template-include-release-flows-and-preview-environment-templates)
+- [Workflows and preview blueprints within templates: Create and manage environments with workflow and preview blueprint templates within Northflank templates.](infrastructure-as-code.md#write-a-template-include-workflows-and-preview-blueprints)
 - [Set up a pipeline and release flow: Manage your deployments and release your updates in an intuitive pipeline with release flows.](release.md#create-a-pipeline-and-release-flow)
 - [Configure a release flow: Learn how to use the visual editor or code to configure a release flow.](release.md#configure-a-release-flow)
 - [Set up a preview environment: Create templates in your pipelines to automatically generate temporary preview environments to view pull requests and branches.](release.md#set-up-a-preview-environment)
@@ -1196,7 +1196,7 @@ In this example a function to check equality is used to see if the argument prov
 
 - [Run a template: Run templates manually or automatically.](infrastructure-as-code.md#run-a-template)
 - [Update a template: Update a template and resources within a project.](infrastructure-as-code.md#run-a-template-update-a-template)
-- [GitOps on Northflank: Use templates and release flows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
+- [GitOps on Northflank: Use templates and workflows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
 - [Share a template: Share templates with your team or the public.](infrastructure-as-code.md#share-a-template)
 - [Manage template versions on Northflank: Use the template drafts system to review, accept, or reject proposed changes to your team's Northflank templates.](infrastructure-as-code.md#manage-template-versions)
 
@@ -1250,7 +1250,7 @@ If you have [audit logging](observe.md#audit-logs) enabled you can view the hist
 - [Create a template: Learn how to create and configure a Northflank template.](infrastructure-as-code.md#create-a-template)
 - [Write a template: Learn how to structure a Northflank template, define workflows, create resources, and perform actions.](infrastructure-as-code.md#write-a-template)
 - [Update a template: Update a template and resources within a project.](infrastructure-as-code.md#run-a-template-update-a-template)
-- [GitOps on Northflank: Use templates and release flows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
+- [GitOps on Northflank: Use templates and workflows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
 
 ## Run a template
 
@@ -1311,7 +1311,7 @@ If you have enabled [run a template automatically](infrastructure-as-code.md#run
 ### Run a template: Next steps
 
 - [Share a template: Share templates with your team or the public.](infrastructure-as-code.md#share-a-template)
-- [GitOps on Northflank: Use templates and release flows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
+- [GitOps on Northflank: Use templates and workflows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
 
 ## Share a template
 
@@ -1340,7 +1340,7 @@ For example, if the template deploys a Docker image, is it the expected image fr
 - [Run a template: Run templates manually or automatically.](infrastructure-as-code.md#run-a-template)
 - [Create a template: Learn how to create and configure a Northflank template.](infrastructure-as-code.md#create-a-template)
 - [Write a template: Learn how to structure a Northflank template, define workflows, create resources, and perform actions.](infrastructure-as-code.md#write-a-template)
-- [GitOps on Northflank: Use templates and release flows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
+- [GitOps on Northflank: Use templates and workflows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
 
 ## Template nodes
 
@@ -1382,16 +1382,15 @@ You can specify the [project context](infrastructure-as-code.md#write-a-template
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofWorkflow
-
-- spec
-  {object} requiredThe specification for the workflow node.
-
 - skipNodeExecution
   (multiple options: oneOf)
 
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the workflow node.
 
 ### Template nodes: Team resource nodes
 
@@ -1409,14 +1408,12 @@ Team nodes create and update resources and integrations on the team level. They 
 
 #### Template nodes: Project
 
-- {object} Project node
+- {object} Project patch node
 
 - ref
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofProject
-- spec
-  (multiple options: oneOf) required
 - skipNodeExecution
   (multiple options: oneOf)
 
@@ -1424,16 +1421,19 @@ Team nodes create and update resources and integrations on the team level. They 
 OR
 - string pattern.*\${.*}.*
 
+- spec
+  {object} requiredThe specification for the Project node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
+
 #### Template nodes: BYOC integration
 
-- {object} BYOCIntegration node
+- {object} BYOCIntegration patch node
 
 - ref
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofBYOCIntegration
-- spec
-  {object} requiredThe specification for the BYOCIntegration node.
 - skipNodeExecution
   (multiple options: oneOf)
 
@@ -1441,22 +1441,30 @@ OR
 OR
 - string pattern.*\${.*}.*
 
+- spec
+  {object} requiredThe specification for the BYOCIntegration node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
+
 #### Template nodes: BYOC cluster
 
-- {object} BYOCCluster node
+- {object} BYOCCluster patch node
 
 - ref
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofBYOCCluster
-- spec
-  {object} requiredThe specification for the BYOCCluster node.
 - skipNodeExecution
   (multiple options: oneOf)
 
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the BYOCCluster node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
 
 #### Template nodes: Subdomain path
 
@@ -1466,8 +1474,6 @@ OR
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofSubdomainPath
-- spec
-  {object} requiredThe specification for the SubdomainPath node.
 - skipNodeExecution
   (multiple options: oneOf)
 
@@ -1475,16 +1481,17 @@ OR
 OR
 - string pattern.*\${.*}.*
 
+- spec
+  {object} requiredThe specification for the SubdomainPath node.
+
 #### Template nodes: Tag
 
-- {object} ResourceTag node
+- {object} ResourceTag patch node
 
 - ref
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofResourceTag
-- spec
-  {object} requiredThe specification for the ResourceTag node.
 - skipNodeExecution
   (multiple options: oneOf)
 
@@ -1492,22 +1499,30 @@ OR
 OR
 - string pattern.*\${.*}.*
 
+- spec
+  {object} requiredThe specification for the ResourceTag node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
+
 #### Template nodes: Custom plan
 
-- {object} CustomPlan node
+- {object} CustomPlan patch node
 
 - ref
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofCustomPlan
-- spec
-  {object} requiredThe specification for the CustomPlan node.
 - skipNodeExecution
   (multiple options: oneOf)
 
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the CustomPlan node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
 
 #### Template nodes: Secret inheritance
 
@@ -1517,14 +1532,15 @@ OR
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofSecretInheritance
-- spec
-  {object} requiredThe specification for the SecretInheritance node.
 - skipNodeExecution
   (multiple options: oneOf)
 
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the SecretInheritance node.
 
 ### Template nodes: Project resource nodes
 
@@ -1550,39 +1566,45 @@ To enable CI/CD and build from private Git repositories you must have a [Git acc
 
 A combined service will automatically build and deploy the latest commit for the selected branch when it is created.
 
-- {object} CombinedService node
+- {object} CombinedService patch node
 
 - ref
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofCombinedService
-- spec
-  {object} requiredThe specification for the CombinedService node.
 - skipNodeExecution
   (multiple options: oneOf)
 
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the CombinedService node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
 
 #### Template nodes: Build service
 
 You must trigger a build using a start build node to deploy from a build service later in the template. Otherwise, a build will only be triggered when a commit matching the [build rules](build.md#build-code-from-a-git-repository-build-from-a-repository) is pushed.
 
-- {object} BuildService node
+- {object} BuildService patch node
 
 - ref
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofBuildService
-- spec
-  {object} requiredThe specification for the BuildService node.
 - skipNodeExecution
   (multiple options: oneOf)
 
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the BuildService node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
 
 #### Template nodes: Deployment service
 
@@ -1592,20 +1614,23 @@ If you are deploying from a Northflank build service you can toggle between depl
 
 Latest build will deploy whatever the service has build most recently, regardless of the commit age. Latest commit will deploy the most recent commit to the branch that has been built by the service.
 
-- {object} DeploymentService node
+- {object} DeploymentService patch node
 
 - ref
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofDeploymentService
-- spec
-  {object} requiredThe specification for the DeploymentService node.
 - skipNodeExecution
   (multiple options: oneOf)
 
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the DeploymentService node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
 
 #### Template nodes: Cron job
 
@@ -1613,20 +1638,23 @@ You can deploy a job using an image from a container registry or one built by a 
 
 You can also build and deploy an image in a job by linking it to a Git repository, and create a build to deploy using a start build node.
 
-- {object} CronJob node
+- {object} CronJob patch node
 
 - ref
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofCronJob
-- spec
-  {object} requiredThe specification for the CronJob node.
 - skipNodeExecution
   (multiple options: oneOf)
 
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the CronJob node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
 
 #### Template nodes: Manual job
 
@@ -1634,20 +1662,23 @@ You can deploy a job using an image from a container registry or one built by a 
 
 You can also build and deploy an image in a job by linking it to a Git repository, and create a build to deploy using a start build node.
 
-- {object} ManualJob node
+- {object} ManualJob patch node
 
 - ref
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofManualJob
-- spec
-  {object} requiredThe specification for the ManualJob node.
 - skipNodeExecution
   (multiple options: oneOf)
 
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the ManualJob node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
 
 #### Template nodes: Addon
 
@@ -1663,14 +1694,12 @@ You can use `latest` to use the most recent backup, but if no backup exists the 
 
 You can enable upgrade on version mismatch to allow a template to trigger an upgrade for an existing addon (disabled by default). If the addon version specified in the template is greater than the version of the existing addon, the addon will be upgraded. Addons must follow the upgrade path and cannot skip major versions. For example, to upgrade an addon from version 14 to version 16, you must first run the template with version 15 specified before updating to version 16.
 
-- {object} Addon node
+- {object} Addon patch node
 
 - ref
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofAddon
-- spec
-  (multiple options: anyOf) requiredThe provisioner type of the addon
 - skipNodeExecution
   (multiple options: oneOf)
 
@@ -1678,35 +1707,41 @@ You can enable upgrade on version mismatch to allow a template to trigger an upg
 OR
 - string pattern.*\${.*}.*
 
+- spec
+  (multiple options: anyOf) requiredThe provisioner type of the addon
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
+
 #### Template nodes: Secret group
 
-- {object} SecretGroup node
+- {object} SecretGroup patch node
 
 - ref
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofSecretGroup
-- spec
-  {object} requiredThe specification for the SecretGroup node.
 - skipNodeExecution
   (multiple options: oneOf)
 
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the SecretGroup node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
 
 #### Template nodes: Volume
 
 A running service will be restarted when a volume is attached to it.
 
-- {object} Volume node
+- {object} Volume patch node
 
 - ref
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofVolume
-- spec
-  {object} requiredThe specification for the Volume node.
 - skipNodeExecution
   (multiple options: oneOf)
 
@@ -1714,17 +1749,22 @@ A running service will be restarted when a volume is attached to it.
 OR
 - string pattern.*\${.*}.*
 
-### Template nodes: Pipeline node
+- spec
+  {object} requiredThe specification for the Volume node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
 
-Pipeline nodes are used to create a pipeline in a project and populate the stages of the pipeline with deployment services, jobs, and addons.
+### Template nodes: Environment node
 
-You can also define a [preview environment and release flow templates](infrastructure-as-code.md#write-a-template-include-release-flows-and-preview-environment-templates) for each stage of the pipeline using the visual editor within the pipeline node.
+Environment nodes are used to create an environment in a project.
+
+You can also define [workflow and preview blueprint templates](infrastructure-as-code.md#write-a-template-include-workflows-and-preview-blueprints) for each environment using the visual editor within the environment node.
 
 #### Template nodes: References, arguments, and functions in nested templates
 
-Normally composed references, arguments, and functions will not be resolved in release flow or preview environment templates in pipeline nodes when the template is executed. This is to preserve their functionality in the release flow and preview templates when they are created.
+Normally composed references, arguments, and functions will not be resolved in workflow or preview blueprint templates in environment nodes when the template is executed. This is to preserve their functionality in the workflow and preview blueprint templates when they are created.
 
-If you want to include references, arguments, or functions that will be executed when the template runs, so that the values are resolved in the release flow and preview environment templates when they are created, you can prefix them with `template`.
+If you want to include references, arguments, or functions that will be executed when the template runs, so that the values are resolved in the workflow and preview blueprint templates when they are created, you can prefix them with `template`.
 
 For example:
 
@@ -1734,42 +1774,29 @@ For example:
 
 - `"${fn.randomString(64)}"` would become `"${template.fn.randomString(64)}"`
 
-- {object} Pipeline node
+Error fetching template node schema
 
-- ref
-  string An identifier that can used to reference the output of this node later in the template.
-- kind
-  string requiredThe kind of node.one ofPipeline
-- spec
-  {object} requiredThe specification for the Pipeline node.
-- skipNodeExecution
-  (multiple options: oneOf)
+#### Template nodes: Preview blueprint
 
-- string one oftrue, false
-OR
-- string pattern.*\${.*}.*
+The environment specification can include `preview`, a node with the kind `PreviewBlueprint`. The spec for the `PreviewBlueprint` node includes `apiVersion` and `spec`, where `spec` is the content of the preview blueprint template.
 
-#### Template nodes: Preview environment
-
-The pipeline specification can include `preview`, a node with the kind `PreviewEnv`. The spec for the `PreviewEnv` node includes `apiVersion` and `spec`, where `spec` is the content of the preview environment template.
-
-- {object} preview
+- {object} previewBlueprint
 
 - kind
-  string The kind of node.one ofPreviewEnv
+  string The kind of node.one ofPreviewBlueprint
 - spec
-  {object} requiredThe preview environment template specification.
+  {object} requiredThe preview blueprint template specification.
 
-#### Template nodes: Release flow
+#### Template nodes: Workflow
 
-Release flow template specifications can be included in pipeline stages.
+Workflow template specifications can be included in environments.
 
-- {object} releaseFlow
+- {object} workflow
 
 - kind
-  string requiredThe kind of node.one ofReleaseFlow
+  string requiredThe kind of node.one ofWorkflow
 - spec
-  {object} requiredThe release flow template specification.
+  {object} requiredThe workflow template specification.
 
 ### Template nodes: Action nodes
 
@@ -1795,8 +1822,6 @@ In [preview blueprints](getting-started.md#set-up-environments) you can enable `
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofAddonBackup
-- spec
-  {object} requiredThe specification for the AddonBackup node.
 - condition
   string one ofsuccess
 - skipNodeExecution
@@ -1805,6 +1830,16 @@ In [preview blueprints](getting-started.md#set-up-environments) you can enable `
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- runNodeOnce
+  (multiple options: oneOf)
+
+- string one oftrue, false
+OR
+- string pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the AddonBackup node.
 
 #### Template nodes: Run job
 
@@ -1818,8 +1853,6 @@ In [preview blueprints](getting-started.md#set-up-environments) you can enable `
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofJobRun
-- spec
-  {object} requiredThe specification for the JobRun node.
 - condition
   string one ofsuccess
 - skipNodeExecution
@@ -1828,6 +1861,16 @@ In [preview blueprints](getting-started.md#set-up-environments) you can enable `
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- runNodeOnce
+  (multiple options: oneOf)
+
+- string one oftrue, false
+OR
+- string pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the JobRun node.
 
 #### Template nodes: Import backup
 
@@ -1847,8 +1890,6 @@ In [preview blueprints](getting-started.md#set-up-environments) you can enable `
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofAddonImport
-- spec
-  {object} requiredThe specification for the AddonImport node.
 - condition
   string one ofsuccess
 - skipNodeExecution
@@ -1857,6 +1898,16 @@ In [preview blueprints](getting-started.md#set-up-environments) you can enable `
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- runNodeOnce
+  (multiple options: oneOf)
+
+- string one oftrue, false
+OR
+- string pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the AddonImport node.
 
 #### Template nodes: Start build
 
@@ -1868,8 +1919,6 @@ You can trigger builds in build and combined services, and jobs that deploy from
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofBuild
-- spec
-  {object} requiredThe specification for the Build node.
 - condition
   string one ofsuccess
 - skipNodeExecution
@@ -1878,6 +1927,9 @@ You can trigger builds in build and combined services, and jobs that deploy from
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the Build node.
 
 #### Template nodes: Run action
 
@@ -1900,14 +1952,22 @@ In [preview blueprints](getting-started.md#set-up-environments) you can enable `
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofAction
-- spec
-  (multiple options: oneOf) requiredThe specification for the Action node.
 - skipNodeExecution
   (multiple options: oneOf)
 
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- runNodeOnce
+  (multiple options: oneOf)
+
+- string one oftrue, false
+OR
+- string pattern.*\${.*}.*
+
+- spec
+  (multiple options: oneOf) requiredThe specification for the Action node.
 
 ### Template nodes: Message node
 
@@ -1929,14 +1989,22 @@ In [preview blueprints](getting-started.md#set-up-environments) you can enable `
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofMessage
-- spec
-  (multiple options: oneOf) requiredThe specification for the Message node.
 - skipNodeExecution
   (multiple options: oneOf)
 
 - string one oftrue, false
 OR
 - string pattern.*\${.*}.*
+
+- runNodeOnce
+  (multiple options: oneOf)
+
+- string one oftrue, false
+OR
+- string pattern.*\${.*}.*
+
+- spec
+  (multiple options: oneOf) requiredThe specification for the Message node.
 
 ### Template nodes: Condition nodes
 
@@ -1968,8 +2036,6 @@ Below is a list of checks you can include in your template.
   string An identifier that can used to reference the output of this node later in the template.
 - kind
   string requiredThe kind of node.one ofCondition
-- spec
-  (multiple options: oneOf) requiredThe specification for the Condition node.
 - skipNodeExecution
   (multiple options: oneOf)
 
@@ -1977,11 +2043,14 @@ Below is a list of checks you can include in your template.
 OR
 - string pattern.*\${.*}.*
 
+- spec
+  (multiple options: oneOf) requiredThe specification for the Condition node.
+
 ### Template nodes: Next steps
 
 - [Run a template: Run templates manually or automatically.](infrastructure-as-code.md#run-a-template)
 - [Update a template: Update a template and resources within a project.](infrastructure-as-code.md#run-a-template-update-a-template)
-- [GitOps on Northflank: Use templates and release flows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
+- [GitOps on Northflank: Use templates and workflows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
 - [Share a template: Share templates with your team or the public.](infrastructure-as-code.md#share-a-template)
 - [Manage template versions on Northflank: Use the template drafts system to review, accept, or reject proposed changes to your team's Northflank templates.](infrastructure-as-code.md#manage-template-versions)
 
@@ -2009,9 +2078,9 @@ You can reuse other workflows from your own repository, public repositories, or 
 
 #### Use GitHub Actions with Northflank: Workflow example
 
-This example workflow builds and publishes and image, and then [triggers a Northflank release flow run](release.md#create-a-pipeline-and-release-flow) to deploy it.
+This example workflow builds and publishes and image, and then [triggers a Northflank release flow run](https://northflank.com/docs/v1/application/release/create-a-pipeline-and-release-flow) to deploy it.
 
-The workflow logs in to the [GitHub container registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry), builds the pull request branch in the repository and pushes the image to [https://ghcr.io/](https://ghcr.io/), and then [triggers a Northflank release flow using a webhook](release.md#create-a-pipeline-and-release-flow-release-flow-settings).
+The workflow logs in to the [GitHub container registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry), builds the pull request branch in the repository and pushes the image to [https://ghcr.io/](https://ghcr.io/), and then [triggers a Northflank release flow using a webhook](https://northflank.com/docs/v1/application/release/create-a-pipeline-and-release-flow#release-flow-settings).
 
 The events that trigger the workflow to run are defined in `on`, the environment variables to use in the workflow are defined in `env`, and the jobs to run as part of the workflow are defined in `jobs`.
 
@@ -2021,9 +2090,9 @@ The `build-and-push-image` job specifies the base image to run the steps on (`ub
 
 The steps include `checkout repository`, which uses the published [checkout](https://github.com/marketplace/actions/checkout) action, `log in to the container registry` which uses the [Docker login](https://github.com/marketplace/actions/docker-login) action, and `build and push Docker image` which uses the [build and push Docker image](https://github.com/marketplace/actions/build-and-push-docker-images) action.
 
-The final step runs a command (`curl`) to send a GET request to a Northflank release flow webhook, stored in the `NF_WEBHOOK` secret, and provides `image_tag` as a URL query parameter, which can then be [accessed in the release flow via the `args` object](release.md#configure-a-release-flow-node-arguments-and-references) to provide an image tag to deploy.
+The final step runs a command (`curl`) to send a GET request to a Northflank release flow webhook, stored in the `NF_WEBHOOK` secret, and provides `image_tag` as a URL query parameter, which can then be [accessed in the release flow via the `args` object](https://northflank.com/docs/v1/application/release/configure-a-release-flow#node-arguments-and-references) to provide an image tag to deploy.
 
-The workflow also uses two [secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets), `GITHUB_TOKEN` which is automatically generated and passed to the workflow, and `NF_WEBHOOK`, which is generated in your [release flow's settings](release.md#create-a-pipeline-and-release-flow-release-flow-settings).
+The workflow also uses two [secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets), `GITHUB_TOKEN` which is automatically generated and passed to the workflow, and `NF_WEBHOOK`, which is generated in your [release flow's settings](https://northflank.com/docs/v1/application/release/create-a-pipeline-and-release-flow#release-flow-settings).
 
 ```yaml
 name: Publish image and run release flow
@@ -2127,7 +2196,7 @@ branding:
 
 ### Use GitHub Actions with Northflank: Next steps
 
-- [GitOps on Northflank: Use templates and release flows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
+- [GitOps on Northflank: Use templates and workflows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
 - [Create a template: Learn how to create and configure a Northflank template.](infrastructure-as-code.md#create-a-template)
 - [Set up a pipeline and release flow: Manage your deployments and release your updates in an intuitive pipeline with release flows.](release.md#create-a-pipeline-and-release-flow)
 - [Configure a release flow: Learn how to use the visual editor or code to configure a release flow.](release.md#configure-a-release-flow)
@@ -2284,13 +2353,13 @@ You can set the timeout duration (in seconds) which will fail a condition node i
 
 You can [add a condition to nodes and workflows](infrastructure-as-code.md#make-a-template-dynamic-conditionally-skip-node-execution) that will be checked before they are executed in the template. You can use this to include nodes or entire workflows that you don't want to be executed on every template run.
 
-### Write a template: Include release flows and preview environment templates
+### Write a template: Include workflows and preview blueprints
 
-[Pipeline nodes](infrastructure-as-code.md#template-nodes-pipeline-node) include the ability to create and edit release flows and preview environment templates within the template editor.
+[Environment nodes](infrastructure-as-code.md#template-nodes-environment-node) include the ability to create and edit workflows and preview blueprint templates within the template editor.
 
-Editing a release flow or preview environment within a template will open the specific editors for those templates, and return you to the template editor when you save or exit the nested editor.
+Editing a workflow or preview blueprint within a template will open the specific editors for those templates, and return you to the template editor when you save or exit the nested editor.
 
-[Release flow](release.md#configure-a-release-flow) and [preview environment](release.md#set-up-a-preview-environment) templates have some unique nodes and behaviour to consider when creating them.
+[Workflow](release.md#configure-workflows) and [preview blueprint](release.md#set-up-preview-blueprints) templates have some unique nodes and behaviour to consider when creating them.
 
 ![A pipeline node in a template in the Northflank application](https://assets.northflank.com/documentation/v1/application/infrastructure-as-code/write-a-template/pipeline-node-resources-templates.png)
 
@@ -3099,6 +3168,6 @@ Await conditions and restart the service
 
 - [Run a template: Run templates manually or automatically.](infrastructure-as-code.md#run-a-template)
 - [Update a template: Update a template and resources within a project.](infrastructure-as-code.md#run-a-template-update-a-template)
-- [GitOps on Northflank: Use templates and release flows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
+- [GitOps on Northflank: Use templates and workflows in a Git repository to trigger changes to your config and resources.](infrastructure-as-code.md#gitops-on-northflank)
 - [Share a template: Share templates with your team or the public.](infrastructure-as-code.md#share-a-template)
 - [Manage template versions on Northflank: Use the template drafts system to review, accept, or reject proposed changes to your team's Northflank templates.](infrastructure-as-code.md#manage-template-versions)

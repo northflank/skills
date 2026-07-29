@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/add-ssh-identity.md
 
 Adds a new SSH identity to this account.
 
-Required permission: Account > Ssh > General > Create
+Required permission: Account > Platform > Ssh > Create
 
 **Request body:**
 

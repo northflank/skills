@@ -24,6 +24,7 @@ Required permission: Organisation > Admin > Members > Read
          - `address`: (string)
          - `verified`: (boolean)
      - `joinedAt`: (string) The time the member joined the org. (format: date-time)
+     - `lastLoginTime`: (string) The time the member last logged in. (format: date-time)
      - `finalized`: (boolean) (required) Whether the account has been fully set up by the user.
 - `pagination`: {object}
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
@@ -51,7 +52,8 @@ GET /v1/org-members
             "verified": true
           }
         ],
-        "joinedAt": "2021-01-20T11:19:53.175Z"
+        "joinedAt": "2021-01-20T11:19:53.175Z",
+        "lastLoginTime": "2021-01-20T11:19:53.175Z"
       }
     ]
   },
@@ -96,7 +98,8 @@ Options:
           "verified": true
         }
       ],
-      "joinedAt": "2021-01-20T11:19:53.175Z"
+      "joinedAt": "2021-01-20T11:19:53.175Z",
+      "lastLoginTime": "2021-01-20T11:19:53.175Z"
     }
   ]
 }
@@ -132,7 +135,8 @@ await apiClient.list.orgMembers({
             "verified": true
           }
         ],
-        "joinedAt": "2021-01-20T11:19:53.175Z"
+        "joinedAt": "2021-01-20T11:19:53.175Z",
+        "lastLoginTime": "2021-01-20T11:19:53.175Z"
       }
     ]
   },

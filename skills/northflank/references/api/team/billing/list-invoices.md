@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/billing/list-invoices.md
 
 Lists finalized invoices.
 
-Required permission: Account > Billing > General > Read
+Required permission: Organisation > Admin > Billing > Read
 
 **Query parameters:**
 

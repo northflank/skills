@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/list-notification-i
 
 Lists notification integrations for the authenticated user or team.
 
-Required permission: Account > Team > Notifications > Read
+Required permission: Account > Observability > Notifications > Read
 
 **Query parameters:**
 

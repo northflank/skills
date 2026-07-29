@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/jobs/get-job-build.md
 
 Gets information about a build for the job
 
-Required permission: Project > Jobs > Deployment > Deploy Build
+Required permission: Project > Jobs > General > Update
 
 **Path parameters:**
 

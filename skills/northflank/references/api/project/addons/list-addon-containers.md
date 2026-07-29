@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/addons/list-addon-containers.
 
 Gets a list of containers for the given addon.
 
-Required permission: Project > Addons > Deployment > View Instances
+Required permission: Project > Addons > General > Read
 
 **Path parameters:**
 
