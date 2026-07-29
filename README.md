@@ -32,10 +32,10 @@ $skill-installer https://github.com/northflank/skills/tree/master/skills/northfl
 
 ### Skills CLI
 
-If your editor supports the Skills specification, install the Northflank Skill with:
+Alternatively, install the Northflank Skill using the Skills CLI, which supports Codex, Claude Code, Cursor, OpenCode, and other coding agents:
 
 ```bash
-npx skills add northflank/skills
+npx skills add northflank/skills --global
 ```
 
 ### Manual Installation
@@ -52,7 +52,7 @@ If your editor supports loading skills from a directory, copy `skills/northflank
 
 ## Usage
 
-After installation, ask Claude Code to do Northflank work directly. The skill should load automatically when the task involves Northflank projects, services, jobs, addons, preview environments, release workflows, AI sandboxes, GPU workloads, domains, secrets, templates, or the Northflank API and CLI.
+After installation, ask your coding agent to do Northflank work directly. The skill should load automatically when the task involves Northflank projects, services, jobs, addons, preview environments, release workflows, AI sandboxes, GPU workloads, domains, secrets, templates, or the Northflank API and CLI.
 
 Examples:
 
