@@ -22,9 +22,25 @@ claude plugin install northflank@northflank
 
 `northflank/skills` is the GitHub shorthand for [`github.com/northflank/skills`](https://github.com/northflank/skills) — Claude Code resolves it to the marketplace at the repo root. Pass a full URL (`https://github.com/northflank/skills`) instead if you prefer to be explicit.
 
-### Other Editors
+### OpenAI Codex
 
-If your editor supports skill directories directly, copy `skills/northflank` into its skills directory:
+Install the Northflank Skill using Codex's built-in skill installer:
+
+```text
+$skill-installer https://github.com/northflank/skills/tree/master/skills/northflank
+```
+
+### Skills CLI
+
+Alternatively, install the Northflank Skill using the Skills CLI, which supports Codex, Claude Code, Cursor, OpenCode, and other coding agents:
+
+```bash
+npx skills add northflank/skills --global
+```
+
+### Manual Installation
+
+If your editor supports loading skills from a directory, copy `skills/northflank` into the appropriate skills directory:
 
 | Editor | Skill directory |
 | :----- | :-------------- |
@@ -36,7 +52,7 @@ If your editor supports skill directories directly, copy `skills/northflank` int
 
 ## Usage
 
-After installation, ask Claude Code to do Northflank work directly. The skill should load automatically when the task involves Northflank projects, services, jobs, addons, preview environments, release workflows, AI sandboxes, GPU workloads, domains, secrets, templates, or the Northflank API and CLI.
+After installation, ask your coding agent to do Northflank work directly. The skill should load automatically when the task involves Northflank projects, services, jobs, addons, preview environments, release workflows, AI sandboxes, GPU workloads, domains, secrets, templates, or the Northflank API and CLI.
 
 Examples:
 
