@@ -21,12 +21,12 @@ Required permission: Project > PreviewBlueprints > General > Update
   - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
   - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
   - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
-  - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+  - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
   - `branch`: (string) (required) The name of the branch to use.
   - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
 - `$schema`: (string)
-- `name`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
-- `description`: (multiple options) (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) (pattern: .*\${.*}.*)
+- `name`: (multiple options) (string) The name of the preview blueprint (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the name of the preview blueprint (pattern: .*\${.*}.*)
+- `description`: (multiple options) (string) A description of the preview blueprint (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the preview blueprint (pattern: .*\${.*}.*)
 - `options`: {object}
   - `concurrencyPolicy`: (string) Defines the concurrency behaviour of the template with respect to parallel runs. (enum: allow, queue, forbid, latest, replace)
   - `nameFormat`: (string) The format of the automatically generated preview name. This is a parsed ref string.
@@ -70,7 +70,7 @@ Required permission: Project > PreviewBlueprints > General > Update
         - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
         - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
         - `vcsLinkId`: (string)
-        - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+        - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
       - `branchNamePatterns`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
       - `commitMessageFlags`: {object}
         - `enabled`: (boolean)
@@ -89,7 +89,7 @@ Required permission: Project > PreviewBlueprints > General > Update
         - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
         - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
         - `vcsLinkId`: (string)
-        - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+        - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
       - `branchNamePatterns`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
       - `commitMessageFlags`: {object}
         - `enabled`: (boolean)
@@ -115,7 +115,7 @@ Required permission: Project > PreviewBlueprints > General > Update
         - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
         - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
         - `vcsLinkId`: (string)
-        - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+        - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
     - `id`: (string)
     - `paused`: (boolean) | {object}
@@ -126,7 +126,7 @@ Required permission: Project > PreviewBlueprints > General > Update
         - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
         - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
         - `vcsLinkId`: (string)
-        - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+        - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
       - `labelNamePatterns`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
       - `branchNamePatterns`: {object}
         - `enabled`: (boolean)
@@ -149,7 +149,7 @@ Required permission: Project > PreviewBlueprints > General > Update
         - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
         - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
         - `vcsLinkId`: (string)
-        - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+        - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
       - `branchNamePatterns`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
       - `commitMessageFlags`: {object}
         - `enabled`: (boolean)
@@ -185,7 +185,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"options":{"concurrencyPolicy":"allow","autorun":false},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]"]},"filePaths":{"paths":["README.md"]}}}]}' \
+  --data '{"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"options":{"concurrencyPolicy":"allow","autorun":false},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"]},"filePaths":{"paths":["README.md"]}},"kind":"vcs-push"}],"name":"string","apiVersion":"string","spec":{}}' \
   https://api.northflank.com/v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}
 ```
 
@@ -212,7 +212,13 @@ const payload = {
         },
         "commitMessageFlags": {
           "flags": [
-            "[skip ci]"
+            "[skip ci]",
+            "[ci skip]",
+            "[no ci]",
+            "[skip nf]",
+            "[nf skip]",
+            "[northflank skip]",
+            "[skip northflank]"
           ]
         },
         "filePaths": {
@@ -220,9 +226,13 @@ const payload = {
             "README.md"
           ]
         }
-      }
+      },
+      "kind": "vcs-push"
     }
-  ]
+  ],
+  "name": "string",
+  "apiVersion": "string",
+  "spec": {}
 }
 
 const response = await fetch('https://api.northflank.com/v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}', {
@@ -243,7 +253,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}"
 
-payload = {"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"options":{"concurrencyPolicy":"allow","autorun":false},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]"]},"filePaths":{"paths":["README.md"]}}}]}
+payload = {"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"options":{"concurrencyPolicy":"allow","autorun":false},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"]},"filePaths":{"paths":["README.md"]}},"kind":"vcs-push"}],"name":"string","apiVersion":"string","spec":{}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -264,7 +274,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}"
 
-  var jsonStr = []byte(`{"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"options":{"concurrencyPolicy":"allow","autorun":false},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]"]},"filePaths":{"paths":["README.md"]}}}]}`)
+  var jsonStr = []byte(`{"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"options":{"concurrencyPolicy":"allow","autorun":false},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"]},"filePaths":{"paths":["README.md"]}},"kind":"vcs-push"}],"name":"string","apiVersion":"string","spec":{}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -330,7 +340,13 @@ Options:
         },
         "commitMessageFlags": {
           "flags": [
-            "[skip ci]"
+            "[skip ci]",
+            "[ci skip]",
+            "[no ci]",
+            "[skip nf]",
+            "[nf skip]",
+            "[northflank skip]",
+            "[skip northflank]"
           ]
         },
         "filePaths": {
@@ -338,9 +354,13 @@ Options:
             "README.md"
           ]
         }
-      }
+      },
+      "kind": "vcs-push"
     }
-  ]
+  ],
+  "name": "string",
+  "apiVersion": "string",
+  "spec": {}
 }
 ```
 
@@ -378,7 +398,13 @@ await apiClient.update.previewBlueprint({
           },
           "commitMessageFlags": {
             "flags": [
-              "[skip ci]"
+              "[skip ci]",
+              "[ci skip]",
+              "[no ci]",
+              "[skip nf]",
+              "[nf skip]",
+              "[northflank skip]",
+              "[skip northflank]"
             ]
           },
           "filePaths": {
@@ -386,9 +412,13 @@ await apiClient.update.previewBlueprint({
               "README.md"
             ]
           }
-        }
+        },
+        "kind": "vcs-push"
       }
-    ]
+    ],
+    "name": "string",
+    "apiVersion": "string",
+    "spec": {}
   }
 });
 ```

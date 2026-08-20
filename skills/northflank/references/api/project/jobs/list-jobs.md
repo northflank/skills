@@ -25,6 +25,7 @@ Required permission: Project > Jobs > General > Read
   - `jobs`: [array of] {object}
      - `id`: (string) (required) Identifier for the job
      - `projectId`: (string) (required) ID of the project that the job belongs to
+     - `stageId`: (string) ID of the environment the job belongs to.
      - `appId`: (string) (required) Full identifier used for job deployment
      - `name`: (string) (required) Job name
      - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -55,6 +56,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs
       {
         "id": "example-job",
         "projectId": "default-project",
+        "stageId": "staging",
         "appId": "/example-user/default-project/example-job",
         "name": "Example Job",
         "description": "This is the job description",
@@ -102,6 +104,7 @@ Options:
     {
       "id": "example-job",
       "projectId": "default-project",
+      "stageId": "staging",
       "appId": "/example-user/default-project/example-job",
       "name": "Example Job",
       "description": "This is the job description",
@@ -141,6 +144,7 @@ await apiClient.list.jobs({
       {
         "id": "example-job",
         "projectId": "default-project",
+        "stageId": "staging",
         "appId": "/example-user/default-project/example-job",
         "name": "Example Job",
         "description": "This is the job description",

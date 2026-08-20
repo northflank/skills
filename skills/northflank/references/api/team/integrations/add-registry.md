@@ -36,6 +36,16 @@ Required permission: Account > Cloud > Registries > Create
 {object}
 - `data`: {object}
   - `id`: (string) (required) ID of the docker credentials (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+  - `registryCredentialRefresh`: {object}
+    - `status`: (string) (required) (enum: healthy, retrying, suspended)
+    - `failureCount`: (integer) (required)
+    - `retryDelay`: (integer) (required) Delay in milliseconds before the next refresh attempt.
+    - `lastFailureAt`: (string) (format: date-time)
+    - `nextAttemptAt`: (string) (format: date-time)
+    - `error`: {object}
+      - `type`: (string) (required)
+      - `message`: (string) (required)
+      - `providerCode`: (string)
   - `name`: (string) (required) The name of the docker credentials. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `provider`: (string) (required) The provider of the docker registry. (enum: acr, ecr, gar, dockerhub, dhi, github, gitlab, custom, legacy)
   - `registryUrl`: (string) The URL of the docker registry.
@@ -72,13 +82,14 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"Example Docker Credentials"}' \
+  --data '{"name":"Example Docker Credentials","provider":"acr"}' \
   https://api.northflank.com/v1/integrations/registries
 ```
 
 ```javascript
 const payload = {
-  "name": "Example Docker Credentials"
+  "name": "Example Docker Credentials",
+  "provider": "acr"
 }
 
 const response = await fetch('https://api.northflank.com/v1/integrations/registries', {
@@ -99,7 +110,7 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/registries"
 
-payload = {"name":"Example Docker Credentials"}
+payload = {"name":"Example Docker Credentials","provider":"acr"}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -120,7 +131,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/registries"
 
-  var jsonStr = []byte(`{"name":"Example Docker Credentials"}`)
+  var jsonStr = []byte(`{"name":"Example Docker Credentials","provider":"acr"}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -170,7 +181,8 @@ Options:
 
 ```json
 {
-  "name": "Example Docker Credentials"
+  "name": "Example Docker Credentials",
+  "provider": "acr"
 }
 ```
 
@@ -194,7 +206,8 @@ Request body
 ```javascript
 await apiClient.add.registryCredentials({
   data: {
-    "name": "Example Docker Credentials"
+    "name": "Example Docker Credentials",
+    "provider": "acr"
   }
 });
 ```

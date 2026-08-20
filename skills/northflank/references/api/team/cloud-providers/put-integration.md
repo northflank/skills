@@ -16,7 +16,7 @@ Required permission: Account > Cloud > Integrations > Create
 {object}
 - `name`: (string) (required) The name of the cloud provider integration. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
 - `description`: (string) The description of the integration. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-- `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, byok)
+- `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, byok)
 - `features`: [array of] (string) The type of provider integration. (enum: byoc, byoc-static-egress, byoc-custom-launch-templates, byoc-custom-vpc, byoc-logs, cloudfront, route53, registry-pull, registry-push, opentofu, workload-identity, workload-identity-managed)
 - `restrictions`: {object}
   - `enabled`: (boolean) (required) Enable or disable BYOC restrictions for this entity
@@ -52,6 +52,8 @@ Required permission: Account > Cloud > Integrations > Create
   - `accessToken`: (string) Akamai Access Token
   - `clientToken`: (string) Akamai Client Token
   - `clientSecret`: (string) Akamai Client Secret
+  - `serviceTokenId`: (string) PlanetScale Service Token ID
+  - `serviceToken`: (string) PlanetScale Service Token
 - `aws`: {object}
   - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
   - `permissionCheckLevel`: (string) (enum: enabled, disabled, ignore-implicit-deny-by-organization)
@@ -68,7 +70,7 @@ Required permission: Account > Cloud > Integrations > Create
   - `id`: (string) (required) ID of the integration (pattern: ^[A-Za-z0-9-]+$)
   - `name`: (string) (required) The name of the cloud provider integration. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `description`: (string) The description of the integration. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, byok)
+  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, byok)
   - `features`: [array of] (string) The type of provider integration. (enum: byoc, byoc-static-egress, byoc-custom-launch-templates, byoc-custom-vpc, byoc-logs, cloudfront, route53, registry-pull, registry-push, opentofu, workload-identity, workload-identity-managed)
   - `restrictions`: {object}
     - `enabled`: (boolean) (required) Enable or disable BYOC restrictions for this entity
@@ -104,6 +106,8 @@ Required permission: Account > Cloud > Integrations > Create
     - `accessToken`: (string) Akamai Access Token
     - `clientToken`: (string) Akamai Client Token
     - `clientSecret`: (string) Akamai Client Secret
+    - `serviceTokenId`: (string) PlanetScale Service Token ID
+    - `serviceToken`: (string) PlanetScale Service Token
   - `aws`: {object}
     - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
     - `permissionCheckLevel`: (string) (enum: enabled, disabled, ignore-implicit-deny-by-organization)
@@ -113,6 +117,19 @@ Required permission: Account > Cloud > Integrations > Create
     - `serviceAccountEmail`: (string) Service account email that will be used for cross account access.
   - `cloudflare`: {object}
     - `credentialType`: (string) The type of api key (enum: apiToken, originCAKey, globalApiKey)
+  - `registryCredentialRefresh`: {object}
+    - `status`: (string) (required) (enum: healthy, degraded, suspended)
+    - `affectedCredentialCount`: (integer) (required)
+    - `updatedAt`: (string) (format: date-time)
+    - `retryDelay`: (integer) Delay in milliseconds before the next refresh attempt.
+    - `nextAttemptAt`: (string) (format: date-time)
+    - `lastError`: {object}
+      - `credentialId`: (string) (required) (pattern: ^[A-Za-z0-9-]+$)
+      - `failureCount`: (integer) (required)
+      - `type`: (string) (required)
+      - `message`: (string) (required)
+      - `providerCode`: (string)
+      - `occurredAt`: (string) (required) (format: date-time)
   - `createdAt`: (string) (required) The time the integration was created. (format: date-time)
 
 ### API reference
@@ -129,7 +146,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
-  --data '{"name":"Example Integration","description":"This is a new cloud provider integration.","provider":"gcp","features":["byoc"],"aws":{"authenticationMode":"accessKey"},"gcp":{"authenticationMode":"accessKey"},"cloudflare":{"credentialType":"apiToken"}}' \
+  --data '{"name":"Example Integration","description":"This is a new cloud provider integration.","provider":"gcp","features":["byoc"],"aws":{"authenticationMode":"accessKey"},"gcp":{"authenticationMode":"accessKey","projectId":"string"},"cloudflare":{"credentialType":"apiToken"},"credentials":{}}' \
   https://api.northflank.com/v1/cloud-providers/integrations
 ```
 
@@ -145,11 +162,13 @@ const payload = {
     "authenticationMode": "accessKey"
   },
   "gcp": {
-    "authenticationMode": "accessKey"
+    "authenticationMode": "accessKey",
+    "projectId": "string"
   },
   "cloudflare": {
     "credentialType": "apiToken"
-  }
+  },
+  "credentials": {}
 }
 
 const response = await fetch('https://api.northflank.com/v1/cloud-providers/integrations', {
@@ -170,7 +189,7 @@ import requests
 
 url = "https://api.northflank.com/v1/cloud-providers/integrations"
 
-payload = {"name":"Example Integration","description":"This is a new cloud provider integration.","provider":"gcp","features":["byoc"],"aws":{"authenticationMode":"accessKey"},"gcp":{"authenticationMode":"accessKey"},"cloudflare":{"credentialType":"apiToken"}}
+payload = {"name":"Example Integration","description":"This is a new cloud provider integration.","provider":"gcp","features":["byoc"],"aws":{"authenticationMode":"accessKey"},"gcp":{"authenticationMode":"accessKey","projectId":"string"},"cloudflare":{"credentialType":"apiToken"},"credentials":{}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PUT", url, headers = headers, json = payload)
@@ -191,7 +210,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/cloud-providers/integrations"
 
-  var jsonStr = []byte(`{"name":"Example Integration","description":"This is a new cloud provider integration.","provider":"gcp","features":["byoc"],"aws":{"authenticationMode":"accessKey"},"gcp":{"authenticationMode":"accessKey"},"cloudflare":{"credentialType":"apiToken"}}`)
+  var jsonStr = []byte(`{"name":"Example Integration","description":"This is a new cloud provider integration.","provider":"gcp","features":["byoc"],"aws":{"authenticationMode":"accessKey"},"gcp":{"authenticationMode":"accessKey","projectId":"string"},"cloudflare":{"credentialType":"apiToken"},"credentials":{}}`)
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -268,11 +287,13 @@ Options:
     "authenticationMode": "accessKey"
   },
   "gcp": {
-    "authenticationMode": "accessKey"
+    "authenticationMode": "accessKey",
+    "projectId": "string"
   },
   "cloudflare": {
     "credentialType": "apiToken"
-  }
+  },
+  "credentials": {}
 }
 ```
 
@@ -324,11 +345,13 @@ await apiClient.put.cloud.integration({
       "authenticationMode": "accessKey"
     },
     "gcp": {
-      "authenticationMode": "accessKey"
+      "authenticationMode": "accessKey",
+      "projectId": "string"
     },
     "cloudflare": {
       "credentialType": "apiToken"
-    }
+    },
+    "credentials": {}
   }
 });
 ```

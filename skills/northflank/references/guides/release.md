@@ -28,7 +28,7 @@ Northflank enables you to manage your application delivery from development, thr
 
 You can automate builds and deployments using CI/CD in individual services, or use environments and workflows to configure complex release processes covering many resources.
 
-You can also learn more in the guide on [releasing for production](production-workloads.md#release-for-production).
+You can also learn more in the guide on [release for production](production-workloads.md#release-for-production).
 
 ### CI/CD on Northflank: Continuous integration and delivery
 

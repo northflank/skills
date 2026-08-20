@@ -45,12 +45,12 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
-  --data 'undefined' \
+  --data '{}' \
   https://api.northflank.com/v1/integrations/registries/{credentialId}
 ```
 
 ```javascript
-const payload = undefined
+const payload = {}
 
 const response = await fetch('https://api.northflank.com/v1/integrations/registries/{credentialId}', {
   method: 'PATCH',
@@ -70,7 +70,7 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/registries/{credentialId}"
 
-payload = undefined
+payload = {}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PATCH", url, headers = headers, json = payload)
@@ -91,7 +91,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/registries/{credentialId}"
 
-  var jsonStr = []byte(`undefined`)
+  var jsonStr = []byte(`{}`)
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -139,7 +139,7 @@ Options:
 - `-o --output <format>`: Output formatting
 
 ```json
-undefined
+{}
 ```
 
 #### Example Response
@@ -160,7 +160,8 @@ Request body
 await apiClient.update.registryCredentials({
   parameters: {
     "credentialId": "example-credentials"
-  }
+  },
+  data: {}
 });
 ```
 

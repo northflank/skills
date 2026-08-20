@@ -26,6 +26,7 @@ Required permission: Project > Addons > General > Read
      - `id`: (string) (required) Identifier for the addon.
      - `name`: (string) (required) Addon name.
      - `appId`: (string) (required) Full identifier for the addon.
+     - `stageId`: (string) ID of the environment the addon belongs to.
      - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `description`: (string) A short description of the addon.
      - `spec`: {object}
@@ -54,6 +55,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/addons
         "id": "example-addon",
         "name": "Example Addon",
         "appId": "/example-user/default-project/example-job",
+        "stageId": "staging",
         "description": "This is the addon description",
         "spec": {
           "type": "mongodb"
@@ -100,6 +102,7 @@ Options:
       "id": "example-addon",
       "name": "Example Addon",
       "appId": "/example-user/default-project/example-job",
+      "stageId": "staging",
       "description": "This is the addon description",
       "spec": {
         "type": "mongodb"
@@ -138,6 +141,7 @@ await apiClient.list.addons({
         "id": "example-addon",
         "name": "Example Addon",
         "appId": "/example-user/default-project/example-job",
+        "stageId": "staging",
         "description": "This is the addon description",
         "spec": {
           "type": "mongodb"

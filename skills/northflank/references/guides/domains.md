@@ -93,7 +93,7 @@ Northflank provides automatic certificate generation for your domains by default
 
 > [!note]
 > [Click here](https://app.northflank.com/s/account/domains) to view your account domains page.
-Your services should automatically be able to connect to addons with TLS enabled. However, some applications may need [custom TLS configuration](databases-and-persistence.md#access-a-database-access-tls-certificates-in-services).
+Your services should automatically be able to connect to addons with TLS enabled. However, some applications may need [custom TLS configuration](databases-and-persistence.md#access-a-database-access-tls-certificates-in-containers).
 
 ### Certificate generation: Automatic certificate generation
 

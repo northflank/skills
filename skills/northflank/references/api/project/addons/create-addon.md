@@ -50,6 +50,7 @@ Required permission: Project > Addons > General > Create
    - `redisSentinelEnabled`: (boolean) Redis only: Deploy Redis with Sentinel high availability. Default: false
    - `postgresqlWalLevel`: (string) PostgreSQL only: Configure wal_level setting. (enum: replica, logical)
    - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode (additional extensions and event trigger creation support). Cannot be changed after creation.
+   - `postgresqlEdbMode`: (boolean) PostgreSQL only: Enable EDB mode (EDB extension set: edb_stat_monitor, query_advisor, edb_pg_tuner, aidb, pgaa and others). Requires PostgreSQL 18 or newer. Cannot be changed after creation.
    - `postgresqlConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of postgres instance.
    - `postgresqlConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of connection pooler replicas in case connection pooler is enabled.
    - `postgresqlReadConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of read-only postgres instance.
@@ -135,6 +136,7 @@ Required permission: Project > Addons > General > Create
      - `redisSentinelEnabled`: (boolean) Redis only: Deploy Redis with Sentinel high availability. Default: false
      - `postgresqlWalLevel`: (string) PostgreSQL only: Configure wal_level setting. (enum: replica, logical)
      - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode (additional extensions and event trigger creation support). Cannot be changed after creation.
+     - `postgresqlEdbMode`: (boolean) PostgreSQL only: Enable EDB mode (EDB extension set: edb_stat_monitor, query_advisor, edb_pg_tuner, aidb, pgaa and others). Requires PostgreSQL 18 or newer. Cannot be changed after creation.
      - `postgresqlConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of postgres instance.
      - `postgresqlConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of connection pooler replicas in case connection pooler is enabled.
      - `postgresqlReadConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of read-only postgres instance.

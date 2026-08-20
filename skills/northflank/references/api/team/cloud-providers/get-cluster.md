@@ -19,7 +19,7 @@ Required permission: Account > Cloud > Clusters > Read
   - `name`: (string) (required) The name of the cluster. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 20)
   - `entityType`: (string) (enum: org, team)
   - `description`: (string) The description of the cluster. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, byok)
+  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, byok)
   - `region`: (string) Region of the cluster. Can only be updated for BYOK clusters.
   - `status`: {object}
     - `state`: {object}
@@ -77,9 +77,9 @@ Required permission: Account > Cloud > Clusters > Read
         - `gpuClusterId`: (string) Nebius GPU cluster to attach the node pool to.
       - `nodeCount`: (integer) (required) Number of nodes to the node pool should be provisioned with.
       - `autoscaling`: {object}
-        - `enabled`: (boolean)
-        - `min`: (integer)
-        - `max`: (integer)
+        - `enabled`: (boolean) Whether autoscaling is enabled for the node pool.
+        - `min`: (integer) The minimum number of nodes the node pool can be scaled down to.
+        - `max`: (integer) The maximum number of nodes the node pool can be scaled up to.
       - `computeResources`: {object}
         - `gpu`: {object}
           - `type`: (string) (required) GPU type associated with the node pool. (pattern: [a-z0-9])
@@ -137,29 +137,29 @@ Required permission: Account > Cloud > Clusters > Read
       - `labels`: {object}
   - `settings`: {object}
     - `builds`: {object}
-      - `mode`: (string) (enum: paas, internal, build-cluster)
+      - `mode`: (string) Determines where builds are run: on Northflank infrastructure (paas), on this cluster (internal) or on a dedicated build cluster (build-cluster). (enum: paas, internal, build-cluster)
       - `plan`: (string) Plan to use for builds if they are run on the cluster (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
       - `clusterId`: (string) Cluster to use for scheduling builds (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
       - `caching`: {object}
         - `allow`: (boolean) Whether to allow local disk based caching for builds.
         - `storageClassName`: (string) Storage class used by default for local disk based caching.
     - `registry`: {object}
-      - `mode`: (string) (enum: paas, self-hosted)
+      - `mode`: (string) Determines where built images are stored: in the Northflank registry (paas) or in a self-hosted registry. (enum: paas, self-hosted)
       - `registryId`: (string) Credentials to use for storing of images. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
     - `logging`: (multiple options) {object}
-        - `mode`: (string) (enum: paas) | {object}
-        - `mode`: (string) (required) (enum: loki)
+        - `mode`: (string) The logging mode. `paas` stores logs on Northflank infrastructure. (enum: paas) | {object}
+        - `mode`: (string) (required) The logging mode. `loki` stores logs in your own storage via Loki. (enum: loki)
         - `loki`: {object}
           - `storageType`: (string) (required) (enum: s3)
-          - `s3BucketName`: (string) (required)
-          - `s3AccessKey`: (string) (required)
-          - `s3SecretKey`: (string) (required)
-          - `s3Region`: (string) (required) | {object}
-        - `mode`: (string) (required) (enum: loki)
+          - `s3BucketName`: (string) (required) Name of the S3 bucket used for Loki log storage.
+          - `s3AccessKey`: (string) (required) Access key for the S3 bucket used for Loki log storage.
+          - `s3SecretKey`: (string) (required) Secret key for the S3 bucket used for Loki log storage.
+          - `s3Region`: (string) (required) Region of the S3 bucket used for Loki log storage. | {object}
+        - `mode`: (string) (required) The logging mode. `loki` stores logs in your own storage via Loki. (enum: loki)
         - `loki`: {object}
           - `storageType`: (string) (required) (enum: gcs)
-          - `gcsBucketName`: (string) (required)
-          - `gcpIntegrationId`: (string) (required) (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
+          - `gcsBucketName`: (string) (required) Name of the GCS bucket used for Loki log storage.
+          - `gcpIntegrationId`: (string) (required) ID of the GCP integration used to access the GCS bucket. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
     - `networking`: {object}
       - `overlayNetwork`: (boolean) Whether overlay networking is enabled for this cluster.
       - `overlayCIDR`: (string) CIDR range for the overlay network. (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
@@ -175,17 +175,17 @@ Required permission: Account > Cloud > Clusters > Read
         - `integrationId`: (string) (required)
     - `infrastructure`: {object}
       - `workloads`: {object}
-        - `runtimeClass`: (string) (enum: none, gvisor, kata-clh, kata-qemu)
+        - `runtimeClass`: (string) Defines which runtime scheduling constraints apply for workloads (enum: none, gvisor, kata-clh, kata-qemu)
       - `builds`: {object}
-        - `runtimeClass`: (string) (enum: none, gvisor, kata-clh, kata-qemu)
+        - `runtimeClass`: (string) Defines which runtime scheduling constraints apply for builds (enum: none, gvisor, kata-clh, kata-qemu)
       - `sandboxing`: {object}
         - `installGvisor`: (boolean)
         - `installMicroVm`: (boolean)
         - `defaultSandbox`: {object}
-          - `builds`: (string) (enum: none, gvisor, kata-clh, kata-qemu)
-          - `jobs`: (string) (enum: none, gvisor, kata-clh, kata-qemu)
-          - `services`: (string) (enum: none, gvisor, kata-clh, kata-qemu)
-          - `addons`: (string) (enum: none, gvisor, kata-clh, kata-qemu)
+          - `builds`: (string) Default runtime class used for builds if none is configured (enum: none, gvisor, kata-clh, kata-qemu)
+          - `jobs`: (string) Default runtime class used for jobs if none is configured (enum: none, gvisor, kata-clh, kata-qemu)
+          - `services`: (string) Default runtime class used for services if none is configured (enum: none, gvisor, kata-clh, kata-qemu)
+          - `addons`: (string) Default runtime class used for addons if none is configured (enum: none, gvisor, kata-clh, kata-qemu)
       - `installKata`: (boolean) DEPRECATED: This field will be removed in the near future.
       - `installGvisor`: (boolean) DEPRECATED: This field will be removed in the near future.
       - `cleanupVolumes`: (boolean)
@@ -219,13 +219,13 @@ Required permission: Account > Cloud > Clusters > Read
         - `teamId`: (string) (required) The ID of the team that has access to this BYOC cluster (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 45)
   - `gcp`: {object}
     - `networking`: {object}
-      - `network`: (string)
-      - `subnetwork`: (string)
-    - `enableAuthorizedIpRanges`: (boolean)
+      - `network`: (string) Name of the GCP network the cluster should be created in. By default a new network will be created.
+      - `subnetwork`: (string) Name of the GCP subnetwork the cluster should be created in. By default a new subnetwork will be created.
+    - `enableAuthorizedIpRanges`: (boolean) Whether access to the Kubernetes API server should be restricted to authorized IP ranges.
     - `authorizedIpRanges`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
     - `projectId`: (string) GCP Project ID (pattern: ^[a-z][a-z0-9-]{4,28}[a-z0-9]$)
   - `aws`: {object}
-    - `enablePublicAccessCidrs`: (boolean)
+    - `enablePublicAccessCidrs`: (boolean) Whether access to the public Kubernetes API endpoint should be restricted to specific CIDR ranges.
     - `publicAccessCidrs`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
     - `subnetConfiguration`: {object}
       - `mode`: (string) (required) The mode of the AWS subnet configuration (enum: default-subnets-for-azs, explicit-subnets)
@@ -234,8 +234,8 @@ Required permission: Account > Cloud > Clusters > Read
     - `vpcEgress`: (boolean) If egress traffic from the cluster should come from a single static egress IP.
   - `oci`: {object}
     - `vcnConfiguration`: {object}
-      - `vcnId`: (string) (required)
-      - `subnetIdForKubernetesApi`: (string) (required)
+      - `vcnId`: (string) (required) ID of the OCI VCN the cluster should be created in.
+      - `subnetIdForKubernetesApi`: (string) (required) ID of the subnet to use for the Kubernetes API endpoint.
       - `subnetIdsForServiceLBs`: [array of] (string)
   - `azure`: {object}
     - `networking`: {object}
@@ -243,22 +243,22 @@ Required permission: Account > Cloud > Clusters > Read
         - `mode`: (string) (required) The vnet mode to use for this cluster. Use this to switch between creation of a new vnet per cluster or specifying a custom vnet. (enum: create-default, custom-vnet)
         - `vnetId`: (string) Azure vnetId that should be used for this cluster. By default a new vnet will be created.
       - `networkPluginMode`: (string) Optional setting to configure overlay mode on Azure. (enum: overlay)
-    - `enableAuthorizedIpRanges`: (boolean)
+    - `enableAuthorizedIpRanges`: (boolean) Whether access to the Kubernetes API server should be restricted to authorized IP ranges.
     - `authorizedIpRanges`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
   - `coreweave`: {object}
     - `zone`: (string) (required) AZ of the cluster
     - `network`: {object}
-      - `networkMode`: (string) (required) (enum: create-default, custom)
-      - `vpcId`: (string)
+      - `networkMode`: (string) (required) The network mode to use for this cluster. Use this to switch between the default network configuration and a custom VPC. (enum: create-default, custom)
+      - `vpcId`: (string) ID of the CoreWeave VPC to use for this cluster.
       - `customPrefixNames`: {object}
-        - `podCidrName`: (string) (required)
-        - `serviceCidrName`: (string) (required)
+        - `podCidrName`: (string) (required) Name of the VPC prefix to use for the pod CIDR.
+        - `serviceCidrName`: (string) (required) Name of the VPC prefix to use for the service CIDR.
         - `internalLbCidrNames`: [array of] (string)
   - `nebius`: {object}
     - `projectId`: (string) (required) Nebius project ID to place the cluster in.
     - `subnetId`: (string) (required) Nebius VPC subnet ID for the cluster.
   - `byok`: {object}
-    - `nodePoolProviderIdLabel`: (string) (required)
+    - `nodePoolProviderIdLabel`: (string) (required) The node label used to identify which provider node pool a node belongs to.
   - `coordinates`: {object}
     - `latitude`: (number) (required) (format: float)
     - `longitude`: (number) (required) (format: float)

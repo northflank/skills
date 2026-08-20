@@ -23,6 +23,7 @@ Required permission: Project > Volumes > Backups > Create
 {object}
 - `data`: {object}
   - `id`: (string) (required) Identifier for the backup
+  - `uid`: (string) Stable identifier for using this backup as a volume source (format: uuid)
   - `name`: (string) (required)
   - `description`: (string)
   - `status`: (string) (required)

@@ -22,6 +22,7 @@ Required permission: Project > Jobs > General > Read
   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `description`: (string) A short description of the job
   - `projectId`: (string) (required) ID of the project that the job belongs to
+  - `stageId`: (string) ID of the environment the job belongs to.
   - `jobType`: (string) (required) Type of the job (manual or cron) (enum: manual, cron)
   - `createdAt`: (string) (required) The time the job was created. (format: date-time)
   - `vcsData`: {object}
@@ -37,6 +38,7 @@ Required permission: Project > Jobs > General > Read
     - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
     - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
     - `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+    - `ignoreEmptyCommits`: (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules.
     - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
     - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
     - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -107,6 +109,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}
     "name": "Example Job",
     "description": "This is the job description",
     "projectId": "default-project",
+    "stageId": "staging",
     "jobType": "cron",
     "createdAt": "2021-01-20T11:19:53.175Z",
     "vcsData": {
@@ -126,6 +129,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}
       "ciIgnoreFlags": [
         "[skip ci]"
       ],
+      "ignoreEmptyCommits": false,
       "dockerCredentials": [
         "example-docker-credential"
       ],
@@ -212,6 +216,7 @@ Options:
   "name": "Example Job",
   "description": "This is the job description",
   "projectId": "default-project",
+  "stageId": "staging",
   "jobType": "cron",
   "createdAt": "2021-01-20T11:19:53.175Z",
   "vcsData": {
@@ -231,6 +236,7 @@ Options:
     "ciIgnoreFlags": [
       "[skip ci]"
     ],
+    "ignoreEmptyCommits": false,
     "dockerCredentials": [
       "example-docker-credential"
     ],
@@ -314,6 +320,7 @@ await apiClient.get.job({
     "name": "Example Job",
     "description": "This is the job description",
     "projectId": "default-project",
+    "stageId": "staging",
     "jobType": "cron",
     "createdAt": "2021-01-20T11:19:53.175Z",
     "vcsData": {
@@ -333,6 +340,7 @@ await apiClient.get.job({
       "ciIgnoreFlags": [
         "[skip ci]"
       ],
+      "ignoreEmptyCommits": false,
       "dockerCredentials": [
         "example-docker-credential"
       ],

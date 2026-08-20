@@ -32,6 +32,13 @@ Required permission: Project > Volumes > General > Read
    - `attachedObjects`: [array of] {object}
       - `id`: (string) (required) The id of object to attach this volume to. (pattern: ^[A-Za-z0-9-]+$)
       - `type`: (string) (required) The type of the object to attach this volume to. (enum: service, job)
+   - `backupSchedules`: [array of] {object}
+      - `scheduling`: {object}
+        - `interval`: (string) (required) The interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (enum: hourly, daily, weekly)
+        - `minute`: [array of] (integer) A minute when the backup should be performed.
+        - `hour`: [array of] (integer) An hour when the backup should be performed, in 24 hour format.
+        - `day`: [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday.
+      - `retentionTime`: (integer) (required) The time the backup is retained for, in days.
    - `status`: (string) (required) Status the volume is in on the cluster
    - `createdAt`: (string) (required) The timestamp the volume was created at (format: date-time)
    - `updatedAt`: (string) (required) The timestamp the volume was last updated at (format: date-time)
@@ -57,13 +64,30 @@ GET /v1/teams/{teamId}/projects/{projectId}/volumes
       "id": "example-volume",
       "name": "Example Volume",
       "spec": {
-        "storageClassName": "ssd",
+        "storageClassName": "nvme",
         "storageSize": 6144
       },
       "attachedObjects": [
         {
           "id": "example-service",
           "type": "service"
+        }
+      ],
+      "backupSchedules": [
+        {
+          "scheduling": {
+            "interval": "weekly",
+            "minute": [
+              30
+            ],
+            "hour": [
+              18
+            ],
+            "day": [
+              4
+            ]
+          },
+          "retentionTime": 7
         }
       ],
       "status": "BOUND",
@@ -108,13 +132,30 @@ Options:
     "id": "example-volume",
     "name": "Example Volume",
     "spec": {
-      "storageClassName": "ssd",
+      "storageClassName": "nvme",
       "storageSize": 6144
     },
     "attachedObjects": [
       {
         "id": "example-service",
         "type": "service"
+      }
+    ],
+    "backupSchedules": [
+      {
+        "scheduling": {
+          "interval": "weekly",
+          "minute": [
+            30
+          ],
+          "hour": [
+            18
+          ],
+          "day": [
+            4
+          ]
+        },
+        "retentionTime": 7
       }
     ],
     "status": "BOUND",
@@ -151,13 +192,30 @@ await apiClient.list.volumes({
       "id": "example-volume",
       "name": "Example Volume",
       "spec": {
-        "storageClassName": "ssd",
+        "storageClassName": "nvme",
         "storageSize": 6144
       },
       "attachedObjects": [
         {
           "id": "example-service",
           "type": "service"
+        }
+      ],
+      "backupSchedules": [
+        {
+          "scheduling": {
+            "interval": "weekly",
+            "minute": [
+              30
+            ],
+            "hour": [
+              18
+            ],
+            "day": [
+              4
+            ]
+          },
+          "retentionTime": 7
         }
       ],
       "status": "BOUND",

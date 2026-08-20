@@ -1,6 +1,6 @@
 # List plans
 
-Source: https://northflank.com/docs/v1/api/miscellaneous/list-plans.md
+Source: https://northflank.com/docs/v1/api/miscellaneous/miscellaneous/list-plans.md
 
 Lists available billing plans
 

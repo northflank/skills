@@ -60,13 +60,20 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"Example Backup Destination"}' \
+  --data '{"name":"Example Backup Destination","type":"s3","prefix":"example/","credentials":{"bucketName":"string","region":"string","endpoint":"string"}}' \
   https://api.northflank.com/v1/backup-destinations
 ```
 
 ```javascript
 const payload = {
-  "name": "Example Backup Destination"
+  "name": "Example Backup Destination",
+  "type": "s3",
+  "prefix": "example/",
+  "credentials": {
+    "bucketName": "string",
+    "region": "string",
+    "endpoint": "string"
+  }
 }
 
 const response = await fetch('https://api.northflank.com/v1/backup-destinations', {
@@ -87,7 +94,7 @@ import requests
 
 url = "https://api.northflank.com/v1/backup-destinations"
 
-payload = {"name":"Example Backup Destination"}
+payload = {"name":"Example Backup Destination","type":"s3","prefix":"example/","credentials":{"bucketName":"string","region":"string","endpoint":"string"}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -108,7 +115,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/backup-destinations"
 
-  var jsonStr = []byte(`{"name":"Example Backup Destination"}`)
+  var jsonStr = []byte(`{"name":"Example Backup Destination","type":"s3","prefix":"example/","credentials":{"bucketName":"string","region":"string","endpoint":"string"}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -158,7 +165,14 @@ Options:
 
 ```json
 {
-  "name": "Example Backup Destination"
+  "name": "Example Backup Destination",
+  "type": "s3",
+  "prefix": "example/",
+  "credentials": {
+    "bucketName": "string",
+    "region": "string",
+    "endpoint": "string"
+  }
 }
 ```
 
@@ -182,7 +196,14 @@ Request body
 ```javascript
 await apiClient.add.backupDestination({
   data: {
-    "name": "Example Backup Destination"
+    "name": "Example Backup Destination",
+    "type": "s3",
+    "prefix": "example/",
+    "credentials": {
+      "bucketName": "string",
+      "region": "string",
+      "endpoint": "string"
+    }
   }
 });
 ```

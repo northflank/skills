@@ -14,6 +14,8 @@ Required permission: Account > Git > General > Read
      - `vcsService`: (string) (required) The type of version control provider the account is linked to. (enum: bitbucket, gitlab, github, self-hosted, azure)
      - `email`: (string) (required) The email of the account linked with this provider.
      - `login`: (string) (required) The username of the account linked with this provider.
+     - `vcsLinkId`: (string) (required) The ID of this linked version control account. Pass this value as `vcsLinkId` when creating a harness or service from this account.
+     - `alias`: (string) A user-defined alias for the linked version control account, if set.
      - `name`: (string) The name of the version control provider. Only returned for self-hosted links.
      - `vcsUrl`: (string) The url of the version control provider. Only returned for self-hosted links.
      - `vcsType`: (string) The type of the self-hosted vcs provider. Only returned for self-hosted links. (enum: gitlab-ee, github-ghe, gitea)
@@ -38,6 +40,8 @@ GET /v1/teams/{teamId}/integrations/vcs
         "vcsService": "self-hosted",
         "email": "email@example.com",
         "login": "vcs-user",
+        "vcsLinkId": "63ebb6ce2ccc6c7affdbf253",
+        "alias": "my-github",
         "name": "Self-hosted VCS",
         "vcsUrl": "https://git.example.com",
         "vcsType": "gitlab-ee",
@@ -72,6 +76,8 @@ Options:
       "vcsService": "self-hosted",
       "email": "email@example.com",
       "login": "vcs-user",
+      "vcsLinkId": "63ebb6ce2ccc6c7affdbf253",
+      "alias": "my-github",
       "name": "Self-hosted VCS",
       "vcsUrl": "https://git.example.com",
       "vcsType": "gitlab-ee",
@@ -102,6 +108,8 @@ await apiClient.list.vcs({});
         "vcsService": "self-hosted",
         "email": "email@example.com",
         "login": "vcs-user",
+        "vcsLinkId": "63ebb6ce2ccc6c7affdbf253",
+        "alias": "my-github",
         "name": "Self-hosted VCS",
         "vcsUrl": "https://git.example.com",
         "vcsType": "gitlab-ee",

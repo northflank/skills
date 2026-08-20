@@ -20,6 +20,13 @@ Required permission: Project > Volumes > General > Update
    - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
 - `spec`: {object}
   - `storageSize`: (integer) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
+- `backupSchedules`: [array of] {object}
+   - `scheduling`: {object}
+     - `interval`: (string) (required) The interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (enum: hourly, daily, weekly)
+     - `minute`: [array of] (integer) A minute when the backup should be performed.
+     - `hour`: [array of] (integer) An hour when the backup should be performed, in 24 hour format.
+     - `day`: [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday.
+   - `retentionTime`: (integer) (required) The time the backup is retained for, in days.
 
 **Response body:**
 
@@ -40,7 +47,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageSize":6144}}' \
+  --data '{"mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageSize":6144},"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"retentionTime":7}]}' \
   https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}
 ```
 
@@ -54,7 +61,24 @@ const payload = {
   ],
   "spec": {
     "storageSize": 6144
-  }
+  },
+  "backupSchedules": [
+    {
+      "scheduling": {
+        "interval": "weekly",
+        "minute": [
+          30
+        ],
+        "hour": [
+          18
+        ],
+        "day": [
+          4
+        ]
+      },
+      "retentionTime": 7
+    }
+  ]
 }
 
 const response = await fetch('https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}', {
@@ -75,7 +99,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}"
 
-payload = {"mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageSize":6144}}
+payload = {"mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageSize":6144},"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"retentionTime":7}]}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -96,7 +120,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}"
 
-  var jsonStr = []byte(`{"mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageSize":6144}}`)
+  var jsonStr = []byte(`{"mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageSize":6144},"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"retentionTime":7}]}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -155,7 +179,24 @@ Options:
   ],
   "spec": {
     "storageSize": 6144
-  }
+  },
+  "backupSchedules": [
+    {
+      "scheduling": {
+        "interval": "weekly",
+        "minute": [
+          30
+        ],
+        "hour": [
+          18
+        ],
+        "day": [
+          4
+        ]
+      },
+      "retentionTime": 7
+    }
+  ]
 }
 ```
 
@@ -188,7 +229,24 @@ await apiClient.update.volume({
     ],
     "spec": {
       "storageSize": 6144
-    }
+    },
+    "backupSchedules": [
+      {
+        "scheduling": {
+          "interval": "weekly",
+          "minute": [
+            30
+          ],
+          "hour": [
+            18
+          ],
+          "day": [
+            4
+          ]
+        },
+        "retentionTime": 7
+      }
+    ]
   }
 });
 ```

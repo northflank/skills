@@ -38,6 +38,8 @@ Required permission: Project > ExternalAddons > General > Create
       - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
     - `akamai`: {object}
       - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
+    - `planetscale`: {object}
+      - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
   - `config`: {object}
   - `outputs`: {object}
   - `workloadIdentityId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -71,6 +73,8 @@ Required permission: Project > ExternalAddons > General > Create
         - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
       - `akamai`: {object}
         - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
+      - `planetscale`: {object}
+        - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
     - `config`: {object}
     - `outputs`: {object}
     - `workloadIdentityId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -90,7 +94,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"spec":{"provider":{"aws":{"region":"eu-west-1"},"google":{"region":"us-central1","zone":"us-central1-c"}}}}' \
+  --data '{"spec":{"provider":{"aws":{"region":"eu-west-1","integrationId":"string"},"google":{"region":"us-central1","zone":"us-central1-c","project":"string","integrationId":"string"}},"resourceType":"s3","config":{}},"name":"string"}' \
   https://api.northflank.com/v1/projects/{projectId}/external-addons
 ```
 
@@ -99,14 +103,20 @@ const payload = {
   "spec": {
     "provider": {
       "aws": {
-        "region": "eu-west-1"
+        "region": "eu-west-1",
+        "integrationId": "string"
       },
       "google": {
         "region": "us-central1",
-        "zone": "us-central1-c"
+        "zone": "us-central1-c",
+        "project": "string",
+        "integrationId": "string"
       }
-    }
-  }
+    },
+    "resourceType": "s3",
+    "config": {}
+  },
+  "name": "string"
 }
 
 const response = await fetch('https://api.northflank.com/v1/projects/{projectId}/external-addons', {
@@ -127,7 +137,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/external-addons"
 
-payload = {"spec":{"provider":{"aws":{"region":"eu-west-1"},"google":{"region":"us-central1","zone":"us-central1-c"}}}}
+payload = {"spec":{"provider":{"aws":{"region":"eu-west-1","integrationId":"string"},"google":{"region":"us-central1","zone":"us-central1-c","project":"string","integrationId":"string"}},"resourceType":"s3","config":{}},"name":"string"}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -148,7 +158,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/external-addons"
 
-  var jsonStr = []byte(`{"spec":{"provider":{"aws":{"region":"eu-west-1"},"google":{"region":"us-central1","zone":"us-central1-c"}}}}`)
+  var jsonStr = []byte(`{"spec":{"provider":{"aws":{"region":"eu-west-1","integrationId":"string"},"google":{"region":"us-central1","zone":"us-central1-c","project":"string","integrationId":"string"}},"resourceType":"s3","config":{}},"name":"string"}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -212,14 +222,20 @@ Options:
   "spec": {
     "provider": {
       "aws": {
-        "region": "eu-west-1"
+        "region": "eu-west-1",
+        "integrationId": "string"
       },
       "google": {
         "region": "us-central1",
-        "zone": "us-central1-c"
+        "zone": "us-central1-c",
+        "project": "string",
+        "integrationId": "string"
       }
-    }
-  }
+    },
+    "resourceType": "s3",
+    "config": {}
+  },
+  "name": "string"
 }
 ```
 
@@ -258,14 +274,20 @@ await apiClient.create.externalAddon({
     "spec": {
       "provider": {
         "aws": {
-          "region": "eu-west-1"
+          "region": "eu-west-1",
+          "integrationId": "string"
         },
         "google": {
           "region": "us-central1",
-          "zone": "us-central1-c"
+          "zone": "us-central1-c",
+          "project": "string",
+          "integrationId": "string"
         }
-      }
-    }
+      },
+      "resourceType": "s3",
+      "config": {}
+    },
+    "name": "string"
   }
 });
 ```

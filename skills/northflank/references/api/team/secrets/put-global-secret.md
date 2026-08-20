@@ -6,6 +6,12 @@ Creates or updates a global secret with the specified payload
 
 Required permission: Account > GlobalSecrets > Secrets > Create
 
+**Query parameters:**
+
+{object}
+- `runDependents`: (boolean) On update, whether to run the global secret’s configured dependent templates (when enabled). Defaults to false.
+- `idempotencyKey`: (string) Deduplicates dependent template runs when the same update is retried.
+
 **Request body:**
 
 {object}
@@ -20,9 +26,12 @@ Required permission: Account > GlobalSecrets > Secrets > Create
   - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
   - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
   - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
-  - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+  - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
   - `branch`: (string) (required) The name of the branch to use.
   - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
+- `dependents`: {object}
+  - `templates`: {object}
+    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 
 **Response body:**
 
@@ -39,11 +48,25 @@ Required permission: Account > GlobalSecrets > Secrets > Create
     - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
     - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
     - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
-    - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+    - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
     - `branch`: (string) (required) The name of the branch to use.
     - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
+  - `dependents`: {object}
+    - `templates`: {object}
+      - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `createdAt`: (string) time of creation (format: date-time)
   - `updatedAt`: (string) time of update (format: date-time)
+  - `triggerResult`: {object}
+    - `batchId`: (string) (required) (max length: 128)
+    - `accepted`: (integer) (required)
+    - `succeeded`: (integer) (required)
+    - `failed`: (integer) (required)
+    - `skipped`: (integer) (required)
+    - `deduplicated`: (integer) (required)
+    - `items`: [array of] {object}
+        - `templateInternalId`: (string) (required) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+        - `status`: (string) (required) (enum: succeeded, failed, skipped, deduplicated)
+        - `templateRunId`: (string)
 
 ### API reference
 
@@ -59,7 +82,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
-  --data '{"type":"secret","gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"}}' \
+  --data '{"type":"secret","gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"name":"string"}' \
   https://api.northflank.com/v1/secrets
 ```
 
@@ -72,7 +95,8 @@ const payload = {
     "repoUrl": "https://github.com/northflank-examples/remix-postgres-redis-demo",
     "branch": "main",
     "filePath": "/Dockerfile"
-  }
+  },
+  "name": "string"
 }
 
 const response = await fetch('https://api.northflank.com/v1/secrets', {
@@ -93,7 +117,7 @@ import requests
 
 url = "https://api.northflank.com/v1/secrets"
 
-payload = {"type":"secret","gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"}}
+payload = {"type":"secret","gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"name":"string"}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PUT", url, headers = headers, json = payload)
@@ -114,7 +138,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/secrets"
 
-  var jsonStr = []byte(`{"type":"secret","gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"}}`)
+  var jsonStr = []byte(`{"type":"secret","gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"name":"string"}`)
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -158,6 +182,10 @@ $ northflank put global-secret
 
 Options:
 
+- `--runDependents <runDependents>`: On update, whether to run the global secret’s configured dependent templates (when enabled). Defaults to false.
+
+- `--idempotencyKey <idempotencyKey>`: Deduplicates dependent template runs when the same update is retried.
+
 - `-f --file <file>`: Path to a JSON/YAML resource definition file
 
 - `-i --input <definition>`: JSON/YAML resource definition string (takes precedence over --file)
@@ -177,7 +205,8 @@ Options:
     "repoUrl": "https://github.com/northflank-examples/remix-postgres-redis-demo",
     "branch": "main",
     "filePath": "/Dockerfile"
-  }
+  },
+  "name": "string"
 }
 ```
 
@@ -206,6 +235,9 @@ Request body
 
 ```javascript
 await apiClient.put.globalSecret({
+  options: {
+    "runDependents": true
+  },
   data: {
     "type": "secret",
     "gitops": {
@@ -214,7 +246,8 @@ await apiClient.put.globalSecret({
       "repoUrl": "https://github.com/northflank-examples/remix-postgres-redis-demo",
       "branch": "main",
       "filePath": "/Dockerfile"
-    }
+    },
+    "name": "string"
   }
 });
 ```

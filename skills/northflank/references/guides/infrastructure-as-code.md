@@ -1383,11 +1383,11 @@ You can specify the [project context](infrastructure-as-code.md#write-a-template
 - kind
   string requiredThe kind of node.one ofWorkflow
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the workflow node.
@@ -1415,11 +1415,11 @@ Team nodes create and update resources and integrations on the team level. They 
 - kind
   string requiredThe kind of node.one ofProject
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the Project node.
@@ -1435,11 +1435,11 @@ OR
 - kind
   string requiredThe kind of node.one ofBYOCIntegration
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the BYOCIntegration node.
@@ -1455,11 +1455,11 @@ OR
 - kind
   string requiredThe kind of node.one ofBYOCCluster
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the BYOCCluster node.
@@ -1475,11 +1475,11 @@ OR
 - kind
   string requiredThe kind of node.one ofSubdomainPath
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the SubdomainPath node.
@@ -1493,11 +1493,11 @@ OR
 - kind
   string requiredThe kind of node.one ofResourceTag
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the ResourceTag node.
@@ -1513,11 +1513,11 @@ OR
 - kind
   string requiredThe kind of node.one ofCustomPlan
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the CustomPlan node.
@@ -1533,11 +1533,11 @@ OR
 - kind
   string requiredThe kind of node.one ofSecretInheritance
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the SecretInheritance node.
@@ -1573,11 +1573,11 @@ A combined service will automatically build and deploy the latest commit for the
 - kind
   string requiredThe kind of node.one ofCombinedService
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the CombinedService node.
@@ -1595,11 +1595,11 @@ You must trigger a build using a start build node to deploy from a build service
 - kind
   string requiredThe kind of node.one ofBuildService
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the BuildService node.
@@ -1621,11 +1621,11 @@ Latest build will deploy whatever the service has build most recently, regardles
 - kind
   string requiredThe kind of node.one ofDeploymentService
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the DeploymentService node.
@@ -1645,11 +1645,11 @@ You can also build and deploy an image in a job by linking it to a Git repositor
 - kind
   string requiredThe kind of node.one ofCronJob
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the CronJob node.
@@ -1669,11 +1669,11 @@ You can also build and deploy an image in a job by linking it to a Git repositor
 - kind
   string requiredThe kind of node.one ofManualJob
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the ManualJob node.
@@ -1701,11 +1701,11 @@ You can enable upgrade on version mismatch to allow a template to trigger an upg
 - kind
   string requiredThe kind of node.one ofAddon
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   (multiple options: anyOf) requiredThe provisioner type of the addon
@@ -1721,11 +1721,11 @@ OR
 - kind
   string requiredThe kind of node.one ofSecretGroup
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the SecretGroup node.
@@ -1743,11 +1743,11 @@ A running service will be restarted when a volume is attached to it.
 - kind
   string requiredThe kind of node.one ofVolume
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the Volume node.
@@ -1825,11 +1825,11 @@ In [preview blueprints](getting-started.md#set-up-environments) you can enable `
 - condition
   string one ofsuccess
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - runNodeOnce
   (multiple options: oneOf)
@@ -1856,11 +1856,11 @@ In [preview blueprints](getting-started.md#set-up-environments) you can enable `
 - condition
   string one ofsuccess
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - runNodeOnce
   (multiple options: oneOf)
@@ -1893,11 +1893,11 @@ In [preview blueprints](getting-started.md#set-up-environments) you can enable `
 - condition
   string one ofsuccess
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - runNodeOnce
   (multiple options: oneOf)
@@ -1922,11 +1922,11 @@ You can trigger builds in build and combined services, and jobs that deploy from
 - condition
   string one ofsuccess
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the Build node.
@@ -1953,11 +1953,11 @@ In [preview blueprints](getting-started.md#set-up-environments) you can enable `
 - kind
   string requiredThe kind of node.one ofAction
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - runNodeOnce
   (multiple options: oneOf)
@@ -1990,11 +1990,11 @@ In [preview blueprints](getting-started.md#set-up-environments) you can enable `
 - kind
   string requiredThe kind of node.one ofMessage
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - runNodeOnce
   (multiple options: oneOf)
@@ -2037,11 +2037,11 @@ Below is a list of checks you can include in your template.
 - kind
   string requiredThe kind of node.one ofCondition
 - skipNodeExecution
-  (multiple options: oneOf)
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
 
-- string one oftrue, false
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
-- string pattern.*\${.*}.*
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
 
 - spec
   (multiple options: oneOf) requiredThe specification for the Condition node.

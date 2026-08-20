@@ -18,17 +18,16 @@ Required permission: Project > Services > General > Read
 - `data`: (multiple options) {object}
    - `name`: (string) (required) The name of the service. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
    - `description`: (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-   - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
    - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
    - `billing`: {object}
      - `deploymentPlan`: (string) The ID of the deployment plan to use. (Deprecated - use buildPlan for build resources instead.). (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `buildPlan`: (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `gpu`: {object}
-       - `enabled`: (boolean)
+       - `enabled`: (boolean) Whether GPUs are enabled for this workload.
        - `configuration`: {object}
-         - `gpuType`: (string) (required)
-         - `gpuCount`: (integer)
-         - `timesliced`: (boolean)
+         - `gpuType`: (string) (required) The type of GPU to use.
+         - `gpuCount`: (integer) The number of GPUs to allocate.
+         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `infrastructure`: {object}
      - `architecture`: (string) (enum: x86, arm)
    - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
@@ -66,6 +65,7 @@ Required permission: Project > Services > General > Read
      - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
      - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
      - `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+     - `ignoreEmptyCommits`: (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules.
      - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
      - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
      - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -91,6 +91,7 @@ Required permission: Project > Services > General > Read
      - `build`: {object}
        - `status`: (string) (required) The current status of the build. (enum: QUEUED, PENDING, UNSCHEDULABLE, STARTING, CLONING, BUILDING, UPLOADING, ABORTED, FAILURE, SUBMISSION_FAILURE, SUCCESS, CRASHED, IN_PROGRESS)
        - `lastTransitionTime`: (string) The timestamp of when the build reached this status. (format: date-time)
+   - `stageId`: (string) ID of the environment the service belongs to.
    - `buildEngineConfiguration`: {object}
      - `buildEngine`: (string) The build engine used. (enum: buildpack, buildkit, kaniko)
      - `buildpack`: {object}
@@ -104,7 +105,7 @@ Required permission: Project > Services > General > Read
      - `kaniko`: {object}
        - `useCache`: (boolean) Should intermediate image layers be cached?
    - `vcsData`: {object}
-     - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+     - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
      - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
      - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
      - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -113,17 +114,16 @@ Required permission: Project > Services > General > Read
      - `dockerFilePath`: (string) (required) DEPRECATED. This field has been deprecated in favour of the field in `buildSettings.dockerfile`. | {object}
    - `name`: (string) (required) The name of the service. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
    - `description`: (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-   - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
    - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
    - `billing`: {object}
      - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `buildPlan`: (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `gpu`: {object}
-       - `enabled`: (boolean)
+       - `enabled`: (boolean) Whether GPUs are enabled for this workload.
        - `configuration`: {object}
-         - `gpuType`: (string) (required)
-         - `gpuCount`: (integer)
-         - `timesliced`: (boolean)
+         - `gpuType`: (string) (required) The type of GPU to use.
+         - `gpuCount`: (integer) The number of GPUs to allocate.
+         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `infrastructure`: {object}
      - `architecture`: (string) (enum: x86, arm)
    - `ports`: [array of] {object}
@@ -259,6 +259,7 @@ Required permission: Project > Services > General > Read
      - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
      - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
      - `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+     - `ignoreEmptyCommits`: (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules.
      - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
      - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
      - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -343,18 +344,27 @@ Required permission: Project > Services > General > Read
        - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required)
        - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
      - `gpu`: {object}
-       - `enabled`: (boolean)
+       - `enabled`: (boolean) Whether GPUs are enabled for this workload.
        - `configuration`: {object}
-         - `gpuType`: (string) (required)
-         - `gpuCount`: (integer)
-         - `timesliced`: (boolean)
+         - `gpuType`: (string) (required) The type of GPU to use.
+         - `gpuCount`: (integer) The number of GPUs to allocate.
+         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
      - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-     - `gradualRolloutStrategyId`: (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$)
+     - `gradualRolloutStrategyId`: (multiple options) (undefined)
      - `ssh`: {object}
        - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
      - `metadata`: {object}
        - `labels`: {object}
        - `annotations`: {object}
+     - `volumes`: [array of] {object}
+         - `id`: (string) (required) Slug identifying this volume within the service. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+         - `mounts`: [array of] {object}
+             - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
+             - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
+         - `spec`: {object}
+           - `accessMode`: (string) Access mode of a per-replica volume. Always `ReadWriteOnce`. (enum: ReadWriteOnce)
+           - `storageClassName`: (string) The type of the storage.
+           - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
      - `imageUrl`: (string) Image registry url of the deployed image.
    - `id`: (string) (required) Identifier for the service
    - `appId`: (string) (required) Full identifier used for service deployment
@@ -376,6 +386,7 @@ Required permission: Project > Services > General > Read
        - `status`: (string) (required) The current status of the deployment. (enum: PENDING, IN_PROGRESS, COMPLETED, FAILED)
        - `reason`: (string) (required) The reason the current deployment was started. (enum: SCALING, DEPLOYING)
        - `lastTransitionTime`: (string) The timestamp of when the deployment reached this status. (format: date-time)
+   - `stageId`: (string) ID of the environment the service belongs to.
    - `buildEngineConfiguration`: {object}
      - `buildEngine`: (string) The build engine used. (enum: buildpack, buildkit, kaniko)
      - `buildpack`: {object}
@@ -389,7 +400,7 @@ Required permission: Project > Services > General > Read
      - `kaniko`: {object}
        - `useCache`: (boolean) Should intermediate image layers be cached?
    - `vcsData`: {object}
-     - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+     - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
      - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
      - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
      - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -399,16 +410,15 @@ Required permission: Project > Services > General > Read
      - `dockerFilePath`: (string) (required) DEPRECATED. This field has been deprecated in favour of the field in `buildSettings.dockerfile`. | {object}
    - `name`: (string) (required) The name of the service. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
    - `description`: (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-   - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
    - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
    - `billing`: {object}
      - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `gpu`: {object}
-       - `enabled`: (boolean)
+       - `enabled`: (boolean) Whether GPUs are enabled for this workload.
        - `configuration`: {object}
-         - `gpuType`: (string) (required)
-         - `gpuCount`: (integer)
-         - `timesliced`: (boolean)
+         - `gpuType`: (string) (required) The type of GPU to use.
+         - `gpuCount`: (integer) The number of GPUs to allocate.
+         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `infrastructure`: {object}
      - `architecture`: (string) (enum: x86, arm)
    - `ports`: [array of] {object}
@@ -585,25 +595,40 @@ Required permission: Project > Services > General > Read
        - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required)
        - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
      - `gpu`: {object}
-       - `enabled`: (boolean)
+       - `enabled`: (boolean) Whether GPUs are enabled for this workload.
        - `configuration`: {object}
-         - `gpuType`: (string) (required)
-         - `gpuCount`: (integer)
-         - `timesliced`: (boolean)
+         - `gpuType`: (string) (required) The type of GPU to use.
+         - `gpuCount`: (integer) The number of GPUs to allocate.
+         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
      - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-     - `gradualRolloutStrategyId`: (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$)
+     - `gradualRolloutStrategyId`: (multiple options) (undefined)
      - `ssh`: {object}
        - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
      - `metadata`: {object}
        - `labels`: {object}
        - `annotations`: {object}
+     - `volumes`: [array of] {object}
+         - `id`: (string) (required) Slug identifying this volume within the service. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+         - `mounts`: [array of] {object}
+             - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
+             - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
+         - `spec`: {object}
+           - `accessMode`: (string) Access mode of a per-replica volume. Always `ReadWriteOnce`. (enum: ReadWriteOnce)
+           - `storageClassName`: (string) The type of the storage.
+           - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
+     - `containerSnapshot`: {object}
+       - `restoreFrom`: (string) The successful container snapshot to restore the service from. (format: uuid)
+       - `capture`: {object}
+         - `onTermination`: (boolean) Creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts.
+         - `retention`: {object}
+           - `maxSnapshots`: (integer) The maximum number of termination snapshots retained for the service.
      - `internal`: {object}
-       - `id`: (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string)
+       - `id`: (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
        - `branch`: (string) Branch to deploy
        - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
        - `buildId`: (string) ID of the build that should be deployed
      - `external`: {object}
-       - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$)
+       - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
        - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
      - `imageUrl`: (string) Image registry url of the deployed image.
    - `id`: (string) (required) Identifier for the service
@@ -623,6 +648,7 @@ Required permission: Project > Services > General > Read
        - `status`: (string) (required) The current status of the deployment. (enum: PENDING, IN_PROGRESS, COMPLETED, FAILED)
        - `reason`: (string) (required) The reason the current deployment was started. (enum: SCALING, DEPLOYING)
        - `lastTransitionTime`: (string) The timestamp of when the deployment reached this status. (format: date-time)
+   - `stageId`: (string) ID of the environment the service belongs to.
 
 ### API reference
 
@@ -680,6 +706,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}
       "ciIgnoreFlags": [
         "[skip ci]"
       ],
+      "ignoreEmptyCommits": false,
       "dockerCredentials": [
         "example-docker-credential"
       ],
@@ -722,6 +749,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}
         "lastTransitionTime": "2021-11-29T11:47:16.624Z"
       }
     },
+    "stageId": "staging",
     "buildEngineConfiguration": {
       "buildEngine": "buildpack",
       "buildpack": {
@@ -903,6 +931,7 @@ OR
       "ciIgnoreFlags": [
         "[skip ci]"
       ],
+      "ignoreEmptyCommits": false,
       "dockerCredentials": [
         "example-docker-credential"
       ],
@@ -984,7 +1013,22 @@ OR
           "storageSize": 1024
         }
       },
-      "gradualRolloutStrategyId": "strategy-id"
+      "gradualRolloutStrategyId": "strategy-id",
+      "volumes": [
+        {
+          "id": "data",
+          "mounts": [
+            {
+              "volumeMountPath": "",
+              "containerMountPath": "/container"
+            }
+          ],
+          "spec": {
+            "storageClassName": "nvme",
+            "storageSize": 6144
+          }
+        }
+      ]
     },
     "id": "example-service",
     "appId": "/example-user/default-project/example-service",
@@ -1010,6 +1054,7 @@ OR
         "lastTransitionTime": "2021-11-29T11:47:16.624Z"
       }
     },
+    "stageId": "staging",
     "buildEngineConfiguration": {
       "buildEngine": "buildpack",
       "buildpack": {
@@ -1219,6 +1264,21 @@ OR
         }
       },
       "gradualRolloutStrategyId": "strategy-id",
+      "volumes": [
+        {
+          "id": "data",
+          "mounts": [
+            {
+              "volumeMountPath": "",
+              "containerMountPath": "/container"
+            }
+          ],
+          "spec": {
+            "storageClassName": "nvme",
+            "storageSize": 6144
+          }
+        }
+      ],
       "internal": {
         "id": "example-build-service",
         "branch": "master",
@@ -1248,7 +1308,8 @@ OR
         "reason": "DEPLOYING",
         "lastTransitionTime": "2021-11-29T11:47:16.624Z"
       }
-    }
+    },
+    "stageId": "staging"
   }
 }
 ```
@@ -1318,6 +1379,7 @@ Options:
     "ciIgnoreFlags": [
       "[skip ci]"
     ],
+    "ignoreEmptyCommits": false,
     "dockerCredentials": [
       "example-docker-credential"
     ],
@@ -1360,6 +1422,7 @@ Options:
       "lastTransitionTime": "2021-11-29T11:47:16.624Z"
     }
   },
+  "stageId": "staging",
   "buildEngineConfiguration": {
     "buildEngine": "buildpack",
     "buildpack": {
@@ -1539,6 +1602,7 @@ OR
     "ciIgnoreFlags": [
       "[skip ci]"
     ],
+    "ignoreEmptyCommits": false,
     "dockerCredentials": [
       "example-docker-credential"
     ],
@@ -1620,7 +1684,22 @@ OR
         "storageSize": 1024
       }
     },
-    "gradualRolloutStrategyId": "strategy-id"
+    "gradualRolloutStrategyId": "strategy-id",
+    "volumes": [
+      {
+        "id": "data",
+        "mounts": [
+          {
+            "volumeMountPath": "",
+            "containerMountPath": "/container"
+          }
+        ],
+        "spec": {
+          "storageClassName": "nvme",
+          "storageSize": 6144
+        }
+      }
+    ]
   },
   "id": "example-service",
   "appId": "/example-user/default-project/example-service",
@@ -1646,6 +1725,7 @@ OR
       "lastTransitionTime": "2021-11-29T11:47:16.624Z"
     }
   },
+  "stageId": "staging",
   "buildEngineConfiguration": {
     "buildEngine": "buildpack",
     "buildpack": {
@@ -1853,6 +1933,21 @@ OR
       }
     },
     "gradualRolloutStrategyId": "strategy-id",
+    "volumes": [
+      {
+        "id": "data",
+        "mounts": [
+          {
+            "volumeMountPath": "",
+            "containerMountPath": "/container"
+          }
+        ],
+        "spec": {
+          "storageClassName": "nvme",
+          "storageSize": 6144
+        }
+      }
+    ],
     "internal": {
       "id": "example-build-service",
       "branch": "master",
@@ -1882,7 +1977,8 @@ OR
       "reason": "DEPLOYING",
       "lastTransitionTime": "2021-11-29T11:47:16.624Z"
     }
-  }
+  },
+  "stageId": "staging"
 }
 ```
 
@@ -1949,6 +2045,7 @@ await apiClient.get.service({
       "ciIgnoreFlags": [
         "[skip ci]"
       ],
+      "ignoreEmptyCommits": false,
       "dockerCredentials": [
         "example-docker-credential"
       ],
@@ -1991,6 +2088,7 @@ await apiClient.get.service({
         "lastTransitionTime": "2021-11-29T11:47:16.624Z"
       }
     },
+    "stageId": "staging",
     "buildEngineConfiguration": {
       "buildEngine": "buildpack",
       "buildpack": {
@@ -2175,6 +2273,7 @@ OR
       "ciIgnoreFlags": [
         "[skip ci]"
       ],
+      "ignoreEmptyCommits": false,
       "dockerCredentials": [
         "example-docker-credential"
       ],
@@ -2256,7 +2355,22 @@ OR
           "storageSize": 1024
         }
       },
-      "gradualRolloutStrategyId": "strategy-id"
+      "gradualRolloutStrategyId": "strategy-id",
+      "volumes": [
+        {
+          "id": "data",
+          "mounts": [
+            {
+              "volumeMountPath": "",
+              "containerMountPath": "/container"
+            }
+          ],
+          "spec": {
+            "storageClassName": "nvme",
+            "storageSize": 6144
+          }
+        }
+      ]
     },
     "id": "example-service",
     "appId": "/example-user/default-project/example-service",
@@ -2282,6 +2396,7 @@ OR
         "lastTransitionTime": "2021-11-29T11:47:16.624Z"
       }
     },
+    "stageId": "staging",
     "buildEngineConfiguration": {
       "buildEngine": "buildpack",
       "buildpack": {
@@ -2494,6 +2609,21 @@ OR
         }
       },
       "gradualRolloutStrategyId": "strategy-id",
+      "volumes": [
+        {
+          "id": "data",
+          "mounts": [
+            {
+              "volumeMountPath": "",
+              "containerMountPath": "/container"
+            }
+          ],
+          "spec": {
+            "storageClassName": "nvme",
+            "storageSize": 6144
+          }
+        }
+      ],
       "internal": {
         "id": "example-build-service",
         "branch": "master",
@@ -2523,7 +2653,8 @@ OR
         "reason": "DEPLOYING",
         "lastTransitionTime": "2021-11-29T11:47:16.624Z"
       }
-    }
+    },
+    "stageId": "staging"
   },
   "rawResponse": "...",
   "request": "...",

@@ -11,7 +11,7 @@ Required permission: Organisation > Team > General > Create
 {object}
 - `name`: (string) (required) The name of the team. (pattern: ^[a-zA-Z](('[a-zA-Z])?(-|\s)?[a-zA-Z0-9]+(('[a-zA-Z])?(-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 45)
 - `description`: (string) A description of the team. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-- `email`: (string) (required) The billing email address for the team. (pattern: ^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$)
+- `email`: (string) (required) The billing email address for the team. (pattern: ^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$)
 
 **Response body:**
 

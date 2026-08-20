@@ -15,7 +15,7 @@ Required permission: Project > Services > General > Delete
 **Query parameters:**
 
 {object}
-- `delete_child_objects`: (boolean) If true, any volumes attached to this service will also be deleted.
+- `delete_child_objects`: (boolean) If true, platform volumes owned by or attached to this service are also deleted. Per-replica statefulSet volumes are service-owned and always deleted with the service.
 
 **Response body:**
 
@@ -48,7 +48,7 @@ Options:
 
 - `--serviceId <serviceId>`: ID of the service
 
-- `--delete_child_objects <delete_child_objects>`: If true, any volumes attached to this service will also be deleted.
+- `--delete_child_objects <delete_child_objects>`: If true, platform volumes owned by or attached to this service are also deleted. Per-replica statefulSet volumes are service-owned and always deleted with the service.
 
 - `--verbose `: Verbose output
 

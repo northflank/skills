@@ -19,6 +19,7 @@ Required permission: Project > Addons > General > Read
   - `id`: (string) (required) Identifier for the addon.
   - `name`: (string) (required) Addon name.
   - `appId`: (string) (required) Full identifier for the addon.
+  - `stageId`: (string) ID of the environment the addon belongs to.
   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `description`: (string) A short description of the addon.
   - `createdAt`: (string) (required) The time the addon was created. (format: date-time)
@@ -41,7 +42,14 @@ Required permission: Project > Addons > General > Read
               - `address`: (string) (required) An IP address used by this rule.
               - `action`: (string) (required) The action for this rule. (enum: DENY, ALLOW)
         - `typeSpecificSettings`: {object}
-          - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Whether Supabase mode is enabled (loads supabase extensions and supautils). Set at creation, cannot be changed afterwards. | {object}
+          - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Whether Supabase mode is enabled (loads supabase extensions and supautils). Set at creation, cannot be changed afterwards.
+          - `postgresqlEdbMode`: (boolean) PostgreSQL only: Whether EDB mode is enabled (loads the EDB extension set). Set at creation, cannot be changed afterwards.
+        - `secretRotation`: {object}
+          - `startedAt`: (string) The time the secret rotation was started. (format: date-time)
+          - `completedAt`: (string) The time the secret rotation reached a terminal state. (format: date-time)
+          - `inProgress`: (boolean) Whether the new credentials have been applied. Old credentials stay valid until finalised.
+          - `status`: (string) The current status of the secret rotation. (enum: scheduled, rotating, rotated, finalising, completed, failed, finalise-failed)
+          - `reason`: (string) What triggered the rotation. Defaults to a user-triggered rotate. (enum: user, restore, fork-auto-finalise) | {object}
         - `templateValues`: (string) (required) The template values to be passed to the templating engine. | {object}
         - `region`: (string) The region where the bucket is provisioned.
     - `pendingActions`: [array of] {object}
@@ -69,6 +77,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}
     "id": "example-addon",
     "name": "Example Addon",
     "appId": "/example-user/default-project/example-addon",
+    "stageId": "staging",
     "description": "This is the addon description",
     "createdAt": "2021-01-20T11:19:53.175Z",
     "status": "running",
@@ -95,7 +104,14 @@ GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}
           ]
         },
         "typeSpecificSettings": {
-          "postgresqlSupabaseMode": true
+          "postgresqlSupabaseMode": true,
+          "postgresqlEdbMode": true
+        },
+        "secretRotation": {
+          "startedAt": "2026-01-20T11:19:53.175Z",
+          "completedAt": "2026-01-20T11:24:02.881Z",
+          "status": "rotated",
+          "reason": "user"
         }
       },
       "pendingActions": [
@@ -142,6 +158,7 @@ Options:
   "id": "example-addon",
   "name": "Example Addon",
   "appId": "/example-user/default-project/example-addon",
+  "stageId": "staging",
   "description": "This is the addon description",
   "createdAt": "2021-01-20T11:19:53.175Z",
   "status": "running",
@@ -168,7 +185,14 @@ Options:
         ]
       },
       "typeSpecificSettings": {
-        "postgresqlSupabaseMode": true
+        "postgresqlSupabaseMode": true,
+        "postgresqlEdbMode": true
+      },
+      "secretRotation": {
+        "startedAt": "2026-01-20T11:19:53.175Z",
+        "completedAt": "2026-01-20T11:24:02.881Z",
+        "status": "rotated",
+        "reason": "user"
       }
     },
     "pendingActions": [
@@ -212,6 +236,7 @@ await apiClient.get.addon({
     "id": "example-addon",
     "name": "Example Addon",
     "appId": "/example-user/default-project/example-addon",
+    "stageId": "staging",
     "description": "This is the addon description",
     "createdAt": "2021-01-20T11:19:53.175Z",
     "status": "running",
@@ -238,7 +263,14 @@ await apiClient.get.addon({
           ]
         },
         "typeSpecificSettings": {
-          "postgresqlSupabaseMode": true
+          "postgresqlSupabaseMode": true,
+          "postgresqlEdbMode": true
+        },
+        "secretRotation": {
+          "startedAt": "2026-01-20T11:19:53.175Z",
+          "completedAt": "2026-01-20T11:24:02.881Z",
+          "status": "rotated",
+          "reason": "user"
         }
       },
       "pendingActions": [

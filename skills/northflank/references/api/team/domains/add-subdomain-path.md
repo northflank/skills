@@ -105,7 +105,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"mode":"prefix","uri":"/","options":{"priority":0,"corsPolicy":{"allowOrigins":[{"mode":"prefix","origin":"https://example.com"}]}}}' \
+  --data '{"mode":"prefix","uri":"/","options":{"priority":0,"corsPolicy":{"allowOrigins":[{"mode":"prefix","origin":"https://example.com"}],"enabled":false}}}' \
   https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/paths
 ```
 
@@ -121,7 +121,8 @@ const payload = {
           "mode": "prefix",
           "origin": "https://example.com"
         }
-      ]
+      ],
+      "enabled": false
     }
   }
 }
@@ -144,7 +145,7 @@ import requests
 
 url = "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/paths"
 
-payload = {"mode":"prefix","uri":"/","options":{"priority":0,"corsPolicy":{"allowOrigins":[{"mode":"prefix","origin":"https://example.com"}]}}}
+payload = {"mode":"prefix","uri":"/","options":{"priority":0,"corsPolicy":{"allowOrigins":[{"mode":"prefix","origin":"https://example.com"}],"enabled":false}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -165,7 +166,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/paths"
 
-  var jsonStr = []byte(`{"mode":"prefix","uri":"/","options":{"priority":0,"corsPolicy":{"allowOrigins":[{"mode":"prefix","origin":"https://example.com"}]}}}`)
+  var jsonStr = []byte(`{"mode":"prefix","uri":"/","options":{"priority":0,"corsPolicy":{"allowOrigins":[{"mode":"prefix","origin":"https://example.com"}],"enabled":false}}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -244,7 +245,8 @@ Options:
           "mode": "prefix",
           "origin": "https://example.com"
         }
-      ]
+      ],
+      "enabled": false
     }
   }
 }
@@ -295,7 +297,8 @@ await apiClient.add.subdomain.path({
             "mode": "prefix",
             "origin": "https://example.com"
           }
-        ]
+        ],
+        "enabled": false
       }
     }
   }

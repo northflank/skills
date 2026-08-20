@@ -26,13 +26,20 @@ Required permission: Project > Volumes > General > Create
   - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
 - `source`: {object}
   - `type`: (string) (required) (enum: volume, backup)
-  - `sourceId`: (string) (required) Reference to the source object. For a volume source: "<volumeId>". For a backup source: "<volumeId>/<backupId>", or "<projectId>/<volumeId>/<backupId>" to restore from a backup in another project on the same cluster (requires the cross-project clone feature).
+  - `sourceId`: (string) (required) Reference to the source object. For a volume source: "<volumeId>". For a backup source, prefer the backup UUID. Legacy "<volumeId>/<backupId>" and "<projectId>/<volumeId>/<backupId>" references remain supported.
 - `owningObject`: {object}
   - `id`: (string) (required) The id of object to attach this volume to. (pattern: ^[A-Za-z0-9-]+$)
   - `type`: (string) (required) The type of the object to attach this volume to. (enum: service, job)
 - `attachedObjects`: [array of] {object}
    - `id`: (string) (required) The id of object to attach this volume to. (pattern: ^[A-Za-z0-9-]+$)
    - `type`: (string) (required) The type of the object to attach this volume to. (enum: service, job)
+- `backupSchedules`: [array of] {object}
+   - `scheduling`: {object}
+     - `interval`: (string) (required) The interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (enum: hourly, daily, weekly)
+     - `minute`: [array of] (integer) A minute when the backup should be performed.
+     - `hour`: [array of] (integer) An hour when the backup should be performed, in 24 hour format.
+     - `day`: [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday.
+   - `retentionTime`: (integer) (required) The time the backup is retained for, in days.
 
 **Response body:**
 
@@ -48,6 +55,13 @@ Required permission: Project > Volumes > General > Create
   - `attachedObjects`: [array of] {object}
      - `id`: (string) (required) The id of object to attach this volume to. (pattern: ^[A-Za-z0-9-]+$)
      - `type`: (string) (required) The type of the object to attach this volume to. (enum: service, job)
+  - `backupSchedules`: [array of] {object}
+     - `scheduling`: {object}
+       - `interval`: (string) (required) The interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (enum: hourly, daily, weekly)
+       - `minute`: [array of] (integer) A minute when the backup should be performed.
+       - `hour`: [array of] (integer) An hour when the backup should be performed, in 24 hour format.
+       - `day`: [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday.
+     - `retentionTime`: (integer) (required) The time the backup is retained for, in days.
   - `status`: (string) (required) Status the volume is in on the cluster
   - `createdAt`: (string) (required) The timestamp the volume was created at (format: date-time)
   - `updatedAt`: (string) (required) The timestamp the volume was last updated at (format: date-time)
@@ -66,7 +80,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"ssd","storageSize":6144},"source":{"sourceId":"example-volume/example-backup"},"attachedObjects":[{"id":"example-service","type":"service"}]}' \
+  --data '{"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"nvme","storageSize":6144,"accessMode":"ReadWriteOnce"},"source":{"sourceId":"6d542e24-5d9f-4ecf-80a5-e80724b9133e","type":"volume"},"attachedObjects":[{"id":"example-service","type":"service"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"retentionTime":7}]}' \
   https://api.northflank.com/v1/projects/{projectId}/volumes
 ```
 
@@ -80,16 +94,35 @@ const payload = {
     }
   ],
   "spec": {
-    "storageClassName": "ssd",
-    "storageSize": 6144
+    "storageClassName": "nvme",
+    "storageSize": 6144,
+    "accessMode": "ReadWriteOnce"
   },
   "source": {
-    "sourceId": "example-volume/example-backup"
+    "sourceId": "6d542e24-5d9f-4ecf-80a5-e80724b9133e",
+    "type": "volume"
   },
   "attachedObjects": [
     {
       "id": "example-service",
       "type": "service"
+    }
+  ],
+  "backupSchedules": [
+    {
+      "scheduling": {
+        "interval": "weekly",
+        "minute": [
+          30
+        ],
+        "hour": [
+          18
+        ],
+        "day": [
+          4
+        ]
+      },
+      "retentionTime": 7
     }
   ]
 }
@@ -112,7 +145,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/volumes"
 
-payload = {"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"ssd","storageSize":6144},"source":{"sourceId":"example-volume/example-backup"},"attachedObjects":[{"id":"example-service","type":"service"}]}
+payload = {"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"nvme","storageSize":6144,"accessMode":"ReadWriteOnce"},"source":{"sourceId":"6d542e24-5d9f-4ecf-80a5-e80724b9133e","type":"volume"},"attachedObjects":[{"id":"example-service","type":"service"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"retentionTime":7}]}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -133,7 +166,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/volumes"
 
-  var jsonStr = []byte(`{"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"ssd","storageSize":6144},"source":{"sourceId":"example-volume/example-backup"},"attachedObjects":[{"id":"example-service","type":"service"}]}`)
+  var jsonStr = []byte(`{"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"nvme","storageSize":6144,"accessMode":"ReadWriteOnce"},"source":{"sourceId":"6d542e24-5d9f-4ecf-80a5-e80724b9133e","type":"volume"},"attachedObjects":[{"id":"example-service","type":"service"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"retentionTime":7}]}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -162,13 +195,30 @@ func main() {
     "id": "example-volume",
     "name": "Example Volume",
     "spec": {
-      "storageClassName": "ssd",
+      "storageClassName": "nvme",
       "storageSize": 6144
     },
     "attachedObjects": [
       {
         "id": "example-service",
         "type": "service"
+      }
+    ],
+    "backupSchedules": [
+      {
+        "scheduling": {
+          "interval": "weekly",
+          "minute": [
+            30
+          ],
+          "hour": [
+            18
+          ],
+          "day": [
+            4
+          ]
+        },
+        "retentionTime": 7
       }
     ],
     "status": "BOUND",
@@ -210,16 +260,35 @@ Options:
     }
   ],
   "spec": {
-    "storageClassName": "ssd",
-    "storageSize": 6144
+    "storageClassName": "nvme",
+    "storageSize": 6144,
+    "accessMode": "ReadWriteOnce"
   },
   "source": {
-    "sourceId": "example-volume/example-backup"
+    "sourceId": "6d542e24-5d9f-4ecf-80a5-e80724b9133e",
+    "type": "volume"
   },
   "attachedObjects": [
     {
       "id": "example-service",
       "type": "service"
+    }
+  ],
+  "backupSchedules": [
+    {
+      "scheduling": {
+        "interval": "weekly",
+        "minute": [
+          30
+        ],
+        "hour": [
+          18
+        ],
+        "day": [
+          4
+        ]
+      },
+      "retentionTime": 7
     }
   ]
 }
@@ -234,13 +303,30 @@ Options:
   "id": "example-volume",
   "name": "Example Volume",
   "spec": {
-    "storageClassName": "ssd",
+    "storageClassName": "nvme",
     "storageSize": 6144
   },
   "attachedObjects": [
     {
       "id": "example-service",
       "type": "service"
+    }
+  ],
+  "backupSchedules": [
+    {
+      "scheduling": {
+        "interval": "weekly",
+        "minute": [
+          30
+        ],
+        "hour": [
+          18
+        ],
+        "day": [
+          4
+        ]
+      },
+      "retentionTime": 7
     }
   ],
   "status": "BOUND",
@@ -269,16 +355,35 @@ await apiClient.create.volume({
       }
     ],
     "spec": {
-      "storageClassName": "ssd",
-      "storageSize": 6144
+      "storageClassName": "nvme",
+      "storageSize": 6144,
+      "accessMode": "ReadWriteOnce"
     },
     "source": {
-      "sourceId": "example-volume/example-backup"
+      "sourceId": "6d542e24-5d9f-4ecf-80a5-e80724b9133e",
+      "type": "volume"
     },
     "attachedObjects": [
       {
         "id": "example-service",
         "type": "service"
+      }
+    ],
+    "backupSchedules": [
+      {
+        "scheduling": {
+          "interval": "weekly",
+          "minute": [
+            30
+          ],
+          "hour": [
+            18
+          ],
+          "day": [
+            4
+          ]
+        },
+        "retentionTime": 7
       }
     ]
   }
@@ -295,13 +400,30 @@ await apiClient.create.volume({
     "id": "example-volume",
     "name": "Example Volume",
     "spec": {
-      "storageClassName": "ssd",
+      "storageClassName": "nvme",
       "storageSize": 6144
     },
     "attachedObjects": [
       {
         "id": "example-service",
         "type": "service"
+      }
+    ],
+    "backupSchedules": [
+      {
+        "scheduling": {
+          "interval": "weekly",
+          "minute": [
+            30
+          ],
+          "hour": [
+            18
+          ],
+          "day": [
+            4
+          ]
+        },
+        "retentionTime": 7
       }
     ],
     "status": "BOUND",

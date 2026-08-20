@@ -26,6 +26,7 @@ Required permission: Project > Services > General > Read
      - `id`: (string) (required) Identifier for the service
      - `appId`: (string) (required) Full identifier used for service deployment
      - `projectId`: (string) (required) ID of the project the service belongs to.
+     - `stageId`: (string) ID of the environment the service belongs to.
      - `name`: (string) (required) Service name
      - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `description`: (string) A short description of the service
@@ -63,6 +64,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services
         "id": "example-service",
         "appId": "/example-user/default-project/example-service",
         "projectId": "default-project",
+        "stageId": "staging",
         "name": "Example Service",
         "description": "This is the service description",
         "serviceType": "combined",
@@ -120,6 +122,7 @@ Options:
       "id": "example-service",
       "appId": "/example-user/default-project/example-service",
       "projectId": "default-project",
+      "stageId": "staging",
       "name": "Example Service",
       "description": "This is the service description",
       "serviceType": "combined",
@@ -169,6 +172,7 @@ await apiClient.list.services({
         "id": "example-service",
         "appId": "/example-user/default-project/example-service",
         "projectId": "default-project",
+        "stageId": "staging",
         "name": "Example Service",
         "description": "This is the service description",
         "serviceType": "combined",

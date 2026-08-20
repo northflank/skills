@@ -9,7 +9,7 @@ Required permission: Account > Platform > Tags > Create
 **Request body:**
 
 {object}
-- `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service and job workloads after their next deployment. Required for usage in egress IP selectors.
+- `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, and job workloads after their next deployment. Required for usage in egress IP selectors.
 - `useSpotNodes`: (boolean) Schedule workloads to spot nodes
 - `useOnDemandNodes`: (boolean) Also allow workloads to schedule to on demand nodes. Only relevant if you want workloads to schedule across both spot and on demand nodes
 - `nodeAffinities`: [array of] {object}
@@ -40,7 +40,7 @@ Required permission: Account > Platform > Tags > Create
 
 {object}
 - `data`: {object}
-  - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service and job workloads after their next deployment. Required for usage in egress IP selectors.
+  - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, and job workloads after their next deployment. Required for usage in egress IP selectors.
   - `useSpotNodes`: (boolean) Schedule workloads to spot nodes
   - `useOnDemandNodes`: (boolean) Also allow workloads to schedule to on demand nodes. Only relevant if you want workloads to schedule across both spot and on demand nodes
   - `nodeAffinities`: [array of] {object}

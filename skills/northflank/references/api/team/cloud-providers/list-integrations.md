@@ -20,7 +20,7 @@ Required permission: Account > Cloud > Integrations > Read
   - `integrations`: [array of] {object}
      - `name`: (string) (required) The name of the cloud provider integration. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
      - `description`: (string) The description of the integration. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-     - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, byok)
+     - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, byok)
      - `features`: [array of] (string) The type of provider integration. (enum: byoc, byoc-static-egress, byoc-custom-launch-templates, byoc-custom-vpc, byoc-logs, cloudfront, route53, registry-pull, registry-push, opentofu, workload-identity, workload-identity-managed)
      - `restrictions`: {object}
        - `enabled`: (boolean) (required) Enable or disable BYOC restrictions for this entity
@@ -35,6 +35,19 @@ Required permission: Account > Cloud > Integrations > Read
      - `cloudflare`: {object}
        - `credentialType`: (string) The type of api key (enum: apiToken, originCAKey, globalApiKey)
      - `id`: (string) (required) ID of the integration (pattern: ^[A-Za-z0-9-]+$)
+     - `registryCredentialRefresh`: {object}
+       - `status`: (string) (required) (enum: healthy, degraded, suspended)
+       - `affectedCredentialCount`: (integer) (required)
+       - `updatedAt`: (string) (format: date-time)
+       - `retryDelay`: (integer) Delay in milliseconds before the next refresh attempt.
+       - `nextAttemptAt`: (string) (format: date-time)
+       - `lastError`: {object}
+         - `credentialId`: (string) (required) (pattern: ^[A-Za-z0-9-]+$)
+         - `failureCount`: (integer) (required)
+         - `type`: (string) (required)
+         - `message`: (string) (required)
+         - `providerCode`: (string)
+         - `occurredAt`: (string) (required) (format: date-time)
      - `createdAt`: (string) (required) The time the integration was created. (format: date-time)
 - `pagination`: {object}
   - `hasNextPage`: (boolean) (required) Is there another page of results available?

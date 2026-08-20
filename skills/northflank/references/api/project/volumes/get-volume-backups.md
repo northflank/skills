@@ -24,6 +24,7 @@ Required permission: Project > Volumes > Backups > Read
 {object}
 - `data`: [array of] {object}
    - `id`: (string) (required) Identifier for the backup
+   - `uid`: (string) Stable identifier for using this backup as a volume source (format: uuid)
    - `name`: (string) (required)
    - `description`: (string)
    - `status`: (string) (required)

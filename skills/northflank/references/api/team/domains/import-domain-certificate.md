@@ -37,12 +37,17 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data 'undefined' \
+  --data '{"certificate":{"privateKey":"string","certificateChain":"string"}}' \
   https://api.northflank.com/v1/domains/{domain}/import
 ```
 
 ```javascript
-const payload = undefined
+const payload = {
+  "certificate": {
+    "privateKey": "string",
+    "certificateChain": "string"
+  }
+}
 
 const response = await fetch('https://api.northflank.com/v1/domains/{domain}/import', {
   method: 'POST',
@@ -62,7 +67,7 @@ import requests
 
 url = "https://api.northflank.com/v1/domains/{domain}/import"
 
-payload = undefined
+payload = {"certificate":{"privateKey":"string","certificateChain":"string"}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -83,7 +88,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/domains/{domain}/import"
 
-  var jsonStr = []byte(`undefined`)
+  var jsonStr = []byte(`{"certificate":{"privateKey":"string","certificateChain":"string"}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -139,7 +144,12 @@ Options:
 - `-o --output <format>`: Output formatting
 
 ```json
-undefined
+{
+  "certificate": {
+    "privateKey": "string",
+    "certificateChain": "string"
+  }
+}
 ```
 
 #### Example Response
@@ -160,6 +170,12 @@ Request body
 await apiClient.import.domainCertificate({
   parameters: {
     "domain": "example.com"
+  },
+  data: {
+    "certificate": {
+      "privateKey": "string",
+      "certificateChain": "string"
+    }
   }
 });
 ```

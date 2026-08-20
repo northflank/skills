@@ -63,7 +63,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
-  --data '{"name":"Example SSH Identity","sshPublicKeys":[{"key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."}],"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}' \
+  --data '{"name":"Example SSH Identity","sshPublicKeys":[{"key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...","__depth":3}],"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}' \
   https://api.northflank.com/v1/integrations/ssh-identities/{identityId}
 ```
 
@@ -72,7 +72,8 @@ const payload = {
   "name": "Example SSH Identity",
   "sshPublicKeys": [
     {
-      "key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
+      "key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...",
+      "__depth": 3
     }
   ],
   "restrictions": {
@@ -104,7 +105,7 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/ssh-identities/{identityId}"
 
-payload = {"name":"Example SSH Identity","sshPublicKeys":[{"key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."}],"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}
+payload = {"name":"Example SSH Identity","sshPublicKeys":[{"key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...","__depth":3}],"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PUT", url, headers = headers, json = payload)
@@ -125,7 +126,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/ssh-identities/{identityId}"
 
-  var jsonStr = []byte(`{"name":"Example SSH Identity","sshPublicKeys":[{"key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."}],"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}`)
+  var jsonStr = []byte(`{"name":"Example SSH Identity","sshPublicKeys":[{"key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...","__depth":3}],"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}`)
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -194,7 +195,8 @@ Options:
   "name": "Example SSH Identity",
   "sshPublicKeys": [
     {
-      "key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
+      "key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...",
+      "__depth": 3
     }
   ],
   "restrictions": {
@@ -249,7 +251,8 @@ await apiClient.put.sshIdentities({
     "name": "Example SSH Identity",
     "sshPublicKeys": [
       {
-        "key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
+        "key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...",
+        "__depth": 3
       }
     ],
     "restrictions": {

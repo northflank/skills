@@ -31,6 +31,8 @@ Required permission: Account > Observability > Notifications > Read
   - `events`: {object}
     - `trigger:service:autoscaling:event`: (boolean)
     - `trigger:service:deployment:status-update`: (boolean)
+    - `trigger:harness:autoscaling:event`: (boolean)
+    - `trigger:harness:deployment:status-update`: (boolean)
     - `trigger:project:tailscale-regen-failure`: (boolean)
     - `trigger:addon-backup:start`: (boolean)
     - `trigger:addon-backup:success`: (boolean)
@@ -127,6 +129,8 @@ GET /v1/teams/{teamId}/integrations/notifications/{notificationId}
     "events": {
       "trigger:service:autoscaling:event": true,
       "trigger:service:deployment:status-update": true,
+      "trigger:harness:autoscaling:event": true,
+      "trigger:harness:deployment:status-update": true,
       "trigger:project:tailscale-regen-failure": true,
       "trigger:addon-backup:start": true,
       "trigger:addon-backup:success": true,
@@ -234,6 +238,8 @@ Options:
   "events": {
     "trigger:service:autoscaling:event": true,
     "trigger:service:deployment:status-update": true,
+    "trigger:harness:autoscaling:event": true,
+    "trigger:harness:deployment:status-update": true,
     "trigger:project:tailscale-regen-failure": true,
     "trigger:addon-backup:start": true,
     "trigger:addon-backup:success": true,
@@ -339,6 +345,8 @@ await apiClient.get.notification({
     "events": {
       "trigger:service:autoscaling:event": true,
       "trigger:service:deployment:status-update": true,
+      "trigger:harness:autoscaling:event": true,
+      "trigger:harness:deployment:status-update": true,
       "trigger:project:tailscale-regen-failure": true,
       "trigger:addon-backup:start": true,
       "trigger:addon-backup:success": true,

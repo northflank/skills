@@ -12,3 +12,4 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 | **List global secrets** | `GET /v1/secrets`<br>`GET /v1/teams/{teamId}/secrets` | [list-global-secrets.md](list-global-secrets.md) |
 | **Patch global secret** | `PATCH /v1/secrets/{secretId}`<br>`PATCH /v1/teams/{teamId}/secrets/{secretId}` | [patch-global-secret.md](patch-global-secret.md) |
 | **Put global secret** | `PUT /v1/secrets`<br>`PUT /v1/teams/{teamId}/secrets` | [put-global-secret.md](put-global-secret.md) |
+| **Trigger global secret dependents** | `POST /v1/secrets/{secretId}/trigger-dependents`<br>`POST /v1/teams/{teamId}/secrets/{secretId}/trigger-dependents` | [trigger-global-secret-dependents.md](trigger-global-secret-dependents.md) |

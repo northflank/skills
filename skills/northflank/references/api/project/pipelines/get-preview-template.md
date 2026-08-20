@@ -31,7 +31,7 @@ Required permission: Account > Templates > General > Read
      - `selfHostedVcsId`: (string) If vcsService is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
      - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
      - `vcsLinkId`: (string)
-     - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+     - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
      - `branchRestrictions`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
      - `prRestrictions`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
      - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
@@ -46,20 +46,20 @@ Required permission: Account > Templates > General > Read
     - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
     - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
     - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
-    - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+    - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
     - `branch`: (string) (required) The name of the branch to use.
     - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
   - `$schema`: (string)
   - `spec`: (multiple options) {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Workflow)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: (undefined) (required) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Subdomain)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
-       - `domain`: (multiple options) (string) The domain the path should be created for. (pattern: ^((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+$) | (string) A string containing one or more references that resolve to the domain the path should be created for. (pattern: .*\${.*}.*)
+       - `domain`: (multiple options) (string) The domain the path should be created for. (pattern: ^((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+$) | (string) A string containing one or more references that resolve to the domain the path should be created for. (pattern: .*\${.*}.*)
        - `name`: (multiple options) (string) Subdomain prepended to the domain name | (string) A string containing one or more references that resolve to subdomain prepended to the domain name (pattern: .*\${.*}.*)
        - `options`: {object}
          - `tlsMode`: (string) Desired TLS mode for the subdomain. (enum: default, passthrough)
@@ -105,9 +105,9 @@ Required permission: Account > Templates > General > Read
                  - `ttl`: (number) (required) (format: float) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: SubdomainPath)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
-       - `subdomain`: (multiple options) (string) The domain the path should be created for. (pattern: ^\*|^@$|^([0-9a-z]([0-9a-z\-]*[0-9a-z])?\.)*[0-9a-z]([0-9a-z\-]*[0-9a-z])?$) | (string) A string containing one or more references that resolve to the domain the path should be created for. (pattern: .*\${.*}.*)
+       - `subdomain`: (multiple options) (string) The domain the path should be created for. (pattern: ^\*|^@$|^([0-9a-z]([0-9a-z-]*[0-9a-z])?\.)*[0-9a-z]([0-9a-z-]*[0-9a-z])?$) | (string) A string containing one or more references that resolve to the domain the path should be created for. (pattern: .*\${.*}.*)
        - `mode`: (multiple options) (string) Mode of the path, determining how the URI will be interpreted. (enum: prefix, exact, regex) | (string) A string containing one or more references that resolve to mode of the path, determining how the URI will be interpreted. (pattern: .*\${.*}.*)
        - `uri`: (multiple options) (string) URI of the subdomain path. Interpreted according to the selected path mode | (string) A string containing one or more references that resolve to uRI of the subdomain path. Interpreted according to the selected path mode (pattern: .*\${.*}.*)
        - `options`: {object}
@@ -144,9 +144,9 @@ Required permission: Account > Templates > General > Read
            - `retryOn`: [array of] (string) (enum: 5xx, gateway-error, reset, connect-failure, envoy-ratelimited, retriable-4xx, refused-stream, retriable-status-codes, retriable-headers, cancelled, deadline-exceeded, internal, resource-exhausted, unavailable) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: ResourceTag)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
-       - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service and job workloads after their next deployment. Required for usage in egress IP selectors.
+       - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, and job workloads after their next deployment. Required for usage in egress IP selectors.
        - `useSpotNodes`: (boolean) Schedule workloads to spot nodes
        - `useOnDemandNodes`: (boolean) Also allow workloads to schedule to on demand nodes. Only relevant if you want workloads to schedule across both spot and on demand nodes
        - `nodeAffinities`: [array of] {object}
@@ -175,9 +175,9 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: ResourceTag)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
-       - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service and job workloads after their next deployment. Required for usage in egress IP selectors.
+       - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, and job workloads after their next deployment. Required for usage in egress IP selectors.
        - `useSpotNodes`: (boolean) Schedule workloads to spot nodes
        - `useOnDemandNodes`: (boolean) Also allow workloads to schedule to on demand nodes. Only relevant if you want workloads to schedule across both spot and on demand nodes
        - `nodeAffinities`: [array of] {object}
@@ -206,7 +206,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: RolloutStrategy)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `name`: (multiple options) (string) Display name for the gradual rollout strategy | (string) A string containing one or more references that resolve to display name for the gradual rollout strategy (pattern: .*\${.*}.*)
        - `type`: (multiple options) (string) Type of the gradual rollout strategy (enum: canary) | (string) A string containing one or more references that resolve to type of the gradual rollout strategy (pattern: .*\${.*}.*)
@@ -232,7 +232,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: RolloutStrategy)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `name`: (multiple options) (string) Display name for the gradual rollout strategy | (string) A string containing one or more references that resolve to display name for the gradual rollout strategy (pattern: .*\${.*}.*)
        - `type`: (multiple options) (string) Type of the gradual rollout strategy (enum: canary) | (string) A string containing one or more references that resolve to type of the gradual rollout strategy (pattern: .*\${.*}.*)
@@ -258,7 +258,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: BuildService)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `description`: (multiple options) (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the service. (pattern: .*\${.*}.*)
        - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -267,15 +267,15 @@ Required permission: Account > Templates > General > Read
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (Deprecated - use buildPlan for build resources instead.). (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (Deprecated - use buildPlan for build resources instead.). (pattern: .*\${.*}.*)
          - `buildPlan`: (multiple options) (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the build plan to use. (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
        - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
        - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
        - `vcsData`: {object}
-         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
          - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -310,6 +310,7 @@ Required permission: Account > Templates > General > Read
          - `isAllowList`: (multiple options) (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. | (string) A string containing one or more references that resolve to if `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. (pattern: .*\${.*}.*)
          - `ciIgnoreFlagsEnabled`: (multiple options) (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. | (string) A string containing one or more references that resolve to if `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. (pattern: .*\${.*}.*)
          - `ciIgnoreFlags`: [array of] (multiple options) (string) A commit ignore flag. (max length: 72) | (string) A string containing one or more references that resolve to a commit ignore flag. (pattern: .*\${.*}.*)
+         - `ignoreEmptyCommits`: (multiple options) (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. | (string) A string containing one or more references that resolve to if `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. (pattern: .*\${.*}.*)
          - `dockerfileTarget`: (multiple options) (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. | (string) A string containing one or more references that resolve to if your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: .*\${.*}.*)
          - `dockerCredentials`: [array of] (multiple options) (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the docker credentials to use. (pattern: .*\${.*}.*)
          - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -325,7 +326,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: BuildService)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `name`: (multiple options) (string) The name of the service. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the name of the service. (pattern: .*\${.*}.*)
        - `description`: (multiple options) (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the service. (pattern: .*\${.*}.*)
@@ -336,17 +337,17 @@ Required permission: Account > Templates > General > Read
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (Deprecated - use buildPlan for build resources instead.). (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (Deprecated - use buildPlan for build resources instead.). (pattern: .*\${.*}.*)
          - `buildPlan`: (multiple options) (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the build plan to use. (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
        - `infrastructure`: {object}
          - `architecture`: (string) (enum: x86, arm)
        - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
        - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
        - `vcsData`: {object}
-         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
          - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -384,6 +385,7 @@ Required permission: Account > Templates > General > Read
          - `isAllowList`: (multiple options) (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. | (string) A string containing one or more references that resolve to if `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. (pattern: .*\${.*}.*)
          - `ciIgnoreFlagsEnabled`: (multiple options) (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. | (string) A string containing one or more references that resolve to if `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. (pattern: .*\${.*}.*)
          - `ciIgnoreFlags`: [array of] (multiple options) (string) A commit ignore flag. (max length: 72) | (string) A string containing one or more references that resolve to a commit ignore flag. (pattern: .*\${.*}.*)
+         - `ignoreEmptyCommits`: (multiple options) (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. | (string) A string containing one or more references that resolve to if `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. (pattern: .*\${.*}.*)
          - `dockerfileTarget`: (multiple options) (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. | (string) A string containing one or more references that resolve to if your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: .*\${.*}.*)
          - `dockerCredentials`: [array of] (multiple options) (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the docker credentials to use. (pattern: .*\${.*}.*)
          - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -398,7 +400,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: CombinedService)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `description`: (multiple options) (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the service. (pattern: .*\${.*}.*)
        - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -407,11 +409,11 @@ Required permission: Account > Templates > General > Read
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
          - `buildPlan`: (multiple options) (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the build plan to use. (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
        - `deployment`: {object}
          - `instances`: (multiple options) (integer) The number of instances to run the service on. | (string) A string containing one or more references that resolve to the number of instances to run the service on. (pattern: .*\${.*}.*)
          - `buildpack`: {object}
@@ -436,11 +438,11 @@ Required permission: Account > Templates > General > Read
            - `type`: (multiple options) (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required) | (string) A string containing one or more references that resolve to defines scheduling behaviour across different zones within the same region. (pattern: .*\${.*}.*)
            - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
          - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
          - `gradualRolloutStrategyId`: (multiple options) (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the strategy to be attached to service. (pattern: .*\${.*}.*)
          - `ssh`: {object}
@@ -448,6 +450,15 @@ Required permission: Account > Templates > General > Read
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
+         - `volumes`: [array of] {object}
+             - `id`: (multiple options) (string) Slug identifying this volume within the service. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to slug identifying this volume within the service. (pattern: .*\${.*}.*)
+             - `mounts`: [array of] {object}
+                 - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
+                 - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
+             - `spec`: {object}
+               - `accessMode`: (string) Access mode of a per-replica volume. Always `ReadWriteOnce`. (enum: ReadWriteOnce)
+               - `storageClassName`: (string) The type of the storage.
+               - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
        - `ports`: [array of] {object}
            - `name`: (multiple options) (string) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8) | (string) A string containing one or more references that resolve to the name used to identify the port. (pattern: .*\${.*}.*)
            - `internalPort`: (multiple options) (integer) The port number. | (string) A string containing one or more references that resolve to the port number. (pattern: .*\${.*}.*)
@@ -552,7 +563,7 @@ Required permission: Account > Templates > General > Read
        - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
        - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
        - `vcsData`: {object}
-         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
          - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -585,6 +596,7 @@ Required permission: Account > Templates > General > Read
          - `isAllowList`: (multiple options) (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. | (string) A string containing one or more references that resolve to if `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. (pattern: .*\${.*}.*)
          - `ciIgnoreFlagsEnabled`: (multiple options) (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. | (string) A string containing one or more references that resolve to if `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. (pattern: .*\${.*}.*)
          - `ciIgnoreFlags`: [array of] (multiple options) (string) A commit ignore flag. (max length: 72) | (string) A string containing one or more references that resolve to a commit ignore flag. (pattern: .*\${.*}.*)
+         - `ignoreEmptyCommits`: (multiple options) (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. | (string) A string containing one or more references that resolve to if `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. (pattern: .*\${.*}.*)
          - `dockerfileTarget`: (multiple options) (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. | (string) A string containing one or more references that resolve to if your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: .*\${.*}.*)
          - `dockerCredentials`: [array of] (multiple options) (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the docker credentials to use. (pattern: .*\${.*}.*)
          - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -642,7 +654,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: CombinedService)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `name`: (multiple options) (string) The name of the service. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the name of the service. (pattern: .*\${.*}.*)
        - `description`: (multiple options) (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the service. (pattern: .*\${.*}.*)
@@ -653,11 +665,11 @@ Required permission: Account > Templates > General > Read
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
          - `buildPlan`: (multiple options) (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the build plan to use. (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
        - `infrastructure`: {object}
          - `architecture`: (string) (enum: x86, arm)
        - `deployment`: {object}
@@ -687,11 +699,11 @@ Required permission: Account > Templates > General > Read
            - `type`: (multiple options) (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required) | (string) A string containing one or more references that resolve to defines scheduling behaviour across different zones within the same region. (pattern: .*\${.*}.*)
            - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
          - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
          - `gradualRolloutStrategyId`: (multiple options) (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the strategy to be attached to service. (pattern: .*\${.*}.*)
          - `ssh`: {object}
@@ -699,6 +711,15 @@ Required permission: Account > Templates > General > Read
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
+         - `volumes`: [array of] {object}
+             - `id`: (multiple options) (string) Slug identifying this volume within the service. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to slug identifying this volume within the service. (pattern: .*\${.*}.*)
+             - `mounts`: [array of] {object}
+                 - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
+                 - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
+             - `spec`: {object}
+               - `accessMode`: (string) Access mode of a per-replica volume. Always `ReadWriteOnce`. (enum: ReadWriteOnce)
+               - `storageClassName`: (string) The type of the storage.
+               - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
        - `ports`: [array of] {object}
            - `name`: (multiple options) (string) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8) | (string) A string containing one or more references that resolve to the name used to identify the port. (pattern: .*\${.*}.*)
            - `internalPort`: (multiple options) (integer) The port number. | (string) A string containing one or more references that resolve to the port number. (pattern: .*\${.*}.*)
@@ -803,7 +824,7 @@ Required permission: Account > Templates > General > Read
        - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
        - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
        - `vcsData`: {object}
-         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
          - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -839,6 +860,7 @@ Required permission: Account > Templates > General > Read
          - `isAllowList`: (multiple options) (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. | (string) A string containing one or more references that resolve to if `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. (pattern: .*\${.*}.*)
          - `ciIgnoreFlagsEnabled`: (multiple options) (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. | (string) A string containing one or more references that resolve to if `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. (pattern: .*\${.*}.*)
          - `ciIgnoreFlags`: [array of] (multiple options) (string) A commit ignore flag. (max length: 72) | (string) A string containing one or more references that resolve to a commit ignore flag. (pattern: .*\${.*}.*)
+         - `ignoreEmptyCommits`: (multiple options) (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. | (string) A string containing one or more references that resolve to if `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. (pattern: .*\${.*}.*)
          - `dockerfileTarget`: (multiple options) (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. | (string) A string containing one or more references that resolve to if your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: .*\${.*}.*)
          - `dockerCredentials`: [array of] (multiple options) (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the docker credentials to use. (pattern: .*\${.*}.*)
          - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -898,7 +920,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: DeploymentService)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `description`: (multiple options) (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the service. (pattern: .*\${.*}.*)
        - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -906,11 +928,11 @@ Required permission: Account > Templates > General > Read
        - `billing`: {object}
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
        - `deployment`: {object}
          - `instances`: (multiple options) (integer) The number of instances to run the service on. | (string) A string containing one or more references that resolve to the number of instances to run the service on. (pattern: .*\${.*}.*)
          - `buildpack`: {object}
@@ -935,11 +957,11 @@ Required permission: Account > Templates > General > Read
            - `type`: (multiple options) (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required) | (string) A string containing one or more references that resolve to defines scheduling behaviour across different zones within the same region. (pattern: .*\${.*}.*)
            - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
          - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
          - `gradualRolloutStrategyId`: (multiple options) (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the strategy to be attached to service. (pattern: .*\${.*}.*)
          - `ssh`: {object}
@@ -947,13 +969,27 @@ Required permission: Account > Templates > General > Read
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
+         - `volumes`: [array of] {object}
+             - `id`: (multiple options) (string) Slug identifying this volume within the service. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to slug identifying this volume within the service. (pattern: .*\${.*}.*)
+             - `mounts`: [array of] {object}
+                 - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
+                 - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
+             - `spec`: {object}
+               - `accessMode`: (string) Access mode of a per-replica volume. Always `ReadWriteOnce`. (enum: ReadWriteOnce)
+               - `storageClassName`: (string) The type of the storage.
+               - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
+         - `containerSnapshot`: {object}
+           - `capture`: {object}
+             - `onTermination`: (multiple options) (boolean) Creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts. | (string) A string containing one or more references that resolve to creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts. (pattern: .*\${.*}.*)
+             - `retention`: {object}
+               - `maxSnapshots`: (multiple options) (integer) The maximum number of termination snapshots retained for the service. | (string) A string containing one or more references that resolve to the maximum number of termination snapshots retained for the service. (pattern: .*\${.*}.*)
          - `internal`: {object}
-           - `id`: (multiple options) (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+           - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
          - `external`: {object}
-           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
+           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
            - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
        - `ports`: [array of] {object}
            - `name`: (multiple options) (string) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8) | (string) A string containing one or more references that resolve to the name used to identify the port. (pattern: .*\${.*}.*)
@@ -1102,7 +1138,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: DeploymentService)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `name`: (multiple options) (string) The name of the service. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the name of the service. (pattern: .*\${.*}.*)
        - `description`: (multiple options) (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the service. (pattern: .*\${.*}.*)
@@ -1112,11 +1148,11 @@ Required permission: Account > Templates > General > Read
        - `billing`: {object}
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
        - `infrastructure`: {object}
          - `architecture`: (string) (enum: x86, arm)
        - `deployment`: {object}
@@ -1146,11 +1182,11 @@ Required permission: Account > Templates > General > Read
            - `type`: (multiple options) (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required) | (string) A string containing one or more references that resolve to defines scheduling behaviour across different zones within the same region. (pattern: .*\${.*}.*)
            - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
          - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
          - `gradualRolloutStrategyId`: (multiple options) (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the strategy to be attached to service. (pattern: .*\${.*}.*)
          - `ssh`: {object}
@@ -1158,13 +1194,28 @@ Required permission: Account > Templates > General > Read
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
+         - `volumes`: [array of] {object}
+             - `id`: (multiple options) (string) Slug identifying this volume within the service. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to slug identifying this volume within the service. (pattern: .*\${.*}.*)
+             - `mounts`: [array of] {object}
+                 - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
+                 - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
+             - `spec`: {object}
+               - `accessMode`: (string) Access mode of a per-replica volume. Always `ReadWriteOnce`. (enum: ReadWriteOnce)
+               - `storageClassName`: (string) The type of the storage.
+               - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
+         - `containerSnapshot`: {object}
+           - `restoreFrom`: (multiple options) (string) The successful container snapshot to restore the service from. (format: uuid) | (string) A string containing one or more references that resolve to the successful container snapshot to restore the service from. (pattern: .*\${.*}.*)
+           - `capture`: {object}
+             - `onTermination`: (multiple options) (boolean) Creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts. | (string) A string containing one or more references that resolve to creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts. (pattern: .*\${.*}.*)
+             - `retention`: {object}
+               - `maxSnapshots`: (multiple options) (integer) The maximum number of termination snapshots retained for the service. | (string) A string containing one or more references that resolve to the maximum number of termination snapshots retained for the service. (pattern: .*\${.*}.*)
          - `internal`: {object}
-           - `id`: (multiple options) (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+           - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
          - `external`: {object}
-           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
+           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
            - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
          - `releaseFlowControlled`: (boolean) When enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually.
        - `ports`: [array of] {object}
@@ -1315,8 +1366,313 @@ Required permission: Account > Templates > General > Read
          - `expiryTime`: (integer) Number of seconds from creation after which the service should automatically expire. Once reached, the service is paused and scheduled for deletion. Must be between 300 (5 minutes) and 604800 (7 days).
      - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: Harness)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `spec`: {object}
+       - `description`: (multiple options) (string) A description of the harness. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the harness. (pattern: .*\${.*}.*)
+       - `tags`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
+       - `billing`: {object}
+         - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
+         - `gpu`: {object}
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
+           - `configuration`: {object}
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
+       - `deployment`: {object}
+         - `gpu`: {object}
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
+           - `configuration`: {object}
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
+         - `storage`: {object}
+           - `ephemeralStorage`: {object}
+             - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
+         - `workspaceSize`: (multiple options) (integer) Size of the persistent workspace volume in MiB. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims. | (string) A string containing one or more references that resolve to size of the persistent workspace volume in MiB. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims. (pattern: .*\${.*}.*)
+       - `ports`: [array of] {object}
+           - `name`: (multiple options) (string) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8) | (string) A string containing one or more references that resolve to the name used to identify the port. (pattern: .*\${.*}.*)
+           - `internalPort`: (multiple options) (integer) The port number. | (string) A string containing one or more references that resolve to the port number. (pattern: .*\${.*}.*)
+           - `public`: (multiple options) (boolean) If true, the port will be exposed publicly. | (string) A string containing one or more references that resolve to if true, the port will be exposed publicly. (pattern: .*\${.*}.*)
+           - `security`: {object}
+             - `credentials`: [array of] {object}
+                 - `username`: (multiple options) (string) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the username to access the service (pattern: .*\${.*}.*)
+                 - `password`: (multiple options) (string) The password to access the service with this username. | (string) A string containing one or more references that resolve to the password to access the service with this username. (pattern: .*\${.*}.*)
+                 - `type`: (multiple options) (string) The type of authentication used (enum: basic-auth) | (string) A string containing one or more references that resolve to the type of authentication used (pattern: .*\${.*}.*)
+             - `ip`: (multiple options) [array of] {object}
+                   - `addresses`: (multiple options) [array of] (multiple options) (string) An IP address used by this rule (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))?$) | (string) A string containing one or more references that resolve to an IP address used by this rule (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP addresses used for this rule (pattern: .*\${.*}.*)
+                   - `action`: (multiple options) (string) The action for this rule. (enum: ALLOW, DENY) | (string) A string containing one or more references that resolve to the action for this rule. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP address policies. (pattern: .*\${.*}.*)
+             - `policies`: (multiple options) [array of] {object}
+                   - `addresses`: (multiple options) [array of] (multiple options) (string) An IP address used by this rule (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))?$) | (string) A string containing one or more references that resolve to an IP address used by this rule (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP addresses used for this rule (pattern: .*\${.*}.*)
+                   - `action`: (multiple options) (string) The action for this rule. (enum: ALLOW, DENY) | (string) A string containing one or more references that resolve to the action for this rule. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP address policies. (pattern: .*\${.*}.*)
+             - `sso`: {object}
+               - `organizationId`: (multiple options) (string) ID of the SSO organization that the user will have to be a member of | (string) A string containing one or more references that resolve to iD of the SSO organization that the user will have to be a member of (pattern: .*\${.*}.*)
+               - `directoryGroupIds`: (multiple options) [array of] (string) | (string) A string containing one or more references that resolve to array of directory groups that will have access (pattern: .*\${.*}.*)
+               - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
+               - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
+               - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+               - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
+             - `headers`: [array of] (multiple options) {object}
+                   - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                   - `name`: (multiple options) (string) (pattern: ^[a-zA-Z0-9_\-%$+]+$) | (string) (pattern: .*\${.*}.*)
+                   - `value`: (multiple options) (string) | (string) (pattern: .*\${.*}.*) | {object}
+                   - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                   - `name`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                   - `value`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+             - `verificationMode`: (string) Mode used to verify multiple security features like ip policies and SSO authentication (enum: or, and)
+             - `securePathConfiguration`: {object}
+               - `enabled`: (boolean) Enable security policies on a path-level style
+               - `skipSecurityPoliciesForInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip all security policies
+               - `rules`: [array of] {object}
+                   - `paths`: [array of] (multiple options) {object}
+                         - `path`: (multiple options) (string) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$) | (string) (pattern: .*\${.*}.*)
+                         - `routingMode`: (multiple options) (string) Mode of the path, determining how the URI will be interpreted. (enum: prefix) | (string) A string containing one or more references that resolve to mode of the path, determining how the URI will be interpreted. (pattern: .*\${.*}.*)
+                         - `priority`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*) | {object}
+                         - `path`: (multiple options) (string) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$) | (string) (pattern: .*\${.*}.*)
+                         - `routingMode`: (multiple options) (string) Mode of the path, determining how the URI will be interpreted. (enum: exact) | (string) A string containing one or more references that resolve to mode of the path, determining how the URI will be interpreted. (pattern: .*\${.*}.*)
+                         - `priority`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*) | {object}
+                         - `path`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                         - `routingMode`: (multiple options) (string) Mode of the path, determining how the URI will be interpreted. (enum: regex) | (string) A string containing one or more references that resolve to mode of the path, determining how the URI will be interpreted. (pattern: .*\${.*}.*)
+                         - `priority`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
+                   - `accessMode`: (multiple options) (string) Specify the way the path rule will behave when processing policies. This enables an allow-list/deny-list approach for access control on each path (enum: protected, unprotected) | (string) A string containing one or more references that resolve to specify the way the path rule will behave when processing policies. This enables an allow-list/deny-list approach for access control on each path (pattern: .*\${.*}.*)
+                   - `securityPolicies`: (multiple options) {object}
+                       - `orPolicies`: {object}
+                         - `credentials`: [array of] {object}
+                             - `username`: (multiple options) (string) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the username to access the service (pattern: .*\${.*}.*)
+                             - `password`: (multiple options) (string) The password to access the service with this username. | (string) A string containing one or more references that resolve to the password to access the service with this username. (pattern: .*\${.*}.*)
+                             - `type`: (multiple options) (string) The type of authentication used (enum: basic-auth) | (string) A string containing one or more references that resolve to the type of authentication used (pattern: .*\${.*}.*)
+                         - `ip`: (multiple options) [array of] {object}
+                               - `addresses`: (multiple options) [array of] (multiple options) (string) An IP address used by this rule (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))?$) | (string) A string containing one or more references that resolve to an IP address used by this rule (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP addresses used for this rule (pattern: .*\${.*}.*)
+                               - `action`: (multiple options) (string) The action for this rule. (enum: ALLOW, DENY) | (string) A string containing one or more references that resolve to the action for this rule. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP address policies. (pattern: .*\${.*}.*)
+                         - `policies`: (multiple options) [array of] {object}
+                               - `addresses`: (multiple options) [array of] (multiple options) (string) An IP address used by this rule (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))?$) | (string) A string containing one or more references that resolve to an IP address used by this rule (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP addresses used for this rule (pattern: .*\${.*}.*)
+                               - `action`: (multiple options) (string) The action for this rule. (enum: ALLOW, DENY) | (string) A string containing one or more references that resolve to the action for this rule. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP address policies. (pattern: .*\${.*}.*)
+                         - `sso`: {object}
+                           - `organizationId`: (multiple options) (string) ID of the SSO organization that the user will have to be a member of | (string) A string containing one or more references that resolve to iD of the SSO organization that the user will have to be a member of (pattern: .*\${.*}.*)
+                           - `directoryGroupIds`: (multiple options) [array of] (string) | (string) A string containing one or more references that resolve to array of directory groups that will have access (pattern: .*\${.*}.*)
+                           - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
+                           - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
+                           - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
+                         - `headers`: [array of] (multiple options) {object}
+                               - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                               - `name`: (multiple options) (string) (pattern: ^[a-zA-Z0-9_\-%$+]+$) | (string) (pattern: .*\${.*}.*)
+                               - `value`: (multiple options) (string) | (string) (pattern: .*\${.*}.*) | {object}
+                               - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                               - `name`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                               - `value`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                       - `requiredPolicies`: {object}
+                         - `credentials`: [array of] {object}
+                             - `username`: (multiple options) (string) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the username to access the service (pattern: .*\${.*}.*)
+                             - `password`: (multiple options) (string) The password to access the service with this username. | (string) A string containing one or more references that resolve to the password to access the service with this username. (pattern: .*\${.*}.*)
+                             - `type`: (multiple options) (string) The type of authentication used (enum: basic-auth) | (string) A string containing one or more references that resolve to the type of authentication used (pattern: .*\${.*}.*)
+                         - `ip`: (multiple options) [array of] {object}
+                               - `addresses`: (multiple options) [array of] (multiple options) (string) An IP address used by this rule (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))?$) | (string) A string containing one or more references that resolve to an IP address used by this rule (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP addresses used for this rule (pattern: .*\${.*}.*)
+                               - `action`: (multiple options) (string) The action for this rule. (enum: ALLOW, DENY) | (string) A string containing one or more references that resolve to the action for this rule. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP address policies. (pattern: .*\${.*}.*)
+                         - `policies`: (multiple options) [array of] {object}
+                               - `addresses`: (multiple options) [array of] (multiple options) (string) An IP address used by this rule (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))?$) | (string) A string containing one or more references that resolve to an IP address used by this rule (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP addresses used for this rule (pattern: .*\${.*}.*)
+                               - `action`: (multiple options) (string) The action for this rule. (enum: ALLOW, DENY) | (string) A string containing one or more references that resolve to the action for this rule. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP address policies. (pattern: .*\${.*}.*)
+                         - `sso`: {object}
+                           - `organizationId`: (multiple options) (string) ID of the SSO organization that the user will have to be a member of | (string) A string containing one or more references that resolve to iD of the SSO organization that the user will have to be a member of (pattern: .*\${.*}.*)
+                           - `directoryGroupIds`: (multiple options) [array of] (string) | (string) A string containing one or more references that resolve to array of directory groups that will have access (pattern: .*\${.*}.*)
+                           - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
+                           - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
+                           - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
+                         - `headers`: [array of] (multiple options) {object}
+                               - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                               - `name`: (multiple options) (string) (pattern: ^[a-zA-Z0-9_\-%$+]+$) | (string) (pattern: .*\${.*}.*)
+                               - `value`: (multiple options) (string) | (string) (pattern: .*\${.*}.*) | {object}
+                               - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                               - `name`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                               - `value`: (multiple options) (string) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+           - `domains`: (multiple options) [array of] (multiple options) (string) A domain to redirect to this port. | (string) A string containing one or more references that resolve to a domain to redirect to this port. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of domains to redirect to this port. Each domain must first be verified and registered to your account. (pattern: .*\${.*}.*)
+           - `disableNfDomain`: (multiple options) (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains. | (string) A string containing one or more references that resolve to disable routing on the default code.run domain for public HTTP ports with custom domains. (pattern: .*\${.*}.*)
+           - `advancedOptions`: {object}
+             - `enableTlsPassthrough`: (multiple options) (boolean) Whether this port should use pass through mode for TLS | (string) A string containing one or more references that resolve to whether this port should use pass through mode for TLS (pattern: .*\${.*}.*)
+           - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+       - `source`: {object}
+         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+         - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+         - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
+         - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
+         - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
+         - `projectBranch`: (multiple options) (string) The name of the branch to pre-pull for the harness environment. | (string) A string containing one or more references that resolve to the name of the branch to pre-pull for the harness environment. (pattern: .*\${.*}.*)
+         - `publicRepo`: (multiple options) (boolean) Whether the linked repository is public. | (string) A string containing one or more references that resolve to whether the linked repository is public. (pattern: .*\${.*}.*)
+       - `additionalRepositories`: [array of] {object}
+           - `source`: {object}
+             - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+             - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+             - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
+             - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
+             - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
+             - `projectBranch`: (multiple options) (string) The name of the branch to pre-pull for the harness environment. | (string) A string containing one or more references that resolve to the name of the branch to pre-pull for the harness environment. (pattern: .*\${.*}.*)
+             - `publicRepo`: (multiple options) (boolean) Whether the linked repository is public. | (string) A string containing one or more references that resolve to whether the linked repository is public. (pattern: .*\${.*}.*)
+           - `directory`: (multiple options) (string) Folder to clone the repository into, relative to /home/harness. (pattern: ^(?!\.{1,2}$)[A-Za-z0-9._-]+$) (max length: 237) | (string) A string containing one or more references that resolve to folder to clone the repository into, relative to /home/harness. (pattern: .*\${.*}.*)
+       - `harness`: {object}
+         - `authMode`: (multiple options) (string) How Codex and Claude authenticate. Pi requires `account`; agentless harnesses omit this field. When omitted for Codex or Claude, `apiKey` is inferred if an apiKey is provided. (enum: apiKey, account) | (string) A string containing one or more references that resolve to how Codex and Claude authenticate. Pi requires `account`; agentless harnesses omit this field. When omitted for Codex or Claude, `apiKey` is inferred if an apiKey is provided. (pattern: .*\${.*}.*)
+         - `apiKey`: (multiple options) (string) API key used by the harness environment. | (string) A string containing one or more references that resolve to aPI key used by the harness environment. (pattern: .*\${.*}.*)
+       - `runtimeEnvironment`: (multiple options) {object} | (string) (pattern: .*\${.*}.*)
+       - `runtimeFiles`: {object}
+       - `name`: (multiple options) (string) The name of the harness. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the name of the harness. (pattern: .*\${.*}.*)
+     - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: Harness)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `spec`: {object}
+       - `name`: (multiple options) (string) The name of the harness. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the name of the harness. (pattern: .*\${.*}.*)
+       - `description`: (multiple options) (string) A description of the harness. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the harness. (pattern: .*\${.*}.*)
+       - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+       - `tags`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
+       - `billing`: {object}
+         - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
+         - `gpu`: {object}
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
+           - `configuration`: {object}
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
+       - `deployment`: {object}
+         - `gpu`: {object}
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
+           - `configuration`: {object}
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
+         - `storage`: {object}
+           - `ephemeralStorage`: {object}
+             - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
+         - `workspaceSize`: (multiple options) (integer) Size of the persistent workspace volume in MiB. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims. | (string) A string containing one or more references that resolve to size of the persistent workspace volume in MiB. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims. (pattern: .*\${.*}.*)
+       - `ports`: [array of] {object}
+           - `name`: (multiple options) (string) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8) | (string) A string containing one or more references that resolve to the name used to identify the port. (pattern: .*\${.*}.*)
+           - `internalPort`: (multiple options) (integer) The port number. | (string) A string containing one or more references that resolve to the port number. (pattern: .*\${.*}.*)
+           - `public`: (multiple options) (boolean) If true, the port will be exposed publicly. | (string) A string containing one or more references that resolve to if true, the port will be exposed publicly. (pattern: .*\${.*}.*)
+           - `security`: {object}
+             - `credentials`: [array of] {object}
+                 - `username`: (multiple options) (string) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the username to access the service (pattern: .*\${.*}.*)
+                 - `password`: (multiple options) (string) The password to access the service with this username. | (string) A string containing one or more references that resolve to the password to access the service with this username. (pattern: .*\${.*}.*)
+                 - `type`: (multiple options) (string) The type of authentication used (enum: basic-auth) | (string) A string containing one or more references that resolve to the type of authentication used (pattern: .*\${.*}.*)
+             - `ip`: (multiple options) [array of] {object}
+                   - `addresses`: (multiple options) [array of] (multiple options) (string) An IP address used by this rule (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))?$) | (string) A string containing one or more references that resolve to an IP address used by this rule (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP addresses used for this rule (pattern: .*\${.*}.*)
+                   - `action`: (multiple options) (string) The action for this rule. (enum: ALLOW, DENY) | (string) A string containing one or more references that resolve to the action for this rule. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP address policies. (pattern: .*\${.*}.*)
+             - `policies`: (multiple options) [array of] {object}
+                   - `addresses`: (multiple options) [array of] (multiple options) (string) An IP address used by this rule (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))?$) | (string) A string containing one or more references that resolve to an IP address used by this rule (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP addresses used for this rule (pattern: .*\${.*}.*)
+                   - `action`: (multiple options) (string) The action for this rule. (enum: ALLOW, DENY) | (string) A string containing one or more references that resolve to the action for this rule. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP address policies. (pattern: .*\${.*}.*)
+             - `sso`: {object}
+               - `organizationId`: (multiple options) (string) ID of the SSO organization that the user will have to be a member of | (string) A string containing one or more references that resolve to iD of the SSO organization that the user will have to be a member of (pattern: .*\${.*}.*)
+               - `directoryGroupIds`: (multiple options) [array of] (string) | (string) A string containing one or more references that resolve to array of directory groups that will have access (pattern: .*\${.*}.*)
+               - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
+               - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
+               - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+               - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
+             - `headers`: [array of] (multiple options) {object}
+                   - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                   - `name`: (multiple options) (string) (pattern: ^[a-zA-Z0-9_\-%$+]+$) | (string) (pattern: .*\${.*}.*)
+                   - `value`: (multiple options) (string) | (string) (pattern: .*\${.*}.*) | {object}
+                   - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                   - `name`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                   - `value`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+             - `verificationMode`: (string) Mode used to verify multiple security features like ip policies and SSO authentication (enum: or, and)
+             - `securePathConfiguration`: {object}
+               - `enabled`: (boolean) Enable security policies on a path-level style
+               - `skipSecurityPoliciesForInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip all security policies
+               - `rules`: [array of] {object}
+                   - `paths`: [array of] (multiple options) {object}
+                         - `path`: (multiple options) (string) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$) | (string) (pattern: .*\${.*}.*)
+                         - `routingMode`: (multiple options) (string) Mode of the path, determining how the URI will be interpreted. (enum: prefix) | (string) A string containing one or more references that resolve to mode of the path, determining how the URI will be interpreted. (pattern: .*\${.*}.*)
+                         - `priority`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*) | {object}
+                         - `path`: (multiple options) (string) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$) | (string) (pattern: .*\${.*}.*)
+                         - `routingMode`: (multiple options) (string) Mode of the path, determining how the URI will be interpreted. (enum: exact) | (string) A string containing one or more references that resolve to mode of the path, determining how the URI will be interpreted. (pattern: .*\${.*}.*)
+                         - `priority`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*) | {object}
+                         - `path`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                         - `routingMode`: (multiple options) (string) Mode of the path, determining how the URI will be interpreted. (enum: regex) | (string) A string containing one or more references that resolve to mode of the path, determining how the URI will be interpreted. (pattern: .*\${.*}.*)
+                         - `priority`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
+                   - `accessMode`: (multiple options) (string) Specify the way the path rule will behave when processing policies. This enables an allow-list/deny-list approach for access control on each path (enum: protected, unprotected) | (string) A string containing one or more references that resolve to specify the way the path rule will behave when processing policies. This enables an allow-list/deny-list approach for access control on each path (pattern: .*\${.*}.*)
+                   - `securityPolicies`: (multiple options) {object}
+                       - `orPolicies`: {object}
+                         - `credentials`: [array of] {object}
+                             - `username`: (multiple options) (string) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the username to access the service (pattern: .*\${.*}.*)
+                             - `password`: (multiple options) (string) The password to access the service with this username. | (string) A string containing one or more references that resolve to the password to access the service with this username. (pattern: .*\${.*}.*)
+                             - `type`: (multiple options) (string) The type of authentication used (enum: basic-auth) | (string) A string containing one or more references that resolve to the type of authentication used (pattern: .*\${.*}.*)
+                         - `ip`: (multiple options) [array of] {object}
+                               - `addresses`: (multiple options) [array of] (multiple options) (string) An IP address used by this rule (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))?$) | (string) A string containing one or more references that resolve to an IP address used by this rule (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP addresses used for this rule (pattern: .*\${.*}.*)
+                               - `action`: (multiple options) (string) The action for this rule. (enum: ALLOW, DENY) | (string) A string containing one or more references that resolve to the action for this rule. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP address policies. (pattern: .*\${.*}.*)
+                         - `policies`: (multiple options) [array of] {object}
+                               - `addresses`: (multiple options) [array of] (multiple options) (string) An IP address used by this rule (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))?$) | (string) A string containing one or more references that resolve to an IP address used by this rule (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP addresses used for this rule (pattern: .*\${.*}.*)
+                               - `action`: (multiple options) (string) The action for this rule. (enum: ALLOW, DENY) | (string) A string containing one or more references that resolve to the action for this rule. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP address policies. (pattern: .*\${.*}.*)
+                         - `sso`: {object}
+                           - `organizationId`: (multiple options) (string) ID of the SSO organization that the user will have to be a member of | (string) A string containing one or more references that resolve to iD of the SSO organization that the user will have to be a member of (pattern: .*\${.*}.*)
+                           - `directoryGroupIds`: (multiple options) [array of] (string) | (string) A string containing one or more references that resolve to array of directory groups that will have access (pattern: .*\${.*}.*)
+                           - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
+                           - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
+                           - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
+                         - `headers`: [array of] (multiple options) {object}
+                               - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                               - `name`: (multiple options) (string) (pattern: ^[a-zA-Z0-9_\-%$+]+$) | (string) (pattern: .*\${.*}.*)
+                               - `value`: (multiple options) (string) | (string) (pattern: .*\${.*}.*) | {object}
+                               - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                               - `name`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                               - `value`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                       - `requiredPolicies`: {object}
+                         - `credentials`: [array of] {object}
+                             - `username`: (multiple options) (string) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the username to access the service (pattern: .*\${.*}.*)
+                             - `password`: (multiple options) (string) The password to access the service with this username. | (string) A string containing one or more references that resolve to the password to access the service with this username. (pattern: .*\${.*}.*)
+                             - `type`: (multiple options) (string) The type of authentication used (enum: basic-auth) | (string) A string containing one or more references that resolve to the type of authentication used (pattern: .*\${.*}.*)
+                         - `ip`: (multiple options) [array of] {object}
+                               - `addresses`: (multiple options) [array of] (multiple options) (string) An IP address used by this rule (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))?$) | (string) A string containing one or more references that resolve to an IP address used by this rule (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP addresses used for this rule (pattern: .*\${.*}.*)
+                               - `action`: (multiple options) (string) The action for this rule. (enum: ALLOW, DENY) | (string) A string containing one or more references that resolve to the action for this rule. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP address policies. (pattern: .*\${.*}.*)
+                         - `policies`: (multiple options) [array of] {object}
+                               - `addresses`: (multiple options) [array of] (multiple options) (string) An IP address used by this rule (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))?$) | (string) A string containing one or more references that resolve to an IP address used by this rule (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP addresses used for this rule (pattern: .*\${.*}.*)
+                               - `action`: (multiple options) (string) The action for this rule. (enum: ALLOW, DENY) | (string) A string containing one or more references that resolve to the action for this rule. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of IP address policies. (pattern: .*\${.*}.*)
+                         - `sso`: {object}
+                           - `organizationId`: (multiple options) (string) ID of the SSO organization that the user will have to be a member of | (string) A string containing one or more references that resolve to iD of the SSO organization that the user will have to be a member of (pattern: .*\${.*}.*)
+                           - `directoryGroupIds`: (multiple options) [array of] (string) | (string) A string containing one or more references that resolve to array of directory groups that will have access (pattern: .*\${.*}.*)
+                           - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
+                           - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
+                           - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
+                         - `headers`: [array of] (multiple options) {object}
+                               - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                               - `name`: (multiple options) (string) (pattern: ^[a-zA-Z0-9_\-%$+]+$) | (string) (pattern: .*\${.*}.*)
+                               - `value`: (multiple options) (string) | (string) (pattern: .*\${.*}.*) | {object}
+                               - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+                               - `name`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                               - `value`: (multiple options) (string) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+           - `domains`: (multiple options) [array of] (multiple options) (string) A domain to redirect to this port. | (string) A string containing one or more references that resolve to a domain to redirect to this port. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to an array of domains to redirect to this port. Each domain must first be verified and registered to your account. (pattern: .*\${.*}.*)
+           - `disableNfDomain`: (multiple options) (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains. | (string) A string containing one or more references that resolve to disable routing on the default code.run domain for public HTTP ports with custom domains. (pattern: .*\${.*}.*)
+           - `advancedOptions`: {object}
+             - `enableTlsPassthrough`: (multiple options) (boolean) Whether this port should use pass through mode for TLS | (string) A string containing one or more references that resolve to whether this port should use pass through mode for TLS (pattern: .*\${.*}.*)
+           - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+       - `source`: {object}
+         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+         - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+         - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
+         - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
+         - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
+         - `projectBranch`: (multiple options) (string) The name of the branch to pre-pull for the harness environment. | (string) A string containing one or more references that resolve to the name of the branch to pre-pull for the harness environment. (pattern: .*\${.*}.*)
+         - `publicRepo`: (multiple options) (boolean) Whether the linked repository is public. | (string) A string containing one or more references that resolve to whether the linked repository is public. (pattern: .*\${.*}.*)
+       - `additionalRepositories`: [array of] {object}
+           - `source`: {object}
+             - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+             - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+             - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
+             - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
+             - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
+             - `projectBranch`: (multiple options) (string) The name of the branch to pre-pull for the harness environment. | (string) A string containing one or more references that resolve to the name of the branch to pre-pull for the harness environment. (pattern: .*\${.*}.*)
+             - `publicRepo`: (multiple options) (boolean) Whether the linked repository is public. | (string) A string containing one or more references that resolve to whether the linked repository is public. (pattern: .*\${.*}.*)
+           - `directory`: (multiple options) (string) Folder to clone the repository into, relative to /home/harness. (pattern: ^(?!\.{1,2}$)[A-Za-z0-9._-]+$) (max length: 237) | (string) A string containing one or more references that resolve to folder to clone the repository into, relative to /home/harness. (pattern: .*\${.*}.*)
+       - `harness`: {object}
+         - `type`: (multiple options) (string) The harness environment type to run. (enum: codex, claude, pi, none) | (string) A string containing one or more references that resolve to the harness environment type to run. (pattern: .*\${.*}.*)
+         - `authMode`: (multiple options) (string) How Codex and Claude authenticate. Pi requires `account`; agentless harnesses omit this field. When omitted for Codex or Claude, `apiKey` is inferred if an apiKey is provided. (enum: apiKey, account) | (string) A string containing one or more references that resolve to how Codex and Claude authenticate. Pi requires `account`; agentless harnesses omit this field. When omitted for Codex or Claude, `apiKey` is inferred if an apiKey is provided. (pattern: .*\${.*}.*)
+         - `apiKey`: (multiple options) (string) API key used by the harness environment. | (string) A string containing one or more references that resolve to aPI key used by the harness environment. (pattern: .*\${.*}.*)
+         - `cloneDirectory`: (multiple options) (string) Absolute path the repo is cloned into in the harness container. Must be /home/harness or a directory inside it, the path backed by the harness's persistent workspace volume. Defaults to /home/harness. Can only be set when creating the harness. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to absolute path the repo is cloned into in the harness container. Must be /home/harness or a directory inside it, the path backed by the harness's persistent workspace volume. Defaults to /home/harness. Can only be set when creating the harness. (pattern: .*\${.*}.*)
+       - `runtimeEnvironment`: (multiple options) {object} | (string) (pattern: .*\${.*}.*)
+       - `runtimeFiles`: {object}
+     - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: LLMModelDeployment)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `name`: (multiple options) (string) The name of the AI model. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the name of the AI model. (pattern: .*\${.*}.*)
        - `description`: (multiple options) (string) A description of the AI model. (pattern: ^[\s\S]*$) (max length: 1024) | (string) A string containing one or more references that resolve to a description of the AI model. (pattern: .*\${.*}.*)
@@ -1354,7 +1710,7 @@ Required permission: Account > Templates > General > Read
                  - `pipelineParallelism`: (integer)
                  - `expertParallelism`: (integer)
                - `sequenceLengthConfig`: {object}
-                 - `maxModelLength`: (multiple options) (integer) | (string) (enum: auto)
+                 - `maxModelLength`: (multiple options) (integer) A fixed maximum context length, in tokens | (string) `auto` to derive the maximum context length from the model's config (enum: auto)
                  - `maxInputLength`: (integer)
                  - `maxOutputLength`: (integer)
                - `batchingConfig`: {object}
@@ -1372,7 +1728,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: LLMModelDeployment)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `name`: (multiple options) (string) The name of the AI model. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the name of the AI model. (pattern: .*\${.*}.*)
        - `description`: (multiple options) (string) A description of the AI model. (pattern: ^[\s\S]*$) (max length: 1024) | (string) A string containing one or more references that resolve to a description of the AI model. (pattern: .*\${.*}.*)
@@ -1411,7 +1767,7 @@ Required permission: Account > Templates > General > Read
                  - `pipelineParallelism`: (integer)
                  - `expertParallelism`: (integer)
                - `sequenceLengthConfig`: {object}
-                 - `maxModelLength`: (multiple options) (integer) | (string) (enum: auto)
+                 - `maxModelLength`: (multiple options) (integer) A fixed maximum context length, in tokens | (string) `auto` to derive the maximum context length from the model's config (enum: auto)
                  - `maxInputLength`: (integer)
                  - `maxOutputLength`: (integer)
                - `batchingConfig`: {object}
@@ -1430,7 +1786,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: CronJob)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `description`: (multiple options) (string) A description of the job. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the job. (pattern: .*\${.*}.*)
        - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -1439,11 +1795,11 @@ Required permission: Account > Templates > General > Read
          - `buildPlan`: (multiple options) (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the build plan to use. (pattern: .*\${.*}.*)
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
        - `deployment`: {object}
          - `buildpack`: {object}
            - `configType`: (multiple options) (string) (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand) | (string) (pattern: .*\${.*}.*)
@@ -1459,27 +1815,27 @@ Required permission: Account > Templates > General > Read
              - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
            - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
          - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
          - `vcs`: {object}
-           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
            - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
            - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
            - `projectBranch`: (multiple options) (string) The name of the branch to use. | (string) A string containing one or more references that resolve to the name of the branch to use. (pattern: .*\${.*}.*)
          - `external`: {object}
-           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
+           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
            - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
          - `internal`: {object}
-           - `id`: (multiple options) (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+           - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
@@ -1489,6 +1845,7 @@ Required permission: Account > Templates > General > Read
          - `isAllowList`: (multiple options) (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. | (string) A string containing one or more references that resolve to if `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. (pattern: .*\${.*}.*)
          - `ciIgnoreFlagsEnabled`: (multiple options) (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. | (string) A string containing one or more references that resolve to if `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. (pattern: .*\${.*}.*)
          - `ciIgnoreFlags`: [array of] (multiple options) (string) A commit ignore flag. (max length: 72) | (string) A string containing one or more references that resolve to a commit ignore flag. (pattern: .*\${.*}.*)
+         - `ignoreEmptyCommits`: (multiple options) (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. | (string) A string containing one or more references that resolve to if `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. (pattern: .*\${.*}.*)
          - `dockerfileTarget`: (multiple options) (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. | (string) A string containing one or more references that resolve to if your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: .*\${.*}.*)
          - `dockerCredentials`: [array of] (multiple options) (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the docker credentials to use. (pattern: .*\${.*}.*)
          - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -1542,7 +1899,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: CronJob)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `name`: (multiple options) (string) The name of the job. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the name of the job. (pattern: .*\${.*}.*)
        - `description`: (multiple options) (string) A description of the job. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the job. (pattern: .*\${.*}.*)
@@ -1555,11 +1912,11 @@ Required permission: Account > Templates > General > Read
          - `buildPlan`: (multiple options) (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the build plan to use. (pattern: .*\${.*}.*)
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
        - `deployment`: {object}
          - `buildpack`: {object}
            - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
@@ -1577,27 +1934,27 @@ Required permission: Account > Templates > General > Read
              - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
            - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
          - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
          - `vcs`: {object}
-           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
            - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
            - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
            - `projectBranch`: (multiple options) (string) The name of the branch to use. | (string) A string containing one or more references that resolve to the name of the branch to use. (pattern: .*\${.*}.*)
          - `external`: {object}
-           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
+           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
            - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
          - `internal`: {object}
-           - `id`: (multiple options) (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+           - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
@@ -1608,6 +1965,7 @@ Required permission: Account > Templates > General > Read
          - `isAllowList`: (multiple options) (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. | (string) A string containing one or more references that resolve to if `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. (pattern: .*\${.*}.*)
          - `ciIgnoreFlagsEnabled`: (multiple options) (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. | (string) A string containing one or more references that resolve to if `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. (pattern: .*\${.*}.*)
          - `ciIgnoreFlags`: [array of] (multiple options) (string) A commit ignore flag. (max length: 72) | (string) A string containing one or more references that resolve to a commit ignore flag. (pattern: .*\${.*}.*)
+         - `ignoreEmptyCommits`: (multiple options) (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. | (string) A string containing one or more references that resolve to if `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. (pattern: .*\${.*}.*)
          - `dockerfileTarget`: (multiple options) (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. | (string) A string containing one or more references that resolve to if your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: .*\${.*}.*)
          - `dockerCredentials`: [array of] (multiple options) (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the docker credentials to use. (pattern: .*\${.*}.*)
          - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -1663,7 +2021,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: ManualJob)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `description`: (multiple options) (string) A description of the job. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the job. (pattern: .*\${.*}.*)
        - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -1672,11 +2030,11 @@ Required permission: Account > Templates > General > Read
          - `buildPlan`: (multiple options) (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the build plan to use. (pattern: .*\${.*}.*)
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
        - `deployment`: {object}
          - `buildpack`: {object}
            - `configType`: (multiple options) (string) (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand) | (string) (pattern: .*\${.*}.*)
@@ -1692,27 +2050,27 @@ Required permission: Account > Templates > General > Read
              - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
            - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
          - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
          - `vcs`: {object}
-           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
            - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
            - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
            - `projectBranch`: (multiple options) (string) The name of the branch to use. | (string) A string containing one or more references that resolve to the name of the branch to use. (pattern: .*\${.*}.*)
          - `external`: {object}
-           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
+           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
            - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
          - `internal`: {object}
-           - `id`: (multiple options) (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+           - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
@@ -1722,6 +2080,7 @@ Required permission: Account > Templates > General > Read
          - `isAllowList`: (multiple options) (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. | (string) A string containing one or more references that resolve to if `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. (pattern: .*\${.*}.*)
          - `ciIgnoreFlagsEnabled`: (multiple options) (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. | (string) A string containing one or more references that resolve to if `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. (pattern: .*\${.*}.*)
          - `ciIgnoreFlags`: [array of] (multiple options) (string) A commit ignore flag. (max length: 72) | (string) A string containing one or more references that resolve to a commit ignore flag. (pattern: .*\${.*}.*)
+         - `ignoreEmptyCommits`: (multiple options) (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. | (string) A string containing one or more references that resolve to if `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. (pattern: .*\${.*}.*)
          - `dockerfileTarget`: (multiple options) (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. | (string) A string containing one or more references that resolve to if your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: .*\${.*}.*)
          - `dockerCredentials`: [array of] (multiple options) (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the docker credentials to use. (pattern: .*\${.*}.*)
          - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -1772,7 +2131,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: ManualJob)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `name`: (multiple options) (string) The name of the job. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the name of the job. (pattern: .*\${.*}.*)
        - `description`: (multiple options) (string) A description of the job. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the job. (pattern: .*\${.*}.*)
@@ -1785,11 +2144,11 @@ Required permission: Account > Templates > General > Read
          - `buildPlan`: (multiple options) (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the build plan to use. (pattern: .*\${.*}.*)
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
        - `deployment`: {object}
          - `buildpack`: {object}
            - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
@@ -1807,27 +2166,27 @@ Required permission: Account > Templates > General > Read
              - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
            - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
          - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
          - `vcs`: {object}
-           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
            - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
            - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
            - `projectBranch`: (multiple options) (string) The name of the branch to use. | (string) A string containing one or more references that resolve to the name of the branch to use. (pattern: .*\${.*}.*)
          - `external`: {object}
-           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
+           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
            - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
          - `internal`: {object}
-           - `id`: (multiple options) (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+           - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
@@ -1838,6 +2197,7 @@ Required permission: Account > Templates > General > Read
          - `isAllowList`: (multiple options) (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. | (string) A string containing one or more references that resolve to if `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. (pattern: .*\${.*}.*)
          - `ciIgnoreFlagsEnabled`: (multiple options) (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. | (string) A string containing one or more references that resolve to if `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. (pattern: .*\${.*}.*)
          - `ciIgnoreFlags`: [array of] (multiple options) (string) A commit ignore flag. (max length: 72) | (string) A string containing one or more references that resolve to a commit ignore flag. (pattern: .*\${.*}.*)
+         - `ignoreEmptyCommits`: (multiple options) (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. | (string) A string containing one or more references that resolve to if `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. (pattern: .*\${.*}.*)
          - `dockerfileTarget`: (multiple options) (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. | (string) A string containing one or more references that resolve to if your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: .*\${.*}.*)
          - `dockerCredentials`: [array of] (multiple options) (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the docker credentials to use. (pattern: .*\${.*}.*)
          - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -1890,7 +2250,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Job)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `description`: (multiple options) (string) A description of the job. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the job. (pattern: .*\${.*}.*)
        - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -1899,11 +2259,11 @@ Required permission: Account > Templates > General > Read
          - `buildPlan`: (multiple options) (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the build plan to use. (pattern: .*\${.*}.*)
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
        - `deployment`: {object}
          - `buildpack`: {object}
            - `configType`: (multiple options) (string) (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand) | (string) (pattern: .*\${.*}.*)
@@ -1919,27 +2279,27 @@ Required permission: Account > Templates > General > Read
              - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
            - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
          - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
          - `vcs`: {object}
-           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
            - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
            - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
            - `projectBranch`: (multiple options) (string) The name of the branch to use. | (string) A string containing one or more references that resolve to the name of the branch to use. (pattern: .*\${.*}.*)
          - `external`: {object}
-           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
+           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
            - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
          - `internal`: {object}
-           - `id`: (multiple options) (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+           - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
@@ -1949,6 +2309,7 @@ Required permission: Account > Templates > General > Read
          - `isAllowList`: (multiple options) (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. | (string) A string containing one or more references that resolve to if `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. (pattern: .*\${.*}.*)
          - `ciIgnoreFlagsEnabled`: (multiple options) (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. | (string) A string containing one or more references that resolve to if `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. (pattern: .*\${.*}.*)
          - `ciIgnoreFlags`: [array of] (multiple options) (string) A commit ignore flag. (max length: 72) | (string) A string containing one or more references that resolve to a commit ignore flag. (pattern: .*\${.*}.*)
+         - `ignoreEmptyCommits`: (multiple options) (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. | (string) A string containing one or more references that resolve to if `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. (pattern: .*\${.*}.*)
          - `dockerfileTarget`: (multiple options) (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. | (string) A string containing one or more references that resolve to if your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: .*\${.*}.*)
          - `dockerCredentials`: [array of] (multiple options) (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the docker credentials to use. (pattern: .*\${.*}.*)
          - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -2004,7 +2365,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Job)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `name`: (multiple options) (string) The name of the job. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the name of the job. (pattern: .*\${.*}.*)
        - `description`: (multiple options) (string) A description of the job. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the job. (pattern: .*\${.*}.*)
@@ -2017,11 +2378,11 @@ Required permission: Account > Templates > General > Read
          - `buildPlan`: (multiple options) (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the build plan to use. (pattern: .*\${.*}.*)
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
        - `deployment`: {object}
          - `buildpack`: {object}
            - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
@@ -2039,27 +2400,27 @@ Required permission: Account > Templates > General > Read
              - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
            - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
          - `gpu`: {object}
-           - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
            - `configuration`: {object}
-             - `gpuType`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-             - `gpuCount`: (multiple options) (integer) | (string) (pattern: .*\${.*}.*)
-             - `timesliced`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+             - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+             - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
          - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
          - `vcs`: {object}
-           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
            - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
            - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
            - `projectBranch`: (multiple options) (string) The name of the branch to use. | (string) A string containing one or more references that resolve to the name of the branch to use. (pattern: .*\${.*}.*)
          - `external`: {object}
-           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
+           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
            - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
          - `internal`: {object}
-           - `id`: (multiple options) (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+           - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
@@ -2070,6 +2431,7 @@ Required permission: Account > Templates > General > Read
          - `isAllowList`: (multiple options) (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. | (string) A string containing one or more references that resolve to if `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. (pattern: .*\${.*}.*)
          - `ciIgnoreFlagsEnabled`: (multiple options) (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. | (string) A string containing one or more references that resolve to if `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built. (pattern: .*\${.*}.*)
          - `ciIgnoreFlags`: [array of] (multiple options) (string) A commit ignore flag. (max length: 72) | (string) A string containing one or more references that resolve to a commit ignore flag. (pattern: .*\${.*}.*)
+         - `ignoreEmptyCommits`: (multiple options) (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. | (string) A string containing one or more references that resolve to if `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules. (pattern: .*\${.*}.*)
          - `dockerfileTarget`: (multiple options) (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. | (string) A string containing one or more references that resolve to if your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: .*\${.*}.*)
          - `dockerCredentials`: [array of] (multiple options) (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the docker credentials to use. (pattern: .*\${.*}.*)
          - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -2127,7 +2489,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Addon)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: (multiple options) {object}
          - `description`: (multiple options) (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the addon. (pattern: .*\${.*}.*)
          - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -2152,6 +2514,7 @@ Required permission: Account > Templates > General > Read
            - `redisSentinelEnabled`: (boolean) Redis only: Deploy Redis with Sentinel high availability. Default: false
            - `postgresqlWalLevel`: (string) PostgreSQL only: Configure wal_level setting. (enum: replica, logical)
            - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode (additional extensions and event trigger creation support). Cannot be changed after creation.
+           - `postgresqlEdbMode`: (boolean) PostgreSQL only: Enable EDB mode (EDB extension set: edb_stat_monitor, query_advisor, edb_pg_tuner, aidb, pgaa and others). Requires PostgreSQL 18 or newer. Cannot be changed after creation.
            - `postgresqlConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of postgres instance.
            - `postgresqlConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of connection pooler instances in case connection pooler is enabled.
            - `postgresqlReadConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of read-only postgres instance.
@@ -2187,7 +2550,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Addon)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: (multiple options) {object}
          - `name`: (multiple options) (string) The name of the addon. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the name of the addon. (pattern: .*\${.*}.*)
          - `description`: (multiple options) (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the addon. (pattern: .*\${.*}.*)
@@ -2225,6 +2588,7 @@ Required permission: Account > Templates > General > Read
            - `redisSentinelEnabled`: (boolean) Redis only: Deploy Redis with Sentinel high availability. Default: false
            - `postgresqlWalLevel`: (string) PostgreSQL only: Configure wal_level setting. (enum: replica, logical)
            - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode (additional extensions and event trigger creation support). Cannot be changed after creation.
+           - `postgresqlEdbMode`: (boolean) PostgreSQL only: Enable EDB mode (EDB extension set: edb_stat_monitor, query_advisor, edb_pg_tuner, aidb, pgaa and others). Requires PostgreSQL 18 or newer. Cannot be changed after creation.
            - `postgresqlConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of postgres instance.
            - `postgresqlConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of connection pooler instances in case connection pooler is enabled.
            - `postgresqlReadConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of read-only postgres instance.
@@ -2274,7 +2638,7 @@ Required permission: Account > Templates > General > Read
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: ExternalAddon)
      - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `description`: (multiple options) (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) (pattern: .*\${.*}.*)
        - `tags`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -2300,6 +2664,8 @@ Required permission: Account > Templates > General > Read
              - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
            - `akamai`: {object}
              - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
+           - `planetscale`: {object}
+             - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
          - `config`: {object}
          - `outputs`: {object}
          - `workloadIdentityId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -2308,7 +2674,7 @@ Required permission: Account > Templates > General > Read
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: AddonBackup)
      - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `projectId`: (multiple options) (string) The ID of the addon to backup. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the addon to backup. (pattern: .*\${.*}.*)
@@ -2323,7 +2689,7 @@ Required permission: Account > Templates > General > Read
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: AddonImport)
      - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `projectId`: (multiple options) (string) The ID of the project containing the addon. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the project containing the addon. (pattern: .*\${.*}.*)
@@ -2335,7 +2701,7 @@ Required permission: Account > Templates > General > Read
        - `customDestinationId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: SecretGroup)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `description`: (multiple options) (string) A description of the secret. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the secret. (pattern: .*\${.*}.*)
        - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -2344,12 +2710,13 @@ Required permission: Account > Templates > General > Read
        - `secretType`: (string) The injection scope of the created secret (enum: environment-arguments, environment, arguments)
        - `priority`: (multiple options) (integer) The priority with which different secrets will be merged. | (string) A string containing one or more references that resolve to the priority with which different secrets will be merged. (pattern: .*\${.*}.*)
        - `restrictions`: {object}
-         - `restricted`: (boolean) Whether the secret is restricted to specific resources. If this is `true`, only resources listed in `nfObjects` or with a tag listed in `tags` will have access to these secrets. Otherwise, all resources in the project will be able to access it.
+         - `restricted`: (boolean) Whether the secret is restricted to specific resources, tags, or environments. If this is `true`, resources listed in `nfObjects`, with a tag listed in `tags`, or in an environment listed in `stageIds` will have access to these secrets. Otherwise, all resources in the project will be able to access it.
          - `nfObjects`: [array of] {object}
              - `id`: (multiple options) (string) ID of the entity the secret is restricted to. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the entity the secret is restricted to. (pattern: .*\${.*}.*)
              - `type`: (string) (required) Type of the entity the secret is restricted to. (enum: service, job)
          - `tags`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
          - `tagMatchCondition`: (multiple options) (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or) | (string) A string containing one or more references that resolve to if all or any of the tags must be present on the target for it to match the condition. (pattern: .*\${.*}.*)
+         - `stageIds`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
        - `addonDependencies`: [array of] {object}
            - `addonId`: (multiple options) (string) The id of the addon to link. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the addon to link. (pattern: .*\${.*}.*)
            - `keys`: [array of] {object}
@@ -2368,7 +2735,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: SecretGroup)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `name`: (multiple options) (string) The name of the secret. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the name of the secret. (pattern: .*\${.*}.*)
        - `description`: (multiple options) (string) A description of the secret. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the secret. (pattern: .*\${.*}.*)
@@ -2379,12 +2746,13 @@ Required permission: Account > Templates > General > Read
        - `secretType`: (string) (required) The injection scope of the created secret (enum: environment-arguments, environment, arguments)
        - `priority`: (multiple options) (integer) The priority with which different secrets will be merged. | (string) A string containing one or more references that resolve to the priority with which different secrets will be merged. (pattern: .*\${.*}.*)
        - `restrictions`: {object}
-         - `restricted`: (boolean) Whether the secret is restricted to specific resources. If this is `true`, only resources listed in `nfObjects` or with a tag listed in `tags` will have access to these secrets. Otherwise, all resources in the project will be able to access it.
+         - `restricted`: (boolean) Whether the secret is restricted to specific resources, tags, or environments. If this is `true`, resources listed in `nfObjects`, with a tag listed in `tags`, or in an environment listed in `stageIds` will have access to these secrets. Otherwise, all resources in the project will be able to access it.
          - `nfObjects`: [array of] {object}
              - `id`: (multiple options) (string) ID of the entity the secret is restricted to. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the entity the secret is restricted to. (pattern: .*\${.*}.*)
              - `type`: (string) (required) Type of the entity the secret is restricted to. (enum: service, job)
          - `tags`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
          - `tagMatchCondition`: (multiple options) (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or) | (string) A string containing one or more references that resolve to if all or any of the tags must be present on the target for it to match the condition. (pattern: .*\${.*}.*)
+         - `stageIds`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
        - `addonDependencies`: [array of] {object}
            - `addonId`: (multiple options) (string) The id of the addon to link. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the addon to link. (pattern: .*\${.*}.*)
            - `keys`: [array of] {object}
@@ -2402,7 +2770,7 @@ Required permission: Account > Templates > General > Read
      - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Volume)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
        - `tags`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -2417,11 +2785,18 @@ Required permission: Account > Templates > General > Read
        - `attachedObjects`: [array of] {object}
            - `id`: (multiple options) (string) The id of object to attach this volume to. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of object to attach this volume to. (pattern: .*\${.*}.*)
            - `type`: (string) (required) The type of the object to attach this volume to. (enum: service, job)
+       - `backupSchedules`: [array of] {object}
+           - `scheduling`: (multiple options) {object}
+               - `interval`: (multiple options) (string) The interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (enum: hourly, daily, weekly) | (string) A string containing one or more references that resolve to the interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (pattern: .*\${.*}.*)
+               - `minute`: (multiple options) [array of] (integer) A minute when the backup should be performed. | (string) A string containing one or more references that resolve to an array of minutes when the backup should be performed. (pattern: .*\${.*}.*)
+               - `hour`: (multiple options) [array of] (integer) An hour when the backup should be performed, in 24 hour format. | (string) A string containing one or more references that resolve to an array of hours in 24 hour format when the backup should be performed. At these hours, a backup will be performed at each of the minutes provided in the `minute` field. Required for `daily` and `weekly` intervals and unavailable for `hourly` intervals. (pattern: .*\${.*}.*)
+               - `day`: (multiple options) [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday. | (string) A string containing one or more references that resolve to an array of days of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday. On these days, a backup will be performed at each of the minutes provided in the `minute` field whenever it is an hour from the `hour` field. Required for `weekly` intervals and unavailable for `hourly` and `daily` intervals. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to schedule for the backup. (pattern: .*\${.*}.*)
+           - `retentionTime`: (multiple options) (integer) The time the backup is retained for, in days. | (string) A string containing one or more references that resolve to the time the backup is retained for, in days. (pattern: .*\${.*}.*)
        - `name`: (multiple options) (string) The name of the volume. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the name of the volume. (pattern: .*\${.*}.*)
      - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Volume)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `name`: (multiple options) (string) The name of the volume. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the name of the volume. (pattern: .*\${.*}.*)
        - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
@@ -2436,18 +2811,25 @@ Required permission: Account > Templates > General > Read
          - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
        - `source`: {object}
          - `type`: (multiple options) (string) (enum: volume, backup) | (string) (pattern: .*\${.*}.*)
-         - `sourceId`: (multiple options) (string) Reference to the source object. For a volume source: "<volumeId>". For a backup source: "<volumeId>/<backupId>", or "<projectId>/<volumeId>/<backupId>" to restore from a backup in another project on the same cluster (requires the cross-project clone feature). | (string) A string containing one or more references that resolve to reference to the source object. For a volume source: "<volumeId>". For a backup source: "<volumeId>/<backupId>", or "<projectId>/<volumeId>/<backupId>" to restore from a backup in another project on the same cluster (requires the cross-project clone feature). (pattern: .*\${.*}.*)
+         - `sourceId`: (multiple options) (string) Reference to the source object. For a volume source: "<volumeId>". For a backup source, prefer the backup UUID. Legacy "<volumeId>/<backupId>" and "<projectId>/<volumeId>/<backupId>" references remain supported. | (string) A string containing one or more references that resolve to reference to the source object. For a volume source: "<volumeId>". For a backup source, prefer the backup UUID. Legacy "<volumeId>/<backupId>" and "<projectId>/<volumeId>/<backupId>" references remain supported. (pattern: .*\${.*}.*)
        - `owningObject`: {object}
          - `id`: (multiple options) (string) The id of object to attach this volume to. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of object to attach this volume to. (pattern: .*\${.*}.*)
          - `type`: (string) (required) The type of the object to attach this volume to. (enum: service, job)
        - `attachedObjects`: [array of] {object}
            - `id`: (multiple options) (string) The id of object to attach this volume to. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of object to attach this volume to. (pattern: .*\${.*}.*)
            - `type`: (string) (required) The type of the object to attach this volume to. (enum: service, job)
+       - `backupSchedules`: [array of] {object}
+           - `scheduling`: (multiple options) {object}
+               - `interval`: (multiple options) (string) The interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (enum: hourly, daily, weekly) | (string) A string containing one or more references that resolve to the interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (pattern: .*\${.*}.*)
+               - `minute`: (multiple options) [array of] (integer) A minute when the backup should be performed. | (string) A string containing one or more references that resolve to an array of minutes when the backup should be performed. (pattern: .*\${.*}.*)
+               - `hour`: (multiple options) [array of] (integer) An hour when the backup should be performed, in 24 hour format. | (string) A string containing one or more references that resolve to an array of hours in 24 hour format when the backup should be performed. At these hours, a backup will be performed at each of the minutes provided in the `minute` field. Required for `daily` and `weekly` intervals and unavailable for `hourly` intervals. (pattern: .*\${.*}.*)
+               - `day`: (multiple options) [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday. | (string) A string containing one or more references that resolve to an array of days of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday. On these days, a backup will be performed at each of the minutes provided in the `minute` field whenever it is an hour from the `hour` field. Required for `weekly` intervals and unavailable for `hourly` and `daily` intervals. (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to schedule for the backup. (pattern: .*\${.*}.*)
+           - `retentionTime`: (multiple options) (integer) The time the backup is retained for, in days. | (string) A string containing one or more references that resolve to the time the backup is retained for, in days. (pattern: .*\${.*}.*)
      - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Build)
      - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
        - `buildRules`: {object}
@@ -2473,7 +2855,7 @@ Required permission: Account > Templates > General > Read
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: JobRun)
      - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
@@ -2499,7 +2881,7 @@ Required permission: Account > Templates > General > Read
                - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
              - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
            - `internal`: {object}
-             - `id`: (multiple options) (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+             - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
              - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
              - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
              - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*) | {object}
@@ -2519,18 +2901,18 @@ Required permission: Account > Templates > General > Read
                - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
              - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
            - `external`: {object}
-             - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
+             - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
              - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
        - `jobId`: (multiple options) (string) The ID of the job to run. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the ID of the job to run. (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: LoopWorkflow)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `iterations`: (multiple options) [array of] (multiple options) {object} | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
        - `steps`: [array of] (undefined) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Action)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `spec`: (multiple options) {object}
          - `kind`: (string) (required) The kind of action. (enum: Addon)
@@ -2583,30 +2965,31 @@ Required permission: Account > Templates > General > Read
              - `type`: (string) (required) The type of action. (enum: createRepoFromSource)
              - `data`: {object}
                - `sourceData`: {object}
-                 - `publicRepo`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
-                 - `vcsService`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `oauthProvider`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `repoUrl`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `branch`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `accountLogin`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `commitSha`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                 - `publicRepo`: (multiple options) (boolean) Whether the source repository is a public repository. | (string) A string containing one or more references that resolve to whether the source repository is a public repository. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider of the source repository. | (string) A string containing one or more references that resolve to the VCS provider of the source repository. (pattern: .*\${.*}.*)
+                 - `oauthProvider`: (multiple options) (string) The OAuth provider used to access the source repository. | (string) A string containing one or more references that resolve to the OAuth provider used to access the source repository. (pattern: .*\${.*}.*)
+                 - `repoUrl`: (multiple options) (string) URL of the source Git repo. | (string) A string containing one or more references that resolve to uRL of the source Git repo. (pattern: .*\${.*}.*)
+                 - `branch`: (multiple options) (string) The name of the branch to use. | (string) A string containing one or more references that resolve to the name of the branch to use. (pattern: .*\${.*}.*)
+                 - `accountLogin`: (multiple options) (string) The login name of the linked VCS account used to access the source repository. | (string) A string containing one or more references that resolve to the login name of the linked VCS account used to access the source repository. (pattern: .*\${.*}.*)
+                 - `commitSha`: (multiple options) (string) The SHA of the commit to use. | (string) A string containing one or more references that resolve to the SHA of the commit to use. (pattern: .*\${.*}.*)
                  - `directory`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
-                 - `vcsLinkId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
-                 - `selfHostedVcsId`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                 - `vcsLinkId`: (multiple options) (string) The ID of the linked VCS account to use. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to the ID of the linked VCS account to use. (pattern: .*\${.*}.*)
+                 - `selfHostedVcsId`: (multiple options) (string) The ID of the self-hosted VCS to use. | (string) A string containing one or more references that resolve to the ID of the self-hosted VCS to use. (pattern: .*\${.*}.*)
                - `targetData`: {object}
-                 - `name`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `description`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `privateRepo`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
-                 - `context`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `folder`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `accountLogin`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `vcsLinkId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
-                 - `oauthProvider`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `vcsService`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `selfHostedVcsId`: (multiple options) (string) | (string) (pattern: .*\${.*}.*) | {object}
+                 - `name`: (multiple options) (string) The name of the repository to create. | (string) A string containing one or more references that resolve to the name of the repository to create. (pattern: .*\${.*}.*)
+                 - `description`: (multiple options) (string) A description of the repository to create. | (string) A string containing one or more references that resolve to a description of the repository to create. (pattern: .*\${.*}.*)
+                 - `privateRepo`: (multiple options) (boolean) Whether the repository should be created as a private repository. | (string) A string containing one or more references that resolve to whether the repository should be created as a private repository. (pattern: .*\${.*}.*)
+                 - `branch`: (multiple options) (string) The repository branch. | (string) A string containing one or more references that resolve to the repository branch. (pattern: .*\${.*}.*)
+                 - `context`: (multiple options) (string) The owner context (user or organisation) the repository should be created in. | (string) A string containing one or more references that resolve to the owner context (user or organisation) the repository should be created in. (pattern: .*\${.*}.*)
+                 - `folder`: (multiple options) (string) The folder or project the repository should be created in, if supported by the VCS provider. | (string) A string containing one or more references that resolve to the folder or project the repository should be created in, if supported by the VCS provider. (pattern: .*\${.*}.*)
+                 - `accountLogin`: (multiple options) (string) The login name of the linked VCS account used to create the repository. | (string) A string containing one or more references that resolve to the login name of the linked VCS account used to create the repository. (pattern: .*\${.*}.*)
+                 - `vcsLinkId`: (multiple options) (string) The ID of the linked VCS account to use. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to the ID of the linked VCS account to use. (pattern: .*\${.*}.*)
+                 - `oauthProvider`: (multiple options) (string) The OAuth provider used to create the repository. | (string) A string containing one or more references that resolve to the OAuth provider used to create the repository. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider to create the repository with. | (string) A string containing one or more references that resolve to the VCS provider to create the repository with. (pattern: .*\${.*}.*)
+                 - `selfHostedVcsId`: (multiple options) (string) The ID of the self-hosted VCS to use. | (string) A string containing one or more references that resolve to the ID of the self-hosted VCS to use. (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Condition)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: (multiple options) {object}
          - `kind`: (string) (required) The kind of condition. (enum: Addon)
          - `spec`: (multiple options) {object}
@@ -2663,7 +3046,7 @@ Required permission: Account > Templates > General > Read
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: BuildSource)
      - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `id`: (multiple options) (string) The ID of object to build. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of object to build. (pattern: .*\${.*}.*)
        - `type`: (string) (required) The type of the object to build. (enum: service, job)
@@ -2691,7 +3074,7 @@ Required permission: Account > Templates > General > Read
        - `buildRuleFallThroughHandling`: (string) Define handling if build rules do not match the specified commit (enum: fail, skip, useLastBuild) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Message)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `spec`: (multiple options) {object}
          - `kind`: (string) (required) The kind of message to send. (enum: VCS)
@@ -2699,7 +3082,7 @@ Required permission: Account > Templates > General > Read
            - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
-           - `repoUrl`: (multiple options) (string) URL of the Git repo to send this message to. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to send this message to. (pattern: .*\${.*}.*)
+           - `repoUrl`: (multiple options) (string) URL of the Git repo to send this message to. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to send this message to. (pattern: .*\${.*}.*)
            - `pullRequestId`: (multiple options) (string) The ID of the pull request to comment on. | (string) A string containing one or more references that resolve to the ID of the pull request to comment on. (pattern: .*\${.*}.*)
            - `message`: (multiple options) (string) The rich text message to comment. | (string) A string containing one or more references that resolve to the rich text message to comment. (pattern: .*\${.*}.*) | {object}
          - `kind`: (string) (required) The kind of message to send. (enum: SLACK)
@@ -2713,11 +3096,11 @@ Required permission: Account > Templates > General > Read
            - `message`: (multiple options) (string) The message content to send to the webhook. | (string) A string containing one or more references that resolve to the message content to send to the webhook. (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: LoopData)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object} | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: SecretInheritance)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `configs`: (multiple options) [array of] (multiple options) (string) (pattern: ^[A-Za-z0-9-]+$) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
        - `secrets`: (multiple options) [array of] (multiple options) (string) (pattern: ^[A-Za-z0-9-]+$) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
@@ -2726,7 +3109,7 @@ Required permission: Account > Templates > General > Read
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: OpenTofu)
      - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `stateKey`: (string) (required) Key to track state, must not be changed after first run.
        - `isolateResourcesPerEnvironment`: (boolean) Each preview environment will have its own isolated OpenTofu state.
@@ -2751,11 +3134,13 @@ Required permission: Account > Templates > General > Read
              - `integrationId`: (multiple options) (string) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) | (string) A string containing one or more references that resolve to integration to use for this job. (pattern: .*\${.*}.*)
            - `akamai`: {object}
              - `integrationId`: (multiple options) (string) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) | (string) A string containing one or more references that resolve to integration to use for this job. (pattern: .*\${.*}.*)
+           - `planetscale`: {object}
+             - `integrationId`: (multiple options) (string) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) | (string) A string containing one or more references that resolve to integration to use for this job. (pattern: .*\${.*}.*)
          - `resource`: {object}
          - `output`: {object} | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Approval)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `amount`: (integer) (required)
   - `id`: (string) (required) Identifier for the template

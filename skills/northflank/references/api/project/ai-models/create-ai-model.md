@@ -51,7 +51,7 @@ Required permission: Project > AiModels > General > Create
           - `pipelineParallelism`: (integer)
           - `expertParallelism`: (integer)
         - `sequenceLengthConfig`: {object}
-          - `maxModelLength`: (multiple options) (integer) | (string) (enum: auto)
+          - `maxModelLength`: (multiple options) (integer) A fixed maximum context length, in tokens | (string) `auto` to derive the maximum context length from the model's config (enum: auto)
           - `maxInputLength`: (integer)
           - `maxOutputLength`: (integer)
         - `batchingConfig`: {object}
@@ -81,7 +81,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"deepseek-v3-deployment","description":"A deployment for DeepSeek V3 model","spec":{"configuration":{"nodeConfiguration":{"storage":{"storageClass":"nvme","storageSize":6144}}}}}' \
+  --data '{"name":"deepseek-v3-deployment","description":"A deployment for DeepSeek V3 model","spec":{"configuration":{"nodeConfiguration":{"storage":{"storageClass":"nvme","storageSize":6144}}},"type":"custom"}}' \
   https://api.northflank.com/v1/projects/{projectId}/llm-model-deployments
 ```
 
@@ -97,7 +97,8 @@ const payload = {
           "storageSize": 6144
         }
       }
-    }
+    },
+    "type": "custom"
   }
 }
 
@@ -119,7 +120,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/llm-model-deployments"
 
-payload = {"name":"deepseek-v3-deployment","description":"A deployment for DeepSeek V3 model","spec":{"configuration":{"nodeConfiguration":{"storage":{"storageClass":"nvme","storageSize":6144}}}}}
+payload = {"name":"deepseek-v3-deployment","description":"A deployment for DeepSeek V3 model","spec":{"configuration":{"nodeConfiguration":{"storage":{"storageClass":"nvme","storageSize":6144}}},"type":"custom"}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -140,7 +141,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/llm-model-deployments"
 
-  var jsonStr = []byte(`{"name":"deepseek-v3-deployment","description":"A deployment for DeepSeek V3 model","spec":{"configuration":{"nodeConfiguration":{"storage":{"storageClass":"nvme","storageSize":6144}}}}}`)
+  var jsonStr = []byte(`{"name":"deepseek-v3-deployment","description":"A deployment for DeepSeek V3 model","spec":{"configuration":{"nodeConfiguration":{"storage":{"storageClass":"nvme","storageSize":6144}}},"type":"custom"}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -193,7 +194,8 @@ Options:
           "storageSize": 6144
         }
       }
-    }
+    },
+    "type": "custom"
   }
 }
 ```
@@ -220,7 +222,8 @@ await apiClient.create.llmModelDeployment({
             "storageSize": 6144
           }
         }
-      }
+      },
+      "type": "custom"
     }
   }
 });

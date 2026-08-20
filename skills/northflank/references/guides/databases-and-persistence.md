@@ -1219,7 +1219,7 @@ This guide explains how to quickly and easily deploy and use [MinIO®*](https://
 
 3. Choose a version or leave as default (most recent version)
 
-4. Choose whether to [deploy with TLS](databases-and-persistence.md#connect-database-secrets-to-workloads-enable-tls). This can be changed later.
+4. Choose whether to [deploy with TLS](databases-and-persistence.md#access-a-database-deploy-a-database-with-tls). This can be changed later.
 
 5. Choose whether to make MinIO publicly accessible. This will give your addon a URL and make it available online. TLS must be enabled to select this.
 
@@ -1349,7 +1349,7 @@ This guide explains how to quickly and easily deploy and use [MongoDB®](https:/
 
 3. Choose a version or leave as default (most recent version)
 
-4. Choose whether to [deploy with TLS](databases-and-persistence.md#connect-database-secrets-to-workloads-enable-tls). This can be changed later.
+4. Choose whether to [deploy with TLS](databases-and-persistence.md#access-a-database-deploy-a-database-with-tls). This can be changed later.
 
 5. Choose whether to make the database publicly accessible. This will give your database a URL and make it available online. TLS must be enabled to select this.
 
@@ -1501,7 +1501,7 @@ This guide explains how to quickly and easily deploy and use [MySQL](https://www
 
 3. Choose a version or leave as default (most recent version)
 
-4. Choose whether to [deploy with TLS](databases-and-persistence.md#connect-database-secrets-to-workloads-enable-tls). This cannot be changed later.
+4. Choose whether to [deploy with TLS](databases-and-persistence.md#access-a-database-deploy-a-database-with-tls). This cannot be changed later.
 
 5. Choose whether to make the database publicly accessible. This will give your addon a URL and make it available online. TLS must be enabled to select this.
 
@@ -1649,7 +1649,7 @@ This guide explains how to quickly and easily deploy and use [PostgreSQL](https:
 
 3. Choose a version or leave as default (most recent version)
 
-4. Choose whether to [deploy with TLS](databases-and-persistence.md#connect-database-secrets-to-workloads-enable-tls). This can be changed later.
+4. Choose whether to [deploy with TLS](databases-and-persistence.md#access-a-database-deploy-a-database-with-tls). This can be changed later.
 
 5. Choose whether to make the database publicly accessible. This will give your addon a URL and make it available online. TLS must be enabled to select this.
 
@@ -1809,7 +1809,7 @@ This guide explains how to quickly and easily deploy and use [RabbitMQ](https://
 
 3. Choose a version or leave as default (most recent version)
 
-4. Choose whether to [deploy with TLS](databases-and-persistence.md#connect-database-secrets-to-workloads-enable-tls). This can be changed later.
+4. Choose whether to [deploy with TLS](databases-and-persistence.md#access-a-database-deploy-a-database-with-tls). This can be changed later.
 
 5. Choose whether to make RabbitMQ publicly accessible. This will give your addon a URL and make it available online. TLS must be enabled to select this.
 
@@ -1933,7 +1933,7 @@ This guide explains how to quickly and easily deploy and use [Redis®*](https://
 
 3. Choose a version or leave as default (most recent version)
 
-4. Choose whether to [deploy with TLS](databases-and-persistence.md#connect-database-secrets-to-workloads-enable-tls). This can be changed later.
+4. Choose whether to [deploy with TLS](databases-and-persistence.md#access-a-database-deploy-a-database-with-tls). This can be changed later.
 
 5. Choose whether to make the database publicly accessible. This will give your addon a URL and make it available online. TLS must be enabled to select this.
 

@@ -1,6 +1,6 @@
 # Bring Your Own Cloud
 
-Generated from 15 application pages listed in `llms.txt`.
+Generated from 16 application pages listed in `llms.txt`.
 
 ## Pages
 
@@ -17,6 +17,7 @@ Generated from 15 application pages listed in `llms.txt`.
 - [Deploy workloads to your cluster](#deploy-workloads-to-your-cluster)
 - [Google Cloud Platform on Northflank](#google-cloud-platform-on-northflank)
 - [Manage your cluster](#manage-your-cluster)
+- [Nebius on Northflank](#nebius-on-northflank)
 - [Oracle Cloud Infrastructure on Northflank](#oracle-cloud-infrastructure-on-northflank)
 - [Use other cloud providers with Northflank](#use-other-cloud-providers-with-northflank)
 
@@ -2221,6 +2222,85 @@ You can delete a cluster from the cluster's overview by using the  delete button
 
 - [Configure your Kubernetes cluster: Manage your clusters on other cloud providers using Northflank.](bring-your-own-cloud.md#configure-your-cluster)
 - [Infrastructure alerts: Set infrastructure alerts to let you and your team know when there is an issue with your applications or addons.](observe.md#set-infrastructure-alerts)
+- [Deploy node pools: Configure and deploy node pools on a Kubernetes cluster with Northflank.](bring-your-own-cloud.md#deploy-and-scale-node-pools)
+- [Deploy workloads to your cluster: Deploy services, jobs, and addons to your own cluster, and configure workloads to schedule on specific node pools.](bring-your-own-cloud.md#deploy-workloads-to-your-cluster)
+- [Run GPU workloads: Deploy GPU workloads on Northflank for AI, machine learning, HPC workloads, and other tasks.](gpu-workloads.md#gpus-on-northflank)
+
+## Nebius on Northflank
+
+Source: https://northflank.com/docs/v1/application/bring-your-own-cloud/nebius-on-northflank.md
+
+You can integrate your Nebius account to create and manage clusters using Northflank.
+
+> [!note]
+>
+- Volume snapshots for addon backups are not currently available on Nebius clusters.
+- MicroVM sandboxes are not supported on Nebius clusters (but gVisor is).
+
+### Nebius on Northflank: Add your Nebius account to Northflank
+
+Navigate to `Cloud → Provider links → Create provider link` and select Nebius as the provider. Or use the direct link:
+
+> [!note]
+> [Click here](https://app.northflank.com/s/account/cloud/integrations/new/nebius) to create a new Nebius integration.
+First, you will need to set up a service account with an authorized key on Nebius. The service account will need to be in the `editors` group for each project that should be managed by Northflank. Follow Nebius docs to:
+
+- [Prepare a service account](https://docs.nebius.com/grpc-api/auth#prepare-a-service-account)
+
+- [Prepare an authorized key](https://docs.nebius.com/grpc-api/auth#prepare-an-authorized-key)
+
+To create a provider link, you need to supply the service account ID, the authorized key ID, and the private key PEM.
+
+![Create a new provider link](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/nebius/integration-new.png)
+
+You can now configure and deploy new clusters in your Nebius account.
+
+Note: You can edit the integration at any time to update the credentials, if required.
+
+### Nebius on Northflank: Check your quotas
+
+To successfully deploy a cluster on Nebius using Northflank, you must have the required resources available to your account.
+
+You can view your account quota and request new quota from the Nebius console under `Administration → Limits`. In order to provision a cluster, you will require a cluster resource and the appropriate compute and virtual network resources.
+
+Learn more on the [Nebius documentation on quotas](https://docs.nebius.com/kubernetes/resources/quotas-limits).
+
+### Nebius on Northflank: Create a cluster
+
+Navigate to `Cloud → Clusters → Create cluster` and select Nebius as the provider. Or use the direct link:
+
+> [!note]
+> [Click here](https://app.northflank.com/s/account/cloud/clusters/new/nebius) to create a new Nebius cluster.
+Enter a name for the cluster or generate one randomly. Choose your integration credentials. Select the project and a subnet within that project to deploy the cluster in.
+
+![Create a new cluster](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/nebius/cluster-new.png)
+
+#### Nebius on Northflank: Node pool configuration
+
+You can now configure the node pools for your cluster. Node pools can also be added, deleted, and updated after creating your cluster. Click add node pool to add another pool. Node types which are not available in your chosen project will be grayed out in the selection box.
+
+Some GPU node types can optionally be attached to a Nebius GPU cluster (an InfiniBand interconnect). In order to do this, you will first need to create the GPU cluster in your Nebius project, and then select it from the drop-down box.
+
+GPU node types support spot instances, while CPU node types do not.
+
+![Create a nodepool for your cluster](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/nebius/cluster-nodepool.png)
+
+> [!note] Minimum cluster requirements
+> Each cluster requires at least one node pool, and a combined minimum of 8 vCPU and 16GB memory across all node pools.
+
+Each node can schedule up to 256 pods (minus system pods). The actual number of pods per node will usually be limited by resource requests and [request modifiers](bring-your-own-cloud.md#configure-your-cluster-configure-resources) for smaller nodes.
+
+See [deploy and scale node pools](bring-your-own-cloud.md#deploy-and-scale-node-pools) for more information on configuring nodes and node pools.
+
+#### Nebius on Northflank: Configure advanced options
+
+After adding your initial node pools, you can configure advanced options for the cluster, such as build infrastructure and resource request modifiers.
+
+When you create the cluster, Northflank will begin installing system components in the node pools according to their capacity. Provisioning a node pool can take up to 20 minutes.
+
+### Nebius on Northflank: Next steps
+
+- [Configure your Kubernetes cluster: Manage your clusters on other cloud providers using Northflank.](bring-your-own-cloud.md#configure-your-cluster)
 - [Deploy node pools: Configure and deploy node pools on a Kubernetes cluster with Northflank.](bring-your-own-cloud.md#deploy-and-scale-node-pools)
 - [Deploy workloads to your cluster: Deploy services, jobs, and addons to your own cluster, and configure workloads to schedule on specific node pools.](bring-your-own-cloud.md#deploy-workloads-to-your-cluster)
 - [Run GPU workloads: Deploy GPU workloads on Northflank for AI, machine learning, HPC workloads, and other tasks.](gpu-workloads.md#gpus-on-northflank)

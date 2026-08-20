@@ -1,6 +1,6 @@
 # List regions
 
-Source: https://northflank.com/docs/v1/api/miscellaneous/list-regions.md
+Source: https://northflank.com/docs/v1/api/miscellaneous/miscellaneous/list-regions.md
 
 Lists available project regions
 

@@ -2,7 +2,7 @@
 
 Source: https://northflank.com/docs/v1/api/team/rollout-strategies/delete-gradual-rollout-strategy.md
 
-Deletes a gradual rollout strategy.
+Deletes a gradual rollout strategy. Any services still using it are detached first, which redeploys them without the rollout. Because that redeploys services, this also requires service update permission. Fails if a rollout is in progress on any of those services.
 
 Required permission: Account > Platform > GradualRollouts > Delete
 
@@ -31,6 +31,14 @@ DELETE /v1/teams/{teamId}/gradual-rollout-strategies/{gradualRolloutStrategyId}
   "data": {}
 }
 ```
+
+#### Example Response
+
+403 Forbidden: The caller does not have permission to update services.
+
+#### Example Response
+
+409 Conflict: A rollout is in progress on one or more services using this strategy.
 
 ### CLI reference
 
