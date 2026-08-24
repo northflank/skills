@@ -30,6 +30,10 @@ Required permission: Account > Networking > NetworkPolicies > Create
     - `denyAll`: (boolean)
     - `allowFromTags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `allowFromProjects`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `loadBalancerIngress`: {object}
+    - `targets`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `mode`: (string) (required) Whether the listed source ranges are allowed or denied. (enum: allowList, denyList)
+    - `cidrs`: [array of] (string)
   - `egressSecretInjection`: [array of] {object}
      - `name`: (string) (required) (pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$) (max length: 63)
      - `header`: (string) (required) (pattern: ^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$) (max length: 256)
@@ -50,14 +54,15 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"restrict-api-ingress","description":"Restrict ingress to the api service."}' \
+  --data '{"name":"restrict-api-ingress","description":"Restrict ingress to the api service.","spec":{}}' \
   https://api.northflank.com/v1/network-policies
 ```
 
 ```javascript
 const payload = {
   "name": "restrict-api-ingress",
-  "description": "Restrict ingress to the api service."
+  "description": "Restrict ingress to the api service.",
+  "spec": {}
 }
 
 const response = await fetch('https://api.northflank.com/v1/network-policies', {
@@ -78,7 +83,7 @@ import requests
 
 url = "https://api.northflank.com/v1/network-policies"
 
-payload = {"name":"restrict-api-ingress","description":"Restrict ingress to the api service."}
+payload = {"name":"restrict-api-ingress","description":"Restrict ingress to the api service.","spec":{}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -99,7 +104,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/network-policies"
 
-  var jsonStr = []byte(`{"name":"restrict-api-ingress","description":"Restrict ingress to the api service."}`)
+  var jsonStr = []byte(`{"name":"restrict-api-ingress","description":"Restrict ingress to the api service.","spec":{}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -141,7 +146,8 @@ Options:
 ```json
 {
   "name": "restrict-api-ingress",
-  "description": "Restrict ingress to the api service."
+  "description": "Restrict ingress to the api service.",
+  "spec": {}
 }
 ```
 
@@ -155,7 +161,8 @@ Request body
 await apiClient.create.networkPolicy({
   data: {
     "name": "restrict-api-ingress",
-    "description": "Restrict ingress to the api service."
+    "description": "Restrict ingress to the api service.",
+    "spec": {}
   }
 });
 ```

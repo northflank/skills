@@ -15,7 +15,7 @@ Required permission: Account > Platform > GradualRollouts > Update
 
 {object}
 - `name`: (string) Display name for the gradual rollout strategy
-- `type`: (string) (required) Type of the gradual rollout strategy (enum: canary)
+- `type`: (string) Type of the gradual rollout strategy (enum: canary)
 - `options`: {object}
   - `triggers`: {object}
     - `releaseFromTemplate`: (boolean) Automatically trigger the rollout strategy when a release is initiated from a template
@@ -56,8 +56,12 @@ Required permission: Account > Platform > GradualRollouts > Update
     - `config`: (multiple options) {object}
         - `canaryPercentage`: (integer) (required)
         - `stablePercentage`: (integer) (required) | {object}
-        - `headerName`: (string) (required) (min length: 1)
-        - `headerValue`: (string) (required) (min length: 1)
+        - `stableHeader`: {object}
+          - `headerName`: (string) (required) (min length: 1)
+          - `headerValue`: (string) (required) (min length: 1)
+        - `canaryHeader`: {object}
+          - `headerName`: (string) (required) (min length: 1)
+          - `headerValue`: (string) (required) (min length: 1)
 
 ### API reference
 

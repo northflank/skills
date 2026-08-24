@@ -290,7 +290,7 @@ Source: https://northflank.com/docs/v1/application/billing/pricing-on-northflank
 
 Northflank offers transparent, usage-based billing, so you can scale both horizontally and vertically with no unexpected costs. Authorised users can manage billing from the account dashboard at any time to configure alerts, update plan selection, change payment method, or get up-to-date details on current and historical resource usage. For detailed information about our different plans, please [visit our pricing page](https://northflank.com/pricing).
 
-Please note: all users must add a payment method to start creating resources on Northflank, regardless of plan selection. This is to verify user identity, and prevent malicious usage of the platform. However, with our easily configurable [billing alerts](billing.md#monitor-spending-set-up-billing-alertss) - you don’t need to worry about surprise bills.
+Please note: all users must add a payment method to start creating resources on Northflank, regardless of plan selection. This is to verify user identity, and prevent malicious usage of the platform. However, with our easily configurable [billing alerts](billing.md#monitor-spending-set-up-billing-alerts) - you don’t need to worry about surprise bills.
 
 You can manage billing for multiple teams using [organisations](collaborate.md#manage-an-organisation).
 

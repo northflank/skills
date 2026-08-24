@@ -51,8 +51,12 @@ Required permission: Account > Platform > GradualRollouts > Create
     - `config`: (multiple options) {object}
         - `canaryPercentage`: (integer) (required)
         - `stablePercentage`: (integer) (required) | {object}
-        - `headerName`: (string) (required) (min length: 1)
-        - `headerValue`: (string) (required) (min length: 1)
+        - `stableHeader`: {object}
+          - `headerName`: (string) (required) (min length: 1)
+          - `headerValue`: (string) (required) (min length: 1)
+        - `canaryHeader`: {object}
+          - `headerName`: (string) (required) (min length: 1)
+          - `headerValue`: (string) (required) (min length: 1)
 
 ### API reference
 

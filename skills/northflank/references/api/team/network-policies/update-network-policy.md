@@ -35,6 +35,10 @@ Required permission: Account > Networking > NetworkPolicies > Update
     - `denyAll`: (boolean)
     - `allowFromTags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `allowFromProjects`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `loadBalancerIngress`: {object}
+    - `targets`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `mode`: (string) (required) Whether the listed source ranges are allowed or denied. (enum: allowList, denyList)
+    - `cidrs`: [array of] (string)
   - `egressSecretInjection`: [array of] {object}
      - `name`: (string) (required) (pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$) (max length: 63)
      - `header`: (string) (required) (pattern: ^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$) (max length: 256)

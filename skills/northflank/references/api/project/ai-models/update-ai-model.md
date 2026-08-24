@@ -51,7 +51,7 @@ Required permission: Project > AiModels > General > Update
           - `pipelineParallelism`: (integer)
           - `expertParallelism`: (integer)
         - `sequenceLengthConfig`: {object}
-          - `maxModelLength`: (multiple options) (integer) | (string) (enum: auto)
+          - `maxModelLength`: (multiple options) (integer) A fixed maximum context length, in tokens | (string) `auto` to derive the maximum context length from the model's config (enum: auto)
           - `maxInputLength`: (integer)
           - `maxOutputLength`: (integer)
         - `batchingConfig`: {object}

@@ -14,7 +14,7 @@ Required permission: Account > Admin > Members > Manage
 **Request body:**
 
 {object}
-- `email`: (string) (required) Email of the user to invite. (pattern: ^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$)
+- `email`: (string) (required) Email of the user to invite. (pattern: ^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$)
 - `roles`: [array of] (string) (pattern: ^[A-Za-z0-9-]+$)
 
 **Response body:**

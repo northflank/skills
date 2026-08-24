@@ -17,7 +17,7 @@ Required permission: Account > Networking > SubdomainPaths > Read
 {object}
 - `data`: {object}
   - `paths`: [array of] {object}
-     - `subdomain`: (string) (required) The domain the path should be created for. (pattern: ^\*|^@$|^([0-9a-z]([0-9a-z\-]*[0-9a-z])?\.)*[0-9a-z]([0-9a-z\-]*[0-9a-z])?$)
+     - `subdomain`: (string) (required) The domain the path should be created for. (pattern: ^\*|^@$|^([0-9a-z]([0-9a-z-]*[0-9a-z])?\.)*[0-9a-z]([0-9a-z-]*[0-9a-z])?$)
      - `mode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: prefix, exact, regex)
      - `uri`: (string) (required) URI of the subdomain path. Interpreted according to the selected path mode
      - `options`: {object}

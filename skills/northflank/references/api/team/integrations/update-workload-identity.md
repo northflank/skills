@@ -30,15 +30,15 @@ Required permission: Account > Cloud > WorkloadIdentities > Update
        - `Statement`: (multiple options) {object}
            - `Sid`: (string) (pattern: ^[a-zA-Z0-9]*$)
            - `Effect`: (string) (required) (enum: Allow, Deny)
-           - `Action`: (multiple options) (string) | [array of] (string)
-           - `Resource`: (multiple options) (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
+           - `Action`: (multiple options) (string) A single IAM action. | [array of] (string)
+           - `Resource`: (multiple options) (string) A single resource ARN. (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
            - `Condition`: {object} | [array of] {object}
              - `Sid`: (string) (pattern: ^[a-zA-Z0-9]*$)
              - `Effect`: (string) (required) (enum: Allow, Deny)
-             - `Action`: (multiple options) (string) | [array of] (string)
-             - `Resource`: (multiple options) (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
+             - `Action`: (multiple options) (string) A single IAM action. | [array of] (string)
+             - `Resource`: (multiple options) (string) A single resource ARN. (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
              - `Condition`: {object}
-     - `rolePath`: (string) The path for the AWS IAM role to create. (pattern: ^\/?[\w+=,.@\-]+(?:\/[\w+=,.@\-]+)*\/?$)
+     - `rolePath`: (string) The path for the AWS IAM role to create. (pattern: ^\/?[\w+=,.@-]+(?:\/[\w+=,.@-]+)*\/?$)
      - `arn`: (string)
      - `roleName`: (undefined) (required) | {object}
      - `type`: (string) (required) (enum: aws)
@@ -47,15 +47,15 @@ Required permission: Account > Cloud > WorkloadIdentities > Update
        - `Statement`: (multiple options) {object}
            - `Sid`: (string) (pattern: ^[a-zA-Z0-9]*$)
            - `Effect`: (string) (required) (enum: Allow, Deny)
-           - `Action`: (multiple options) (string) | [array of] (string)
-           - `Resource`: (multiple options) (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
+           - `Action`: (multiple options) (string) A single IAM action. | [array of] (string)
+           - `Resource`: (multiple options) (string) A single resource ARN. (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
            - `Condition`: {object} | [array of] {object}
              - `Sid`: (string) (pattern: ^[a-zA-Z0-9]*$)
              - `Effect`: (string) (required) (enum: Allow, Deny)
-             - `Action`: (multiple options) (string) | [array of] (string)
-             - `Resource`: (multiple options) (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
+             - `Action`: (multiple options) (string) A single IAM action. | [array of] (string)
+             - `Resource`: (multiple options) (string) A single resource ARN. (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
              - `Condition`: {object}
-     - `roleName`: (string) The name for the AWS IAM role to create. If not specified, a name is generated automatically. (pattern: ^[\w+=,.@\-]{1,64}$)
+     - `roleName`: (string) The name for the AWS IAM role to create. If not specified, a name is generated automatically. (pattern: ^[\w+=,.@-]{1,64}$)
      - `arn`: (string)
      - `rolePath`: (undefined) (required) | {object}
      - `type`: (string) (required) (enum: aws)
@@ -64,13 +64,13 @@ Required permission: Account > Cloud > WorkloadIdentities > Update
        - `Statement`: (multiple options) {object}
            - `Sid`: (string) (pattern: ^[a-zA-Z0-9]*$)
            - `Effect`: (string) (required) (enum: Allow, Deny)
-           - `Action`: (multiple options) (string) | [array of] (string)
-           - `Resource`: (multiple options) (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
+           - `Action`: (multiple options) (string) A single IAM action. | [array of] (string)
+           - `Resource`: (multiple options) (string) A single resource ARN. (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
            - `Condition`: {object} | [array of] {object}
              - `Sid`: (string) (pattern: ^[a-zA-Z0-9]*$)
              - `Effect`: (string) (required) (enum: Allow, Deny)
-             - `Action`: (multiple options) (string) | [array of] (string)
-             - `Resource`: (multiple options) (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
+             - `Action`: (multiple options) (string) A single IAM action. | [array of] (string)
+             - `Resource`: (multiple options) (string) A single resource ARN. (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
              - `Condition`: {object}
      - `arn`: (string)
      - `roleName`: (undefined) (required)
@@ -81,16 +81,16 @@ Required permission: Account > Cloud > WorkloadIdentities > Update
         - `Statement`: (multiple options) {object}
             - `Sid`: (string) (pattern: ^[a-zA-Z0-9]*$)
             - `Effect`: (string) (required) (enum: Allow, Deny)
-            - `Action`: (multiple options) (string) | [array of] (string)
-            - `Resource`: (multiple options) (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
+            - `Action`: (multiple options) (string) A single IAM action. | [array of] (string)
+            - `Resource`: (multiple options) (string) A single resource ARN. (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
             - `Condition`: {object} | [array of] {object}
               - `Sid`: (string) (pattern: ^[a-zA-Z0-9]*$)
               - `Effect`: (string) (required) (enum: Allow, Deny)
-              - `Action`: (multiple options) (string) | [array of] (string)
-              - `Resource`: (multiple options) (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
+              - `Action`: (multiple options) (string) A single IAM action. | [array of] (string)
+              - `Resource`: (multiple options) (string) A single resource ARN. (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
               - `Condition`: {object}
-      - `roleName`: (string) The name for the AWS IAM role to create. If not specified, a name is generated automatically. (pattern: ^[\w+=,.@\-]{1,64}$)
-      - `rolePath`: (string) The path for the AWS IAM role to create. (pattern: ^\/?[\w+=,.@\-]+(?:\/[\w+=,.@\-]+)*\/?$)
+      - `roleName`: (string) The name for the AWS IAM role to create. If not specified, a name is generated automatically. (pattern: ^[\w+=,.@-]{1,64}$)
+      - `rolePath`: (string) The path for the AWS IAM role to create. (pattern: ^\/?[\w+=,.@-]+(?:\/[\w+=,.@-]+)*\/?$)
       - `arn`: (string) | {object}
       - `type`: (string) (required) (enum: aws)
       - `existingRoleArn`: (string) (required)
@@ -131,16 +131,16 @@ Required permission: Account > Cloud > WorkloadIdentities > Update
           - `Statement`: (multiple options) {object}
               - `Sid`: (string) (pattern: ^[a-zA-Z0-9]*$)
               - `Effect`: (string) (required) (enum: Allow, Deny)
-              - `Action`: (multiple options) (string) | [array of] (string)
-              - `Resource`: (multiple options) (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
+              - `Action`: (multiple options) (string) A single IAM action. | [array of] (string)
+              - `Resource`: (multiple options) (string) A single resource ARN. (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
               - `Condition`: {object} | [array of] {object}
                 - `Sid`: (string) (pattern: ^[a-zA-Z0-9]*$)
                 - `Effect`: (string) (required) (enum: Allow, Deny)
-                - `Action`: (multiple options) (string) | [array of] (string)
-                - `Resource`: (multiple options) (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
+                - `Action`: (multiple options) (string) A single IAM action. | [array of] (string)
+                - `Resource`: (multiple options) (string) A single resource ARN. (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$) | [array of] (string) (pattern: ^(\*|arn:[a-zA-Z0-9:*/\-?_+=,.@]+)$)
                 - `Condition`: {object}
-        - `roleName`: (string) The name for the AWS IAM role to create. If not specified, a name is generated automatically. (pattern: ^[\w+=,.@\-]{1,64}$)
-        - `rolePath`: (string) The path for the AWS IAM role to create. (pattern: ^\/?[\w+=,.@\-]+(?:\/[\w+=,.@\-]+)*\/?$)
+        - `roleName`: (string) The name for the AWS IAM role to create. If not specified, a name is generated automatically. (pattern: ^[\w+=,.@-]{1,64}$)
+        - `rolePath`: (string) The path for the AWS IAM role to create. (pattern: ^\/?[\w+=,.@-]+(?:\/[\w+=,.@-]+)*\/?$)
         - `arn`: (string) | {object}
         - `type`: (string) (required) (enum: aws)
         - `existingRoleArn`: (string) (required)
@@ -163,7 +163,7 @@ Required permission: Account > Cloud > WorkloadIdentities > Update
         - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
         - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
   - `state`: {object}
-    - `status`: (string) (required) The current install status of the workload identity. (enum: unapplied, outdated, installing, error, applied, deleting)
+    - `status`: (string) (required) The current install status of the workload identity. (enum: unapplied, outdated, installing, updating, error, applied, deleting)
     - `updatedAt`: (string) time of update (format: date-time)
     - `errors`: [array of] (string)
   - `updatedAt`: (string) time of update (format: date-time)

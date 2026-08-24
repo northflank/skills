@@ -6,7 +6,7 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 
 | Page | API Reference | File |
 |------|---------------|------|
-| **Create combined service** | `POST /v1/projects/{projectId}/secrets`<br>`POST /v1/teams/{teamId}/projects/{projectId}/secrets` | [create-combined-service.md](create-combined-service.md) |
+| **Create project secret** | `POST /v1/projects/{projectId}/secrets`<br>`POST /v1/teams/{teamId}/projects/{projectId}/secrets` | [create-project-secret.md](create-project-secret.md) |
 | **Delete project secret** | `DELETE /v1/projects/{projectId}/secrets/{secretId}`<br>`DELETE /v1/teams/{teamId}/projects/{projectId}/secrets/{secretId}` | [delete-project-secret.md](delete-project-secret.md) |
 | **Get project secret addon link details** | `GET /v1/projects/{projectId}/secrets/{secretId}/addons/{addonId}`<br>`GET /v1/teams/{teamId}/projects/{projectId}/secrets/{secretId}/addons/{addonId}` | [get-project-secret-addon-link-details.md](get-project-secret-addon-link-details.md) |
 | **Get project secret details** | `GET /v1/projects/{projectId}/secrets/{secretId}/details`<br>`GET /v1/teams/{teamId}/projects/{projectId}/secrets/{secretId}/details` | [get-project-secret-details.md](get-project-secret-details.md) |

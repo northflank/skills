@@ -302,6 +302,28 @@ OR
   - `licenseKey`: (string) (required) New Relic License Key
   - `region`: (string) (required) (enum: eu, us)
 
+OR
+
+{object}
+- `name`: (string) (required) Name of the log sink.
+- `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
+- `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
+- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `restrictions`: {object}
+  - `tags`: {object}
+    - `enabled`: (boolean) Whether restriction by tag should be enabled.
+    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
+- `options`: {object}
+  - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
+  - `forwardCdnLogs`: (boolean) Forward CDN logs from your workloads
+  - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
+  - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
+- `sinkType`: (string) (required) The type of the log sink. (enum: sentry)
+- `sinkData`: {object}
+  - `endpoint`: (string) (required) The complete OTLP logs endpoint from your Sentry Client Keys configuration. (pattern: ^https:\/\/[\w.-]+\.sentry\.io\/)
+  - `publicKey`: (string) (required) The public key from your Sentry OTLP DSN (Client Keys (DSN) > OpenTelemetry).
+
 **Response body:**
 
 {object}
@@ -1219,7 +1241,7 @@ Create a log sink using Solar Winds
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"solarWinds","sinkData":{"api_key":"Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc","encoding":{"codec":"json"}}}' \
+  --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"solarWinds","sinkData":{"api_key":"Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc","encoding":{"codec":"json"},"endpointType":"unitary"}}' \
   https://api.northflank.com/v1/integrations/log-sinks
 ```
 
@@ -1248,7 +1270,8 @@ const payload = {
     "api_key": "Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc",
     "encoding": {
       "codec": "json"
-    }
+    },
+    "endpointType": "unitary"
   }
 }
 
@@ -1270,7 +1293,7 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks"
 
-payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"solarWinds","sinkData":{"api_key":"Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc","encoding":{"codec":"json"}}}
+payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"solarWinds","sinkData":{"api_key":"Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc","encoding":{"codec":"json"},"endpointType":"unitary"}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -1291,7 +1314,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
-  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"solarWinds","sinkData":{"api_key":"Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc","encoding":{"codec":"json"}}}`)
+  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"solarWinds","sinkData":{"api_key":"Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc","encoding":{"codec":"json"},"endpointType":"unitary"}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -1488,6 +1511,103 @@ func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
   var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"newRelic","sinkData":{"accountId":"b1dd3feb585asd1a3e9","licenseKey":"b1dd3feb585asd1a3e9","region":"eu"}}`)
+  req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+  req.Header.Set("Content-Type", "application/json")
+  req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
+
+  client := &http.Client{}
+  resp, err := client.Do(req)
+  if err != nil {
+    panic(err)
+  }
+  defer resp.Body.Close()
+
+  fmt.Println("Response status:", resp.Status)
+  fmt.Println("Response headers:", resp.Header)
+  body, _ := ioutil.ReadAll(resp.Body)
+  fmt.Println("Response body:", string(body))
+}
+```
+
+OR
+
+Create a log sink using Sentry
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request POST \
+  --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"sentry","sinkData":{"endpoint":"https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs","publicKey":"5cac0d8cb9414d5c80eb8467f55d5352"}}' \
+  https://api.northflank.com/v1/integrations/log-sinks
+```
+
+```javascript
+const payload = {
+  "name": "example-log-sink",
+  "description": "This is an example log sink.",
+  "restricted": true,
+  "projects": [
+    "default-project"
+  ],
+  "restrictions": {
+    "tags": {
+      "enabled": false,
+      "matchCondition": "or"
+    }
+  },
+  "options": {
+    "useCustomLabels": true,
+    "forwardCdnLogs": true,
+    "forwardIngressLogs": true,
+    "forwardMeshLogs": true
+  },
+  "sinkType": "sentry",
+  "sinkData": {
+    "endpoint": "https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs",
+    "publicKey": "5cac0d8cb9414d5c80eb8467f55d5352"
+  }
+}
+
+const response = await fetch('https://api.northflank.com/v1/integrations/log-sinks', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${NORTHFLANK_API_TOKEN}`
+  },
+  body: JSON.stringify(payload)
+})
+
+const json = await response.json()
+console.log(json)
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/integrations/log-sinks"
+
+payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"sentry","sinkData":{"endpoint":"https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs","publicKey":"5cac0d8cb9414d5c80eb8467f55d5352"}}
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("POST", url, headers = headers, json = payload)
+
+print(response.json())
+```
+
+```go
+package main
+
+import (
+  "bytes"
+  "fmt"
+  "io/ioutil"
+  "net/http"
+)
+
+func main() {
+  url := "https://api.northflank.com/v1/integrations/log-sinks"
+
+  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"sentry","sinkData":{"endpoint":"https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs","publicKey":"5cac0d8cb9414d5c80eb8467f55d5352"}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -1871,7 +1991,8 @@ Create a log sink using Solar Winds
     "api_key": "Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc",
     "encoding": {
       "codec": "json"
-    }
+    },
+    "endpointType": "unitary"
   }
 }
 ```
@@ -1938,6 +2059,38 @@ Create a log sink using New Relic
     "accountId": "b1dd3feb585asd1a3e9",
     "licenseKey": "b1dd3feb585asd1a3e9",
     "region": "eu"
+  }
+}
+```
+
+OR
+
+Create a log sink using Sentry
+
+```json
+{
+  "name": "example-log-sink",
+  "description": "This is an example log sink.",
+  "restricted": true,
+  "projects": [
+    "default-project"
+  ],
+  "restrictions": {
+    "tags": {
+      "enabled": false,
+      "matchCondition": "or"
+    }
+  },
+  "options": {
+    "useCustomLabels": true,
+    "forwardCdnLogs": true,
+    "forwardIngressLogs": true,
+    "forwardMeshLogs": true
+  },
+  "sinkType": "sentry",
+  "sinkData": {
+    "endpoint": "https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs",
+    "publicKey": "5cac0d8cb9414d5c80eb8467f55d5352"
   }
 }
 ```
@@ -2314,7 +2467,8 @@ await apiClient.create.logSink({
       "api_key": "Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc",
       "encoding": {
         "codec": "json"
-      }
+      },
+      "endpointType": "unitary"
     }
   }
 });
@@ -2385,6 +2539,40 @@ await apiClient.create.logSink({
       "accountId": "b1dd3feb585asd1a3e9",
       "licenseKey": "b1dd3feb585asd1a3e9",
       "region": "eu"
+    }
+  }
+});
+```
+
+OR
+
+Create a log sink using Sentry
+
+```javascript
+await apiClient.create.logSink({
+  data: {
+    "name": "example-log-sink",
+    "description": "This is an example log sink.",
+    "restricted": true,
+    "projects": [
+      "default-project"
+    ],
+    "restrictions": {
+      "tags": {
+        "enabled": false,
+        "matchCondition": "or"
+      }
+    },
+    "options": {
+      "useCustomLabels": true,
+      "forwardCdnLogs": true,
+      "forwardIngressLogs": true,
+      "forwardMeshLogs": true
+    },
+    "sinkType": "sentry",
+    "sinkData": {
+      "endpoint": "https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs",
+      "publicKey": "5cac0d8cb9414d5c80eb8467f55d5352"
     }
   }
 });

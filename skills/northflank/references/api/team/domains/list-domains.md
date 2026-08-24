@@ -22,6 +22,9 @@ Required permission: Account > Networking > Domains > Read
      - `status`: (string) (required) The status of the domain verification. (enum: pending, verified)
      - `hostname`: (string) (required) The hostname to add to your domain's DNS records as a TXT record to verify the domain.
      - `token`: (string) (required) The token to add as the content of the TXT record to verify the domain.
+     - `options`: {object}
+       - `minTlsProtocolVersion`: (string) Minimum TLS protocol version configured at the domain level. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
+       - `tlsMode`: (string) TLS mode configured at the domain level. (enum: default, passthrough)
 - `pagination`: {object}
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.

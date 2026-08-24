@@ -40,6 +40,7 @@ Required permission: Project > Services > General > Update
 - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
 - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
 - `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+- `ignoreEmptyCommits`: (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules.
 - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
 - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
 - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -61,6 +62,7 @@ OR
 - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
 - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
 - `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+- `ignoreEmptyCommits`: (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules.
 
 OR
 
@@ -75,6 +77,7 @@ OR
 - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
 - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
 - `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+- `ignoreEmptyCommits`: (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules.
 - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
 - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
 - `includeGitFolder`: (boolean) Include .git folder inside the build context
@@ -105,7 +108,7 @@ Build from a Dockerfile
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}' \
+  --data '{"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"],"isAllowList":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}' \
   https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options
 ```
 
@@ -126,15 +129,23 @@ const payload = {
     "enabled": true,
     "projects": [
       "example-project"
-    ]
+    ],
+    "isAllowList": false
   },
   "pathIgnoreRules": [
     "README.md"
   ],
   "isAllowList": false,
   "ciIgnoreFlags": [
-    "[skip ci]"
+    "[skip ci]",
+    "[ci skip]",
+    "[no ci]",
+    "[skip nf]",
+    "[nf skip]",
+    "[northflank skip]",
+    "[skip northflank]"
   ],
+  "ignoreEmptyCommits": false,
   "dockerCredentials": [
     "example-docker-credential"
   ],
@@ -163,7 +174,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options"
 
-payload = {"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}
+payload = {"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"],"isAllowList":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -184,7 +195,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options"
 
-  var jsonStr = []byte(`{"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}`)
+  var jsonStr = []byte(`{"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"],"isAllowList":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -211,7 +222,7 @@ Build from a Buildpack
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"]}' \
+  --data '{"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false}' \
   https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options
 ```
 
@@ -230,8 +241,15 @@ const payload = {
   ],
   "isAllowList": false,
   "ciIgnoreFlags": [
-    "[skip ci]"
-  ]
+    "[skip ci]",
+    "[ci skip]",
+    "[no ci]",
+    "[skip nf]",
+    "[nf skip]",
+    "[northflank skip]",
+    "[skip northflank]"
+  ],
+  "ignoreEmptyCommits": false
 }
 
 const response = await fetch('https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options', {
@@ -252,7 +270,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options"
 
-payload = {"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"]}
+payload = {"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -273,7 +291,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options"
 
-  var jsonStr = []byte(`{"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"]}`)
+  var jsonStr = []byte(`{"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -300,7 +318,7 @@ Don't modify build type settings
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}' \
+  --data '{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"],"isAllowList":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}' \
   https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options
 ```
 
@@ -316,15 +334,23 @@ const payload = {
     "enabled": true,
     "projects": [
       "example-project"
-    ]
+    ],
+    "isAllowList": false
   },
   "pathIgnoreRules": [
     "README.md"
   ],
   "isAllowList": false,
   "ciIgnoreFlags": [
-    "[skip ci]"
+    "[skip ci]",
+    "[ci skip]",
+    "[no ci]",
+    "[skip nf]",
+    "[nf skip]",
+    "[northflank skip]",
+    "[skip northflank]"
   ],
+  "ignoreEmptyCommits": false,
   "dockerCredentials": [
     "example-docker-credential"
   ],
@@ -353,7 +379,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options"
 
-payload = {"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}
+payload = {"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"],"isAllowList":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -374,7 +400,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-options"
 
-  var jsonStr = []byte(`{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"]},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]"],"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}`)
+  var jsonStr = []byte(`{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"],"isAllowList":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -442,15 +468,23 @@ Build from a Dockerfile
     "enabled": true,
     "projects": [
       "example-project"
-    ]
+    ],
+    "isAllowList": false
   },
   "pathIgnoreRules": [
     "README.md"
   ],
   "isAllowList": false,
   "ciIgnoreFlags": [
-    "[skip ci]"
+    "[skip ci]",
+    "[ci skip]",
+    "[no ci]",
+    "[skip nf]",
+    "[nf skip]",
+    "[northflank skip]",
+    "[skip northflank]"
   ],
+  "ignoreEmptyCommits": false,
   "dockerCredentials": [
     "example-docker-credential"
   ],
@@ -481,8 +515,15 @@ Build from a Buildpack
   ],
   "isAllowList": false,
   "ciIgnoreFlags": [
-    "[skip ci]"
-  ]
+    "[skip ci]",
+    "[ci skip]",
+    "[no ci]",
+    "[skip nf]",
+    "[nf skip]",
+    "[northflank skip]",
+    "[skip northflank]"
+  ],
+  "ignoreEmptyCommits": false
 }
 ```
 
@@ -502,15 +543,23 @@ Don't modify build type settings
     "enabled": true,
     "projects": [
       "example-project"
-    ]
+    ],
+    "isAllowList": false
   },
   "pathIgnoreRules": [
     "README.md"
   ],
   "isAllowList": false,
   "ciIgnoreFlags": [
-    "[skip ci]"
+    "[skip ci]",
+    "[ci skip]",
+    "[no ci]",
+    "[skip nf]",
+    "[nf skip]",
+    "[northflank skip]",
+    "[skip northflank]"
   ],
+  "ignoreEmptyCommits": false,
   "dockerCredentials": [
     "example-docker-credential"
   ],
@@ -560,15 +609,23 @@ await apiClient.update.service.buildOptions({
       "enabled": true,
       "projects": [
         "example-project"
-      ]
+      ],
+      "isAllowList": false
     },
     "pathIgnoreRules": [
       "README.md"
     ],
     "isAllowList": false,
     "ciIgnoreFlags": [
-      "[skip ci]"
+      "[skip ci]",
+      "[ci skip]",
+      "[no ci]",
+      "[skip nf]",
+      "[nf skip]",
+      "[northflank skip]",
+      "[skip northflank]"
     ],
+    "ignoreEmptyCommits": false,
     "dockerCredentials": [
       "example-docker-credential"
     ],
@@ -605,8 +662,15 @@ await apiClient.update.service.buildOptions({
     ],
     "isAllowList": false,
     "ciIgnoreFlags": [
-      "[skip ci]"
-    ]
+      "[skip ci]",
+      "[ci skip]",
+      "[no ci]",
+      "[skip nf]",
+      "[nf skip]",
+      "[northflank skip]",
+      "[skip northflank]"
+    ],
+    "ignoreEmptyCommits": false
   }
 });
 ```
@@ -632,15 +696,23 @@ await apiClient.update.service.buildOptions({
       "enabled": true,
       "projects": [
         "example-project"
-      ]
+      ],
+      "isAllowList": false
     },
     "pathIgnoreRules": [
       "README.md"
     ],
     "isAllowList": false,
     "ciIgnoreFlags": [
-      "[skip ci]"
+      "[skip ci]",
+      "[ci skip]",
+      "[no ci]",
+      "[skip nf]",
+      "[nf skip]",
+      "[northflank skip]",
+      "[skip northflank]"
     ],
+    "ignoreEmptyCommits": false,
     "dockerCredentials": [
       "example-docker-credential"
     ],

@@ -30,6 +30,9 @@ Required permission: Account > Networking > Domains > Read
       - `record`: (string) Expected CNAME target of the dcvRecord.
     - `status`: {object}
       - `expiryDate`: (string) Expiry date of the current certificate. (format: date-time)
+  - `options`: {object}
+    - `minTlsProtocolVersion`: (string) Minimum TLS protocol version configured at the domain level. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
+    - `tlsMode`: (string) TLS mode configured at the domain level. (enum: default, passthrough)
   - `subdomains`: [array of] {object}
      - `name`: (string) (required) The subdomain added, or -default for the empty subdomain.
      - `fullName`: (string) (required) The full domain including the subdomain.

@@ -16,7 +16,7 @@ Required permission: Organisation > Admin > Billing > Read
 {object}
 - `teamId`: (string) The ID of the team to filter by.
 - `projectId`: (string) The ID of the project to filter by.
-- `resourceType`: (string) The resource type to filter by (e.g. service, job, addon, volume). (enum: job, service, addon, volume)
+- `resourceType`: (string) The resource type to filter by (e.g. service, job, harness, addon, volume). (enum: job, service, harness, addon, volume)
 - `per_page`: (integer) The number of breakdown entries to return per page (teams, projects, or resources depending on the active filters). Maximum of 100.
 - `page`: (integer) The page number of breakdown entries to access.
 
@@ -51,7 +51,7 @@ Required permission: Organisation > Admin > Billing > Read
               - `storage`: (number) The storage usage price, in cents. (format: float)
               - `gpu`: (number) The GPU usage price, in cents. (format: float)
             - `resourceTypes`: [array of] {object}
-                - `resourceType`: (string) The type of the resource (service, job, addon, volume, etc.).
+                - `resourceType`: (string) The type of the resource (service, job, harness, addon, volume, etc.).
                 - `price`: {object}
                   - `total`: (number) The total PaaS price, in cents. (format: float)
                   - `cpu`: (number) The CPU usage price, in cents. (format: float)
@@ -110,7 +110,7 @@ Options:
 
 - `--projectId <projectId>`: The ID of the project to filter by.
 
-- `--resourceType <resourceType>`: The resource type to filter by (e.g. service, job, addon, volume).
+- `--resourceType <resourceType>`: The resource type to filter by (e.g. service, job, harness, addon, volume).
 
 - `--per_page <per_page>`: The number of breakdown entries to return per page (teams, projects, or resources depending on the active filters). Maximum of 100.
 

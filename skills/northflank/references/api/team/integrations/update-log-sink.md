@@ -22,7 +22,7 @@ Required permission: Account > Observability > LogSinks > Update
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `resumeLogSink`: (boolean) If `true`, and the log sink is currently paused, the log sink will be resumed after updating.
-- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic)
+- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
 - `sinkData`: {object}
   - `endpoint`: (string) The endpoint of the Loki log sink.
   - `auth`: {object}
@@ -41,7 +41,7 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `resumeLogSink`: (boolean) If `true`, and the log sink is currently paused, the log sink will be resumed after updating.
-- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic)
+- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
 - `sinkData`: {object}
   - `default_api_key`: (string) The Datadog API key.
   - `region`: (string) The Datadog region. (enum: eu, us, us3, us5)
@@ -57,7 +57,7 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `resumeLogSink`: (boolean) If `true`, and the log sink is currently paused, the log sink will be resumed after updating.
-- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic)
+- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
 - `sinkData`: (multiple options) {object}
    - `authenticationStrategy`: (string) The authentication strategy. (enum: port)
    - `host`: (string) The host for the Papertrail log destination.
@@ -77,7 +77,7 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `resumeLogSink`: (boolean) If `true`, and the log sink is currently paused, the log sink will be resumed after updating.
-- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic)
+- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
 - `sinkData`: {object}
   - `uri`: (string) (required) Uri to send logs to.
   - `encoding`: {object}
@@ -106,7 +106,7 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `resumeLogSink`: (boolean) If `true`, and the log sink is currently paused, the log sink will be resumed after updating.
-- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic)
+- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
 - `sinkData`: {object}
   - `endpoint`: (string) Endpoint for the AWS S3 or compatible API bucket.
   - `region`: (string) Region of the S3 bucket. (enum: eu-west-1, eu-west-2, eu-west-3, eu-central-1, eu-south-1, eu-north-1, us-west-1, us-west-2, us-east-1, us-east2)
@@ -127,7 +127,7 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `resumeLogSink`: (boolean) If `true`, and the log sink is currently paused, the log sink will be resumed after updating.
-- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic)
+- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
 - `sinkData`: {object}
   - `token`: (string) Better Stack Source Token
   - `uri`: (string) Better stack ingestion host
@@ -143,7 +143,7 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `resumeLogSink`: (boolean) If `true`, and the log sink is currently paused, the log sink will be resumed after updating.
-- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic)
+- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
 - `sinkData`: {object}
   - `api_key`: (string) Ingestion Key
 
@@ -158,7 +158,7 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `resumeLogSink`: (boolean) If `true`, and the log sink is currently paused, the log sink will be resumed after updating.
-- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic)
+- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
 - `sinkData`: {object}
   - `region`: (string) Your Logzio region code (enum: eu, uk, us, ca, au, nl, wa)
   - `token`: (string) The Log Shipping Token of the account you want to ship to
@@ -174,7 +174,7 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `resumeLogSink`: (boolean) If `true`, and the log sink is currently paused, the log sink will be resumed after updating.
-- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic)
+- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
 - `sinkData`: {object}
   - `api_key`: (string) Solar Winds API Key
   - `encoding`: {object}
@@ -192,7 +192,7 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `resumeLogSink`: (boolean) If `true`, and the log sink is currently paused, the log sink will be resumed after updating.
-- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic)
+- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
 - `sinkData`: {object}
   - `api_key`: (string) Honeycomb API Key
   - `dataset`: (string) Name of the dataset
@@ -208,7 +208,7 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `resumeLogSink`: (boolean) If `true`, and the log sink is currently paused, the log sink will be resumed after updating.
-- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic)
+- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
 - `sinkData`: {object}
   - `dataset`: (string) (required) Name of the data
   - `token`: (string) Axiom API/Personal token
@@ -227,11 +227,27 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `resumeLogSink`: (boolean) If `true`, and the log sink is currently paused, the log sink will be resumed after updating.
-- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic)
+- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
 - `sinkData`: {object}
   - `accountId`: (string) New Relic Account ID
   - `licenseKey`: (string) New Relic License Key
   - `region`: (string) (enum: eu, us)
+
+OR
+
+{object}
+- `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
+- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `options`: {object}
+  - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
+  - `forwardCdnLogs`: (boolean) Forward CDN logs from your workloads
+  - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
+  - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
+- `resumeLogSink`: (boolean) If `true`, and the log sink is currently paused, the log sink will be resumed after updating.
+- `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
+- `sinkData`: {object}
+  - `endpoint`: (string) The complete OTLP logs endpoint from your Sentry Client Keys configuration. (pattern: ^https:\/\/[\w.-]+\.sentry\.io\/)
+  - `publicKey`: (string) The public key from your Sentry OTLP DSN (Client Keys (DSN) > OpenTelemetry).
 
 **Response body:**
 
@@ -1349,6 +1365,96 @@ func main() {
 }
 ```
 
+OR
+
+Update a log sink using Sentry
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request POST \
+  --data '{"restricted":true,"projects":["default-project"],"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"resumeLogSink":false,"sinkType":"http","sinkData":{"endpoint":"https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs","publicKey":"5cac0d8cb9414d5c80eb8467f55d5352"}}' \
+  https://api.northflank.com/v1/integrations/log-sinks/{logSinkId}/settings
+```
+
+```javascript
+const payload = {
+  "restricted": true,
+  "projects": [
+    "default-project"
+  ],
+  "options": {
+    "useCustomLabels": true,
+    "forwardCdnLogs": true,
+    "forwardIngressLogs": true,
+    "forwardMeshLogs": true
+  },
+  "resumeLogSink": false,
+  "sinkType": "http",
+  "sinkData": {
+    "endpoint": "https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs",
+    "publicKey": "5cac0d8cb9414d5c80eb8467f55d5352"
+  }
+}
+
+const response = await fetch('https://api.northflank.com/v1/integrations/log-sinks/{logSinkId}/settings', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${NORTHFLANK_API_TOKEN}`
+  },
+  body: JSON.stringify(payload)
+})
+
+const json = await response.json()
+console.log(json)
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/integrations/log-sinks/{logSinkId}/settings"
+
+payload = {"restricted":true,"projects":["default-project"],"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"resumeLogSink":false,"sinkType":"http","sinkData":{"endpoint":"https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs","publicKey":"5cac0d8cb9414d5c80eb8467f55d5352"}}
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("POST", url, headers = headers, json = payload)
+
+print(response.json())
+```
+
+```go
+package main
+
+import (
+  "bytes"
+  "fmt"
+  "io/ioutil"
+  "net/http"
+)
+
+func main() {
+  url := "https://api.northflank.com/v1/integrations/log-sinks/{logSinkId}/settings"
+
+  var jsonStr = []byte(`{"restricted":true,"projects":["default-project"],"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"resumeLogSink":false,"sinkType":"http","sinkData":{"endpoint":"https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs","publicKey":"5cac0d8cb9414d5c80eb8467f55d5352"}}`)
+  req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+  req.Header.Set("Content-Type", "application/json")
+  req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
+
+  client := &http.Client{}
+  resp, err := client.Do(req)
+  if err != nil {
+    panic(err)
+  }
+  defer resp.Body.Close()
+
+  fmt.Println("Response status:", resp.Status)
+  fmt.Println("Response headers:", resp.Header)
+  body, _ := ioutil.ReadAll(resp.Body)
+  fmt.Println("Response body:", string(body))
+}
+```
+
 #### Example Response
 
 200 OK: The operation was performed successfully.
@@ -1694,6 +1800,31 @@ Update a log sink using New Relic
     "accountId": "b1dd3feb585asd1a3e9",
     "licenseKey": "b1dd3feb585asd1a3e9",
     "region": "eu"
+  }
+}
+```
+
+OR
+
+Update a log sink using Sentry
+
+```json
+{
+  "restricted": true,
+  "projects": [
+    "default-project"
+  ],
+  "options": {
+    "useCustomLabels": true,
+    "forwardCdnLogs": true,
+    "forwardIngressLogs": true,
+    "forwardMeshLogs": true
+  },
+  "resumeLogSink": false,
+  "sinkType": "http",
+  "sinkData": {
+    "endpoint": "https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs",
+    "publicKey": "5cac0d8cb9414d5c80eb8467f55d5352"
   }
 }
 ```
@@ -2088,6 +2219,36 @@ await apiClient.update.logSink({
       "accountId": "b1dd3feb585asd1a3e9",
       "licenseKey": "b1dd3feb585asd1a3e9",
       "region": "eu"
+    }
+  }
+});
+```
+
+OR
+
+Update a log sink using Sentry
+
+```javascript
+await apiClient.update.logSink({
+  parameters: {
+    "logSinkId": "example-log-sink"
+  },
+  data: {
+    "restricted": true,
+    "projects": [
+      "default-project"
+    ],
+    "options": {
+      "useCustomLabels": true,
+      "forwardCdnLogs": true,
+      "forwardIngressLogs": true,
+      "forwardMeshLogs": true
+    },
+    "resumeLogSink": false,
+    "sinkType": "http",
+    "sinkData": {
+      "endpoint": "https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs",
+      "publicKey": "5cac0d8cb9414d5c80eb8467f55d5352"
     }
   }
 });

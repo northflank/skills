@@ -21,11 +21,11 @@ Required permission: Project > Services > General > Create
 - `billing`: {object}
   - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `gpu`: {object}
-    - `enabled`: (boolean)
+    - `enabled`: (boolean) Whether GPUs are enabled for this workload.
     - `configuration`: {object}
-      - `gpuType`: (string) (required)
-      - `gpuCount`: (integer)
-      - `timesliced`: (boolean)
+      - `gpuType`: (string) (required) The type of GPU to use.
+      - `gpuCount`: (integer) The number of GPUs to allocate.
+      - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
 - `infrastructure`: {object}
   - `architecture`: (string) (enum: x86, arm)
 - `deployment`: (multiple options) {object}
@@ -55,20 +55,35 @@ Required permission: Project > Services > General > Create
      - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required)
      - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
    - `gpu`: {object}
-     - `enabled`: (boolean)
+     - `enabled`: (boolean) Whether GPUs are enabled for this workload.
      - `configuration`: {object}
-       - `gpuType`: (string) (required)
-       - `gpuCount`: (integer)
-       - `timesliced`: (boolean)
+       - `gpuType`: (string) (required) The type of GPU to use.
+       - `gpuCount`: (integer) The number of GPUs to allocate.
+       - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-   - `gradualRolloutStrategyId`: (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$)
+   - `gradualRolloutStrategyId`: (multiple options) (undefined)
    - `ssh`: {object}
      - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
    - `metadata`: {object}
      - `labels`: {object}
      - `annotations`: {object}
+   - `volumes`: [array of] {object}
+      - `id`: (string) (required) Slug identifying this volume within the service. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+      - `mounts`: [array of] {object}
+          - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
+          - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
+      - `spec`: {object}
+        - `accessMode`: (string) Access mode of a per-replica volume. Always `ReadWriteOnce`. (enum: ReadWriteOnce)
+        - `storageClassName`: (string) The type of the storage.
+        - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
+   - `containerSnapshot`: {object}
+     - `restoreFrom`: (string) The successful container snapshot to restore the service from. (format: uuid)
+     - `capture`: {object}
+       - `onTermination`: (boolean) Creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts.
+       - `retention`: {object}
+         - `maxSnapshots`: (integer) The maximum number of termination snapshots retained for the service.
    - `internal`: {object}
-     - `id`: (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string)
+     - `id`: (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
      - `branch`: (string) Branch to deploy
      - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
      - `buildId`: (string) ID of the build that should be deployed | {object}
@@ -98,20 +113,35 @@ Required permission: Project > Services > General > Create
      - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required)
      - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
    - `gpu`: {object}
-     - `enabled`: (boolean)
+     - `enabled`: (boolean) Whether GPUs are enabled for this workload.
      - `configuration`: {object}
-       - `gpuType`: (string) (required)
-       - `gpuCount`: (integer)
-       - `timesliced`: (boolean)
+       - `gpuType`: (string) (required) The type of GPU to use.
+       - `gpuCount`: (integer) The number of GPUs to allocate.
+       - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-   - `gradualRolloutStrategyId`: (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$)
+   - `gradualRolloutStrategyId`: (multiple options) (undefined)
    - `ssh`: {object}
      - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
    - `metadata`: {object}
      - `labels`: {object}
      - `annotations`: {object}
+   - `volumes`: [array of] {object}
+      - `id`: (string) (required) Slug identifying this volume within the service. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+      - `mounts`: [array of] {object}
+          - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
+          - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
+      - `spec`: {object}
+        - `accessMode`: (string) Access mode of a per-replica volume. Always `ReadWriteOnce`. (enum: ReadWriteOnce)
+        - `storageClassName`: (string) The type of the storage.
+        - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
+   - `containerSnapshot`: {object}
+     - `restoreFrom`: (string) The successful container snapshot to restore the service from. (format: uuid)
+     - `capture`: {object}
+       - `onTermination`: (boolean) Creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts.
+       - `retention`: {object}
+         - `maxSnapshots`: (integer) The maximum number of termination snapshots retained for the service.
    - `external`: {object}
-     - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$)
+     - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
      - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | {object}
    - `type`: (string) The way the service should be deployed. Either as a deployment (default), or as a stateful set. (enum: deployment, statefulSet)
    - `instances`: (integer) (required) The number of instances to run the service on.
@@ -139,18 +169,33 @@ Required permission: Project > Services > General > Create
      - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required)
      - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
    - `gpu`: {object}
-     - `enabled`: (boolean)
+     - `enabled`: (boolean) Whether GPUs are enabled for this workload.
      - `configuration`: {object}
-       - `gpuType`: (string) (required)
-       - `gpuCount`: (integer)
-       - `timesliced`: (boolean)
+       - `gpuType`: (string) (required) The type of GPU to use.
+       - `gpuCount`: (integer) The number of GPUs to allocate.
+       - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-   - `gradualRolloutStrategyId`: (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$)
+   - `gradualRolloutStrategyId`: (multiple options) (undefined)
    - `ssh`: {object}
      - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
    - `metadata`: {object}
      - `labels`: {object}
      - `annotations`: {object}
+   - `volumes`: [array of] {object}
+      - `id`: (string) (required) Slug identifying this volume within the service. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+      - `mounts`: [array of] {object}
+          - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
+          - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
+      - `spec`: {object}
+        - `accessMode`: (string) Access mode of a per-replica volume. Always `ReadWriteOnce`. (enum: ReadWriteOnce)
+        - `storageClassName`: (string) The type of the storage.
+        - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
+   - `containerSnapshot`: {object}
+     - `restoreFrom`: (string) The successful container snapshot to restore the service from. (format: uuid)
+     - `capture`: {object}
+       - `onTermination`: (boolean) Creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts.
+       - `retention`: {object}
+         - `maxSnapshots`: (integer) The maximum number of termination snapshots retained for the service.
 - `ports`: [array of] {object}
    - `name`: (string) (required) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8)
    - `internalPort`: (integer) (required) The port number.
@@ -309,11 +354,11 @@ Required permission: Project > Services > General > Create
   - `billing`: {object}
     - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `gpu`: {object}
-      - `enabled`: (boolean)
+      - `enabled`: (boolean) Whether GPUs are enabled for this workload.
       - `configuration`: {object}
-        - `gpuType`: (string) (required)
-        - `gpuCount`: (integer)
-        - `timesliced`: (boolean)
+        - `gpuType`: (string) (required) The type of GPU to use.
+        - `gpuCount`: (integer) The number of GPUs to allocate.
+        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
   - `infrastructure`: {object}
     - `architecture`: (string) (enum: x86, arm)
   - `ports`: [array of] {object}
@@ -490,25 +535,40 @@ Required permission: Project > Services > General > Create
       - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required)
       - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
     - `gpu`: {object}
-      - `enabled`: (boolean)
+      - `enabled`: (boolean) Whether GPUs are enabled for this workload.
       - `configuration`: {object}
-        - `gpuType`: (string) (required)
-        - `gpuCount`: (integer)
-        - `timesliced`: (boolean)
+        - `gpuType`: (string) (required) The type of GPU to use.
+        - `gpuCount`: (integer) The number of GPUs to allocate.
+        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
     - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-    - `gradualRolloutStrategyId`: (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$)
+    - `gradualRolloutStrategyId`: (multiple options) (undefined)
     - `ssh`: {object}
       - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
     - `metadata`: {object}
       - `labels`: {object}
       - `annotations`: {object}
+    - `volumes`: [array of] {object}
+        - `id`: (string) (required) Slug identifying this volume within the service. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+        - `mounts`: [array of] {object}
+            - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
+            - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
+        - `spec`: {object}
+          - `accessMode`: (string) Access mode of a per-replica volume. Always `ReadWriteOnce`. (enum: ReadWriteOnce)
+          - `storageClassName`: (string) The type of the storage.
+          - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
+    - `containerSnapshot`: {object}
+      - `restoreFrom`: (string) The successful container snapshot to restore the service from. (format: uuid)
+      - `capture`: {object}
+        - `onTermination`: (boolean) Creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts.
+        - `retention`: {object}
+          - `maxSnapshots`: (integer) The maximum number of termination snapshots retained for the service.
     - `internal`: {object}
-      - `id`: (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string)
+      - `id`: (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
       - `branch`: (string) Branch to deploy
       - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
       - `buildId`: (string) ID of the build that should be deployed
     - `external`: {object}
-      - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$)
+      - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
       - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
     - `imageUrl`: (string) Image registry url of the deployed image.
   - `id`: (string) (required) Identifier for the service
@@ -543,7 +603,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id","internal":{"id":"example-build-service","branch":"master","buildId":"premium-guide-6393"}},"ports":[{"name":"p01","internalPort":8080,"public":true,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}},"createOptions":{"expiryTime":86400}}' \
+  --data '{"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id","internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}},"ports":[{"name":"p01","internalPort":8080,"public":true,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}},"createOptions":{"expiryTime":86400}}' \
   https://api.northflank.com/v1/projects/{projectId}/services/deployment
 ```
 
@@ -568,6 +628,7 @@ const payload = {
     "internal": {
       "id": "example-build-service",
       "branch": "master",
+      "buildSHA": "latest",
       "buildId": "premium-guide-6393"
     }
   },
@@ -613,7 +674,8 @@ const payload = {
               "paths": [
                 {
                   "routingMode": "prefix",
-                  "priority": 80
+                  "priority": 80,
+                  "path": "/path"
                 }
               ],
               "accessMode": "protected",
@@ -758,7 +820,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/deployment"
 
-payload = {"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id","internal":{"id":"example-build-service","branch":"master","buildId":"premium-guide-6393"}},"ports":[{"name":"p01","internalPort":8080,"public":true,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}},"createOptions":{"expiryTime":86400}}
+payload = {"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id","internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}},"ports":[{"name":"p01","internalPort":8080,"public":true,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}},"createOptions":{"expiryTime":86400}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -779,7 +841,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/deployment"
 
-  var jsonStr = []byte(`{"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id","internal":{"id":"example-build-service","branch":"master","buildId":"premium-guide-6393"}},"ports":[{"name":"p01","internalPort":8080,"public":true,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}},"createOptions":{"expiryTime":86400}}`)
+  var jsonStr = []byte(`{"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id","internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}},"ports":[{"name":"p01","internalPort":8080,"public":true,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}},"createOptions":{"expiryTime":86400}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -988,6 +1050,21 @@ func main() {
         }
       },
       "gradualRolloutStrategyId": "strategy-id",
+      "volumes": [
+        {
+          "id": "data",
+          "mounts": [
+            {
+              "volumeMountPath": "",
+              "containerMountPath": "/container"
+            }
+          ],
+          "spec": {
+            "storageClassName": "nvme",
+            "storageSize": 6144
+          }
+        }
+      ],
       "internal": {
         "id": "example-build-service",
         "branch": "master",
@@ -1069,6 +1146,7 @@ Options:
     "internal": {
       "id": "example-build-service",
       "branch": "master",
+      "buildSHA": "latest",
       "buildId": "premium-guide-6393"
     }
   },
@@ -1114,7 +1192,8 @@ Options:
               "paths": [
                 {
                   "routingMode": "prefix",
-                  "priority": 80
+                  "priority": 80,
+                  "path": "/path"
                 }
               ],
               "accessMode": "protected",
@@ -1431,6 +1510,21 @@ Options:
       }
     },
     "gradualRolloutStrategyId": "strategy-id",
+    "volumes": [
+      {
+        "id": "data",
+        "mounts": [
+          {
+            "volumeMountPath": "",
+            "containerMountPath": "/container"
+          }
+        ],
+        "spec": {
+          "storageClassName": "nvme",
+          "storageSize": 6144
+        }
+      }
+    ],
     "internal": {
       "id": "example-build-service",
       "branch": "master",
@@ -1495,6 +1589,7 @@ await apiClient.create.service.deployment({
       "internal": {
         "id": "example-build-service",
         "branch": "master",
+        "buildSHA": "latest",
         "buildId": "premium-guide-6393"
       }
     },
@@ -1540,7 +1635,8 @@ await apiClient.create.service.deployment({
                 "paths": [
                   {
                     "routingMode": "prefix",
-                    "priority": 80
+                    "priority": 80,
+                    "path": "/path"
                   }
                 ],
                 "accessMode": "protected",
@@ -1859,6 +1955,21 @@ await apiClient.create.service.deployment({
         }
       },
       "gradualRolloutStrategyId": "strategy-id",
+      "volumes": [
+        {
+          "id": "data",
+          "mounts": [
+            {
+              "volumeMountPath": "",
+              "containerMountPath": "/container"
+            }
+          ],
+          "spec": {
+            "storageClassName": "nvme",
+            "storageSize": 6144
+          }
+        }
+      ],
       "internal": {
         "id": "example-build-service",
         "branch": "master",

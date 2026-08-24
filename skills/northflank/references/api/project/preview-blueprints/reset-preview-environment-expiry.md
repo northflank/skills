@@ -38,12 +38,12 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data 'undefined' \
+  --data '{}' \
   https://api.northflank.com/v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}/previews/{previewId}/reset
 ```
 
 ```javascript
-const payload = undefined
+const payload = {}
 
 const response = await fetch('https://api.northflank.com/v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}/previews/{previewId}/reset', {
   method: 'POST',
@@ -63,7 +63,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}/previews/{previewId}/reset"
 
-payload = undefined
+payload = {}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -84,7 +84,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}/previews/{previewId}/reset"
 
-  var jsonStr = []byte(`undefined`)
+  var jsonStr = []byte(`{}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -134,7 +134,7 @@ Options:
 - `-o --output <format>`: Output formatting
 
 ```json
-undefined
+{}
 ```
 
 #### Example Response
@@ -157,7 +157,8 @@ await apiClient.reset.blueprintTemplatePreview({
     "projectId": "default-project",
     "previewBlueprintId": "development",
     "previewId": "example-preview"
-  }
+  },
+  data: {}
 });
 ```
 

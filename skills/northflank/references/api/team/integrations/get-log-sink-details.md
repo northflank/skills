@@ -26,7 +26,7 @@ Required permission: Account > Observability > LogSinks > Read
     - `forwardCdnLogs`: (boolean) Forward CDN logs from your workloads
     - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
     - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
-  - `sinkType`: (string) (required) The type of the log sink. (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic)
+  - `sinkType`: (string) (required) The type of the log sink. (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
   - `createdAt`: (string) (required) Timestamp of when the log sink was created. (format: date-time)
   - `updatedAt`: (string) (required) Timestamp of when the log sink was last updated. (format: date-time)
   - `sinkData`: (multiple options) {object}
@@ -85,7 +85,9 @@ Required permission: Account > Observability > LogSinks > Read
      - `url`: (string) The Axiom url to use. Only change if self hosting axiom. | {object}
      - `accountId`: (string) (required) New Relic Account ID
      - `licenseKey`: (string) (required) New Relic License Key
-     - `region`: (string) (required) (enum: eu, us)
+     - `region`: (string) (required) (enum: eu, us) | {object}
+     - `endpoint`: (string) (required) The complete OTLP logs endpoint from your Sentry Client Keys configuration. (pattern: ^https:\/\/[\w.-]+\.sentry\.io\/)
+     - `publicKey`: (string) (required) The public key from your Sentry OTLP DSN (Client Keys (DSN) > OpenTelemetry).
 
 ### API reference
 

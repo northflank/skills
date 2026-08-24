@@ -25,7 +25,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
      - `selfHostedVcsId`: (string) If vcsService is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
      - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
      - `vcsLinkId`: (string)
-     - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+     - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
      - `branchRestrictions`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
      - `prRestrictions`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
      - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
@@ -41,7 +41,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
     - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
     - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
     - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
-    - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+    - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
     - `branch`: (string) (required) The name of the branch to use.
     - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
   - `$schema`: (string)
@@ -53,7 +53,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: Workflow)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
        - `error`: (multiple options) {object}
@@ -67,6 +67,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: (undefined) The response data of the Workflow node.
      - `spec`: (undefined) (required) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
@@ -76,7 +77,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: RolloutStrategy)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
        - `error`: (multiple options) {object}
@@ -90,6 +91,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: {object}
          - `id`: (string) (required) Identifier for the gradual rollout strategy
          - `name`: (string) (required) Name of the gradual rollout strategy
@@ -107,8 +109,12 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
            - `config`: (multiple options) {object}
                - `canaryPercentage`: (integer) (required)
                - `stablePercentage`: (integer) (required) | {object}
-               - `headerName`: (string) (required) (min length: 1)
-               - `headerValue`: (string) (required) (min length: 1)
+               - `stableHeader`: {object}
+                 - `headerName`: (string) (required) (min length: 1)
+                 - `headerValue`: (string) (required) (min length: 1)
+               - `canaryHeader`: {object}
+                 - `headerName`: (string) (required) (min length: 1)
+                 - `headerValue`: (string) (required) (min length: 1)
      - `spec`: {object}
        - `name`: (multiple options) (string) Display name for the gradual rollout strategy | (string) A string containing one or more references that resolve to display name for the gradual rollout strategy (pattern: .*\${.*}.*)
        - `type`: (multiple options) (string) Type of the gradual rollout strategy (enum: canary) | (string) A string containing one or more references that resolve to type of the gradual rollout strategy (pattern: .*\${.*}.*)
@@ -139,7 +145,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: RolloutStrategy)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
        - `error`: (multiple options) {object}
@@ -153,6 +159,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: {object}
          - `id`: (string) (required) Identifier for the gradual rollout strategy
          - `name`: (string) (required) Name of the gradual rollout strategy
@@ -170,8 +177,12 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
            - `config`: (multiple options) {object}
                - `canaryPercentage`: (integer) (required)
                - `stablePercentage`: (integer) (required) | {object}
-               - `headerName`: (string) (required) (min length: 1)
-               - `headerValue`: (string) (required) (min length: 1)
+               - `stableHeader`: {object}
+                 - `headerName`: (string) (required) (min length: 1)
+                 - `headerValue`: (string) (required) (min length: 1)
+               - `canaryHeader`: {object}
+                 - `headerName`: (string) (required) (min length: 1)
+                 - `headerValue`: (string) (required) (min length: 1)
      - `spec`: {object}
        - `name`: (multiple options) (string) Display name for the gradual rollout strategy | (string) A string containing one or more references that resolve to display name for the gradual rollout strategy (pattern: .*\${.*}.*)
        - `type`: (multiple options) (string) Type of the gradual rollout strategy (enum: canary) | (string) A string containing one or more references that resolve to type of the gradual rollout strategy (pattern: .*\${.*}.*)
@@ -203,7 +214,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: AddonBackup)
      - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -218,6 +229,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: (undefined) The response data of the AddonBackup node.
      - `spec`: {object}
        - `projectId`: (multiple options) (string) The ID of the addon to backup. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the addon to backup. (pattern: .*\${.*}.*)
@@ -237,7 +249,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: AddonImport)
      - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -252,6 +264,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: (undefined) The response data of the AddonImport node.
      - `spec`: {object}
        - `projectId`: (multiple options) (string) The ID of the project containing the addon. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the project containing the addon. (pattern: .*\${.*}.*)
@@ -269,7 +282,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: Build)
      - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
        - `error`: (multiple options) {object}
@@ -283,6 +296,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: (undefined) The response data of the Build node.
      - `spec`: {object}
        - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
@@ -314,7 +328,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: JobRun)
      - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -329,6 +343,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: (undefined) The response data of the JobRun node.
      - `spec`: {object}
        - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
@@ -354,7 +369,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
                - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
              - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
            - `internal`: {object}
-             - `id`: (multiple options) (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+             - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
              - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
              - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
              - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*) | {object}
@@ -374,7 +389,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
                - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
              - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
            - `external`: {object}
-             - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
+             - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
              - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
        - `jobId`: (multiple options) (string) The ID of the job to run. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the ID of the job to run. (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
@@ -384,7 +399,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: LoopWorkflow)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
        - `error`: (multiple options) {object}
@@ -398,6 +413,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: (undefined) The response data of the LoopWorkflow node.
      - `spec`: {object}
        - `iterations`: (multiple options) [array of] (multiple options) {object} | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
@@ -409,7 +425,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: Action)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -424,6 +440,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: (undefined) The response data of the Action node.
      - `spec`: (multiple options) {object}
          - `kind`: (string) (required) The kind of action. (enum: Addon)
@@ -476,27 +493,28 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
              - `type`: (string) (required) The type of action. (enum: createRepoFromSource)
              - `data`: {object}
                - `sourceData`: {object}
-                 - `publicRepo`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
-                 - `vcsService`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `oauthProvider`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `repoUrl`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `branch`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `accountLogin`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `commitSha`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                 - `publicRepo`: (multiple options) (boolean) Whether the source repository is a public repository. | (string) A string containing one or more references that resolve to whether the source repository is a public repository. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider of the source repository. | (string) A string containing one or more references that resolve to the VCS provider of the source repository. (pattern: .*\${.*}.*)
+                 - `oauthProvider`: (multiple options) (string) The OAuth provider used to access the source repository. | (string) A string containing one or more references that resolve to the OAuth provider used to access the source repository. (pattern: .*\${.*}.*)
+                 - `repoUrl`: (multiple options) (string) URL of the source Git repo. | (string) A string containing one or more references that resolve to uRL of the source Git repo. (pattern: .*\${.*}.*)
+                 - `branch`: (multiple options) (string) The name of the branch to use. | (string) A string containing one or more references that resolve to the name of the branch to use. (pattern: .*\${.*}.*)
+                 - `accountLogin`: (multiple options) (string) The login name of the linked VCS account used to access the source repository. | (string) A string containing one or more references that resolve to the login name of the linked VCS account used to access the source repository. (pattern: .*\${.*}.*)
+                 - `commitSha`: (multiple options) (string) The SHA of the commit to use. | (string) A string containing one or more references that resolve to the SHA of the commit to use. (pattern: .*\${.*}.*)
                  - `directory`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
-                 - `vcsLinkId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
-                 - `selfHostedVcsId`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
+                 - `vcsLinkId`: (multiple options) (string) The ID of the linked VCS account to use. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to the ID of the linked VCS account to use. (pattern: .*\${.*}.*)
+                 - `selfHostedVcsId`: (multiple options) (string) The ID of the self-hosted VCS to use. | (string) A string containing one or more references that resolve to the ID of the self-hosted VCS to use. (pattern: .*\${.*}.*)
                - `targetData`: {object}
-                 - `name`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `description`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `privateRepo`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
-                 - `context`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `folder`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `accountLogin`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `vcsLinkId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
-                 - `oauthProvider`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `vcsService`: (multiple options) (string) | (string) (pattern: .*\${.*}.*)
-                 - `selfHostedVcsId`: (multiple options) (string) | (string) (pattern: .*\${.*}.*) | {object}
+                 - `name`: (multiple options) (string) The name of the repository to create. | (string) A string containing one or more references that resolve to the name of the repository to create. (pattern: .*\${.*}.*)
+                 - `description`: (multiple options) (string) A description of the repository to create. | (string) A string containing one or more references that resolve to a description of the repository to create. (pattern: .*\${.*}.*)
+                 - `privateRepo`: (multiple options) (boolean) Whether the repository should be created as a private repository. | (string) A string containing one or more references that resolve to whether the repository should be created as a private repository. (pattern: .*\${.*}.*)
+                 - `branch`: (multiple options) (string) The repository branch. | (string) A string containing one or more references that resolve to the repository branch. (pattern: .*\${.*}.*)
+                 - `context`: (multiple options) (string) The owner context (user or organisation) the repository should be created in. | (string) A string containing one or more references that resolve to the owner context (user or organisation) the repository should be created in. (pattern: .*\${.*}.*)
+                 - `folder`: (multiple options) (string) The folder or project the repository should be created in, if supported by the VCS provider. | (string) A string containing one or more references that resolve to the folder or project the repository should be created in, if supported by the VCS provider. (pattern: .*\${.*}.*)
+                 - `accountLogin`: (multiple options) (string) The login name of the linked VCS account used to create the repository. | (string) A string containing one or more references that resolve to the login name of the linked VCS account used to create the repository. (pattern: .*\${.*}.*)
+                 - `vcsLinkId`: (multiple options) (string) The ID of the linked VCS account to use. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to the ID of the linked VCS account to use. (pattern: .*\${.*}.*)
+                 - `oauthProvider`: (multiple options) (string) The OAuth provider used to create the repository. | (string) A string containing one or more references that resolve to the OAuth provider used to create the repository. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider to create the repository with. | (string) A string containing one or more references that resolve to the VCS provider to create the repository with. (pattern: .*\${.*}.*)
+                 - `selfHostedVcsId`: (multiple options) (string) The ID of the self-hosted VCS to use. | (string) A string containing one or more references that resolve to the ID of the self-hosted VCS to use. (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}
        - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
@@ -504,7 +522,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: Condition)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
        - `error`: (multiple options) {object}
@@ -518,6 +536,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: (undefined) The response data of the Condition node.
      - `spec`: (multiple options) {object}
          - `kind`: (string) (required) The kind of condition. (enum: Addon)
@@ -581,7 +600,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
      - `kind`: (string) (required) The kind of node. (enum: Release)
      - `condition`: (string) (enum: running)
      - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A string containing one or more references that resolve to timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. (pattern: .*\${.*}.*)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
        - `error`: (multiple options) {object}
@@ -595,6 +614,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: (undefined) The response data of the Release node.
      - `spec`: {object}
        - `type`: (string) (required) (enum: build, deployment, registry)
@@ -604,7 +624,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
            - `build`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*) | {object}
            - `id`: (multiple options) (string) ID of the deployment service or job to promote from. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the deployment service or job to promote from. (pattern: .*\${.*}.*)
            - `type`: (string) (required) The type of resource to promote from. (enum: service, job) | {object}
-           - `imagePath`: (multiple options) (string) The image path of the external image to deploy. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$) | (string) A string containing one or more references that resolve to the image path of the external image to deploy. (pattern: .*\${.*}.*)
+           - `imagePath`: (multiple options) (string) The image path of the external image to deploy. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to the image path of the external image to deploy. (pattern: .*\${.*}.*)
            - `credentials`: (multiple options) (string) The ID of the credentials to authenticate with to access the external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the credentials to authenticate with to access the external image. (pattern: .*\${.*}.*)
        - `target`: {object}
          - `id`: (multiple options) (string) (pattern: ^[A-Za-z0-9-]+$) | (string) (pattern: .*\${.*}.*)
@@ -616,7 +636,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: Message)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
@@ -631,6 +651,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: (undefined) The response data of the Message node.
      - `spec`: (multiple options) {object}
          - `kind`: (string) (required) The kind of message to send. (enum: VCS)
@@ -638,7 +659,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
            - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
-           - `repoUrl`: (multiple options) (string) URL of the Git repo to send this message to. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9\-]{2,})+\.)?[a-zA-Z0-9\-]{2,})(\.([a-zA-Z0-9\-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to send this message to. (pattern: .*\${.*}.*)
+           - `repoUrl`: (multiple options) (string) URL of the Git repo to send this message to. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to send this message to. (pattern: .*\${.*}.*)
            - `pullRequestId`: (multiple options) (string) The ID of the pull request to comment on. | (string) A string containing one or more references that resolve to the ID of the pull request to comment on. (pattern: .*\${.*}.*)
            - `message`: (multiple options) (string) The rich text message to comment. | (string) A string containing one or more references that resolve to the rich text message to comment. (pattern: .*\${.*}.*) | {object}
          - `kind`: (string) (required) The kind of message to send. (enum: SLACK)
@@ -657,7 +678,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: LoopData)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
        - `error`: (multiple options) {object}
@@ -671,6 +692,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: (undefined) The response data of the LoopData node.
      - `spec`: {object} | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
@@ -680,7 +702,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: SecretInheritance)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
        - `error`: (multiple options) {object}
@@ -694,6 +716,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: (undefined) The response data of the SecretInheritance node.
      - `spec`: {object}
        - `configs`: (multiple options) [array of] (multiple options) (string) (pattern: ^[A-Za-z0-9-]+$) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
@@ -707,7 +730,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: Approval)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
        - `error`: (multiple options) {object}
@@ -721,6 +744,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: (undefined) The response data of the Approval node.
      - `spec`: {object}
        - `amount`: (integer) (required) | {object}
@@ -732,7 +756,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: RunTemplate)
      - `condition`: (string) (enum: success)
-     - `skipNodeExecution`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `response`: {object}
        - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
        - `error`: (multiple options) {object}
@@ -746,6 +770,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
          - `initialCheckTime`: (integer) The timestamp of the initial condition check.
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
        - `data`: (undefined) The response data of the RunTemplate node.
      - `spec`: {object}
        - `templateType`: (string) (required) (enum: template, release-flow-template, preview-env-template, workflow, preview-blueprint, template-teardown, workflow-teardown, preview-blueprint-teardown)

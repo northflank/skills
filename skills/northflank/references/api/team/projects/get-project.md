@@ -24,6 +24,7 @@ Required permission: Project > Projects > Manage > Read
   - `services`: [array of] {object}
      - `id`: (string) (required) Identifier for the service.
      - `appId`: (string) (required) Full identifier used for service deployment
+     - `stageId`: (string) ID of the environment the resource belongs to.
      - `name`: (string) (required) The name of the service.
      - `description`: (string) A short description of the service.
      - `serviceType`: (string) (required) Type of the service (combined, build or deployment) (enum: combined, build, deployment)
@@ -35,12 +36,14 @@ Required permission: Project > Projects > Manage > Read
   - `jobs`: [array of] {object}
      - `id`: (string) (required) Identifier for the job.
      - `appId`: (string) (required) Full identifier used for deployment
+     - `stageId`: (string) ID of the environment the resource belongs to.
      - `name`: (string) (required) The name of the job.
      - `description`: (string) A short description of the job.
      - `jobType`: (string) (required) Type of the job (manual or cron) (enum: manual, cron)
   - `addons`: [array of] {object}
      - `id`: (string) (required) Identifier for the addon.
      - `appId`: (string) (required) Full identifier used for deployment
+     - `stageId`: (string) ID of the environment the resource belongs to.
      - `name`: (string) (required) The name of the addon.
      - `description`: (string) A short description of the addon.
      - `spec`: {object}
@@ -75,6 +78,7 @@ GET /v1/teams/{teamId}/projects/{projectId}
       {
         "id": "example-service",
         "appId": "/example-user/default-project/example-service",
+        "stageId": "staging",
         "name": "Example Service",
         "description": "This is the service description",
         "serviceType": "combined"
@@ -87,6 +91,7 @@ GET /v1/teams/{teamId}/projects/{projectId}
       {
         "id": "example-job",
         "appId": "/example-user/default-project/example-job",
+        "stageId": "staging",
         "name": "Example Job",
         "description": "This is the job description",
         "jobType": "cron"
@@ -96,6 +101,7 @@ GET /v1/teams/{teamId}/projects/{projectId}
       {
         "id": "example-addon",
         "appId": "/example-user/default-project/example-addon",
+        "stageId": "staging",
         "name": "Example Addon",
         "description": "This is the addon description",
         "spec": {
@@ -146,6 +152,7 @@ Options:
     {
       "id": "example-service",
       "appId": "/example-user/default-project/example-service",
+      "stageId": "staging",
       "name": "Example Service",
       "description": "This is the service description",
       "serviceType": "combined"
@@ -158,6 +165,7 @@ Options:
     {
       "id": "example-job",
       "appId": "/example-user/default-project/example-job",
+      "stageId": "staging",
       "name": "Example Job",
       "description": "This is the job description",
       "jobType": "cron"
@@ -167,6 +175,7 @@ Options:
     {
       "id": "example-addon",
       "appId": "/example-user/default-project/example-addon",
+      "stageId": "staging",
       "name": "Example Addon",
       "description": "This is the addon description",
       "spec": {
@@ -215,6 +224,7 @@ await apiClient.get.project({
       {
         "id": "example-service",
         "appId": "/example-user/default-project/example-service",
+        "stageId": "staging",
         "name": "Example Service",
         "description": "This is the service description",
         "serviceType": "combined"
@@ -227,6 +237,7 @@ await apiClient.get.project({
       {
         "id": "example-job",
         "appId": "/example-user/default-project/example-job",
+        "stageId": "staging",
         "name": "Example Job",
         "description": "This is the job description",
         "jobType": "cron"
@@ -236,6 +247,7 @@ await apiClient.get.project({
       {
         "id": "example-addon",
         "appId": "/example-user/default-project/example-addon",
+        "stageId": "staging",
         "name": "Example Addon",
         "description": "This is the addon description",
         "spec": {

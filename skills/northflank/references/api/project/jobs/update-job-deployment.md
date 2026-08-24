@@ -22,7 +22,7 @@ Required permission: Project > Jobs > General > Update
 
 {object}
 - `external`: {object}
-  - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9\-]+\.[a-zA-Z0-9\.\-]+)(\/v1)?)?(?:\/)?([a-zA-Z/-9\.\-_]+)(?:\:([a-zA-Z/-9\.\-_\:]+)|\@([a-zA-Z/-9\.\-_\:]+))$)
+  - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
   - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
 - `docker`: {object}
   - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
@@ -33,7 +33,7 @@ OR
 
 {object}
 - `internal`: {object}
-  - `id`: (multiple options) (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string)
+  - `id`: (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
   - `branch`: (string) Branch to deploy
   - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
   - `buildId`: (string) ID of the build that should be deployed
@@ -157,7 +157,7 @@ An internal deployment
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"internal":{"id":"example-build-service","branch":"master","buildId":"premium-guide-6393"},"docker":{"configType":"default"}}' \
+  --data '{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"docker":{"configType":"default"}}' \
   https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/deployment
 ```
 
@@ -166,6 +166,7 @@ const payload = {
   "internal": {
     "id": "example-build-service",
     "branch": "master",
+    "buildSHA": "latest",
     "buildId": "premium-guide-6393"
   },
   "docker": {
@@ -191,7 +192,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/deployment"
 
-payload = {"internal":{"id":"example-build-service","branch":"master","buildId":"premium-guide-6393"},"docker":{"configType":"default"}}
+payload = {"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"docker":{"configType":"default"}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -212,7 +213,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/deployment"
 
-  var jsonStr = []byte(`{"internal":{"id":"example-build-service","branch":"master","buildId":"premium-guide-6393"},"docker":{"configType":"default"}}`)
+  var jsonStr = []byte(`{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"docker":{"configType":"default"}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -355,6 +356,7 @@ An internal deployment
   "internal": {
     "id": "example-build-service",
     "branch": "master",
+    "buildSHA": "latest",
     "buildId": "premium-guide-6393"
   },
   "docker": {
@@ -415,6 +417,7 @@ await apiClient.update.job.deployment({
     "internal": {
       "id": "example-build-service",
       "branch": "master",
+      "buildSHA": "latest",
       "buildId": "premium-guide-6393"
     },
     "docker": {

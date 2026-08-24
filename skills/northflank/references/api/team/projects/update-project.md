@@ -44,7 +44,7 @@ Required permission: Project > Projects > Manage > Update
     - `enabled`: (boolean) Enable support for adding /etc/hosts overrides for a container
     - `hostEntries`: [array of] {object}
         - `ipAddress`: (string) (required) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$)
-        - `hostnames`: [array of] (string) (pattern: ^(([a-z0-9][a-z0-9\-]*)|[a-z0-9]\.)*([a-z]+|xn\-\-[a-z0-9]+)\.?$)
+        - `hostnames`: [array of] (string) (pattern: ^(([a-z0-9][a-z0-9-]*)|[a-z0-9]\.)*([a-z]+|xn-\-[a-z0-9]+)\.?$)
     - `restrictions`: {object}
       - `enabled`: (boolean) Whether or not to restrict the settings to resources with specific tags
       - `tags`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
@@ -93,7 +93,7 @@ Required permission: Project > Projects > Manage > Update
       - `enabled`: (boolean) Enable support for adding /etc/hosts overrides for a container
       - `hostEntries`: [array of] {object}
           - `ipAddress`: (string) (required) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$)
-          - `hostnames`: [array of] (string) (pattern: ^(([a-z0-9][a-z0-9\-]*)|[a-z0-9]\.)*([a-z]+|xn\-\-[a-z0-9]+)\.?$)
+          - `hostnames`: [array of] (string) (pattern: ^(([a-z0-9][a-z0-9-]*)|[a-z0-9]\.)*([a-z]+|xn-\-[a-z0-9]+)\.?$)
       - `restrictions`: {object}
         - `enabled`: (boolean) (required) Whether or not to restrict the settings to resources with specific tags
         - `tags`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
@@ -115,7 +115,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
-  --data '{"description":"This is a new project.","color":"#EF233C","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or"}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}' \
+  --data '{"description":"This is a new project.","color":"#EF233C","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or","enabled":false}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}' \
   https://api.northflank.com/v1/projects/{projectId}
 ```
 
@@ -130,7 +130,8 @@ const payload = {
       },
       "tailscaleOptions": {
         "tailnetServicesRestrictions": {
-          "tagMatchCondition": "or"
+          "tagMatchCondition": "or",
+          "enabled": false
         }
       }
     },
@@ -160,7 +161,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}"
 
-payload = {"description":"This is a new project.","color":"#EF233C","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or"}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}
+payload = {"description":"This is a new project.","color":"#EF233C","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or","enabled":false}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PATCH", url, headers = headers, json = payload)
@@ -181,7 +182,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}"
 
-  var jsonStr = []byte(`{"description":"This is a new project.","color":"#EF233C","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or"}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}`)
+  var jsonStr = []byte(`{"description":"This is a new project.","color":"#EF233C","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or","enabled":false}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}`)
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -265,7 +266,8 @@ Options:
       },
       "tailscaleOptions": {
         "tailnetServicesRestrictions": {
-          "tagMatchCondition": "or"
+          "tagMatchCondition": "or",
+          "enabled": false
         }
       }
     },
@@ -333,7 +335,8 @@ await apiClient.patch.project({
         },
         "tailscaleOptions": {
           "tailnetServicesRestrictions": {
-            "tagMatchCondition": "or"
+            "tagMatchCondition": "or",
+            "enabled": false
           }
         }
       },

@@ -16,6 +16,16 @@ Required permission: Account > Cloud > Registries > Read
 {object}
 - `data`: {object}
   - `id`: (string) (required) ID of the docker credentials (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+  - `registryCredentialRefresh`: {object}
+    - `status`: (string) (required) (enum: healthy, retrying, suspended)
+    - `failureCount`: (integer) (required)
+    - `retryDelay`: (integer) (required) Delay in milliseconds before the next refresh attempt.
+    - `lastFailureAt`: (string) (format: date-time)
+    - `nextAttemptAt`: (string) (format: date-time)
+    - `error`: {object}
+      - `type`: (string) (required)
+      - `message`: (string) (required)
+      - `providerCode`: (string)
   - `name`: (string) (required) The name of the docker credentials. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `provider`: (string) (required) The provider of the docker registry. (enum: acr, ecr, gar, dockerhub, dhi, github, gitlab, custom, legacy)
   - `registryUrl`: (string) The URL of the docker registry.

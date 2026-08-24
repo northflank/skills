@@ -1,6 +1,6 @@
-# Create combined service
+# Create project secret
 
-Source: https://northflank.com/docs/v1/api/project/secrets/create-combined-service.md
+Source: https://northflank.com/docs/v1/api/project/secrets/create-project-secret.md
 
 Creates a project secret with the specified payload
 
@@ -22,12 +22,13 @@ Required permission: Project > Secrets > SecretGroups > Create
 - `secretType`: (string) (required) The injection scope of the created secret (enum: environment-arguments, environment, arguments)
 - `priority`: (integer) (required) The priority with which different secrets will be merged.
 - `restrictions`: {object}
-  - `restricted`: (boolean) Whether the secret is restricted to specific resources. If this is `true`, only resources listed in `nfObjects` or with a tag listed in `tags` will have access to these secrets. Otherwise, all resources in the project will be able to access it.
+  - `restricted`: (boolean) Whether the secret is restricted to specific resources, tags, or environments. If this is `true`, resources listed in `nfObjects`, with a tag listed in `tags`, or in an environment listed in `stageIds` will have access to these secrets. Otherwise, all resources in the project will be able to access it.
   - `nfObjects`: [array of] {object}
      - `id`: (string) (required) ID of the entity the secret is restricted to. (pattern: ^[A-Za-z0-9-]+$)
      - `type`: (string) (required) Type of the entity the secret is restricted to. (enum: service, job)
   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
+  - `stageIds`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `addonDependencies`: [array of] {object}
    - `addonId`: (string) (required) The id of the addon to link. (pattern: ^[A-Za-z0-9-]+$)
    - `keys`: [array of] {object}
@@ -55,12 +56,13 @@ Required permission: Project > Secrets > SecretGroups > Create
   - `secretType`: (string) (required) The injection scope of the created secret (enum: environment-arguments, environment, arguments)
   - `priority`: (integer) (required) The priority with which different secrets will be merged.
   - `restrictions`: {object}
-    - `restricted`: (boolean) Whether the secret is restricted to specific resources. If this is `true`, only resources listed in `nfObjects` or with a tag listed in `tags` will have access to these secrets. Otherwise, all resources in the project will be able to access it.
+    - `restricted`: (boolean) Whether the secret is restricted to specific resources, tags, or environments. If this is `true`, resources listed in `nfObjects`, with a tag listed in `tags`, or in an environment listed in `stageIds` will have access to these secrets. Otherwise, all resources in the project will be able to access it.
     - `nfObjects`: [array of] {object}
         - `id`: (string) (required) ID of the entity the secret is restricted to. (pattern: ^[A-Za-z0-9-]+$)
         - `type`: (string) (required) Type of the entity the secret is restricted to. (enum: service, job)
     - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
+    - `stageIds`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `addonDependencies`: [array of] {object}
      - `addonId`: (string) (required) The id of the addon to link. (pattern: ^[A-Za-z0-9-]+$)
      - `keys`: [array of] {object}

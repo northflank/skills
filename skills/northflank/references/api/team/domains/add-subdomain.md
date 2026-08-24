@@ -14,7 +14,7 @@ Required permission: Account > Networking > Subdomains > Update
 **Request body:**
 
 {object}
-- `subdomain`: (string) (required) A subdomain to be added. (pattern: ^\*|^@$|^([0-9a-z]([0-9a-z\-]*[0-9a-z])?\.)*[0-9a-z]([0-9a-z\-]*[0-9a-z])?$)
+- `subdomain`: (string) (required) A subdomain to be added. (pattern: ^\*|^@$|^([0-9a-z]([0-9a-z-]*[0-9a-z])?\.)*[0-9a-z]([0-9a-z-]*[0-9a-z])?$)
 - `routingMode`: (string) The routing mode for the subdomain. Determines how traffic is routed. Once set, this cannot be changed. (enum: paths, geoRouting, loadBalancerSubdomain)
 - `cdn`: {object}
   - `northflank`: {object}

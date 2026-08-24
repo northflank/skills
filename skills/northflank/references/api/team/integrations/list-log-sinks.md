@@ -29,7 +29,7 @@ Required permission: Account > Observability > LogSinks > Read
        - `forwardCdnLogs`: (boolean) Forward CDN logs from your workloads
        - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
        - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
-     - `sinkType`: (string) (required) The type of the log sink. (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic)
+     - `sinkType`: (string) (required) The type of the log sink. (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
      - `createdAt`: (string) (required) Timestamp of when the log sink was created. (format: date-time)
      - `updatedAt`: (string) (required) Timestamp of when the log sink was last updated. (format: date-time)
 - `pagination`: {object}
