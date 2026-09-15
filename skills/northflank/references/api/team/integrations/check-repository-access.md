@@ -10,7 +10,7 @@ Required permission: Account > Git > General > Read
 
 {object}
 - `projectUrl`: (string) (required) HTTPS URL of the git repository to check access for.
-- `projectType`: (string) (required) The version control provider the repository belongs to. (enum: bitbucket, gitlab, github, self-hosted, azure)
+- `projectType`: (string) (required) The version control provider the repository belongs to. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
 - `projectBranch`: (string) Optional branch to check.
 - `vcsLinkId`: (string) If provided, only checks access via this specific linked account. (min length: 24) (max length: 24)
 - `accountLogin`: (string) If provided, only checks access via the linked account with this login.

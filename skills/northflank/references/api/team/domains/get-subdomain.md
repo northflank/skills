@@ -22,10 +22,15 @@ Required permission: Account > Networking > Subdomains > Read
   - `content`: (string) (required) The content to set the DNS record to
   - `verified`: (boolean) (required) Whether the subdomain has been verified successfully and can be used.
   - `loadBalancer`: (string) Name of the load balancer linked to this subdomain, if any.
+  - `clusterLoadBalancer`: (string) Cluster load balancer the subdomain resolves on, as set by `loadBalancer` on create and update. Distinct from `loadBalancer` above, which names a linked load balancer object. (enum: public, vpc)
   - `certificate`: {object}
     - `inProgress`: (boolean) Whether a certificate is in the process of being generated
     - `expiryDate`: (string) Expiry date of the current certificate (format: date-time)
     - `refreshDare`: (string) Refresh date of the current certificate (format: date-time)
+  - `certificateValidationMethod`: (string) How the subdomain's TLS certificate is validated and issued. (enum: http, dcv, imported)
+  - `dcvRecord`: {object}
+    - `record`: (string) (required) CNAME record used for DCV delegation.
+    - `target`: (string) (required) Expected target of the DCV CNAME record.
   - `options`: {object}
     - `tlsMode`: (string) Desired TLS mode for the subdomain. (enum: default, passthrough)
     - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
@@ -101,6 +106,7 @@ GET /v1/teams/{teamId}/domains/{domain}/subdomains/{subdomain}
     "content": "site.example.com.user-1234.dns.northflank.app",
     "verified": true,
     "loadBalancer": "my-load-balancer",
+    "clusterLoadBalancer": "public",
     "geoRouting": {
       "rules": [
         {
@@ -147,6 +153,7 @@ Options:
   "content": "site.example.com.user-1234.dns.northflank.app",
   "verified": true,
   "loadBalancer": "my-load-balancer",
+  "clusterLoadBalancer": "public",
   "geoRouting": {
     "rules": [
       {
@@ -190,6 +197,7 @@ await apiClient.get.subdomain({
     "content": "site.example.com.user-1234.dns.northflank.app",
     "verified": true,
     "loadBalancer": "my-load-balancer",
+    "clusterLoadBalancer": "public",
     "geoRouting": {
       "rules": [
         {

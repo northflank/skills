@@ -19,13 +19,13 @@ Required permission: Account > Networking > NetworkPolicies > Update
 - `spec`: {object}
   - `restrictions`: {object}
     - `projects`: {object}
-      - `enabled`: (boolean) (required)
+      - `enabled`: (boolean)
       - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
       - `restrictionMode`: (string) (enum: in, notIn)
     - `tags`: {object}
-      - `enabled`: (boolean) (required)
+      - `enabled`: (boolean)
       - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-      - `matchCondition`: (string) (required) (enum: or, and)
+      - `matchCondition`: (string) (enum: or, and)
   - `egress`: {object}
     - `denyAll`: (boolean)
     - `allowTo`: [array of] (string) (min length: 1)
@@ -43,7 +43,7 @@ Required permission: Account > Networking > NetworkPolicies > Update
      - `name`: (string) (required) (pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$) (max length: 63)
      - `header`: (string) (required) (pattern: ^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$) (max length: 256)
      - `hosts`: [array of] (string) (max length: 253)
-     - `value`: (multiple options) (string) | {object}
+     - `value`: (string) (required)
 
 ### API reference
 

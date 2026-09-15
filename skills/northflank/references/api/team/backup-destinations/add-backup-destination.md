@@ -12,6 +12,7 @@ Required permission: Account > Platform > BackupDestinations > Create
 - `name`: (string) (required) The name of the backup destination. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `type`: (string) (required) Type of the backup destination. (enum: s3)
+- `usage`: (string) (required) The backup workload that can use this destination. (enum: globalBackups, containerSnapshots)
 - `prefix`: (string) (required) A prefix path to add to the bucket objects if not writing to / (pattern: ^([a-zA-Z0-9-_]+)\/$)
 - `credentials`: {object}
   - `authMode`: (string) Whether the destination authenticates with static AWS credentials or a workload identity. (enum: staticCreds, workloadIdentity)
@@ -31,6 +32,7 @@ Required permission: Account > Platform > BackupDestinations > Create
   - `name`: (string) (required) The name of the backup destination. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
   - `type`: (string) (required) Type of the backup destination. (enum: s3)
+  - `usage`: (string) (required) The backup workload that can use this destination. (enum: globalBackups, containerSnapshots)
   - `prefix`: (string) (required) A prefix path to add to the bucket objects if not writing to / (pattern: ^([a-zA-Z0-9-_]+)\/$)
   - `credentials`: {object}
     - `authMode`: (string) Whether the destination authenticates with static AWS credentials or a workload identity. (enum: staticCreds, workloadIdentity)
@@ -60,7 +62,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"Example Backup Destination","type":"s3","prefix":"example/","credentials":{"bucketName":"string","region":"string","endpoint":"string"}}' \
+  --data '{"name":"Example Backup Destination","type":"s3","usage":"globalBackups","prefix":"example/","credentials":{"bucketName":"string","region":"string","endpoint":"string"}}' \
   https://api.northflank.com/v1/backup-destinations
 ```
 
@@ -68,6 +70,7 @@ curl --header "Content-Type: application/json" \
 const payload = {
   "name": "Example Backup Destination",
   "type": "s3",
+  "usage": "globalBackups",
   "prefix": "example/",
   "credentials": {
     "bucketName": "string",
@@ -94,7 +97,7 @@ import requests
 
 url = "https://api.northflank.com/v1/backup-destinations"
 
-payload = {"name":"Example Backup Destination","type":"s3","prefix":"example/","credentials":{"bucketName":"string","region":"string","endpoint":"string"}}
+payload = {"name":"Example Backup Destination","type":"s3","usage":"globalBackups","prefix":"example/","credentials":{"bucketName":"string","region":"string","endpoint":"string"}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -115,7 +118,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/backup-destinations"
 
-  var jsonStr = []byte(`{"name":"Example Backup Destination","type":"s3","prefix":"example/","credentials":{"bucketName":"string","region":"string","endpoint":"string"}}`)
+  var jsonStr = []byte(`{"name":"Example Backup Destination","type":"s3","usage":"globalBackups","prefix":"example/","credentials":{"bucketName":"string","region":"string","endpoint":"string"}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -167,6 +170,7 @@ Options:
 {
   "name": "Example Backup Destination",
   "type": "s3",
+  "usage": "globalBackups",
   "prefix": "example/",
   "credentials": {
     "bucketName": "string",
@@ -198,6 +202,7 @@ await apiClient.add.backupDestination({
   data: {
     "name": "Example Backup Destination",
     "type": "s3",
+    "usage": "globalBackups",
     "prefix": "example/",
     "credentials": {
       "bucketName": "string",

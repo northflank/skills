@@ -17,6 +17,7 @@ Required permission: Project > Addons > General > Update
 {object}
 - `tlsEnabled`: (boolean) If `true`, a TLS certificate will be provisioned for the addon.
 - `externalAccessEnabled`: (boolean) If `true`, the addon will be given a public URL and will be accessible from the internet. `tlsEnabled` must be `true` to set this as `true`.
+- `vpcAccessible`: (boolean) If `true`, the addon is exposed on the cluster's private (VPC) load balancer. Mutually exclusive with `externalAccessEnabled`. `tlsEnabled` must be `true` to set this as `true`.
 
 **Response body:**
 
@@ -37,14 +38,15 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"tlsEnabled":true,"externalAccessEnabled":true}' \
+  --data '{"tlsEnabled":true,"externalAccessEnabled":true,"vpcAccessible":false}' \
   https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/network-settings
 ```
 
 ```javascript
 const payload = {
   "tlsEnabled": true,
-  "externalAccessEnabled": true
+  "externalAccessEnabled": true,
+  "vpcAccessible": false
 }
 
 const response = await fetch('https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/network-settings', {
@@ -65,7 +67,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/network-settings"
 
-payload = {"tlsEnabled":true,"externalAccessEnabled":true}
+payload = {"tlsEnabled":true,"externalAccessEnabled":true,"vpcAccessible":false}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -86,7 +88,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/network-settings"
 
-  var jsonStr = []byte(`{"tlsEnabled":true,"externalAccessEnabled":true}`)
+  var jsonStr = []byte(`{"tlsEnabled":true,"externalAccessEnabled":true,"vpcAccessible":false}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -138,7 +140,8 @@ Options:
 ```json
 {
   "tlsEnabled": true,
-  "externalAccessEnabled": true
+  "externalAccessEnabled": true,
+  "vpcAccessible": false
 }
 ```
 
@@ -164,7 +167,8 @@ await apiClient.update.addon.networkSettings({
   },
   data: {
     "tlsEnabled": true,
-    "externalAccessEnabled": true
+    "externalAccessEnabled": true,
+    "vpcAccessible": false
   }
 });
 ```

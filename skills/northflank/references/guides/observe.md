@@ -729,31 +729,47 @@ You can also configure notifications to be sent to a webhook URL to create your 
 > [!note]
 > [Click here](https://app.northflank.com/s/account/integrations/notifications) to view your account notifications page.
 
+#### Configure notification integrations: Organisation notifications
+
+Open Observability → Notifications in the organisation. Your organisation role must allow you to view and create notification integrations.
+
+You can select billing events for the organisation and provisioning errors for its clusters and node pools. These integrations do not receive events from team-owned resources. Project and resource-tag filters do not apply to organisation integrations.
+
+Use the integration setup instructions below to connect your notification destination.
+
 #### Configure notification integrations: Infrastructure alerts
 
-You can select [infrastructure alerts](observe.md#set-infrastructure-alerts) to be sent to your notification integration. These alerts trigger notifications when certain your running containers crashes, have high CPU and memory usage, or when volumes have limited space available.
+For account and team integrations, you can select [infrastructure alerts](observe.md#set-infrastructure-alerts) for container crashes, high CPU or memory usage, and limited volume space.
 
 You can configure how often infrastructure alerts are generated on the alerts page in your account settings.
 
 #### Configure notification integrations: Types of notification integrations
 
-- [Slack](observe.md#configure-notification-integrations-slack): send formatted notifications to a Slack channel or user
+- [Slack](observe.md#configure-notification-integrations-slack-notifications): send formatted notifications to a Slack channel or user
 
-- [Discord](observe.md#configure-notification-integrations-discord): send formatted notifications to a Discord channel
+- [Discord](observe.md#configure-notification-integrations-discord-notifications): send formatted notifications to a Discord channel
 
-- [Teams](observe.md#configure-notification-integrations-teams): send formatted notifications to a Microsoft teams channel
+- [Teams Workflows](observe.md#configure-notification-integrations-teams-notifications): send formatted notifications to a Microsoft Teams channel
 
-- [Webhook](observe.md#configure-notification-integrations-webhooks): send notifications to a HTTP endpoint for processing
+- [Webhook](observe.md#configure-notification-integrations-webhook-notifications): send notifications to a HTTP endpoint for processing
 
 ![Creating a webhook notification integration in the Northflank application](https://assets.northflank.com/documentation/v1/application/observe/configure-notification-integrations/create-webhook-notification-integration.png)
 
 ### Configure notification integrations: Filter events
 
-You can filter events by type and by project.
+When creating or editing an integration, select the event types that you want to receive. Examples include build starts and backup failures.
 
-Select the type of events you want to be notified about when creating or editing the integration. You can receive alerts for different events in various categories, such as a new build starting or a new job run beginning.
+Account and team integrations also support project and resource-tag filters.
 
-You can also receive notifications for specific projects. Enable the handle events only from specific projects and select one or more projects you want to receive notifications for.
+#### Configure notification integrations: Filter by project
+
+Enable Restrict to specific projects and select one or more projects. Events without an associated project, such as billing events, are not excluded by this filter.
+
+#### Configure notification integrations: Filter by resource tags
+
+Enable Restrict by tags of the event's resources and select at least one tag. By default, a resource must match any selected tag. Enable Force matching all tags to require all selected tags on a matching resource.
+
+Tag filters apply to services, jobs, addons, and volumes associated with an event. Events without one of these resources are not excluded by this filter. Events must also pass your event-type and project selections.
 
 ### Configure notification integrations: Slack notifications
 
@@ -785,19 +801,34 @@ You can edit the events that will send a notification to your Discord channel, o
 
 ### Configure notification integrations: Teams notifications
 
-You can create or update a [Teams](https://www.microsoft.com/en-gb/microsoft-teams/group-chat-software) integration from the notifications page in your account settings. You will require permission in the workspace to manage connectors.
+Use Teams Workflows to send Northflank notifications to a Microsoft Teams channel. You need access to the Teams Workflows app and permission to post to the target channel.
 
-1. Select the Teams integration type and the types of event you want to receive notifications about. Enable `handle events only from specific projects` if you want to restrict the integration to selected projects.
+The workflow must post incoming Adaptive Cards, the formatted messages that Northflank sends. See Microsoft's [workflow setup guide](https://support.microsoft.com/en-us/workflows/send-messages-in-teams-using-incoming-webhooks) for the Teams steps.
 
-2. Open the channel you want to send notifications to in Microsoft Teams, click the options menu  and select `connectors`
+> [!note]
+> Keep the workflow URL secret. Anyone with this URL can send requests to the workflow.
 
-3. Search for and add the [Incoming Webhook](https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook) connector, then configure it
+1. In Teams, open Workflows and select the Send webhook alerts to a channel template.
 
-4. Copy the generated webhook URL and paste it into the `webhook URL` field in the Northflank form and then click create notification integration
+2. Select the target team and channel.
 
-Your channel will now receive the configured alerts whenever an event triggers them.
+3. Set the webhook trigger's access to Anyone. Northflank does not send the Microsoft authentication token that the restricted access choices require.
 
-You can edit the events that will send a notification to your Teams channel, or restrict/unrestrict alerts to certain projects. If the connector is deleted in Teams, or you want to change the channel it posts to, create a new connector and update the webhook URL in the Northflank integration.
+4. Save the workflow and copy its webhook URL.
+
+5. On the Northflank notifications page, create an integration with the type Teams Workflows.
+
+6. Enter a name and the workflow's Webhook URL.
+
+7. Select the events and any [filters](observe.md#configure-notification-integrations-filter-events) that you need.
+
+8. Select Create notification integration.
+
+Add a co-owner to the workflow so that another person can manage it if its owner leaves. If the workflow URL changes, update Webhook URL in Northflank.
+
+#### Configure notification integrations: Replace a legacy Teams integration
+
+You cannot create new Teams (Legacy) integrations or change an existing integration's type. Create a new Teams Workflows integration and select its events and filters again. Before removing the legacy integration, make sure that a notification reaches the target Teams channel through the replacement.
 
 ### Configure notification integrations: Webhook notifications
 
@@ -1025,9 +1056,11 @@ If one or more containers are reporting issues, such as failing health checks or
 
 ### Monitor containers: View addon replicas
 
-You can view addon replicas on the containers page of your addon, which displays a list of active and terminated replicas and their statuses.
+You can view active and terminated addon replicas and their statuses on the addon's Instances page.
 
-You can click through to a replica to view logs, metrics, and the health checks.
+Depending on the addon type, role labels identify the primary, which handles writes, and replicas, which hold copies of the data. Indicators for current roles use the latest available metrics, so changes during failover are not shown instantly.
+
+Select a replica to view its logs, metrics, and health checks.
 
 ### Monitor containers: View job runs
 

@@ -217,6 +217,8 @@ You can configure autoscaling to handle spikes in activity for your continuous d
 
 This can help you avoid a loss of service from high traffic or unexpected spikes in usage, without the cost of permanently running the number of instances required at peak usage.
 
+You can also enable [disk auto-resize](databases-and-persistence.md#scale-a-database-scale-storage) for addons. This automatically increases an addon's storage when its volume reaches a selected usage threshold.
+
 - [Enable autoscaling: Increase availability and reduce cost by automatically responding to changes in usage of your deployments.](scale.md#autoscale-deployments)
 
 ### Scale on Northflank: Scale using infrastructure as code

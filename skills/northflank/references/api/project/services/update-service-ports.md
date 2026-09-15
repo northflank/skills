@@ -23,10 +23,11 @@ Required permission: Project > Services > General > Update
 {object}
 - `ports`: [array of] {object}
    - `id`: (string) The id of an existing port. Pass this when changing in order to keep security configurations. (pattern: ^[a-z]-?[a-z0-9]+(-[a-z0-9]+)*$)
+   - `protocol`: (string) (required) The protocol to use for the port. Public and VPC-accessible ports only support `HTTP` and `HTTP/2`. (enum: HTTP, HTTP/2, TCP, UDP)
    - `name`: (string) (required) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8)
    - `internalPort`: (integer) (required) The port number.
    - `public`: (boolean) If true, the port will be exposed publicly.
-   - `protocol`: (string) (required) The protocol to use for the port. Public ports only support `HTTP` and `HTTP/2`. (enum: HTTP, HTTP/2, TCP, UDP)
+   - `vpcAccessible`: (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer.
    - `domains`: [array of] (string) A domain to redirect to this port.
    - `security`: {object}
      - `credentials`: [array of] {object}
@@ -45,6 +46,7 @@ Required permission: Project > Services > General > Update
        - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
        - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
        - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+       - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
        - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
      - `headers`: [array of] (multiple options) {object}
            - `regexMode`: (boolean)
@@ -87,6 +89,7 @@ Required permission: Project > Services > General > Update
                  - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                  - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                  - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                 - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                  - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                - `headers`: [array of] (multiple options) {object}
                      - `regexMode`: (boolean)
@@ -112,6 +115,7 @@ Required permission: Project > Services > General > Update
                  - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                  - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                  - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                 - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                  - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                - `headers`: [array of] (multiple options) {object}
                      - `regexMode`: (boolean)
@@ -141,7 +145,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"ports":[{"id":"p01","name":"p01","internalPort":12345,"public":true,"protocol":"HTTP","domains":["app.example.com"],"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}}}]}' \
+  --data '{"ports":[{"id":"p01","protocol":"HTTP","name":"p01","internalPort":12345,"public":true,"vpcAccessible":false,"domains":["app.example.com"],"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}}}]}' \
   https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/ports
 ```
 
@@ -150,10 +154,11 @@ const payload = {
   "ports": [
     {
       "id": "p01",
+      "protocol": "HTTP",
       "name": "p01",
       "internalPort": 12345,
       "public": true,
-      "protocol": "HTTP",
+      "vpcAccessible": false,
       "domains": [
         "app.example.com"
       ],
@@ -291,7 +296,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/ports"
 
-payload = {"ports":[{"id":"p01","name":"p01","internalPort":12345,"public":true,"protocol":"HTTP","domains":["app.example.com"],"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}}}]}
+payload = {"ports":[{"id":"p01","protocol":"HTTP","name":"p01","internalPort":12345,"public":true,"vpcAccessible":false,"domains":["app.example.com"],"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}}}]}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -312,7 +317,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/ports"
 
-  var jsonStr = []byte(`{"ports":[{"id":"p01","name":"p01","internalPort":12345,"public":true,"protocol":"HTTP","domains":["app.example.com"],"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}}}]}`)
+  var jsonStr = []byte(`{"ports":[{"id":"p01","protocol":"HTTP","name":"p01","internalPort":12345,"public":true,"vpcAccessible":false,"domains":["app.example.com"],"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}}}]}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -370,10 +375,11 @@ Options:
   "ports": [
     {
       "id": "p01",
+      "protocol": "HTTP",
       "name": "p01",
       "internalPort": 12345,
       "public": true,
-      "protocol": "HTTP",
+      "vpcAccessible": false,
       "domains": [
         "app.example.com"
       ],
@@ -518,10 +524,11 @@ await apiClient.update.service.ports({
     "ports": [
       {
         "id": "p01",
+        "protocol": "HTTP",
         "name": "p01",
         "internalPort": 12345,
         "public": true,
-        "protocol": "HTTP",
+        "vpcAccessible": false,
         "domains": [
           "app.example.com"
         ],

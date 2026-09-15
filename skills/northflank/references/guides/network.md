@@ -1,6 +1,6 @@
 # Network
 
-Generated from 11 application pages listed in `llms.txt`.
+Generated from 12 application pages listed in `llms.txt`.
 
 ## Pages
 
@@ -9,6 +9,7 @@ Generated from 11 application pages listed in `llms.txt`.
 - [Configure load balancers](#configure-load-balancers)
 - [Configure network policies](#configure-network-policies)
 - [Configure ports](#configure-ports)
+- [Configure team and organisation security policies](#configure-team-and-organisation-security-policies)
 - [Create path-based security policies](#create-path-based-security-policies)
 - [Enable multi-project networking](#enable-multi-project-networking)
 - [Expose your application](#expose-your-application)
@@ -65,9 +66,9 @@ You can require users to authenticate via your SSO provider before they can acce
 > [!note] Requirements
 > You will need the following to get started:
 
-- A team that's part of an [organisation](collaborate.md#manage-an-organisation)
-- [Single sign-on](collaborate.md#manage-an-organisation-configure-single-sign-on-sso) configured for your organisation
-- [Directory sync](collaborate.md#manage-an-organisation-sync-your-directory) enabled
+- A team that's part of an [organisation](collaborate.md#create-and-manage-an-organisation)
+- [Single sign-on](collaborate.md#create-and-manage-an-organisation-configure-single-sign-on-sso) configured for your organisation
+- [Directory sync](collaborate.md#create-and-manage-an-organisation-sync-your-directory) enabled
 
 You can require SSO authentication for a port on a service by expanding the custom domains & security rules option.
 
@@ -684,6 +685,359 @@ EXPOSE 7171/udp
 - [Set IP policies: Allow or deny access to services based on IP addresses.](network.md#add-security-policies-for-ports-set-ip-policies)
 - [Configure basic authentication: Require users to enter a username and password to access your site.](network.md#add-security-policies-for-ports-require-credentials)
 
+## Configure team and organisation security policies
+
+Source: https://northflank.com/docs/v1/application/network/configure-team-and-organisation-security-policies.md
+
+Team and organization security policies apply access rules to multiple services. A policy can require authentication, restrict access, or remove security controls for HTTP paths on every matching service.
+
+Single sign-on (SSO) uses the login provider for your organization.
+
+Use these policies to:
+
+- Require SSO for administrative paths across several teams
+
+- Restrict internal tools to approved IP addresses
+
+- Require Basic Auth or a request header for a group of services
+
+- Define an organization default that teams can replace where permitted
+
+- Exclude resources from a specific policy
+
+Policies apply to every public HTTP and HTTP/2 port on matching deployment and combined services. You cannot select individual ports. These policies do not change port exposure or apply to private-only ports or other protocols.
+
+You need permission to read security policies to view them. You need the corresponding create, update, or delete permission to manage them. If the security policies page or an expected team is unavailable, contact your Northflank administrator or support.
+
+### Configure team and organisation security policies: How security policies apply
+
+Northflank evaluates team and organization security policies by path. With Path and descendants, `/` matches every path and `/admin` matches only `/admin` and its child paths.
+
+For each request path, Northflank determines the applicable policy at each level:
+
+1. Northflank selects the highest-priority matching organization policy.
+
+2. Northflank selects the highest-priority matching team policy.
+
+3. The winning organization policy determines whether a team policy can replace it, as shown below.
+
+4. If neither level has a matching policy, Northflank uses the service access configuration.
+
+| Winning organization policy | Matching team policy | Result |
+| --- | --- | --- |
+| Enforced | Yes or no | Organization policy |
+| Default | Yes | Team policy |
+| Default | No | Organization policy |
+| None | Yes | Team policy |
+| None | No | Service access configuration |
+
+Northflank compares priorities within each level. It does not compare a team priority numerically with an organization priority.
+
+A more specific path does not automatically win. At the same level, a higher-priority policy for `/` can replace a policy for `/admin` when both use Path and descendants.
+
+Each winning policy supplies the complete access configuration for its matching path. Northflank does not combine its controls with controls from another policy or the service. Paths outside its scope use other matching policies or the service access configuration.
+
+The Enforced mode prevents a team policy from replacing the winning organization policy. It does not remove [internal-traffic exceptions](network.md#configure-team-and-organisation-security-policies-internal-traffic).
+
+### Configure team and organisation security policies: Create a team security policy
+
+New policies start disabled. Enabled policies in the same team must have unique priorities. A higher value wins when multiple team policies match the same path.
+
+To create and enable a team security policy:
+
+1. Open the team and select Cloud → Security policies.
+
+2. Select Create security policy.
+
+3. Enter a name and optional description.
+
+4. Enter a priority.
+
+5. Configure the paths, access mode, targets, exclusions, and security controls.
+
+6. Select Create policy to save a disabled policy.
+
+7. On the saved policy, select Preview.
+
+8. Review the matching services and their access rules.
+
+9. Select Enable.
+
+10. Review the [policy status](network.md#configure-team-and-organisation-security-policies-understand-policy-status) as Northflank applies the change.
+
+You can also preview the draft before creation. This preview does not replace the preview on the saved policy.
+
+Team policies can target all or selected projects and services within those projects. You can also filter services by workload tags. See [targets and exclusions](network.md#configure-team-and-organisation-security-policies-team-targets).
+
+### Configure team and organisation security policies: Create an organisation security policy
+
+New policies start disabled. Enabled policies in the same organization must have unique priorities. A higher value wins when multiple organization policies match the same path.
+
+The Team inheritance mode determines whether a team policy can replace the winning organization policy. Enforced prevents replacement, while Default allows a matching team policy to replace it.
+
+> [!warning] A default can replace an enforced policy
+> Before enabling an organization default, review its effect on enforced policies. A higher-priority organization default can replace a lower-priority enforced policy. This can let a team policy replace those access rules. Northflank requires acknowledgment of any displayed inheritance warning before activation or an enabled policy update.
+
+To create and enable an organization security policy:
+
+1. Open the organization and select Cloud → Security policies.
+
+2. Select Create security policy.
+
+3. Enter a name, optional description, and priority.
+
+4. Select a Team inheritance mode.
+
+5. Configure the paths, access mode, targets, exclusions, and security controls.
+
+6. Select Create policy to save a disabled policy.
+
+7. On the saved policy, select Preview.
+
+8. Review the result by team, project, service, port, and path.
+
+9. If an inheritance warning appears, review and acknowledge it.
+
+10. Select Enable.
+
+11. Review the [policy status](network.md#configure-team-and-organisation-security-policies-understand-policy-status) as Northflank applies the change.
+
+You can also preview the draft before creation. This preview does not replace the preview on the saved policy.
+
+An organization policy can target eligible teams, projects within those teams, and services with matching workload tags. Organization policies cannot directly select or exclude individual services. See [organization targets](network.md#configure-team-and-organisation-security-policies-organisation-targets).
+
+### Configure team and organisation security policies: Configure paths and access
+
+#### Configure team and organisation security policies: Add paths
+
+Every policy must include at least one path. All paths in one policy share the same access mode, targets, exclusions, priority, and security controls. Create another policy when a path needs a different result.
+
+Choose a match mode for each path.
+
+The Exact path mode matches only the configured path. `/admin` does not match `/admin/users`.
+
+The Path and descendants mode also matches child paths. `/admin` matches `/admin` and `/admin/users`, but not `/administrator`.
+
+Use `/` with Path and descendants to apply the policy to every path. Paths are case-sensitive and must begin with `/`. Paths cannot contain query strings, fragments, or repeated slashes. Team and organization policies do not support regular expressions.
+
+Northflank removes a trailing slash from configured paths, except `/`. For example, Northflank saves `/admin/` as `/admin` for an Exact path match.
+
+#### Configure team and organisation security policies: Choose an access mode
+
+The Protected mode evaluates the security controls you add. With no controls, it denies external requests but allows requests through project-internal addresses. See [internal traffic](network.md#configure-team-and-organisation-security-policies-internal-traffic).
+
+The Unprotected (public) mode allows requests without security controls when the policy wins for a path. It replaces existing protection for that path, but does not expose a private port.
+
+Before enabling an unprotected policy, review the preview for changes that remove protection.
+
+#### Configure team and organisation security policies: Add security controls
+
+CIDR notation describes a range of IP addresses. For protected access, select Add security control.
+
+The available controls are:
+
+- IP addresses: allow or deny addresses and CIDR ranges
+
+- Request headers: require a header name and matching value
+
+- Basic Auth: require a username and password
+
+- SSO: require an organization user or selected directory groups
+
+SSO is available when your organization configures it.
+
+Place each control in Required or Optional. Every required control must pass. If you configure optional controls, at least one must also pass.
+
+For example, use a required IP rule with optional SSO and Basic Auth controls. An external request must match the IP rule and pass either SSO or Basic Auth. A single optional control is effectively required. IP deny rules can only be required.
+
+#### Configure team and organisation security policies: Internal traffic
+
+The winning enforced organization policy determines which access rules apply. It does not remove existing exceptions for internal traffic.
+
+Requests through public endpoints normally use security controls, even when they originate inside the project.
+
+Requests through [project-internal addresses](network.md#configure-ports-private-ports) bypass IP and request-header controls. Basic Auth can still apply.
+
+> [!warning] Require SSO for internal requests
+> To require SSO for project-internal requests, place SSO in Required. Then enable Validate internal traffic. By default, a policy that includes SSO bypasses all controls for these requests, including Basic Auth. See [use an SSO provider](network.md#create-path-based-security-policies-use-sso-provider).
+
+Services can also apply internal-traffic exceptions to requests through their Northflank HTTPS hostnames. This covers requests from the same project or projects with ingress permission. Team and organization policies preserve this service configuration. See [allow internal traffic to skip security policies](network.md#create-path-based-security-policies-allow-internal-traffic-to-skip-security-policies).
+
+These exceptions concern internal requests to ports marked public. Team and organization policies do not apply to private-only ports.
+
+#### Configure team and organisation security policies: Policy limits
+
+The following limits apply:
+
+| Configuration | Limit |
+| --- | --- |
+| Paths configured in one policy | 50 |
+| Enabled policies in one team or organization | 100 |
+| Combined path entries for one service port | 200 |
+| Configuration for one policy | 256 KiB |
+| Combined access configuration for one service port, before compression | 256 KiB |
+
+Northflank rejects a policy that exceeds the individual size limit when you save it.
+
+Matching policies and service access rules contribute to the combined limits. One configured path can produce multiple entries in the combined rules.
+
+If the combined rules exceed the path-count or size limit, Northflank blocks external requests to the affected port and reports an error. It does not apply a partial configuration. To restore access, reduce overlapping paths or simplify the policy configuration.
+
+### Configure team and organisation security policies: Select targets and exclusions
+
+Targets define where a policy can apply. Exclusions remove specific resources from those targets.
+
+#### Configure team and organisation security policies: Team targets
+
+A team policy can target:
+
+- All projects or selected projects
+
+- All services in the project scope or selected deployment and combined services
+
+- Services that match one or all configured workload tags
+
+Each service must match the configured project and service selections. If tag filtering is enabled, the service must also match any or all selected tags, as configured.
+
+You can exclude projects and individual services from a team policy.
+
+#### Configure team and organisation security policies: Organization targets
+
+An organization policy can target:
+
+- All eligible teams or selected teams
+
+- All projects in the team scope or selected team/project pairs
+
+- Services that match one or all configured workload tags
+
+Each service must belong to the selected team and project scope. If tag filtering is enabled, the service must also match any or all selected tags, as configured. Organization tag names match workloads directly in each selected team. Organization policies cannot directly select or exclude individual services. You can exclude teams and projects.
+
+To create a service exception to an organization default, create a team policy that selects the service.
+
+For an exception to an enforced policy, create a higher-priority organization policy with the required access rules. Target it by a dedicated workload tag or project. Alternatively, exclude the entire project or team from the enforced policy.
+
+#### Configure team and organisation security policies: How exclusions behave
+
+An exclusion removes only the policy that contains it. Another matching policy can still apply to the excluded resource. For example, an excluded project can still use another organization policy, a team policy, or service access rules.
+
+### Configure team and organisation security policies: Preview and manage policies
+
+#### Configure team and organisation security policies: Preview a policy
+
+Select Preview before enabling a policy or saving changes to an enabled policy. Preview uses your unsaved form values and does not save or apply them.
+
+If you change the form after a preview, select Preview again. For organization policies, acknowledge any displayed inheritance warning. Saving a disabled policy does not require a preview or acknowledgment.
+
+The preview shows:
+
+- Matching and excluded services
+
+- The resulting access for each public HTTP or HTTP/2 port and path
+
+- Whether the proposed policy applies or another policy takes precedence
+
+- The organization, team, or service rule that supplies the resulting access
+
+- Priority conflicts and changes that remove existing protection
+
+- Organization inheritance warnings and paths where team policies replace organization defaults
+
+Previews can show a sample of services or split results across pages. Organization previews can span multiple teams and projects.
+
+Preview evaluates the configured paths. It does not inspect application endpoints or live enforcement, guarantee successful application, or predict exactly when changes take effect.
+
+#### Configure team and organisation security policies: Understand policy status
+
+- Disabled: Northflank stores the policy but does not enforce it.
+
+- Applying: Northflank is applying an enabled policy.
+
+- Active: Northflank applied the enabled policy to its matching services.
+
+- Failed: Northflank cannot apply or remove the policy on every affected service. Northflank retries automatically.
+
+- Removing: Northflank is removing the effect of a disabled or deleted policy from services.
+
+- Removal failed: Northflank cannot finish removing the policy from services during deletion. Northflank retries automatically. If this status persists, contact support.
+
+Northflank applies policy updates in the background without restarting workloads. Changes to targets or workload tags can take time to appear in policy status and service access rules.
+
+#### Configure team and organisation security policies: Disable or delete a policy
+
+To stop applying a policy but keep it for later use, select Disable. Northflank removes its effect from services in the background.
+
+Deleting a policy also starts removal in the background. During deletion, the policy remains visible and read-only until Northflank removes its effect from services. Northflank then removes the policy from the list.
+
+If the status is Removing or Removal failed, the policy can still affect service access.
+
+### Configure team and organisation security policies: Examples and best practices
+
+#### Configure team and organisation security policies: Protect an administrative path across a team
+
+Create a team policy with:
+
+- Path `/admin` using Path and descendants
+
+- Access mode Protected
+
+- SSO as a required control
+
+- The projects or workload tags used by your administrative services
+
+This policy applies where no enforced organization policy or higher-priority team policy takes precedence. Other paths use another matching policy or the service access configuration. For SSO on internal requests, review the [internal-traffic configuration](network.md#configure-team-and-organisation-security-policies-internal-traffic).
+
+#### Configure team and organisation security policies: Set an organization default with a team exception
+
+Create these policies with Path and descendants for both paths:
+
+| Level | Path | Team inheritance | Access mode | Required control |
+| --- | --- | --- | --- | --- |
+| Organization | `/` | Default | Protected | IP allow rule |
+| Team | `/admin` | Not applicable | Protected | SSO |
+
+When these policies win at their respective levels, `/admin` and its child paths use the team policy. The team policy replaces the IP rule with SSO. Other paths use the organization default unless another policy takes precedence. If multiple team policies match `/admin`, the highest team priority wins.
+
+#### Configure team and organisation security policies: Enforce SSO without allowing team overrides
+
+Create an organization policy for `/admin` with Path and descendants, Enforced inheritance, Protected access, and required SSO.
+
+If this policy has the highest matching organization priority, team policies cannot replace it. A higher-priority organization default can still permit team replacement. Enforced inheritance does not remove [internal-traffic exceptions](network.md#configure-team-and-organisation-security-policies-internal-traffic).
+
+#### Configure team and organisation security policies: Keep static assets public
+
+Create both policies in the same team or organization:
+
+| Path | Match mode | Access mode | Priority |
+| --- | --- | --- | --- |
+| `/` | Path and descendants | Protected, with your chosen controls | 50 |
+| `/assets` | Path and descendants | Unprotected (public) | 100 |
+
+If other policies use these priorities, choose unused values that keep the `/assets` policy higher. Northflank evaluates priority before path specificity within each level. A higher-priority policy or organization inheritance can still change the result. Review the preview before enabling these policies.
+
+#### Configure team and organisation security policies: Best practices
+
+- Before enabling a saved policy, preview its affected services and access rules.
+
+- Use meaningful names that describe scope and purpose, such as `admin-sso` or `office-ip-baseline`.
+
+- Keep policies focused. Put paths with different access results in separate policies.
+
+- Assign priorities deliberately and leave gaps between values to make future ordering changes easier.
+
+- Review unprotected policies and organization defaults for changes that remove protection.
+
+- Use exclusions for explicit exceptions. Another policy can still apply afterward.
+
+- Test policy changes on a small project or selected services before broadening their target scope.
+
+### Configure team and organisation security policies: Next steps
+
+- [Configure security policies by path: Set security policies to restrict access to your endpoints based on port and subdomain path.](network.md#create-path-based-security-policies)
+- [Use SSO access control: Use your organisation's SSO provider to authenticate access to your services.](network.md#add-security-policies-for-ports-use-sso-provider)
+- [Configure basic authentication: Require users to enter a username and password to access your site.](network.md#add-security-policies-for-ports-require-credentials)
+- [Network security: Set IP policies and add basic authentication to your deployments.](network.md#networking-on-northflank)
+
 ## Create path-based security policies
 
 Source: https://northflank.com/docs/v1/application/network/create-path-based-security-policies.md
@@ -779,9 +1133,9 @@ You can require users to authenticate via your SSO provider before they can acce
 > [!note] Requirements
 > You will need the following to get started:
 
-- A team that's part of an [organisation](collaborate.md#manage-an-organisation)
-- [Single sign-on](collaborate.md#manage-an-organisation-configure-single-sign-on-sso) configured for your organisation
-- [Directory sync](collaborate.md#manage-an-organisation-sync-your-directory) enabled
+- A team that's part of an [organisation](collaborate.md#create-and-manage-an-organisation)
+- [Single sign-on](collaborate.md#create-and-manage-an-organisation-configure-single-sign-on-sso) configured for your organisation
+- [Directory sync](collaborate.md#create-and-manage-an-organisation-sync-your-directory) enabled
 
 Select your organisation's ID and choose the directory groups you want to grant access to.
 
@@ -793,6 +1147,7 @@ Only one SSO authorisation can be added per `AND`/`OR` group.
 
 ### Create path-based security policies: Next steps
 
+- [Apply security policies across services: Protect paths consistently across services in a team or organisation.](network.md#configure-team-and-organisation-security-policies)
 - [Add a domain: Add your domain name to your Northflank account.](domains.md#add-a-domain-to-your-account)
 - [Link a domain to a port: How to link and unlink domains and subdomains with specific ports on your deployments.](domains.md#link-a-domain-to-a-port)
 - [Add public ports: Configure ports to expose your services on the internet.](network.md#configure-ports-public-ports)
@@ -1096,8 +1451,9 @@ Northflank will expose your HTTP ports publicly on ports 80 and 443 and route tr
 
 ### Networking on Northflank: Network security
 
-You can configure security policies for individual ports, with allow/deny lists based on IP address, basic auth for endpoints, and SSO for organisations. You can also create granular security policies by subdomain path, for even greater control.
+You can configure security policies for individual ports, or apply path-based access rules consistently across services in a team or organisation. Policies can use IP addresses, request headers, Basic Auth, and SSO to control access.
 
+- [Apply security policies across services: Protect paths consistently across services in a team or organisation.](network.md#configure-team-and-organisation-security-policies)
 - [Set IP policies: Allow or deny access to services based on IP addresses.](network.md#add-security-policies-for-ports-set-ip-policies)
 - [Configure basic authentication: Require users to enter a username and password to access your site.](network.md#add-security-policies-for-ports-require-credentials)
 - [Use SSO access control: Use your organisation's SSO provider to authenticate access to your services.](network.md#add-security-policies-for-ports-use-sso-provider)

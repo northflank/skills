@@ -23,6 +23,7 @@ Required permission: Account > Networking > Domains > Read
     - `mode`: (string) (required) Domain redirect mode.
     - `target`: {object}
       - `record`: (string) Expected CNAME target of the wildcard redirect.
+  - `loadBalancer`: (string) Load balancer all subdomains of this domain route through. Only applies to wildcard-redirect domains. `vpc` requires a self-hosted cluster with the private load balancer enabled. Fixed at creation. (enum: public, vpc)
   - `certificates`: {object}
     - `mode`: (string) (required) Domain certificate mode.
     - `dcvRecord`: (string) DCV CNAME record used to provision wildcard certificates.
@@ -57,6 +58,7 @@ GET /v1/teams/{teamId}/domains/{domain}
     "redirect": {
       "mode": "default"
     },
+    "loadBalancer": "public",
     "certificates": {
       "mode": "default"
     },
@@ -97,6 +99,7 @@ Options:
   "redirect": {
     "mode": "default"
   },
+  "loadBalancer": "public",
   "certificates": {
     "mode": "default"
   },
@@ -135,6 +138,7 @@ await apiClient.get.domain({
     "redirect": {
       "mode": "default"
     },
+    "loadBalancer": "public",
     "certificates": {
       "mode": "default"
     },

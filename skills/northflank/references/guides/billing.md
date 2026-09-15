@@ -164,7 +164,7 @@ The usage breakdown is calculated from the end of the last billing period to the
 
 > [!note]
 > [Click here](https://app.northflank.com/s/account/billing) to view your account billing.
-If your team is [managed by an organisation](collaborate.md#manage-an-organisation-manage-organisation-billing), you may have limited ability to view and update your billing details in the team account.
+If your team is [managed by an organisation](collaborate.md#create-and-manage-an-organisation-manage-organisation-billing), you may have limited ability to view and update your billing details in the team account.
 
 ### Monitor spending: View account billing
 
@@ -292,9 +292,9 @@ Northflank offers transparent, usage-based billing, so you can scale both horizo
 
 Please note: all users must add a payment method to start creating resources on Northflank, regardless of plan selection. This is to verify user identity, and prevent malicious usage of the platform. However, with our easily configurable [billing alerts](billing.md#monitor-spending-set-up-billing-alerts) - you don’t need to worry about surprise bills.
 
-You can manage billing for multiple teams using [organisations](collaborate.md#manage-an-organisation).
+You can manage billing for multiple teams using [organisations](collaborate.md#create-and-manage-an-organisation).
 
-Create [a bespoke plan with our team](https://cal.com/team/northflank/northflank-enterprise) to meet your requirements, and [enable SSO and directory sync](collaborate.md#manage-an-organisation-configure-single-sign-on-sso) for organisations.
+Create [a bespoke plan with our team](https://cal.com/team/northflank/northflank-enterprise) to meet your requirements, and [enable SSO and directory sync](collaborate.md#create-and-manage-an-organisation-configure-single-sign-on-sso) for organisations.
 
 ### Pricing on Northflank: Deploy for free
 

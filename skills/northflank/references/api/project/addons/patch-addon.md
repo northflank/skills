@@ -30,6 +30,7 @@ Required permission: Project > Addons > General > Update
      - `maxSizeMib`: (integer) Maximum disk size in mebibytes. When set, autoscaling will not expand storage beyond this value. Must be greater than the current storage size.
  - `tlsEnabled`: (boolean) Enables access to the addon via TLS (if supported by the addon type).
  - `externalAccessEnabled`: (boolean) Enables external access to the addon via TLS (if supported by the addon type).
+ - `vpcAccessible`: (boolean) Exposes the addon on the cluster's private (VPC) load balancer. Mutually exclusive with `externalAccessEnabled`.
  - `ipPolicies`: [array of] {object}
     - `addresses`: [array of] (string) An IP address used by this rule
     - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
@@ -99,10 +100,12 @@ Required permission: Project > Addons > General > Update
    - `source`: (multiple options) {object}
       - `projectId`: (string) ID of the project of the source addon. Only required if not the same as target addon (pattern: ^[A-Za-z0-9-]+$)
       - `addonId`: (string) (required) ID of the addon to fork. (pattern: ^[A-Za-z0-9-]+$)
-      - `backupId`: (string) (required) ID of a backup belonging to that addon to use for the fork. (pattern: ^[A-Za-z0-9-]+$) | {object}
+      - `backupId`: (string) (required) ID of a backup belonging to that addon to use for the fork. (pattern: ^[A-Za-z0-9-]+$)
+      - `backupType`: (string) Type of backup to select when backupId is `latest`. Defaults to `snapshot`. (enum: snapshot, global) | {object}
       - `backupUid`: (string) (required) Uid of the backup (format: uuid)
    - `tlsEnabled`: (boolean) Enables access to the addon via TLS (if supported by the addon type).
    - `externalAccessEnabled`: (boolean) Enables external access to the addon via TLS (if supported by the addon type).
+   - `vpcAccessible`: (boolean) Exposes the addon on the cluster's private (VPC) load balancer. Mutually exclusive with `externalAccessEnabled`.
    - `ipPolicies`: [array of] {object}
       - `addresses`: [array of] (string) An IP address used by this rule
       - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
@@ -328,7 +331,8 @@ func main() {
     "source": {
       "projectId": "existing-project",
       "addonId": "existing-addon",
-      "backupId": "existing-backup"
+      "backupId": "existing-backup",
+      "backupType": "snapshot"
     },
     "ipPolicies": [
       {
@@ -513,7 +517,8 @@ Options:
   "source": {
     "projectId": "existing-project",
     "addonId": "existing-addon",
-    "backupId": "existing-backup"
+    "backupId": "existing-backup",
+    "backupType": "snapshot"
   },
   "ipPolicies": [
     {
@@ -686,7 +691,8 @@ await apiClient.patch.addon({
     "source": {
       "projectId": "existing-project",
       "addonId": "existing-addon",
-      "backupId": "existing-backup"
+      "backupId": "existing-backup",
+      "backupType": "snapshot"
     },
     "ipPolicies": [
       {

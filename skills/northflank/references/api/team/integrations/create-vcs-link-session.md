@@ -9,7 +9,7 @@ Required permission: Account > Git > General > Manage
 **Request body:**
 
 {object}
-- `vcsService`: (string) Version control provider to link. Supported values are `github` and `gitlab`. Defaults to `github`. (enum: bitbucket, gitlab, github, self-hosted, azure)
+- `vcsService`: (string) Version control provider to link. Supported values are `github`, `gitlab`, and feature-gated `origin`. Defaults to `github`. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
 
 **Response body:**
 

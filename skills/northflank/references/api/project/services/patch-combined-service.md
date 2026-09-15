@@ -76,6 +76,7 @@ Required permission: Project > Services > General > Update
    - `name`: (string) (required) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8)
    - `internalPort`: (integer) (required) The port number.
    - `public`: (boolean) If true, the port will be exposed publicly.
+   - `vpcAccessible`: (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer.
    - `security`: {object}
      - `credentials`: [array of] {object}
          - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
@@ -93,6 +94,7 @@ Required permission: Project > Services > General > Update
        - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
        - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
        - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+       - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
        - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
      - `headers`: [array of] (multiple options) {object}
            - `regexMode`: (boolean)
@@ -135,6 +137,7 @@ Required permission: Project > Services > General > Update
                  - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                  - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                  - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                 - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                  - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                - `headers`: [array of] (multiple options) {object}
                      - `regexMode`: (boolean)
@@ -160,6 +163,7 @@ Required permission: Project > Services > General > Update
                  - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                  - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                  - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                 - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                  - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                - `headers`: [array of] (multiple options) {object}
                      - `regexMode`: (boolean)
@@ -177,7 +181,7 @@ Required permission: Project > Services > General > Update
 - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
 - `vcsData`: {object}
   - `projectUrl`: (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
-  - `projectType`: (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+  - `projectType`: (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
   - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
   - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
   - `vcsLinkId`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24)
@@ -194,6 +198,7 @@ Required permission: Project > Services > General > Update
     - `buildEngine`: (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko)
     - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
     - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
+    - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
     - `buildkit`: {object}
       - `useCache`: (boolean) Use persistent storage to cache build layers.
       - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
@@ -287,6 +292,7 @@ Required permission: Project > Services > General > Update
      - `name`: (string) (required) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8)
      - `internalPort`: (integer) (required) The port number.
      - `public`: (boolean) If true, the port will be exposed publicly.
+     - `vpcAccessible`: (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer.
      - `security`: {object}
        - `credentials`: [array of] {object}
            - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
@@ -304,6 +310,7 @@ Required permission: Project > Services > General > Update
          - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
          - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
          - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+         - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
          - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
        - `headers`: [array of] (multiple options) {object}
              - `regexMode`: (boolean)
@@ -346,6 +353,7 @@ Required permission: Project > Services > General > Update
                    - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                    - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                    - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                   - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                    - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                  - `headers`: [array of] (multiple options) {object}
                        - `regexMode`: (boolean)
@@ -371,6 +379,7 @@ Required permission: Project > Services > General > Update
                    - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                    - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                    - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                   - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                    - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                  - `headers`: [array of] (multiple options) {object}
                        - `regexMode`: (boolean)
@@ -383,12 +392,12 @@ Required permission: Project > Services > General > Update
      - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
      - `advancedOptions`: {object}
        - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
-     - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+     - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
   - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
   - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
   - `vcsData`: {object}
     - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
-    - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+    - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
     - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
     - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
     - `vcsLinkId`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24)
@@ -405,6 +414,7 @@ Required permission: Project > Services > General > Update
        - `buildEngine`: (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko)
        - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
        - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
+       - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
        - `buildkit`: {object}
          - `useCache`: (boolean) Use persistent storage to cache build layers.
          - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
@@ -565,7 +575,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
-  --data '{"description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id"},"ports":[{"name":"p01","internalPort":8080,"public":true,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"bundleData":{"bundleUrl":"https://example.com/archive.tar","branch":"main"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}},"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false}},"buildConfiguration":{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}}}' \
+  --data '{"description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id"},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"bundleData":{"bundleUrl":"https://example.com/archive.tar","branch":"main"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}},"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false}},"buildConfiguration":{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}}}' \
   https://api.northflank.com/v1/projects/{projectId}/services/combined/{serviceId}
 ```
 
@@ -593,6 +603,7 @@ const payload = {
       "name": "p01",
       "internalPort": 8080,
       "public": true,
+      "vpcAccessible": false,
       "security": {
         "credentials": [
           {
@@ -848,7 +859,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/combined/{serviceId}"
 
-payload = {"description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id"},"ports":[{"name":"p01","internalPort":8080,"public":true,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"bundleData":{"bundleUrl":"https://example.com/archive.tar","branch":"main"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}},"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false}},"buildConfiguration":{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}}}
+payload = {"description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id"},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"bundleData":{"bundleUrl":"https://example.com/archive.tar","branch":"main"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}},"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false}},"buildConfiguration":{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PATCH", url, headers = headers, json = payload)
@@ -869,7 +880,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/combined/{serviceId}"
 
-  var jsonStr = []byte(`{"description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id"},"ports":[{"name":"p01","internalPort":8080,"public":true,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"bundleData":{"bundleUrl":"https://example.com/archive.tar","branch":"main"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}},"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false}},"buildConfiguration":{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}}}`)
+  var jsonStr = []byte(`{"description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id"},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"bundleData":{"bundleUrl":"https://example.com/archive.tar","branch":"main"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}},"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false}},"buildConfiguration":{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}}}`)
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -906,6 +917,7 @@ func main() {
         "name": "p01",
         "internalPort": 8080,
         "public": true,
+        "vpcAccessible": false,
         "security": {
           "credentials": [
             {
@@ -1228,6 +1240,7 @@ Options:
       "name": "p01",
       "internalPort": 8080,
       "public": true,
+      "vpcAccessible": false,
       "security": {
         "credentials": [
           {
@@ -1483,6 +1496,7 @@ Options:
       "name": "p01",
       "internalPort": 8080,
       "public": true,
+      "vpcAccessible": false,
       "security": {
         "credentials": [
           {
@@ -1795,6 +1809,7 @@ await apiClient.patch.service.combined({
         "name": "p01",
         "internalPort": 8080,
         "public": true,
+        "vpcAccessible": false,
         "security": {
           "credentials": [
             {
@@ -2052,6 +2067,7 @@ await apiClient.patch.service.combined({
         "name": "p01",
         "internalPort": 8080,
         "public": true,
+        "vpcAccessible": false,
         "security": {
           "credentials": [
             {

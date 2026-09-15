@@ -12,7 +12,7 @@ Our [pricing](https://northflank.com/pricing) is straightforward and transparent
 
 1. [Create an account](https://app.northflank.com/signup)
 
-2. If you're working with others, [create a team](collaborate.md#create-a-team) and invite your colleagues
+2. If you're working with others, [create a team](collaborate.md#create-and-manage-a-team) and invite your colleagues
 
 3. [Link an account](getting-started.md#link-your-git-account) from a supported Git service to Northflank to build from your repositories
 

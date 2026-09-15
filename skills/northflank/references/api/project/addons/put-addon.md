@@ -38,10 +38,12 @@ Required permission: Project > Addons > General > Create
  - `source`: (multiple options) {object}
     - `projectId`: (string) ID of the project of the source addon. Only required if not the same as target addon (pattern: ^[A-Za-z0-9-]+$)
     - `addonId`: (string) (required) ID of the addon to fork. (pattern: ^[A-Za-z0-9-]+$)
-    - `backupId`: (string) (required) ID of a backup belonging to that addon to use for the fork. (pattern: ^[A-Za-z0-9-]+$) | {object}
+    - `backupId`: (string) (required) ID of a backup belonging to that addon to use for the fork. (pattern: ^[A-Za-z0-9-]+$)
+    - `backupType`: (string) Type of backup to select when backupId is `latest`. Defaults to `snapshot`. (enum: snapshot, global) | {object}
     - `backupUid`: (string) (required) Uid of the backup (format: uuid)
  - `tlsEnabled`: (boolean) Enables access to the addon via TLS (if supported by the addon type).
  - `externalAccessEnabled`: (boolean) Enables external access to the addon via TLS (if supported by the addon type).
+ - `vpcAccessible`: (boolean) Exposes the addon on the cluster's private (VPC) load balancer. Mutually exclusive with `externalAccessEnabled`.
  - `ipPolicies`: [array of] {object}
     - `addresses`: [array of] (string) An IP address used by this rule
     - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
@@ -124,10 +126,12 @@ Required permission: Project > Addons > General > Create
    - `source`: (multiple options) {object}
       - `projectId`: (string) ID of the project of the source addon. Only required if not the same as target addon (pattern: ^[A-Za-z0-9-]+$)
       - `addonId`: (string) (required) ID of the addon to fork. (pattern: ^[A-Za-z0-9-]+$)
-      - `backupId`: (string) (required) ID of a backup belonging to that addon to use for the fork. (pattern: ^[A-Za-z0-9-]+$) | {object}
+      - `backupId`: (string) (required) ID of a backup belonging to that addon to use for the fork. (pattern: ^[A-Za-z0-9-]+$)
+      - `backupType`: (string) Type of backup to select when backupId is `latest`. Defaults to `snapshot`. (enum: snapshot, global) | {object}
       - `backupUid`: (string) (required) Uid of the backup (format: uuid)
    - `tlsEnabled`: (boolean) Enables access to the addon via TLS (if supported by the addon type).
    - `externalAccessEnabled`: (boolean) Enables external access to the addon via TLS (if supported by the addon type).
+   - `vpcAccessible`: (boolean) Exposes the addon on the cluster's private (VPC) load balancer. Mutually exclusive with `externalAccessEnabled`.
    - `ipPolicies`: [array of] {object}
       - `addresses`: [array of] (string) An IP address used by this rule
       - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
@@ -225,7 +229,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
-  --data '{"name":"Example Addon","description":"An addon description","projectId":"example-project","type":"postgresql","version":"latest","billing":{"deploymentPlan":"nf-compute-20","storageClass":"nvme","storage":6144,"replicas":1},"source":{"projectId":"existing-project","addonId":"existing-addon","backupId":"existing-backup"},"ipPolicies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"backupType":"snapshot","additionalDestinations":[{"destinationId":"example-backup-destination","retentionTime":7,"type":"custom"}],"compressionType":"gz","retentionTime":7}]}' \
+  --data '{"name":"Example Addon","description":"An addon description","projectId":"example-project","type":"postgresql","version":"latest","billing":{"deploymentPlan":"nf-compute-20","storageClass":"nvme","storage":6144,"replicas":1},"source":{"projectId":"existing-project","addonId":"existing-addon","backupId":"existing-backup","backupType":"snapshot"},"ipPolicies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"backupType":"snapshot","additionalDestinations":[{"destinationId":"example-backup-destination","retentionTime":7,"type":"custom"}],"compressionType":"gz","retentionTime":7}]}' \
   https://api.northflank.com/v1/projects/{projectId}/addons
 ```
 
@@ -245,7 +249,8 @@ const payload = {
   "source": {
     "projectId": "existing-project",
     "addonId": "existing-addon",
-    "backupId": "existing-backup"
+    "backupId": "existing-backup",
+    "backupType": "snapshot"
   },
   "ipPolicies": [
     {
@@ -301,7 +306,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/addons"
 
-payload = {"name":"Example Addon","description":"An addon description","projectId":"example-project","type":"postgresql","version":"latest","billing":{"deploymentPlan":"nf-compute-20","storageClass":"nvme","storage":6144,"replicas":1},"source":{"projectId":"existing-project","addonId":"existing-addon","backupId":"existing-backup"},"ipPolicies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"backupType":"snapshot","additionalDestinations":[{"destinationId":"example-backup-destination","retentionTime":7,"type":"custom"}],"compressionType":"gz","retentionTime":7}]}
+payload = {"name":"Example Addon","description":"An addon description","projectId":"example-project","type":"postgresql","version":"latest","billing":{"deploymentPlan":"nf-compute-20","storageClass":"nvme","storage":6144,"replicas":1},"source":{"projectId":"existing-project","addonId":"existing-addon","backupId":"existing-backup","backupType":"snapshot"},"ipPolicies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"backupType":"snapshot","additionalDestinations":[{"destinationId":"example-backup-destination","retentionTime":7,"type":"custom"}],"compressionType":"gz","retentionTime":7}]}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PUT", url, headers = headers, json = payload)
@@ -322,7 +327,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/addons"
 
-  var jsonStr = []byte(`{"name":"Example Addon","description":"An addon description","projectId":"example-project","type":"postgresql","version":"latest","billing":{"deploymentPlan":"nf-compute-20","storageClass":"nvme","storage":6144,"replicas":1},"source":{"projectId":"existing-project","addonId":"existing-addon","backupId":"existing-backup"},"ipPolicies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"backupType":"snapshot","additionalDestinations":[{"destinationId":"example-backup-destination","retentionTime":7,"type":"custom"}],"compressionType":"gz","retentionTime":7}]}`)
+  var jsonStr = []byte(`{"name":"Example Addon","description":"An addon description","projectId":"example-project","type":"postgresql","version":"latest","billing":{"deploymentPlan":"nf-compute-20","storageClass":"nvme","storage":6144,"replicas":1},"source":{"projectId":"existing-project","addonId":"existing-addon","backupId":"existing-backup","backupType":"snapshot"},"ipPolicies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"backupType":"snapshot","additionalDestinations":[{"destinationId":"example-backup-destination","retentionTime":7,"type":"custom"}],"compressionType":"gz","retentionTime":7}]}`)
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -361,7 +366,8 @@ func main() {
     "source": {
       "projectId": "existing-project",
       "addonId": "existing-addon",
-      "backupId": "existing-backup"
+      "backupId": "existing-backup",
+      "backupType": "snapshot"
     },
     "ipPolicies": [
       {
@@ -494,7 +500,8 @@ Options:
   "source": {
     "projectId": "existing-project",
     "addonId": "existing-addon",
-    "backupId": "existing-backup"
+    "backupId": "existing-backup",
+    "backupType": "snapshot"
   },
   "ipPolicies": [
     {
@@ -552,7 +559,8 @@ Options:
   "source": {
     "projectId": "existing-project",
     "addonId": "existing-addon",
-    "backupId": "existing-backup"
+    "backupId": "existing-backup",
+    "backupType": "snapshot"
   },
   "ipPolicies": [
     {
@@ -672,7 +680,8 @@ await apiClient.put.addon({
     "source": {
       "projectId": "existing-project",
       "addonId": "existing-addon",
-      "backupId": "existing-backup"
+      "backupId": "existing-backup",
+      "backupType": "snapshot"
     },
     "ipPolicies": [
       {
@@ -732,7 +741,8 @@ await apiClient.put.addon({
     "source": {
       "projectId": "existing-project",
       "addonId": "existing-addon",
-      "backupId": "existing-backup"
+      "backupId": "existing-backup",
+      "backupType": "snapshot"
     },
     "ipPolicies": [
       {

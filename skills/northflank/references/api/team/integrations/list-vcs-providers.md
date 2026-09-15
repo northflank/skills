@@ -11,8 +11,8 @@ Required permission: Account > Git > General > Read
 {object}
 - `data`: {object}
   - `vcsAccountLinks`: [array of] {object}
-     - `vcsService`: (string) (required) The type of version control provider the account is linked to. (enum: bitbucket, gitlab, github, self-hosted, azure)
-     - `email`: (string) (required) The email of the account linked with this provider.
+     - `vcsService`: (string) (required) The type of version control provider the account is linked to. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
+     - `email`: (multiple options) (undefined) | (undefined)
      - `login`: (string) (required) The username of the account linked with this provider.
      - `vcsLinkId`: (string) (required) The ID of this linked version control account. Pass this value as `vcsLinkId` when creating a harness or service from this account.
      - `alias`: (string) A user-defined alias for the linked version control account, if set.
@@ -21,6 +21,10 @@ Required permission: Account > Git > General > Read
      - `vcsType`: (string) The type of the self-hosted vcs provider. Only returned for self-hosted links. (enum: gitlab-ee, github-ghe, gitea)
      - `internalId`: (string) The ID of the self-hosted vcs provider. Only returned for self-hosted links.
      - `entityName`: (string) The name of the team the self-hosted vcs belongs to. Only returned for self-hosted links.
+     - `originTargetSlug`: (string) The Cursor Origin installation target slug.
+     - `originRepoSelectionMode`: (string) Whether the Origin installation grants all or selected repositories. (enum: all, selected)
+     - `originScopes`: [array of] (string)
+     - `originMissingScopes`: [array of] (string)
 
 ### API reference
 
@@ -38,7 +42,6 @@ GET /v1/teams/{teamId}/integrations/vcs
     "vcsAccountLinks": [
       {
         "vcsService": "self-hosted",
-        "email": "email@example.com",
         "login": "vcs-user",
         "vcsLinkId": "63ebb6ce2ccc6c7affdbf253",
         "alias": "my-github",
@@ -46,7 +49,8 @@ GET /v1/teams/{teamId}/integrations/vcs
         "vcsUrl": "https://git.example.com",
         "vcsType": "gitlab-ee",
         "internalId": "example-team/self-hosted-vcs",
-        "entityName": "Example Team"
+        "entityName": "Example Team",
+        "originTargetSlug": "example-team"
       }
     ]
   }
@@ -74,7 +78,6 @@ Options:
   "vcsAccountLinks": [
     {
       "vcsService": "self-hosted",
-      "email": "email@example.com",
       "login": "vcs-user",
       "vcsLinkId": "63ebb6ce2ccc6c7affdbf253",
       "alias": "my-github",
@@ -82,7 +85,8 @@ Options:
       "vcsUrl": "https://git.example.com",
       "vcsType": "gitlab-ee",
       "internalId": "example-team/self-hosted-vcs",
-      "entityName": "Example Team"
+      "entityName": "Example Team",
+      "originTargetSlug": "example-team"
     }
   ]
 }
@@ -106,7 +110,6 @@ await apiClient.list.vcs({});
     "vcsAccountLinks": [
       {
         "vcsService": "self-hosted",
-        "email": "email@example.com",
         "login": "vcs-user",
         "vcsLinkId": "63ebb6ce2ccc6c7affdbf253",
         "alias": "my-github",
@@ -114,7 +117,8 @@ await apiClient.list.vcs({});
         "vcsUrl": "https://git.example.com",
         "vcsType": "gitlab-ee",
         "internalId": "example-team/self-hosted-vcs",
-        "entityName": "Example Team"
+        "entityName": "Example Team",
+        "originTargetSlug": "example-team"
       }
     ]
   },

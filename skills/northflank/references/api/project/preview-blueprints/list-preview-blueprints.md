@@ -22,7 +22,7 @@ Required permission: Project > PreviewBlueprints > General > Read
 
 {object}
 - `data`: {object}
-  - `pipelines`: [array of] {object}
+  - `workflows`: [array of] {object}
      - `name`: (string) (required) Name of the template. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `description`: (string) Description of the template. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
      - `apiVersion`: (string) (required) The version of the Northflank API to run the template against. (enum: v1.2)
@@ -50,7 +50,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/preview-blueprints
 ```json
 {
   "data": {
-    "pipelines": [
+    "workflows": [
       {
         "name": "Example Template",
         "description": "This is a sample template.",
@@ -96,7 +96,7 @@ Options:
 
 ```json
 {
-  "pipelines": [
+  "workflows": [
     {
       "name": "Example Template",
       "description": "This is a sample template.",
@@ -134,7 +134,7 @@ await apiClient.list.previewBlueprints({
 ```json
 {
   "data": {
-    "pipelines": [
+    "workflows": [
       {
         "name": "Example Template",
         "description": "This is a sample template.",

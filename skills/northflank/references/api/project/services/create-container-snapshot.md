@@ -16,6 +16,7 @@ Required permission: Account > Platform > ContainerSnapshots > Create
 
 {object}
 - `podName`: (string) The running service pod to snapshot.
+- `backupDestinationId`: (string) The backup destination to store the snapshot in.
 
 **Response body:**
 

@@ -373,9 +373,9 @@ You can create an account and set up a personal team on Northflank for [free](bi
 
 > [!note]
 > [Click here](https://app.northflank.com/signup) to create an account.
-You can invite users to a team to [collaborate on Northflank](collaborate.md#create-a-team), at no extra cost.
+You can invite users to a team to [collaborate on Northflank](collaborate.md#create-and-manage-a-team), at no extra cost.
 
-If you would like to manage more users across multiple teams you can [create an organisation](collaborate.md#manage-an-organisation) to unlock enterprise features.
+If you would like to manage more users across multiple teams you can [create an organisation](collaborate.md#create-and-manage-an-organisation) to unlock enterprise features.
 
 See our [pricing page](https://northflank.com/pricing) for more information on plans.
 
@@ -398,7 +398,7 @@ The getting started section contains walkthrough guides to get you up-and-runnin
 
 - [Link your Git account: Integrate your Git accounts with Northflank to start building and deploying your code.](getting-started.md#link-your-git-account)
 - [Create a project: Create a project to contain your services, persistent data, secrets, and more.](getting-started.md#create-a-project)
-- [Create a team and invite members: Create a team and invite members to collaborate on projects.](collaborate.md#create-a-team)
+- [Create a team and invite members: Create a team and invite members to collaborate on projects.](collaborate.md#create-and-manage-a-team)
 - [Build and deploy your code: Quickly and easily build and run code from a Git repository using a Dockerfile or buildpack.](getting-started.md#build-and-deploy-your-code)
 - [Set up a pipeline: Manage your workflow and release your code in an intuitive pipeline.](getting-started.md#>-note)
 - [Add and verify domain: Add your domain name to your Northflank account and link it to a public port.](getting-started.md#add-and-verify-a-domain)
@@ -566,20 +566,13 @@ To remove your team's access to your Azure DevOps account, select the account an
 
 ### Link your Git account: Set team namespaces
 
-On team accounts you may need to restrict access to certain namespaces on your linked Git accounts.
+You can restrict which repositories team members can access when connecting Git accounts to Northflank.
 
-GitHub account restrictions are managed on GitHub by selecting which account/organisation to install the Northflank GitHub app on, and then granting access to specific repositories on that account.
+For GitHub, you can manage repository access when installing the Northflank GitHub app. You can choose which GitHub account or organisation to install the app on and which repositories the app can access.
 
-Your linked GitLab and Bitbucket accounts can be restricted to certain namespaces by opening the settings on the respective entry. Select restricted and pick the contexts you want your team members to access. Remove a namespace from the list to revoke access. The namespaces available to your team will be displayed on the git integrations page in the section for the relevant service.
-Remove a namespace from the list in the selected account to revoke access.
+For GitLab and Bitbucket, you can restrict access to specific namespaces from the account settings in Northflank.
 
-New namespaces can be created in your Gitlab and Bitbucket accounts by creating new projects.
-
-#### Link your Git account: Restrict self-hosted VCS access
-
-You can restrict access to the repositories in your self-hosted VCS by selecting specific owners within the self-hosted VCS's settings. Team members will be able to build and run from repositories belonging to the selected namespaces, if your account has access to them.
-
-Unrestricted access means team members will be able to create services and jobs from every repository that the linked account can access.
+For self-hosted VCS, you can restrict access to specific owners from the self-hosted VCS settings.
 
 ### Link your Git account: Next steps
 

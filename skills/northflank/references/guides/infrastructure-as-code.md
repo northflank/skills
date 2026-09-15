@@ -210,6 +210,8 @@ You can edit an individual node by clicking on it. You can configure a node usin
 
 ![Editing a template node in the Northflank application using the visual editor](https://assets.northflank.com/documentation/v1/application/infrastructure-as-code/create-a-template/create-template-edit-node.png)
 
+Supported resource nodes offer an Update mode control to choose between creating, replacing, and partially updating resources. See [resource update modes](infrastructure-as-code.md#template-nodes-resource-update-modes) for the choices and JSON syntax.
+
 The [write a template](infrastructure-as-code.md#write-a-template) section covers more specific details of workflows and nodes, and how to make templates for different use-cases.
 
 Click create template or save changes to save your template.
@@ -399,8 +401,7 @@ sure to setup a provider integration with direct credentials.
 
 3. Select Amazon Web Services as the provider and choose the OpenTofu feature
 
-4. Open your
-  [AWS IAM console](https://console.aws.amazon.com/iam/home),
+4. Open your [AWS IAM console](https://console.aws.amazon.com/iam/home),
   open the users page and create a new user without console access.
   Skip the remaining steps and save the user.
 
@@ -1208,7 +1209,7 @@ Template drafts allow you to review and manage updates to templates. Instead of 
 
 Template drafts rely on a separate set of [role permissions](secure.md#use-role-based-access-control) compared to standard templates. Only team members assigned a role with `close` and `accept` permissions will be able to manage drafts.
 
-You can enable template drafts in an [organisation's settings](collaborate.md#manage-an-organisation). This will prevent teams in your organisation from editing their templates directly, replacing save with create draft.
+You can enable template drafts in an [organisation's settings](collaborate.md#create-and-manage-an-organisation). This will prevent teams in your organisation from editing their templates directly, replacing save with create draft.
 
 Drafts can be used with or without Git integration for templates, and allow you to review and manage template versions on Northflank.
 
@@ -1235,6 +1236,8 @@ Once a draft is created it will be listed under  drafts in the template editor. 
 #### Manage template versions: View differences
 
 You can view the changes proposed in the draft as [template code](infrastructure-as-code.md#write-a-template). The read-only editor will display the differences between the currently existing template and the draft. Drafts will not contain updates to the template that happen after the draft has been created. You should check for any unwanted reversions if later drafts have already been accepted.
+
+To inspect resource changes recorded during execution, [view the template run comparison](infrastructure-as-code.md#run-a-template-view-resource-changes).
 
 #### Manage template versions: Edit, accept, or close a draft
 
@@ -1278,6 +1281,24 @@ Each node can be expanded to view the template JSON for `running` nodes, and `su
 
 ![The response for a node from a template run in the Northflank application](https://assets.northflank.com/documentation/v1/application/infrastructure-as-code/run-a-template/template-run-response.png)
 
+#### Run a template: View resource changes
+
+After a run succeeds, fails, or is aborted, View diff appears when recorded resource changes are available. You need permission to read the template or workflow to view these changes.
+
+1. Open the run from its run history.
+
+2. Select View diff.
+
+3. Expand a resource to inspect its recorded changes.
+
+4. Select Download JSON to save that resource's `before` and `after` values.
+
+For example, a description change from `API` to `Public API` shows the previous and updated values.
+
+The comparison covers changes reported by resource nodes. It can omit actions and intermediate updates to the same resource. A failed run can contain changes from successful steps, and a missing View diff button does not prove that nothing changed.
+
+Review downloaded configuration for sensitive values before sharing it.
+
 #### Run a template: Template node states
 
 Workflows and nodes can have the following states:
@@ -1300,11 +1321,11 @@ This is convenient if you want to manage your resources via templates, as trigge
 
 ### Run a template: Update a template
 
-Templates can create new resources and update existing resources in your projects. If you update a template that uses one or more existing [projects as context](infrastructure-as-code.md#create-a-template-set-project-context) in the template, the next time it is run it will update resources with the same name (ID) with the new values in the template.
+Templates can create new resources and update existing resources in your projects. Each supported resource node's [update mode](infrastructure-as-code.md#template-nodes-resource-update-modes) controls what happens when the template runs again. The default `put` mode creates or replaces resource configuration, `patch` updates supplied fields, and `create` skips resources that already exist.
 
-If the new template changes values that cannot be patched the template run will fail and the rest of the template will not be executed.
+An update that changes a field that the resource does not allow you to change fails. A `patch` node also fails if its target resource does not exist.
 
-Existing resources in the projects, created manually or by previous template runs, will not be deleted by the template. If you have changed the names of resource in the template, new resources will be created alongside the existing ones, which may lead to unintended duplication of resources.
+Removing a resource node from the template does not delete the resource. The node's `name` identifies its target resource and does not rename an existing resource. With `put` or `create`, a new name can create another resource alongside the existing one.
 
 If you have enabled [run a template automatically](infrastructure-as-code.md#run-a-template-run-your-template-automatically) the template will be run immediately with any changes when you save the updated template. If you have also [enabled GitOps](infrastructure-as-code.md#create-a-template-enable-gitops-for-your-template) the template will be run as soon as your changes are committed.
 
@@ -1362,6 +1383,65 @@ The nodes are divided into the following categories:
 
 - Conditions  hold the template run while until the status of a resource or action is returned
 
+#### Template nodes: Resource update modes
+
+Supported resource nodes offer an Update mode control, including project, service, job, and addon nodes. The available nodes depend on the template type.
+
+| Update mode | JSON value | Behavior on each run |
+| --- | --- | --- |
+| Put (create or replace) | `put` | Creates a missing resource or replaces an existing resource's configuration with the supplied specification. |
+| Patch (partial update) | `patch` | Updates supplied fields on an existing resource. Fails if the resource does not exist. |
+| Create only | `create` | Creates a missing resource. Skips the node without changing the resource if it already exists. |
+
+A skipped `create` node does not return the existing resource's outputs. If later nodes need that resource, use its known identifiers or template arguments instead of the skipped node's output reference.
+
+In a resource node, `name` identifies the resource to create or update. Changing it targets a different resource rather than renaming the existing resource. For `patch`, keep the existing resource's `name`.
+
+> [!note] Requirements
+> You will need the following to get started:
+
+- For project resources, the correct [project context](infrastructure-as-code.md#create-a-template-set-project-context) on the node or inherited from a workflow
+- For `patch`, any additional fields required for the resource's PATCH operation, even if their values do not change
+- For `put` and `create`, the full specification required to create the resource
+
+Required PATCH fields also apply to API PATCH requests. Beyond these required fields, supply only the fields that you want to change. PATCH preserves fields outside the supplied values. Only fields that the resource allows you to update can change.
+
+> [!warning] Before saving an update
+> Review the fields that the node will replace before saving. Supplied arrays and some object fields replace the whole value. With `put`, omitted configurable fields can reset or clear. If [automatic runs](infrastructure-as-code.md#run-a-template-run-a-template-automatically) are enabled, saving changes runs the template immediately.
+
+In the node's code view, set `updateMode` beside `kind` and `spec`. Use the lowercase values shown above. If you omit `updateMode`, Northflank uses `put`.
+
+For example, this node updates the description of an existing project named `example-project`:
+
+```json
+{
+  "kind": "Project",
+  "updateMode": "patch",
+  "spec": {
+    "name": "example-project",
+    "description": "Shared development environment"
+  }
+}
+```
+
+To set the mode in the visual editor:
+
+1. Open the node's form in the visual editor.
+
+2. For service nodes, expand Template.
+
+3. Expand Advanced.
+
+4. Select an Update mode.
+
+5. Edit the specification for the chosen mode.
+
+6. Review the node's code for unwanted values.
+
+7. Click Save node.
+
+8. Save the template to keep the change.
+
 ### Template nodes: Flow control nodes
 
 Flow control nodes contain resource and action nodes, and determine in what order they are executed. You can click the switch button  in the workflow node to change to a parallel or sequential flow.
@@ -1405,6 +1485,7 @@ Team nodes create and update resources and integrations on the team level. They 
 | Tag | Create a new tag in the team for tagging resources |
 | Custom plan | Create a custom resource plan in the team |
 | Secret inheritance | Merge multiple global secrets with priority ordering |
+| Rollout strategy | Create or update a [canary rollout strategy](release.md#set-up-canary-rollouts) |
 
 #### Template nodes: Project
 
@@ -1542,6 +1623,28 @@ OR
 - spec
   {object} requiredThe specification for the SecretInheritance node.
 
+#### Template nodes: Rollout strategy
+
+A rollout strategy can be attached to a [deployment service](infrastructure-as-code.md#template-nodes-deployment-service) or [combined service](infrastructure-as-code.md#template-nodes-combined-service) node by setting `gradualRolloutStrategyId` in the node's `deployment` object.
+
+- {object} RolloutStrategy patch node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofRolloutStrategy
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the RolloutStrategy node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
+
 ### Template nodes: Project resource nodes
 
 Project resource nodes can be used to create or update services, jobs, addons, and other resources on the Northflank platform. They can also be used to trigger builds, run jobs, and schedule addon backups.
@@ -1566,6 +1669,8 @@ To enable CI/CD and build from private Git repositories you must have a [Git acc
 
 A combined service will automatically build and deploy the latest commit for the selected branch when it is created.
 
+You can attach a [canary rollout strategy](release.md#set-up-canary-rollouts) to the service by setting `gradualRolloutStrategyId` in the `deployment` object.
+
 - {object} CombinedService patch node
 
 - ref
@@ -1578,6 +1683,16 @@ A combined service will automatically build and deploy the latest commit for the
 - string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
 - string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- options
+  {object}
+
+- allowUnlinkingDomains
+  (multiple options: oneOf) Allows the template to remove existing domain assignments from this service.
+
+- boolean Allows the template to remove existing domain assignments from this service.
+OR
+- string A string containing one or more references that resolve to allows the template to remove existing domain assignments from this service.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the CombinedService node.
@@ -1614,6 +1729,8 @@ If you are deploying from a Northflank build service you can toggle between depl
 
 Latest build will deploy whatever the service has build most recently, regardless of the commit age. Latest commit will deploy the most recent commit to the branch that has been built by the service.
 
+You can attach a [canary rollout strategy](release.md#set-up-canary-rollouts) to the service by setting `gradualRolloutStrategyId` in the `deployment` object.
+
 - {object} DeploymentService patch node
 
 - ref
@@ -1626,6 +1743,16 @@ Latest build will deploy whatever the service has build most recently, regardles
 - string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
 - string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- options
+  {object}
+
+- allowUnlinkingDomains
+  (multiple options: oneOf) Allows the template to remove existing domain assignments from this service.
+
+- boolean Allows the template to remove existing domain assignments from this service.
+OR
+- string A string containing one or more references that resolve to allows the template to remove existing domain assignments from this service.pattern.*\${.*}.*
 
 - spec
   {object} requiredThe specification for the DeploymentService node.
@@ -1706,6 +1833,16 @@ You can enable upgrade on version mismatch to allow a template to trigger an upg
 - string If set to 'true', the execution of the node will be skipped.one oftrue, false
 OR
 - string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- options
+  {object}
+
+- upgradeOnVersionMismatch
+  (multiple options: oneOf)
+
+- boolean
+OR
+- string pattern.*\${.*}.*
 
 - spec
   (multiple options: anyOf) requiredThe provisioner type of the addon

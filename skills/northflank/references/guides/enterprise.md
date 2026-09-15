@@ -45,7 +45,7 @@ To set up an Enterprise plan, [contact our team](https://cal.com/team/northflank
 | Feature | Description |
 | --- | --- |
 | Org-level clusters | Define clusters once and share them across all teams in an organisation |
-| Custom AWS launch templates | Use custom node pools and AMIs for your clusters |
+| Custom AWS launch templates | Customise AWS node pools with launch templates, including custom AMIs by arrangement |
 | Managed Ceph as CSI driver | Use Northflank-managed Ceph for persistent storage |
 | Multi read-write volumes (BYOC, Ceph-backed) | Mount volumes across multiple pods simultaneously |
 | Custom labels and annotations (BYOC) | Apply custom Kubernetes metadata to workloads |

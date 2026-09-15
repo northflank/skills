@@ -2,7 +2,7 @@
 
 Source: https://northflank.com/docs/v1/api/team/integrations/list-notification-integrations.md
 
-Lists notification integrations for the authenticated user or team.
+Lists notification integrations for the authenticated user, team or org.
 
 Required permission: Account > Observability > Notifications > Read
 
@@ -40,7 +40,7 @@ GET /v1/teams/{teamId}/integrations/notifications
 
 #### Example Response
 
-200 OK: A list of notification integrations for the authenticated user or team
+200 OK: A list of notification integrations for the authenticated user, team or org
 
 ```json
 {
@@ -86,7 +86,7 @@ Options:
 
 #### Example Response
 
- A list of notification integrations for the authenticated user or team
+ A list of notification integrations for the authenticated user, team or org
 
 ```json
 {
@@ -121,7 +121,7 @@ await apiClient.list.notifications({
 
 #### Example Response
 
- A list of notification integrations for the authenticated user or team
+ A list of notification integrations for the authenticated user, team or org
 
 ```json
 {

@@ -27,7 +27,7 @@ Required permission: Project > Jobs > General > Read
   - `createdAt`: (string) (required) The time the job was created. (format: date-time)
   - `vcsData`: {object}
     - `projectUrl`: (string) (required) URL of the repository being built
-    - `projectType`: (string) (required) VCS provider for the repo being built (enum: bitbucket, gitlab, github, self-hosted, azure)
+    - `projectType`: (string) (required) VCS provider for the repo being built (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
     - `selfHostedVcsId`: (string) ID of the self-hosted VCS, if applicable.
     - `projectBranch`: (string) Branch of the repo being built
     - `publicRepo`: (boolean) Whether the repo is being accessed without authentication.
@@ -47,6 +47,29 @@ Required permission: Project > Jobs > General > Read
     - `storage`: {object}
       - `ephemeralStorage`: {object}
         - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
+  - `buildSettings`: (multiple options) {object}
+     - `storage`: {object}
+       - `ephemeralStorage`: {object}
+         - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
+     - `dockerfile`: {object}
+       - `useCache`: (boolean) DEPRECATED: This field will be removed in the near future and currently has no effect.
+       - `buildEngine`: (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko)
+       - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
+       - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
+       - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+       - `buildkit`: {object}
+         - `useCache`: (boolean) Use persistent storage to cache build layers.
+         - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
+         - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
+         - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+     - `storage`: {object}
+       - `ephemeralStorage`: {object}
+         - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
+     - `buildpack`: {object}
+       - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
+       - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
+       - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
+       - `useCache`: (boolean) Should build dependencies be cached?
   - `buildEngineConfiguration`: {object}
     - `buildEngine`: (string) The build engine used. (enum: buildpack, buildkit, kaniko)
     - `buildpack`: {object}
@@ -136,6 +159,22 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}
       "storage": {
         "ephemeralStorage": {
           "storageSize": 16384
+        }
+      }
+    },
+    "buildSettings": {
+      "storage": {
+        "ephemeralStorage": {
+          "storageSize": 16384
+        }
+      },
+      "dockerfile": {
+        "buildEngine": "buildkit",
+        "dockerFilePath": "/Dockerfile",
+        "dockerWorkDir": "/",
+        "buildkit": {
+          "useCache": true,
+          "cacheStorageSize": 32768
         }
       }
     },
@@ -246,6 +285,22 @@ Options:
       }
     }
   },
+  "buildSettings": {
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 16384
+      }
+    },
+    "dockerfile": {
+      "buildEngine": "buildkit",
+      "dockerFilePath": "/Dockerfile",
+      "dockerWorkDir": "/",
+      "buildkit": {
+        "useCache": true,
+        "cacheStorageSize": 32768
+      }
+    }
+  },
   "buildEngineConfiguration": {
     "buildEngine": "buildpack",
     "buildpack": {
@@ -347,6 +402,22 @@ await apiClient.get.job({
       "storage": {
         "ephemeralStorage": {
           "storageSize": 16384
+        }
+      }
+    },
+    "buildSettings": {
+      "storage": {
+        "ephemeralStorage": {
+          "storageSize": 16384
+        }
+      },
+      "dockerfile": {
+        "buildEngine": "buildkit",
+        "dockerFilePath": "/Dockerfile",
+        "dockerWorkDir": "/",
+        "buildkit": {
+          "useCache": true,
+          "cacheStorageSize": 32768
         }
       }
     },

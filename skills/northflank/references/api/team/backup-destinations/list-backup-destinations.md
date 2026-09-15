@@ -21,6 +21,7 @@ Required permission: Account > Platform > BackupDestinations > Read
      - `name`: (string) (required) The name of the backup destination. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
      - `type`: (string) (required) Type of the backup destination. (enum: s3)
+     - `usage`: (string) (required) The backup workload that can use this destination. (enum: globalBackups, containerSnapshots)
      - `prefix`: (string) (required) A prefix path to add to the bucket objects if not writing to / (pattern: ^([a-zA-Z0-9-_]+)\/$)
      - `credentials`: {object}
        - `authMode`: (string) Whether the destination authenticates with static AWS credentials or a workload identity. (enum: staticCreds, workloadIdentity)

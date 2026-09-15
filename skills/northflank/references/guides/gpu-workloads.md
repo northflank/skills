@@ -283,6 +283,8 @@ You can deploy and manage GPU-enabled nodes on [other cloud providers](bring-you
 
 Any Northflank projects deployed to your cluster will be able to make use of the GPU-enabled nodes.
 
+On AWS clusters, you can use [launch templates](bring-your-own-cloud.md#use-aws-launch-templates-configure-capacity-blocks) with Capacity Blocks to reserve GPU nodes for a specific time period.
+
 - [Deploy GPU node pools: Deploy node pools with GPU nodes on a Kubernetes cluster with Northflank.](gpu-workloads.md#deploy-gpus-in-your-own-cloud-deploy-a-cluster-and-a-gpu-node-pool)
 - [Configure workloads to deploy on GPU nodes: Create a project on your own cluster with GPU nodes and configure workloads to deploy to it.](gpu-workloads.md#deploy-gpus-in-your-own-cloud-configure-workloads-to-deploy-on-gpu-nodes)
 - [Allow multiple workloads to use a GPU with timeslicing: You can enable timeslicing to enable multiple GPU workloads to schedule per GPU, and set the number of slices to allow on each GPU.](gpu-workloads.md#deploy-gpus-in-your-own-cloud-allow-multiple-workloads-to-use-a-gpu-with-timeslicing)

@@ -15,6 +15,12 @@ Required permission: Account > Networking > Subdomains > Update
 
 {object}
 - `name`: (string) (required) Subdomain prepended to the domain name
+- `loadBalancer`: (string) Cluster load balancer the subdomain resolves on. Defaults to public, and cannot differ from the parent domain where that domain pins one (enum: public, vpc)
+- `certificateValidationMethod`: (string) How the subdomain's TLS certificate is validated and issued. Only applies where the subdomain manages its own certificate (enum: http, dcv, imported)
+- `certificate`: {object}
+  - `certificate`: {object}
+    - `privateKey`: (string) (required) Certificate private key.
+    - `certificateChain`: (string) (required) Certificate chain. May consist of one or more certificates.
 - `options`: {object}
   - `tlsMode`: (string) Desired TLS mode for the subdomain. (enum: default, passthrough)
   - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
@@ -88,13 +94,15 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
-  --data '{"name":"site"}' \
+  --data '{"name":"site","loadBalancer":"public","certificateValidationMethod":"dcv"}' \
   https://api.northflank.com/v1/domains/{domain}/subdomains
 ```
 
 ```javascript
 const payload = {
-  "name": "site"
+  "name": "site",
+  "loadBalancer": "public",
+  "certificateValidationMethod": "dcv"
 }
 
 const response = await fetch('https://api.northflank.com/v1/domains/{domain}/subdomains', {
@@ -115,7 +123,7 @@ import requests
 
 url = "https://api.northflank.com/v1/domains/{domain}/subdomains"
 
-payload = {"name":"site"}
+payload = {"name":"site","loadBalancer":"public","certificateValidationMethod":"dcv"}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PUT", url, headers = headers, json = payload)
@@ -136,7 +144,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/domains/{domain}/subdomains"
 
-  var jsonStr = []byte(`{"name":"site"}`)
+  var jsonStr = []byte(`{"name":"site","loadBalancer":"public","certificateValidationMethod":"dcv"}`)
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -199,7 +207,9 @@ Options:
 
 ```json
 {
-  "name": "site"
+  "name": "site",
+  "loadBalancer": "public",
+  "certificateValidationMethod": "dcv"
 }
 ```
 
@@ -229,7 +239,9 @@ await apiClient.put.domain.subdomain({
     "domain": "example.com"
   },
   data: {
-    "name": "site"
+    "name": "site",
+    "loadBalancer": "public",
+    "certificateValidationMethod": "dcv"
   }
 });
 ```

@@ -20,7 +20,7 @@ Connect your cloud provider and deploy a BYOC cluster with sandboxed node pools.
 
 ![Selecting sandbox technology when configuring node pools in the Northflank application](https://assets.northflank.com/documentation/v1/application/sandboxes/deploy-sandboxes-in-your-cloud/sandbox-technology.png)
 
-Runtime availability depends on your cloud provider and region.
+Runtime availability depends on your cloud provider and region. On AWS, microVM node pools require bare-metal instances or instance types that support nested virtualization configured with a [launch template](bring-your-own-cloud.md#use-aws-launch-templates-configure-nested-virtualization).
 
 - [Bring your own cloud to Northflank: Use all the features of the Northflank platform on other cloud hosting providers, with control over your own infrastructure.](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank)
 

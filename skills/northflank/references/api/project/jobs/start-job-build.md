@@ -29,6 +29,7 @@ OR
     - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
     - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
     - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: ^[a-zA-Z0-9-_]+$)
+    - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references. (min length: 1)
 
 **Response body:**
 
@@ -36,7 +37,7 @@ OR
 - `data`: {object}
   - `id`: (string) (required) ID of the build.
   - `branch`: (string) Name of the branch the built commit belongs to.
-  - `pullRequestId`: (number) ID of the pull request the commit belongs to. (format: float)
+  - `pullRequestId`: (multiple options) (string) | (integer)
   - `sha`: (string) The sha of the built commit.
   - `registry`: {object}
     - `uri`: (string) URI of that can be used to pull the image from the registry

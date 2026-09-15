@@ -1,9 +1,10 @@
 # Bring Your Own Cloud
 
-Generated from 16 application pages listed in `llms.txt`.
+Generated from 18 application pages listed in `llms.txt`.
 
 ## Pages
 
+- [Use AWS launch templates](#use-aws-launch-templates)
 - [Amazon Web Services on Northflank](#amazon-web-services-on-northflank)
 - [Microsoft Azure on Northflank](#microsoft-azure-on-northflank)
 - [BYOC and BYOK requirements](#byoc-and-byok-requirements)
@@ -16,10 +17,174 @@ Generated from 16 application pages listed in `llms.txt`.
 - [Deploy and scale node pools](#deploy-and-scale-node-pools)
 - [Deploy workloads to your cluster](#deploy-workloads-to-your-cluster)
 - [Google Cloud Platform on Northflank](#google-cloud-platform-on-northflank)
+- [Import an existing cluster (BYOK)](#import-an-existing-cluster-byok)
 - [Manage your cluster](#manage-your-cluster)
 - [Nebius on Northflank](#nebius-on-northflank)
 - [Oracle Cloud Infrastructure on Northflank](#oracle-cloud-infrastructure-on-northflank)
 - [Use other cloud providers with Northflank](#use-other-cloud-providers-with-northflank)
+
+## Use AWS launch templates
+
+Source: https://northflank.com/docs/v1/application/bring-your-own-cloud/aws-launch-templates.md
+
+You can use [AWS launch templates](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) to customise the EC2 instances Northflank provisions for node pools on your AWS clusters. You select a launch template when configuring a node pool, and the specifications in the template override some of the options selected for the node pool in Northflank.
+
+Common use cases for launch templates include:
+
+- [Configuring nested virtualization](bring-your-own-cloud.md#use-aws-launch-templates-configure-nested-virtualization) to run microVM workload isolation (Kata Containers) on eligible non-metal instance types, for example the `m8i` series
+
+- [Configuring node disks](bring-your-own-cloud.md#use-aws-launch-templates-configure-node-disks), such as volume type, IOPS, and throughput, or using local SSDs
+
+- [Configuring Capacity Blocks](bring-your-own-cloud.md#use-aws-launch-templates-configure-capacity-blocks) to reserve GPU nodes for a specific time period
+
+> [!note]
+> Custom AWS launch templates are available on [enterprise
+plans](../enterprise). Contact Northflank if the feature is not enabled on
+your account.
+
+### Use AWS launch templates: Configure Northflank permissions
+
+You must give Northflank permissions to use launch templates in your AWS integration. You can create a new integration, or update an existing integration by adding Custom Launch Templates to the desired features.
+
+For an existing integration, copy the updated AWS inline policy into your IAM role, then click Update in Northflank to save the integration changes. For a new integration, follow the instructions as normal.
+
+AWS launch templates permissions
+
+```
+ec2:DescribeLaunchTemplateVersions
+ec2:DescribeLaunchTemplates
+ec2:RunInstances
+```
+
+### Use AWS launch templates: Create a launch template
+
+Launch templates are region-specific, so create your launch template in the same region as your AWS cluster. You can create a launch template in your [EC2 dashboard in the AWS console](https://console.aws.amazon.com/ec2/), from the Launch templates page under instances:
+
+1. Click Create launch template and enter a name for the launch template
+
+2. Do not select an Amazon Machine Image unless Northflank has enabled custom AMI support for your account. Contact [support@northflank.com](mailto:support@northflank.com) if you require a custom AMI.
+
+3. Optionally, select an instance type. If selected, it will override the instance type that you specify for a node pool on Northflank.
+
+4. Under Storage (volumes), click Add new volume and configure the node boot disk. You must define at least one volume in the launch template:
+
+  - Set the [device name](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html) to exactly `/dev/xvda`. If you use a different device name, the volume will be attached as a secondary disk instead of replacing the boot disk.
+
+  - Enter a suitable size. We suggest `100 GiB` as a minimum. For larger instances, you may want to increase this.
+
+  - Select `gp3` as the volume type, or another volume type if your use case requires it
+
+  - Select Yes for Delete on termination
+
+  - Enable Encrypted if required
+
+5. Continue to the relevant section below and configure the options required for your use case: [nested virtualization](bring-your-own-cloud.md#use-aws-launch-templates-configure-nested-virtualization), [node disks](bring-your-own-cloud.md#use-aws-launch-templates-configure-node-disks), or [Capacity Blocks](bring-your-own-cloud.md#use-aws-launch-templates-configure-capacity-blocks)
+
+6. Click Create launch template
+
+![Adding a volume in an AWS launch template in the AWS console](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/aws-on-northflank/aws-launch-template-storage.png)
+
+The volume defined in the launch template will override the disk specified for a node pool on Northflank.
+
+> [!warning]
+> Do not configure the subnets, shutdown behaviour, or IAM instance profile in
+the launch template, as these are handled by Northflank. Configuring resources
+not mentioned in this guide may cause issues scheduling and managing nodes
+with Northflank. Learn more about [launch template configuration](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html)
+or contact [support@northflank.com](mailto:support@northflank.com) to discuss other use cases.
+
+### Use AWS launch templates: Configure nested virtualization
+
+You can enable nested virtualization to run workloads with [microVM isolation](sandboxes.md#deploy-sandboxes-in-your-cloud) (Kata Containers) on eligible non-metal instance types.
+
+Bare metal instances support microVM workloads without a launch template. Non-metal instance types that support nested virtualization, for example the `m8i`, `c8i`, `r8i`, and `m7i` families, can run microVM workloads only when their node pool uses a launch template with nested virtualization enabled. See the [AWS documentation on nested virtualization](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-ec2-nested-virtualization.html) for the full list of supported instance types.
+
+> [!warning]
+> At the time of writing (September 2026), AWS is investigating a hypervisor
+issue observed on virtualized `m8i` instances running approximately 50–60 or
+more nested VMs on one node. The issue can cause the EC2 instance to reboot,
+restarting workloads on that node. Until AWS confirms a fix and supported
+density, spread microVM workloads across more nodes and avoid approaching this
+density. Contact [support@northflank.com](mailto:support@northflank.com) for guidance on high-density
+deployments.
+
+First, complete the [common launch template configuration](bring-your-own-cloud.md#use-aws-launch-templates-create-a-launch-template), including the required node boot volume. Then, in your launch template:
+
+1. Select an instance type that supports nested virtualization, for example `m8i.2xlarge`. This will override the instance type you select on the node pool in Northflank.
+
+2. Under Advanced details, locate Nested virtualization and set the field to Enabled
+
+All instance types that can be provisioned in a node pool must support nested virtualization for microVM workloads to be schedulable on the pool.
+
+You can configure the sandbox technology for your workloads globally in your cluster settings, or for specific workloads using tags. See [deploy sandboxes in your cloud](sandboxes.md#deploy-sandboxes-in-your-cloud) for more information.
+
+### Use AWS launch templates: Configure node disks
+
+Use a launch template to customise node storage beyond the options available in Northflank, for example to configure provisioned IOPS and throughput.
+
+Configure the volume in your launch template as described [above](bring-your-own-cloud.md#use-aws-launch-templates-create-a-launch-template), and select the volume type, size, IOPS, and throughput as required.
+
+#### Use AWS launch templates: Use local SSDs
+
+To use the local NVMe SSDs of instance types that have them as node storage, configure the node to combine them into a RAID0 array. Under Advanced details, locate the User data input box and enter:
+
+```
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="==BOUNDARY=="
+
+--==BOUNDARY==
+Content-Type: application/node.eks.aws
+
+---
+apiVersion: node.eks.aws/v1alpha1
+kind: NodeConfig
+spec:
+  instance:
+    localStorage:
+      strategy: RAID0
+
+--==BOUNDARY==--
+```
+
+Local NVMe storage is ephemeral: data on the instance store is lost when a node is stopped, replaced, or terminated, and RAID0 provides no redundancy. Do not use it for persistent application data.
+
+### Use AWS launch templates: Configure Capacity Blocks
+
+You can use launch templates to take advantage of [Capacity Blocks for ML training](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html), which allow you to reserve GPU nodes for a specific time period at a known price, up to 8 weeks in advance.
+
+First, complete the [common launch template configuration](bring-your-own-cloud.md#use-aws-launch-templates-create-a-launch-template), including the required node boot volume. Then select an instance type that matches the reserved instances. Under purchasing options, choose Capacity Blocks and enter your Capacity Block reservation ID. See the [EKS documentation on Capacity Blocks](https://docs.aws.amazon.com/eks/latest/userguide/ml-node-groups.html) for more information.
+
+![Choosing a Capacity Block for an AWS launch template in the AWS console](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/aws-on-northflank/aws-launch-template-capacity-blocks.png)
+
+Capacity Block reservations are zonal: configure your node pool with the availability zone and instance type of the reservation.
+
+Nodes will not join the node pool until the date and time of the capacity reservation. If you create the node pool before the reservation becomes active, set the node count to `0` and scale the pool up when the reservation becomes active. Otherwise, provisioning nodes will fail until the reservation is active.
+
+EKS begins draining nodes and scales the node pool to zero 40 minutes before the reservation expires. EC2 begins terminating instances 30 minutes before expiry. Checkpoint or move workloads before draining begins. If your cluster has no other node pools with nodes that these workloads can schedule on, they will remain unscheduled until the required capacity is added.
+
+### Use AWS launch templates: Use a launch template in Northflank
+
+To use a launch template, select an existing AWS cluster on Northflank, or [create a new one](bring-your-own-cloud.md#amazon-web-services-on-northflank-create-a-cluster). Configure the cluster as normal with a node pool for system components, and any other required node pools.
+
+Create a new node pool and [configure it as normal](bring-your-own-cloud.md#deploy-and-scale-node-pools), selecting the node type, disk size, and availability zone. Then expand the Advanced section:
+
+1. Locate AWS launch template configuration
+
+2. Select the launch template created earlier from the drop-down
+
+3. Select the launch template version. Updating a launch template in AWS creates a new version. Existing node pools keep using the version they were configured with.
+
+4. Update the scheduling rules, if required, for example to reserve the pool for specific workloads
+
+![Creating a node pool with an AWS launch template in the Northflank application](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/aws-on-northflank/node-pool-launch-template.png)
+
+When the node pool is created, the launch template's instance type and boot volume configuration take precedence over the corresponding node pool selections. Other settings are applied subject to Amazon EKS restrictions.
+
+### Use AWS launch templates: Next steps
+
+- [Deploy node pools: Configure and deploy node pools on a Kubernetes cluster with Northflank.](bring-your-own-cloud.md#deploy-and-scale-node-pools)
+- [Deploy workloads to your cluster: Deploy services, jobs, and addons to your own cluster, and configure workloads to schedule on specific node pools.](bring-your-own-cloud.md#deploy-workloads-to-your-cluster)
+- [Run GPU workloads: Deploy GPU workloads on Northflank for AI, machine learning, HPC workloads, and other tasks.](gpu-workloads.md#gpus-on-northflank)
 
 ## Amazon Web Services on Northflank
 
@@ -227,7 +392,7 @@ You can select which subnets (and therefore availability zones) will host the co
 You can now configure the node pools for your cluster. Node pools can also be added, deleted, and updated after creating your cluster. Click add node pool to add another pool.
 
 > [!note] Minimum cluster requirements
-> Each cluster requires at least one node pool, and a combined minimum of 4 vCPU and 8GB memory across all node pools.
+> Each cluster requires at least one node pool, and a combined minimum of 8 vCPU and 16GB memory across all node pools.
 
 The number of pods that can be scheduled on each node is determined by networking and node scheduling limits.
 
@@ -313,59 +478,11 @@ You will need to create a cluster with a [custom VPC](bring-your-own-cloud.md#am
 
 You can then [create a project on your cluster](bring-your-own-cloud.md#deploy-workloads-to-your-cluster), and use [node pool labels and Northflank tags](bring-your-own-cloud.md#deploy-workloads-to-your-cluster-deploy-workloads-to-specific-node-pools) to schedule workloads to your private nodes.
 
-### Amazon Web Services on Northflank: Use AWS Launch Templates
+### Amazon Web Services on Northflank: Use AWS launch templates
 
-Northflank supports the use of [AWS Launch Templates](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) to specify cluster resources. You can use Launch Templates to take advantage of [capacity blocks for ML training](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html), which allow you to reserve GPU nodes for a specific time period at a known price, up to 8 weeks in advance.
+Northflank supports the use of AWS launch templates to customise the EC2 instances provisioned for node pools on your AWS clusters, for example to enable nested virtualization, configure node disks, or use Capacity Blocks.
 
-You can select a Launch Template when creating a node pool in an AWS cluster on Northflank. The specifications in the Launch Template will override some of the options selected for the node pool in Northflank.
-
-#### Amazon Web Services on Northflank: Configure Northflank permissions
-
-You must give Northflank permissions to use Launch Templates in your AWS integration. You can create a new integration, or update permissions for an existing integration by adding Custom Launch Templates to desired features.
-
-For an existing integration, update your IAM role by copying the new AWS inline policy then verify all permissions in Northflank. For a new integration, follow the instructions as normal.
-
-AWS Launch Templates permissions
-
-```
-ec2:DescribeLaunchTemplateVersions
-ec2:DescribeLaunchTemplates
-ec2:RunInstances
-```
-
-#### Amazon Web Services on Northflank: Create a Launch Template
-
-Launch templates are region-specific, you must create a Launch Template in the same region as your AWS cluster. You can create a Launch Template in your [EC2 dashboard in the AWS console](https://console.aws.amazon.com/ec2/), from the Launch Templates page under instances.
-
-Set a name and (optionally) a description, but do not select an Amazon Machine Image.
-
-You can then select an instance type. This is optional, if selected it will override the instance type that you specify for a node pool on Northflank. If you are using a capacity block, the instance type must match the reserved instances.
-
-![Selecting an instance for an AWS Launch Template in the AWS console](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/aws-on-northflank/aws-launch-template-instances.png)
-
-You must define at least one volume in the Launch Template, which will override the disk specified for a node pool on Northflank. Add a new volume under storage, set the [device name](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html) to exactly `/dev/xvda`. If you use a different device name, the volume will be attached as a secondary disk instead of replacing the boot disk. Choose the disk size and select yes for delete on termination. You can configure other options, such as disk encryption, as required.
-
-![Adding a volume in an AWS Launch Template in the AWS console](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/aws-on-northflank/aws-launch-template-storage.png)
-
-Next, select a purchasing option. Choose Capacity Blocks and enter your [capacity reservation targeted ID](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-create.html).
-
-![Choosing a Capacity Block for an AWS Launch Template in the AWS console](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/aws-on-northflank/aws-launch-template-capacity-blocks.png)
-
-Do not configure the machine image, subnets, shutdown behaviour or IAM profile in the Launch Template, as these are handled by Northflank. Finally, save your Launch template.
-
-Configuring resources not mentioned in this guide in a Launch Template may cause issues scheduling and managing nodes with Northflank. Learn more about [Launch Template configuration](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html), or contact [support@northflank.com](mailto:support@northflank.com) to discuss other use cases.
-
-#### Amazon Web Services on Northflank: Use a Launch Template
-
-To use a Launch Template, select an existing AWS cluster on Northflank, or [create a new one](bring-your-own-cloud.md#amazon-web-services-on-northflank-create-a-cluster). Configure the cluster as normal with a node pools for system components, and any other required node pools.
-
-Create a new node pool and [configure it as normal](https://northflank.com/docs/v1/application/deploy-and-scale-node-pools), selecting the node type, disk size, availability zone. Expand the advanced section and update the scheduling rules, if required. In the advanced section, select your Launch Template and version (updating the Launch Template will create a new version).
-
-![Creating a node pool with an AWS Launch Template in the Northflank application](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/aws-on-northflank/node-pool-launch-template.png)
-
-When you create your cluster, or add the new node pool, the Launch Template will override any configured fields.
-
-If you are using a capacity block nodes will not join the node pool until the date and time of the capacity reservation. At the end of the reservation period nodes will be removed from the node pool, you may want to gracefully terminate workloads before this happens. If your cluster has no other node pools with nodes that these workloads can schedule on, they will remain unscheduled until the required capacity is added.
+See [use AWS launch templates](bring-your-own-cloud.md#use-aws-launch-templates) for the use cases and setup instructions.
 
 ### Amazon Web Services on Northflank: Recommended configuration
 
@@ -410,29 +527,43 @@ After integrating your account, you can [create a new cluster](bring-your-own-cl
 
 ### Microsoft Azure on Northflank: Add your Azure account
 
-It is recommended that you create a new Azure Active Directory application to integrate with Northflank:
+> [!note] Requirements
+> You will need the following to get started:
+
+- **Microsoft Entra ID:** permission to register an application and create a client secret. These permissions are available by default in most tenants, or through the **Application Administrator** or **Cloud Application Administrator** role
+- **Azure subscription:** **Owner** or **User Access Administrator** access to the subscription you want to connect to Northflank.
+
+It is recommended that you create a new Microsoft Entra ID application to integrate with Northflank:
+
+#### Microsoft Azure on Northflank: Start the integration in Northflank
 
 1. Navigate to your Northflank account settings and open the clusters page
 
 2. [Create a new cloud provider integration](https://app.northflank.com/s/account/cloud/clusters/integrations/new/azure) and select Azure as the provider
 
-3. Open [Azure Portal](https://portal.azure.com/) and navigate to [Azure Entra ID](https://portal.azure.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/Overview)
+#### Microsoft Azure on Northflank: Register an application in Entra ID
 
-4. [Register a new application](https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app) with Azure AD from the add menu, or from the app registrations page. Copy the directory (tenant) ID and the application (client) ID to the Northflank form.
+The following steps require you to switch between Azure Portal and the Northflank integration form. As you create the application, copy the requested values from Azure Portal into the corresponding fields in Northflank.
 
-5. In your new application click the link for `managed application in local directory` (your application's name) and copy the application's object ID from properties to Northflank.
+1. Open [Azure Portal](https://portal.azure.com/) and navigate to [Microsoft Entra ID](https://portal.azure.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/Overview)
 
-6. Go back to your application overview and open the certificates and secrets page. Create a new client secret, and copy the secret value (not the secret ID) to Northflank.
+2. [Register a new application](https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app) with Microsoft Entra ID from the add menu, or from the app registrations page. Copy the directory (tenant) ID and the application (client) ID to the Northflank form.
 
-7. Navigate to [subscriptions](https://portal.azure.com/#view/Microsoft_Azure_Billing/SubscriptionsBlade) and select an existing subscription, or create a new one. For security, the subscription you use with Northflank should have only the necessary permissions allocated to it.
+3. In your new application click the link for `managed application in local directory` (your application's name) and copy the application's object ID from properties to Northflank.
 
-8. Open access control (IAM) and add a new role assignment to the subscription. Select the [contributor role](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) from privileged administrator roles.
+4. Go back to your application overview and open the certificates and secrets page. Create a new client secret, and copy the secret value (not the secret ID) to Northflank.
 
-9. Open the members page in the new role and assign access to `user, group, or service principle`. Select members and add your Active Directory application. You may need to start typing the name of your application for it to appear in the member selection menu.
+#### Microsoft Azure on Northflank: Grant the application access to your subscription
 
-10. Open resource providers in your subscription, search for and select the provider `Microsoft.ContainerService`. Click register to add the provider to the subscription.
+1. Navigate to [subscriptions](https://portal.azure.com/#view/Microsoft_Azure_Billing/SubscriptionsBlade) and select an existing subscription, or create a new one. For security, the subscription you use with Northflank should have only the necessary permissions allocated to it.
 
-11. Copy the subscription ID to Northflank and create the integration
+2. Open access control (IAM) and add a new role assignment to the subscription. Select the [contributor role](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) from privileged administrator roles.
+
+3. Open the members page in the new role and assign access to `user, group, or service principal`. Select members and add your Active Directory application. You may need to start typing the name of your application for it to appear in the member selection menu.
+
+4. Open resource providers in your subscription, search for and select the provider `Microsoft.ContainerService`. Click register to add the provider to the subscription.
+
+5. Copy the subscription ID to Northflank and create the integration
 
 You can now configure and deploy new clusters in your Azure account.
 
@@ -464,7 +595,7 @@ Enter a name for the cluster and select Azure as the cloud provider. Choose your
 You can now configure the node pools for your cluster. Node pools can also be added, deleted, and updated after creating your cluster. Click add node pool to add another pool.
 
 > [!note] Azure system node pool
-> Each cluster requires at least one node pool, and a combined minimum of 4 vCPU and 8GB memory across all node pools.
+> Each cluster requires at least one node pool, and a combined minimum of 8 vCPU and 16GB memory across all node pools.
 One node pool must be assigned as the system node pool to schedule non-user workloads. For best performance you should assign it more than one node and disable autoscaling.
 
 Each node can schedule up to 250 pods (minus system pods). The actual number of pods per node will usually be limited by resource requests and [request modifiers](bring-your-own-cloud.md#configure-your-cluster-configure-resources) for smaller nodes.
@@ -506,27 +637,35 @@ Before connecting your own cloud infrastructure or importing an existing Kuberne
 
 **BYOC (Bring Your Own Cloud)**: Northflank provisions and manages a new Kubernetes cluster in your cloud account (AWS, GCP, Azure, etc.).
 
-**BYOK (Bring Your Own Kubernetes)**: You import an existing Kubernetes cluster to be managed by Northflank.
+**BYOK (Bring Your Own Kubernetes)**: You import an existing Kubernetes cluster to be managed by Northflank. See [import an existing cluster (BYOK)](bring-your-own-cloud.md#import-an-existing-cluster-byok).
 
 ### BYOC and BYOK requirements: Resource requirements
 
-#### BYOC and BYOK requirements: BYOC minimum requirements
+#### BYOC and BYOK requirements: BYOC resource requirements
 
-| Resource | Per node | Per cluster |
+These minimum requirements are enforced when creating a cluster or updating its node pools.
+
+| Resource | Minimum | Recommended |
 | --- | --- | --- |
-| Nodes | - | 1 node minimum |
-| vCPUs | 4 vCPUs | 12 vCPUs |
-| Memory | 8 GB | 24 GB |
-| Ephemeral storage | 100 GB (recommended) | - |
+| Nodes | 1 | 3 or more |
+| vCPUs per node | 4 vCPUs | - |
+| Memory per node | 8 GB | - |
+| vCPUs per cluster | 8 vCPUs | 12 vCPUs or more |
+| Memory per cluster | 16 GB | 24 GB or more |
+| Ephemeral storage per node | - | 100 GB or more |
 
-#### BYOC and BYOK requirements: BYOK minimum requirements
+A single-node cluster must therefore use a node with at least 8 vCPUs and 16 GB memory. Clusters using self-hosted log storage require at least 12 vCPUs and 32 GB memory.
 
-| Resource | Per node | Per cluster |
+#### BYOC and BYOK requirements: BYOK resource requirements
+
+Northflank does not provision nodes on imported clusters (BYOK), so these requirements are not enforced. Treat them as guidance: below them, Northflank's system components may not have enough capacity to schedule alongside your workloads.
+
+| Resource | Minimum | Recommended |
 | --- | --- | --- |
-| Nodes | - | **3 nodes minimum** |
-| vCPUs | 4 vCPUs | 12 vCPUs |
-| Memory | 8 GB | 24 GB |
-| Ephemeral storage | 100 GB (recommended) | - |
+| Nodes | 1 | 3 or more |
+| vCPUs per node | 4 vCPUs | - |
+| Memory per node | 8 GB | - |
+| Ephemeral storage per node | - | 100 GB or more |
 
 #### BYOC and BYOK requirements: Optimization recommendations
 
@@ -536,7 +675,11 @@ Before connecting your own cloud infrastructure or importing an existing Kuberne
 
 ### BYOC and BYOK requirements: BYOK requirements
 
-If you're importing an existing Kubernetes cluster (BYOK), your cluster must have these components pre-installed and meet additional requirements.
+If you're importing an existing Kubernetes cluster (BYOK), your cluster must have these components pre-installed and meet additional requirements. See [import an existing cluster (BYOK)](bring-your-own-cloud.md#import-an-existing-cluster-byok) for the import process.
+
+#### BYOC and BYOK requirements: Kubernetes version
+
+Your cluster must run a supported Kubernetes version: currently `1.34` and `1.35`. Newer versions may work, but are not officially supported.
 
 #### BYOC and BYOK requirements: Required system components
 
@@ -544,9 +687,15 @@ Your cluster must have these components already installed:
 
 | Component | Requirement | Notes |
 | --- | --- | --- |
-| CNI plugin | Cilium | Required for networking |
+| CNI plugin | Cilium | Required for networking, see below for required configuration |
 | CSI driver | Any compatible driver | Required for persistent volumes and stateful workloads |
-| CoreDNS | Installed at `kube-system/coredns` | Existing installation may be replaced/reconfigured during import |
+| CoreDNS | Installed in `kube-system`, with the DNS `Service` named `kube-dns` (the Kubernetes default) | Replaced with Northflank's managed CoreDNS during import |
+
+The following Cilium flags must be enabled for L7 networking features (for example L7 network policies and port-level security policies):
+
+- `enable-l7-proxy: "true"`
+
+- `enable-envoy-config: "true"`
 
 **Note on Kube-DNS**: If you're currently using Kube-DNS instead of CoreDNS, contact Northflank support before importing your cluster.
 
@@ -572,37 +721,13 @@ Ensure the following components are **NOT** pre-installed on your cluster (excep
 
 - Promtail
 
-- Grafana
-
 - RuntimeClass resources (except those required by your provider)
 
 If these components exist before import, the installation process may fail due to conflicting resources.
 
 ### BYOC and BYOK requirements: Import process and installation
 
-During the BYOK import process, Northflank installs several system components:
-
-**Networking:**
-
-- CoreDNS + configuration
-
-- Istio service mesh
-
-- Envoy Gateway
-
-**Logging and metrics:**
-
-- Prometheus
-
-- Promtail
-
-- Grafana
-
-**Runtime:**
-
-- RuntimeClass resources
-
-These components are essential for Northflank to manage your cluster and provide observability, networking, and runtime capabilities.
+See [import an existing cluster (BYOK)](bring-your-own-cloud.md#import-an-existing-cluster-byok) for a walkthrough of the import process, the components Northflank installs on your cluster, and the split of responsibilities between Northflank and you.
 
 ### BYOC and BYOK requirements: Important warnings
 
@@ -701,7 +826,7 @@ Enter a name for the cluster and select Civo as the cloud provider. Choose your 
 You can now configure the node pools for your cluster. Node pools can also be added, deleted, and updated after creating your cluster. Click add node pool to add another pool.
 
 > [!note] Minimum cluster requirements
-> Each cluster requires at least one node pool, and a combined minimum of 4 vCPU and 8GB memory across all node pools.
+> Each cluster requires at least one node pool, and a combined minimum of 8 vCPU and 16GB memory across all node pools.
 
 Each node can schedule up to 256 pods (minus system pods). The actual number of pods per node will usually be limited by resource requests and [request modifiers](bring-your-own-cloud.md#configure-your-cluster-configure-resources) for smaller nodes.
 
@@ -1222,6 +1347,10 @@ To create a workload identity:
 
 3. **Provider**: Select the cloud provider (AWS or GCP)
 
+Set Priority to an integer from `0` to `100`. The default is `10`.
+
+Northflank uses priority to choose between matching identities for each cloud provider. See the [selection rules, including precedence for linked addons](bring-your-own-cloud.md#configure-workload-identity-selection-priority).
+
 #### Configure workload identity: Integration
 
 1. **Credential name**: Select your cloud provider integration
@@ -1316,53 +1445,64 @@ Or click **Create** to save the configuration without installing.
 
 ### Configure workload identity: Update workload identity
 
-To change permissions for an existing workload identity:
+To change an existing workload identity:
 
-1. Navigate to [**Cloud** → **Workload identities**](https://app.northflank.com/s/team/cloud/workload-identities)
+1. Open [Cloud → Workload identities](https://app.northflank.com/s/team/cloud/workload-identities).
 
-2. Select the workload identity
+2. Select the workload identity.
 
-3. Update the permission details
+3. Change its Priority, project and tag restrictions, or permission details.
 
-4. Choose how to save:
+4. Save the changes with the appropriate control below.
 
-  - Click **Update** to save changes without applying them immediately
+| Change | Save control |
+| --- | --- |
+| Priority or project and tag restrictions | Update |
+| Permissions for a managed role | Update and install |
 
-  - Click **Update and install** to save and apply changes immediately
+Priority and restriction changes do not require you to reinstall cloud permissions.
 
-**When to use "Update and install":**
+For managed roles, Update and install saves changes and starts installation in your cloud account. For example, Northflank creates or updates the IAM role and policy for a managed AWS role.
 
-- Required when you change permissions (IAM policy document or permissions list)
+If you select only Update after changing managed permissions, Northflank saves the changes but does not install them.
 
-- Not needed when only changing project or tag restrictions
+#### Configure workload identity: Apply a change in identity selection
 
-When you update and install, Northflank creates or updates these resources in your cloud environment:
+Changing priority or restrictions can select a different identity and change the cloud permissions available to a workload on its next deployment.
 
-- IAM role
+Before restarting a workload, inspect its selected identity on the Workload identities page.
 
-- IAM role policy
-
-**Note:** If you only click **Update** after changing permissions, changes are saved but not applied to workloads until you install later.
+If a service shows Restart required, restart it to apply the selected identity configuration. For jobs, New configuration pending means that new runs use the selected identities. Running jobs retain the configuration from when they started.
 
 ### Configure workload identity: View active workload identities
 
-To see which workload identities are being used by a service or job:
+On your service or job, select Workload identities in the sidebar.
 
-1. Navigate to your service or job
+The page shows matching identities and marks the selected identity for each cloud provider. Each entry includes:
 
-2. Click **Workload identities** in the sidebar
-
-The page displays:
-
-- Active workload identity name and description
+- Workload identity name and description
 
 - Cloud provider (e.g., Amazon Web Services, Google Cloud Platform)
 
-- Provider integration link
+- Source: provider integration or linked external addon
+
+- Priority
 
 - Creation date
 
-**Note:** If multiple workload identities match a workload (via project and tag rules), only one identity per cloud provider will be used. Northflank selects the first one alphabetically by name. For example, if both `aws-prod` and `aws-s3-access` match, `aws-prod` will be used.
+#### Configure workload identity: Selection priority
+
+Northflank selects one eligible identity per cloud provider. The selection follows these rules:
+
+1. Identities from linked external addons take precedence over identities matched through project and tag restrictions.
+
+2. Within each source, the identity with the highest priority wins.
+
+3. If priorities match, Northflank selects the first identity alphabetically by name.
+
+For two AWS identities matched through project and tag restrictions, `aws-s3-access` at priority `20` takes precedence over `aws-prod` at `10`. If both use `10`, Northflank selects `aws-prod`.
+
+An identity from a linked external addon still takes precedence over a project or tag match with a higher priority.
 
 #### Configure workload identity: Injected credentials
 
@@ -1467,6 +1607,12 @@ Verify both project and tag restrictions are properly configured:
 - If both are enabled, the workload must satisfy BOTH rules
 
 - If "Force matching all tags" is enabled, the workload must have ALL specified tags
+
+#### Configure workload identity: A different identity is selected
+
+If multiple identities match, compare their [selection priority](bring-your-own-cloud.md#configure-workload-identity-selection-priority). Identities from linked external addons take precedence for the same provider. Otherwise, the highest priority wins, with alphabetical order for ties.
+
+If running containers still use a previous identity, follow the [instructions to apply the change](bring-your-own-cloud.md#configure-workload-identity-apply-a-change-in-identity-selection).
 
 ### Configure workload identity: Next steps
 
@@ -1603,7 +1749,7 @@ You can now configure the node pools for your cluster. Node pools can also be ad
 ![Create a nodepool for your cluster](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/coreweave/cluster-nodepool.png)
 
 > [!note] Minimum cluster requirements
-> Each cluster requires at least one node pool, and a combined minimum of 4 vCPU and 8GB memory across all node pools.
+> Each cluster requires at least one node pool, and a combined minimum of 8 vCPU and 16GB memory across all node pools.
 
 Each node can schedule up to 256 pods (minus system pods). The actual number of pods per node will usually be limited by resource requests and [request modifiers](bring-your-own-cloud.md#configure-your-cluster-configure-resources) for smaller nodes.
 
@@ -2085,7 +2231,7 @@ The Google project ID field will be automatically filled based on the provided c
 You can now configure the node pools for your cluster. Node pools can also be added, deleted, and updated after creating your cluster. Click add node pool to add another pool.
 
 > [!note] Minimum cluster requirements
-> Each cluster requires at least one node pool, and a combined minimum of 4 vCPU and 8GB memory across all node pools.
+> Each cluster requires at least one node pool, and a combined minimum of 8 vCPU and 16GB memory across all node pools.
 
 Each node can schedule up to 256 pods (minus system pods). The actual number of pods per node will usually be limited by resource requests and [request modifiers](bring-your-own-cloud.md#configure-your-cluster-configure-resources) for smaller nodes.
 
@@ -2111,6 +2257,241 @@ GCP currently provides no way to provision private nodes. All nodes on GCP clust
 
 - [Configure your Kubernetes cluster: Manage your clusters on other cloud providers using Northflank.](bring-your-own-cloud.md#configure-your-cluster)
 - [Deploy node pools: Configure and deploy node pools on a Kubernetes cluster with Northflank.](bring-your-own-cloud.md#deploy-and-scale-node-pools)
+- [Deploy workloads to your cluster: Deploy services, jobs, and addons to your own cluster, and configure workloads to schedule on specific node pools.](bring-your-own-cloud.md#deploy-workloads-to-your-cluster)
+- [Run GPU workloads: Deploy GPU workloads on Northflank for AI, machine learning, HPC workloads, and other tasks.](gpu-workloads.md#gpus-on-northflank)
+
+## Import an existing cluster (BYOK)
+
+Source: https://northflank.com/docs/v1/application/bring-your-own-cloud/import-an-existing-cluster-byok.md
+
+You can import an existing Kubernetes cluster (BYOK, bring your own Kubernetes) to deploy and manage workloads on it with Northflank. Northflank installs its system components on your cluster and manages workloads, networking, and observability, while you retain control of the underlying cluster and infrastructure.
+
+BYOK differs from [bring your own cloud (BYOC)](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank), where Northflank provisions and manages a new Kubernetes cluster in your cloud account. With BYOK you are responsible for provisioning and operating the cluster itself, see [managed by Northflank vs. managed by you](bring-your-own-cloud.md#import-an-existing-cluster-byok-managed-by-northflank-vs-managed-by-you).
+
+Cluster import is enabled by default for most accounts. If the `Import Cluster (BYOK)` option is not available on your account, [contact Northflank](https://northflank.com/contact).
+
+> [!warning]
+> **We strongly recommend importing a new, dedicated cluster.** Do not import
+clusters that run production workloads or business-critical applications, or
+that are shared with other systems or teams. The installation may fail and
+leave the cluster in an unhealthy state, and there is currently no full
+deinstallation process.
+
+### Import an existing cluster (BYOK): Cluster requirements
+
+Before importing a cluster, make sure it meets the [BYOK requirements](bring-your-own-cloud.md#byoc-and-byok-requirements-byok-requirements). In summary, your cluster must:
+
+- Run a supported Kubernetes version: currently `1.34` and `1.35`. Newer versions may work, but are not officially supported.
+
+- Have at least 1 node, with 3 or more nodes recommended for high availability. Each node should have at least 4 vCPU and 8 GB memory.
+
+- Use Cilium as its CNI plugin. We recommend a recent version. The following Cilium flags must be enabled for L7 networking features (for example L7 network policies and port-level security policies):
+
+  - `enable-l7-proxy: "true"`
+
+  - `enable-envoy-config: "true"`
+
+- Have a CSI driver installed that supports persistent volumes
+
+- Have CoreDNS installed in `kube-system`, with the DNS `Service` named `kube-dns` (the Kubernetes default). Northflank replaces the CoreDNS installation with its own managed CoreDNS during import.
+
+- Have its Kubernetes API reachable from the Northflank control plane
+
+- Be able to provision external, public IPs for `LoadBalancer` services (L4 load balancers)
+
+- Not have any of the following installed, as these are installed by Northflank during import:
+
+  - Istio
+
+  - Envoy Gateway
+
+  - Prometheus
+
+  - Promtail
+
+  - Custom RuntimeClass resources
+
+If your cluster doesn't meet some of these requirements, or your provider requires custom configuration, [contact Northflank support](https://northflank.com/contact).
+
+### Import an existing cluster (BYOK): Add your cluster credentials to Northflank
+
+Navigate to `Cloud → Provider links → Create provider link` and select `Import Cluster (BYOK)` as the provider type. Or use the direct link:
+
+> [!note]
+> [Click here](https://app.northflank.com/s/account/cloud/integrations/new/byok) to create a new BYOK integration.
+In the credentials section, upload the kubeconfig file for your cluster.
+
+Your kubeconfig file must:
+
+- Contain exactly one context, cluster, and user, with a valid current context. The context must not specify a namespace.
+
+- Include the authentication token directly. Kubeconfig files that rely on authentication helpers are not supported.
+
+- Authenticate as a user with `cluster-admin` permissions on the cluster
+
+- Contain a token that is valid for long enough to complete the integration setup. We recommend a TTL of at least 1 hour.
+
+When you create the integration, Northflank connects to your cluster and creates a dedicated service account in the `kube-system` namespace with a `cluster-admin` role binding. Northflank uses this service account to manage your cluster from then on, so the token in your kubeconfig file only needs to remain valid until the integration is created. Do not delete the service account created by Northflank, as this will break access to your cluster.
+
+You can edit the integration at any time to upload a new kubeconfig file, if required.
+
+> [!note]
+> An integration can only be used to import one cluster. Create a new
+integration for each cluster you want to import.
+
+### Import an existing cluster (BYOK): Import your cluster
+
+Navigate to `Cloud → Clusters → Create cluster` and select `Import Cluster (BYOK)` as the provider. Or use the direct link:
+
+> [!note]
+> [Click here](https://app.northflank.com/s/account/cloud/clusters/new/byok) to import a cluster.
+Enter a name for the cluster and choose the integration for the cluster you want to import. Enter the region your cluster is deployed in, for example `us-east-1`. The region is an informational label used for display purposes.
+
+You can optionally enter geographic coordinates (latitude and longitude) for your cluster. These are used by CDN geo-routing to determine the nearest backend, and are required to use the cluster as a backend for geo-routed subdomains.
+
+#### Import an existing cluster (BYOK): Configure storage
+
+Click Detect available storage configurations to fetch the storage classes and snapshot classes available on your cluster.
+
+You can then define the storage and snapshot classes Northflank should use when provisioning volumes and addons on your cluster. For each storage class definition:
+
+- Select the Kubernetes storage class it maps to, and optionally a default snapshot class
+
+- Enter a name (display name), ID (used as reference in specs and templates), and description
+
+- Configure the available access modes and enable capabilities: expansion (increase volume size after provisioning) and snapshots (point-in-time snapshotting of volumes)
+
+- Select the supported resources (addons, volumes, build cache)
+
+- Optionally configure minimum, maximum, and suggested volume sizes
+
+> [!note]
+> The storage configuration cannot be changed after the cluster has been
+imported.
+
+#### Import an existing cluster (BYOK): Configure node pools
+
+Node pools on an imported cluster map your cluster's existing nodes to pools in Northflank, they do not provision any nodes. You choose one node label key for the whole cluster, and each pool claims one value of that label: a node belongs to the pool whose value matches its label.
+
+Set the **node pool cluster label identifier** to the label key to match nodes by. You can use a label your Kubernetes provider already applies to nodes to identify its node pools or groups, or label your nodes yourself, for example with `node.northflank.com/node-pool-id`.
+
+For each node pool, set the **node pool cluster ID label value** to the label value that assigns nodes to it. Enable **fall back default node pool** on exactly one pool: nodes that don't match any defined node pool are assigned to it.
+
+The **node pool user ID** identifies the pool when interacting with Northflank through the API, CLI, and infrastructure-as-code. It doesn't affect how nodes are matched.
+
+> [!note] Example node pool mapping
+> With the node pool cluster label identifier set to `node.northflank.com/node-pool-id`, you could define these pools:
+
+| Node pool user ID | Node pool cluster ID label value | Fall back default node pool |
+| --- | --- | --- |
+| `workers` | `worker-pool` | yes |
+| `gpu` | `gpu-pool` | no |
+A node labelled `node.northflank.com/node-pool-id=gpu-pool` is assigned to the pool `gpu`. Nodes with any other value, or without the label, are assigned to the fall back default node pool `workers`.
+
+For each pool you can also configure:
+
+- Whether the pool consists of spot instances
+
+- GPU settings, if the pool consists of GPU nodes: GPU type, memory, and count, and optionally time slicing
+
+- Scheduling rules and labels (advanced)
+
+If your cluster has GPU node pools, you can choose whether Northflank should handle GPU driver installation. This is a cluster-level setting that applies to all GPU node pools.
+
+Node pools can be added, edited, and removed after importing your cluster.
+
+#### Import an existing cluster (BYOK): Start the import
+
+When you create the cluster, Northflank will begin installing system components on your cluster (see [what Northflank installs](bring-your-own-cloud.md#import-an-existing-cluster-byok-what-northflank-installs)).
+
+The cluster will show as `Installing` and transition to `Ready` once the installation has completed and your cluster is ready to deploy workloads. Installation is expected to take a few minutes, typically around 5 minutes.
+
+### Import an existing cluster (BYOK): What Northflank installs
+
+During the import process, Northflank installs the system components required to manage your cluster and provide networking, observability, and runtime capabilities:
+
+- **Networking**: CoreDNS configuration, Istio service mesh, Envoy Gateway, and certificates for Northflank-managed domains
+
+- **Logging and metrics**: Prometheus, Promtail, Prometheus adapter, and metrics exporters
+
+- **Platform**: Northflank platform services
+
+- **Runtime**: RuntimeClass resources, and the GPU device plugin if Northflank-managed GPU driver installation is enabled
+
+Northflank installs its components into namespaces it creates (`northflank-*`, `istio-system`, `envoy-gateway-system`, `opentelemetry`) and into `kube-system`, where it replaces an existing CoreDNS installation with its own managed CoreDNS and reconfigures the `kube-dns` service to route to it.
+
+Northflank does not install or modify:
+
+- Your CNI plugin (Cilium): your existing installation is used as-is
+
+- Your CSI driver and storage classes: Northflank only uses the storage classes you configure during import
+
+These components are managed by Northflank after import. Do not modify or uninstall them, or any other resources in Northflank-managed namespaces, as this can leave your cluster in an unhealthy state.
+
+### Import an existing cluster (BYOK): Managed by Northflank vs. managed by you
+
+With an imported cluster (BYOK), more of the cluster lifecycle remains your responsibility than with a cluster provisioned by Northflank (BYOC).
+
+| Area | BYOK | BYOC |
+| --- | --- | --- |
+| Cluster provisioning | You | Northflank |
+| Kubernetes control plane & version upgrades | You | Northflank |
+| Node provisioning, scaling, and OS updates | You | Northflank |
+| CNI (Cilium) installation and upgrades | You | Northflank |
+| CSI driver, storage classes, and upgrades | You | Northflank |
+| System components installed by Northflank ([see list](bring-your-own-cloud.md#import-an-existing-cluster-byok-what-northflank-installs)) | Northflank | Northflank |
+| Workload orchestration and deployment | Northflank | Northflank |
+| Cloud resources and billing | You | You |
+
+As Northflank does not provision infrastructure for imported clusters, node pools are not autoscaled: you are responsible for scaling your cluster's nodes to match your workloads.
+
+Some Northflank platform features are not available on imported clusters, including:
+
+- Node pool autoscaling
+
+- Workload identity
+
+- Static egress IPs
+
+- Self-hosted log storage
+
+These features may still work if your cluster or infrastructure supplies them, but Northflank does not set them up or manage them.
+
+When you delete an imported cluster in Northflank, Northflank removes its ingress load balancers. Volume snapshots are not deleted. Other installed system components remain on the cluster, and the cluster itself and its infrastructure are never deleted.
+
+> [!warning]
+> Unless volume cleanup is disabled in the cluster settings (`cleanupVolumes`,
+enabled by default), deleting an imported cluster also deletes all persistent
+volume claims in all namespaces on the cluster, all StatefulSets and all pods
+without an owner (even if they don't reference a persistent volume claim), and
+all Deployments, DaemonSets, and Jobs that reference a persistent volume
+claim. This includes volumes and workloads not managed by Northflank.
+
+We strongly recommend not running anything besides Northflank-managed workloads on an imported cluster.
+
+### Import an existing cluster (BYOK): Getting help
+
+[Contact Northflank support](https://northflank.com/contact) if:
+
+- The `Import Cluster (BYOK)` option is not available on your account
+
+- Your cluster doesn't meet some of the [requirements](bring-your-own-cloud.md#byoc-and-byok-requirements-byok-requirements), or uses Kube-DNS instead of CoreDNS
+
+- Your provider requires custom configuration, for example specific annotations on `Service` resources to provision L4 load balancers
+
+- Storage detection or the import fails, or times out
+
+- You need assistance during or after the import process
+
+### Import an existing cluster (BYOK): Next steps
+
+> [!note]
+> Parts of the linked guides apply to clusters provisioned by Northflank (BYOC).
+On imported clusters, node provisioning, scaling, and deletion behaviour
+differ, see [managed by Northflank vs. managed by
+you](#managed-by-northflank-vs-managed-by-you).
+
+- [Configure your Kubernetes cluster: Manage your clusters on other cloud providers using Northflank.](bring-your-own-cloud.md#configure-your-cluster)
 - [Deploy workloads to your cluster: Deploy services, jobs, and addons to your own cluster, and configure workloads to schedule on specific node pools.](bring-your-own-cloud.md#deploy-workloads-to-your-cluster)
 - [Run GPU workloads: Deploy GPU workloads on Northflank for AI, machine learning, HPC workloads, and other tasks.](gpu-workloads.md#gpus-on-northflank)
 
@@ -2392,7 +2773,7 @@ Select the subnets for the load balancer and the Kubernetes API you want to use 
 You can now configure the node pools for your cluster. Node pools can also be added, deleted, and updated after creating your cluster. Click add node pool to add another pool.
 
 > [!note] Minimum cluster requirements
-> Each cluster requires at least one node pool, and a combined minimum of 4 vCPU and 8GB memory across all node pools.
+> Each cluster requires at least one node pool, and a combined minimum of 8 vCPU and 16GB memory across all node pools.
 
 Each node can schedule up to 256 pods (minus system pods). The actual number of pods per node will usually be limited by resource requests and [request modifiers](bring-your-own-cloud.md#configure-your-cluster-configure-resources) for smaller nodes.
 
@@ -2428,6 +2809,8 @@ You can bring your own cloud to use all the features of the Northflank platform 
 Connect your account with Northflank to create and manage Kubernetes clusters in your own cloud account, and gain complete control of your infrastructure, data storage, security, and auditing.
 
 You will use your existing billing relationship with your cloud provider for all resources consumed by your clusters. See [cloud provider billing](https://northflank.com/docs/v1/application/billing/cloud-provider-billing) for more information.
+
+You can also import an existing Kubernetes cluster to be managed by Northflank, see [import an existing cluster (BYOK)](bring-your-own-cloud.md#import-an-existing-cluster-byok).
 
 > [!note]
 > [Click here](https://app.northflank.com/s/account/cloud/clusters) to start deploying into your cloud account.

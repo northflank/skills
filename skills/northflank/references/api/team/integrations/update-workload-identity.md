@@ -20,6 +20,7 @@ Required permission: Account > Cloud > WorkloadIdentities > Update
 
 {object}
 - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
+- `priority`: (integer) The priority used to select a workload identity for each provider.
 - `updatedAt`: (string) time of update (format: date-time)
 - `createdAt`: (string) time of creation (format: date-time)
 - `spec`: {object}
@@ -120,6 +121,7 @@ Required permission: Account > Cloud > WorkloadIdentities > Update
   - `id`: (string) (required) ID of the workload identity (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
+  - `priority`: (integer) The priority used to select a workload identity for each provider.
   - `spec`: {object}
     - `providerLinkId`: (string) (required) The internal ID of the BYOC provider integration to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `roleMode`: (string) (required) (enum: managed, existing)
@@ -183,12 +185,13 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
-  --data '{"spec":{"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}}' \
+  --data '{"priority":10,"spec":{"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}}' \
   https://api.northflank.com/v1/workload-identities/{workloadIdentityId}
 ```
 
 ```javascript
 const payload = {
+  "priority": 10,
   "spec": {
     "restrictions": {
       "projects": {
@@ -220,7 +223,7 @@ import requests
 
 url = "https://api.northflank.com/v1/workload-identities/{workloadIdentityId}"
 
-payload = {"spec":{"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}}
+payload = {"priority":10,"spec":{"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PATCH", url, headers = headers, json = payload)
@@ -241,7 +244,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/workload-identities/{workloadIdentityId}"
 
-  var jsonStr = []byte(`{"spec":{"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}}`)
+  var jsonStr = []byte(`{"priority":10,"spec":{"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}}`)
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -269,6 +272,7 @@ func main() {
   "data": {
     "id": "example-workload-identity",
     "name": "Example Workload Identity",
+    "priority": 10,
     "spec": {
       "restrictions": {
         "projects": {
@@ -306,6 +310,7 @@ Options:
 
 ```json
 {
+  "priority": 10,
   "spec": {
     "restrictions": {
       "projects": {
@@ -328,6 +333,7 @@ Options:
 {
   "id": "example-workload-identity",
   "name": "Example Workload Identity",
+  "priority": 10,
   "spec": {
     "restrictions": {
       "projects": {
@@ -355,6 +361,7 @@ await apiClient.update.workloadIdentities({
   },
   options: {},
   data: {
+    "priority": 10,
     "spec": {
       "restrictions": {
         "projects": {
@@ -379,6 +386,7 @@ await apiClient.update.workloadIdentities({
   "data": {
     "id": "example-workload-identity",
     "name": "Example Workload Identity",
+    "priority": 10,
     "spec": {
       "restrictions": {
         "projects": {

@@ -18,6 +18,7 @@ Required permission: Account > Cloud > WorkloadIdentities > Update
   - `id`: (string) (required) ID of the workload identity (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
+  - `priority`: (integer) The priority used to select a workload identity for each provider.
   - `spec`: {object}
     - `providerLinkId`: (string) (required) The internal ID of the BYOC provider integration to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `roleMode`: (string) (required) (enum: managed, existing)
@@ -82,6 +83,7 @@ POST /v1/teams/{teamId}/workload-identities/{workloadIdentityId}/install
   "data": {
     "id": "example-workload-identity",
     "name": "Example Workload Identity",
+    "priority": 10,
     "spec": {
       "restrictions": {
         "projects": {

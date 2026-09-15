@@ -24,7 +24,7 @@ Required permission: Project > Services > General > Read
 {object}
 - `data`: {object}
   - `pullRequests`: [array of] {object}
-     - `id`: (integer) (required) ID number of the pull request.
+     - `id`: (multiple options) (integer) | (string)
      - `state`: (string) (required) Status of the pull request.
      - `title`: (string) (required) Title of the pull request.
      - `source`: (string) (required) Name of the branch the pull request is merging from.
@@ -53,7 +53,6 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/pull-requests
   "data": {
     "pullRequests": [
       {
-        "id": 1,
         "state": "OPEN",
         "title": "Add new feature handling",
         "source": "feature/new-feature",
@@ -101,7 +100,6 @@ Options:
 {
   "pullRequests": [
     {
-      "id": 1,
       "state": "OPEN",
       "title": "Add new feature handling",
       "source": "feature/new-feature",
@@ -140,7 +138,6 @@ await apiClient.get.service.pullRequests({
   "data": {
     "pullRequests": [
       {
-        "id": 1,
         "state": "OPEN",
         "title": "Add new feature handling",
         "source": "feature/new-feature",
