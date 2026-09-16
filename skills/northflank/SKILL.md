@@ -417,10 +417,10 @@ JS client / CLI equivalents: `apiClient.list.plans({})` / `apiClient.list.region
 
 Format: `nf-compute-<cpu*100>-<ram_gb>` (newer, explicit) or `nf-compute-<cpu*100>` (legacy, RAM implied). Common picks:
 
-- `nf-compute-10` — 0.1 vCPU / 256 MB (~$2.70/mo) — sidecars, light workers
-- `nf-compute-50` — 0.5 vCPU / 1 GB (~$12/mo) — small APIs, cron jobs
-- `nf-compute-200` — 2 vCPU / 4 GB (~$48/mo) — typical production service
-- `nf-compute-400-16` — 4 vCPU / 16 GB (~$144/mo) — also valid as `buildPlan`
+- `nf-compute-10` — 0.1 vCPU / 256 MB (~\$2.70/mo) — sidecars, light workers
+- `nf-compute-50` — 0.5 vCPU / 1 GB (~\$12/mo) — small APIs, cron jobs
+- `nf-compute-200` — 2 vCPU / 4 GB (~\$48/mo) — typical production service
+- `nf-compute-400-16` — 4 vCPU / 16 GB (~\$144/mo) — also valid as `buildPlan`
 
 `buildPlan` only accepts plans with 4+ vCPU and defaults to `nf-compute-400-16` if omitted. See [references/plans.md](references/plans.md) for all 20 SKUs.
 
