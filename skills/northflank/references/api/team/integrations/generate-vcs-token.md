@@ -21,7 +21,7 @@ Required permission: Account > Git > Tokens > Read
 
 {object}
 - `data`: {object}
-  - `vcsService`: (string) (required) VCS provider the token belongs to. (enum: bitbucket, gitlab, github, self-hosted, azure)
+  - `vcsService`: (string) (required) VCS provider the token belongs to. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
   - `installationId`: (integer) Installation ID of the GitHub installation the token belongs to (GitHub only)
   - `installationToken`: (string) Installation token (GitHub only).
   - `token`: (string) (required) OAuth token.

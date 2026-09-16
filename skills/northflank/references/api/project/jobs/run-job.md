@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/jobs/run-job.md
 
 Starts a new job run for the given job
 
-Required permission: Project > Jobs > General > Read
+Required permission: Project > Jobs > General > Run Job
 
 **Path parameters:**
 
@@ -17,7 +17,7 @@ Required permission: Project > Jobs > General > Read
 {object}
 - `runtimeEnvironment`: {object}
 - `runtimeFiles`: {object}
-- `dockerSecretMounts`: {object}
+- `dockerSecretMounts`: (undefined)
 - `billing`: {object}
   - `deploymentPlan`: (string) The ID of the deployment plan override to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `deployment`: (multiple options) {object}
@@ -36,6 +36,12 @@ Required permission: Project > Jobs > General > Read
      - `ephemeralStorage`: {object}
        - `storageSize`: (integer) Ephemeral storage per container in MB
      - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
+   - `gpu`: {object}
+     - `enabled`: (boolean) Whether GPUs are enabled for this workload.
+     - `configuration`: {object}
+       - `gpuType`: (string) (required) The type of GPU to use.
+       - `gpuCount`: (integer) The number of GPUs to allocate.
+       - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `internal`: {object}
      - `id`: (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
      - `branch`: (string) Branch to deploy
@@ -56,6 +62,12 @@ Required permission: Project > Jobs > General > Read
      - `ephemeralStorage`: {object}
        - `storageSize`: (integer) Ephemeral storage per container in MB
      - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
+   - `gpu`: {object}
+     - `enabled`: (boolean) Whether GPUs are enabled for this workload.
+     - `configuration`: {object}
+       - `gpuType`: (string) (required) The type of GPU to use.
+       - `gpuCount`: (integer) The number of GPUs to allocate.
+       - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `external`: {object}
      - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
      - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
@@ -81,7 +93,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}}}' \
+  --data '{"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}}}' \
   https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/runs
 ```
 
@@ -93,12 +105,6 @@ const payload = {
   },
   "runtimeFiles": {
     "/dir/fileName": {
-      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
-      "encoding": "utf-8"
-    }
-  },
-  "dockerSecretMounts": {
-    "example-secret-mount_1": {
       "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
       "encoding": "utf-8"
     }
@@ -142,7 +148,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/runs"
 
-payload = {"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}}}
+payload = {"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -163,7 +169,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/runs"
 
-  var jsonStr = []byte(`{"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}}}`)
+  var jsonStr = []byte(`{"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -227,12 +233,6 @@ Options:
       "encoding": "utf-8"
     }
   },
-  "dockerSecretMounts": {
-    "example-secret-mount_1": {
-      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
-      "encoding": "utf-8"
-    }
-  },
   "billing": {
     "deploymentPlan": "nf-compute-20"
   },
@@ -285,12 +285,6 @@ await apiClient.start.job.run({
     },
     "runtimeFiles": {
       "/dir/fileName": {
-        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
-        "encoding": "utf-8"
-      }
-    },
-    "dockerSecretMounts": {
-      "example-secret-mount_1": {
         "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
         "encoding": "utf-8"
       }

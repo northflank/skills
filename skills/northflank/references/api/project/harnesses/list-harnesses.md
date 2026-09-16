@@ -18,7 +18,7 @@ Required permission: Project > Harnesses > General > Read
 - `page`: (integer) The page number to access.
 - `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
 - `projectUrl`: (string) If provided, only returns harnesses whose source repository URL matches this value.
-- `projectType`: (string) If provided, only returns harnesses whose source VCS provider matches this value. (enum: bitbucket, gitlab, github, self-hosted, azure)
+- `projectType`: (string) If provided, only returns harnesses whose source VCS provider matches this value. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
 - `projectBranch`: (string) If provided, only returns harnesses whose source branch matches this value.
 
 **Response body:**
@@ -32,7 +32,7 @@ Required permission: Project > Harnesses > General > Read
      - `tags`: [array of] (string)
      - `description`: (string) A short description of the harness.
      - `harness`: {object}
-       - `type`: (string) (required) The harness environment type. (enum: codex, claude, pi, none)
+       - `type`: (string) (required) The harness environment type. (enum: codex, claude, pi, opencode, cursor, none)
      - `source`: {object}
        - `projectUrl`: (string) URL of the git repository pre-pulled into the harness environment.
        - `projectType`: (string) The VCS provider of the harness source.

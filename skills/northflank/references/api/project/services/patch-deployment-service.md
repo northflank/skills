@@ -77,6 +77,7 @@ Required permission: Project > Services > General > Update
    - `containerSnapshot`: {object}
      - `restoreFrom`: (string) The successful container snapshot to restore the service from. (format: uuid)
      - `capture`: {object}
+       - `backupDestinationId`: (string) The backup destination for termination snapshots.
        - `onTermination`: (boolean) Creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts.
        - `retention`: {object}
          - `maxSnapshots`: (integer) The maximum number of termination snapshots retained for the service.
@@ -135,6 +136,7 @@ Required permission: Project > Services > General > Update
    - `containerSnapshot`: {object}
      - `restoreFrom`: (string) The successful container snapshot to restore the service from. (format: uuid)
      - `capture`: {object}
+       - `backupDestinationId`: (string) The backup destination for termination snapshots.
        - `onTermination`: (boolean) Creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts.
        - `retention`: {object}
          - `maxSnapshots`: (integer) The maximum number of termination snapshots retained for the service.
@@ -191,6 +193,7 @@ Required permission: Project > Services > General > Update
    - `containerSnapshot`: {object}
      - `restoreFrom`: (string) The successful container snapshot to restore the service from. (format: uuid)
      - `capture`: {object}
+       - `backupDestinationId`: (string) The backup destination for termination snapshots.
        - `onTermination`: (boolean) Creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts.
        - `retention`: {object}
          - `maxSnapshots`: (integer) The maximum number of termination snapshots retained for the service.
@@ -198,6 +201,7 @@ Required permission: Project > Services > General > Update
    - `name`: (string) (required) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8)
    - `internalPort`: (integer) (required) The port number.
    - `public`: (boolean) If true, the port will be exposed publicly.
+   - `vpcAccessible`: (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer.
    - `security`: {object}
      - `credentials`: [array of] {object}
          - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
@@ -215,6 +219,7 @@ Required permission: Project > Services > General > Update
        - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
        - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
        - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+       - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
        - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
      - `headers`: [array of] (multiple options) {object}
            - `regexMode`: (boolean)
@@ -257,6 +262,7 @@ Required permission: Project > Services > General > Update
                  - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                  - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                  - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                 - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                  - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                - `headers`: [array of] (multiple options) {object}
                      - `regexMode`: (boolean)
@@ -282,6 +288,7 @@ Required permission: Project > Services > General > Update
                  - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                  - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                  - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                 - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                  - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                - `headers`: [array of] (multiple options) {object}
                      - `regexMode`: (boolean)
@@ -360,6 +367,7 @@ Required permission: Project > Services > General > Update
      - `name`: (string) (required) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8)
      - `internalPort`: (integer) (required) The port number.
      - `public`: (boolean) If true, the port will be exposed publicly.
+     - `vpcAccessible`: (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer.
      - `security`: {object}
        - `credentials`: [array of] {object}
            - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
@@ -377,6 +385,7 @@ Required permission: Project > Services > General > Update
          - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
          - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
          - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+         - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
          - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
        - `headers`: [array of] (multiple options) {object}
              - `regexMode`: (boolean)
@@ -419,6 +428,7 @@ Required permission: Project > Services > General > Update
                    - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                    - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                    - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                   - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                    - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                  - `headers`: [array of] (multiple options) {object}
                        - `regexMode`: (boolean)
@@ -444,6 +454,7 @@ Required permission: Project > Services > General > Update
                    - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                    - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                    - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                   - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                    - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                  - `headers`: [array of] (multiple options) {object}
                        - `regexMode`: (boolean)
@@ -456,7 +467,7 @@ Required permission: Project > Services > General > Update
      - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
      - `advancedOptions`: {object}
        - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
-     - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+     - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
   - `runtimeEnvironment`: {object}
   - `runtimeFiles`: {object}
   - `healthChecks`: [array of] {object}
@@ -554,6 +565,7 @@ Required permission: Project > Services > General > Update
     - `containerSnapshot`: {object}
       - `restoreFrom`: (string) The successful container snapshot to restore the service from. (format: uuid)
       - `capture`: {object}
+        - `backupDestinationId`: (string) The backup destination for termination snapshots.
         - `onTermination`: (boolean) Creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts.
         - `retention`: {object}
           - `maxSnapshots`: (integer) The maximum number of termination snapshots retained for the service.
@@ -598,7 +610,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
-  --data '{"description":"A service description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id","internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}},"ports":[{"name":"p01","internalPort":8080,"public":true,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}}}' \
+  --data '{"description":"A service description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id","internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}}}' \
   https://api.northflank.com/v1/projects/{projectId}/services/deployment/{serviceId}
 ```
 
@@ -631,6 +643,7 @@ const payload = {
       "name": "p01",
       "internalPort": 8080,
       "public": true,
+      "vpcAccessible": false,
       "security": {
         "credentials": [
           {
@@ -811,7 +824,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/deployment/{serviceId}"
 
-payload = {"description":"A service description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id","internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}},"ports":[{"name":"p01","internalPort":8080,"public":true,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}}}
+payload = {"description":"A service description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id","internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PATCH", url, headers = headers, json = payload)
@@ -832,7 +845,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/deployment/{serviceId}"
 
-  var jsonStr = []byte(`{"description":"A service description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id","internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}},"ports":[{"name":"p01","internalPort":8080,"public":true,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}}}`)
+  var jsonStr = []byte(`{"description":"A service description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id","internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}}}`)
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -868,6 +881,7 @@ func main() {
         "name": "p01",
         "internalPort": 8080,
         "public": true,
+        "vpcAccessible": false,
         "security": {
           "credentials": [
             {
@@ -1139,6 +1153,7 @@ Options:
       "name": "p01",
       "internalPort": 8080,
       "public": true,
+      "vpcAccessible": false,
       "security": {
         "credentials": [
           {
@@ -1318,6 +1333,7 @@ Options:
       "name": "p01",
       "internalPort": 8080,
       "public": true,
+      "vpcAccessible": false,
       "security": {
         "credentials": [
           {
@@ -1579,6 +1595,7 @@ await apiClient.patch.service.deployment({
         "name": "p01",
         "internalPort": 8080,
         "public": true,
+        "vpcAccessible": false,
         "security": {
           "credentials": [
             {
@@ -1760,6 +1777,7 @@ await apiClient.patch.service.deployment({
         "name": "p01",
         "internalPort": 8080,
         "public": true,
+        "vpcAccessible": false,
         "security": {
           "credentials": [
             {

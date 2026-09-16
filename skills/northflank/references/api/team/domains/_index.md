@@ -20,6 +20,7 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 | **Get subdomain path** | `GET /v1/domains/{domain}/subdomains/{subdomain}/paths/{subdomainPath}`<br>`GET /v1/teams/{teamId}/domains/{domain}/subdomains/{subdomain}/paths/{subdomainPath}` | [get-subdomain-path.md](get-subdomain-path.md) |
 | **Get subdomain** | `GET /v1/domains/{domain}/subdomains/{subdomain}`<br>`GET /v1/teams/{teamId}/domains/{domain}/subdomains/{subdomain}` | [get-subdomain.md](get-subdomain.md) |
 | **Import domain certificate** | `POST /v1/domains/{domain}/import`<br>`POST /v1/teams/{teamId}/domains/{domain}/import` | [import-domain-certificate.md](import-domain-certificate.md) |
+| **Import subdomain certificate** | `POST /v1/domains/{domain}/subdomains/{subdomain}/certificate/import`<br>`POST /v1/teams/{teamId}/domains/{domain}/subdomains/{subdomain}/certificate/import` | [import-subdomain-certificate.md](import-subdomain-certificate.md) |
 | **List domains** | `GET /v1/domains`<br>`GET /v1/teams/{teamId}/domains` | [list-domains.md](list-domains.md) |
 | **List subdomain paths** | `GET /v1/domains/{domain}/subdomains/{subdomain}/paths`<br>`GET /v1/teams/{teamId}/domains/{domain}/subdomains/{subdomain}/paths` | [list-subdomain-paths.md](list-subdomain-paths.md) |
 | **Purge CDN cache for a subdomain** | `POST /v1/domains/{domain}/subdomains/{subdomain}/cdn/purge`<br>`POST /v1/teams/{teamId}/domains/{domain}/subdomains/{subdomain}/cdn/purge` | [purge-cdn-cache-for-a-subdomain.md](purge-cdn-cache-for-a-subdomain.md) |

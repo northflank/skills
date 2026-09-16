@@ -82,7 +82,7 @@ The CLI `northflank login` flow supports generating tokens from organisation rol
 
 ### Grant API access: Next steps
 
-- [Create a team and invite members: Create a team and invite members to collaborate on projects.](collaborate.md#create-a-team)
+- [Create a team and invite members: Create a team and invite members to collaborate on projects.](collaborate.md#create-and-manage-a-team)
 - [Configure role-based access control: Grant granular permissions and manage users with roles for teams and organisations.](secure.md#use-role-based-access-control)
 
 ## Inject secrets
@@ -362,13 +362,45 @@ The scope will define when your secrets are inherited by services and jobs: at b
 
 ### Manage secret groups: Restrict secrets
 
-You can restrict these secrets to specific services or jobs within your project from the group settings page of a secret group.
+Use Group settings to restrict a secret group to services, jobs, tags, or [environments](release.md#set-up-environments) within the project.
 
-Secrets from an unrestricted group will be inherited by all services or jobs within the project that use the type of secret set in the group. Secrets that have been restricted to specific services or jobs will only be inherited by the selected services and jobs that use the type of secret set in the group.
+The [group scope](secure.md#manage-secret-groups-secret-group-scope) controls whether workloads receive build arguments, runtime variables, or both.
+
+| Restrictions | Workloads that receive the group's values |
+| --- | --- |
+| Disabled | All applicable services and jobs in the project |
+| Enabled, with no selections | None |
+| Selected services or jobs | Those resources |
+| Selected tags | Resources that match the tag rule |
+| Selected environments | Services and jobs assigned to those environments |
+| Combined selections | Resources that match any resource, tag, or environment selection |
 
 #### Manage secret groups: Restrict by tag
 
-You can also make secret groups available to resources with [selected tags](release.md#tag-workloads-and-resources), in addition to specific services and jobs. You can combine restrictions to specific resources with restrictions by tag, so that both the selected resources and resources with the chosen tags will inherit secrets from the group.
+You can grant access to resources with [selected tags](release.md#tag-workloads-and-resources). By default, a resource needs any selected tag. Enable Force matching all tags to require every selected tag.
+
+This control applies only to tag matching. Explicitly selected resources and resources in selected environments receive the values independently.
+
+#### Manage secret groups: Restrict by environment
+
+Select existing environments in the same project, such as staging or production.
+
+> [!important]
+> To restrict access to selected environments only, clear the service, job, and tag selections. Other selections grant access independently.
+
+1. Open the secret group's Group settings page.
+
+2. Enable Restrict secret group.
+
+3. Select environments under Apply secrets to specific environments.
+
+4. Select Update settings.
+
+For example, selecting `staging` and the `api` tag grants access to staging workloads and production workloads tagged `api`.
+
+Deleting a selected environment removes it from the restrictions. Other matching criteria still grant access.
+
+Saving the group configuration does not restart workloads. Restart services or start new job runs to apply updated runtime variables.
 
 ### Manage secret groups: Group priority
 
@@ -533,8 +565,8 @@ These features are only effective combined with best practices. Below are common
 You can enable single sign-on to authenticate to Northflank using another service. It is recommended that you add multi-factor authentication to your Northflank account. Teams can enforce members to use multi-factor authentication, and organisations can use directory sync to manage members and their permissions.
 
 - [Sign-on security: Log-in using single sign-on authentication, and add multi-factor authentication to your account.](secure.md#enable-single-sign-on-and-multi-factor-authentication)
-- [Manage team security: Enforce multi-factor authentication and configure RBAC and API access for your team members.](collaborate.md#create-a-team-manage-team-security)
-- [Manage your organisation on Northflank: Manage users, security, billing, and multiple teams with a Northflank organisation.](collaborate.md#manage-an-organisation)
+- [Manage team security: Enforce multi-factor authentication and configure RBAC and API access for your team members.](collaborate.md#create-and-manage-a-team-manage-team-security)
+- [Create and manage an organisation on Northflank: Create and manage users, security, billing, and multiple teams with a Northflank organisation.](collaborate.md#create-and-manage-an-organisation)
 
 ### Security on Northflank: Access control
 
@@ -743,7 +775,7 @@ You can manage user roles on an organisational level to ensure compliance with y
 
 #### Use role-based access control: Directory groups
 
-If you have [enabled directory sync](collaborate.md#manage-an-organisation-sync-your-directory), you can select directory groups to associate with the role. Users in the directory groups will be assigned the role, and the role will be removed from users if they are removed from the directory group.
+If you have [enabled directory sync](collaborate.md#create-and-manage-an-organisation-sync-your-directory), you can select directory groups to associate with the role. Users in the directory groups will be assigned the role, and the role will be removed from users if they are removed from the directory group.
 
 #### Use role-based access control: Organisation permissions
 
@@ -767,5 +799,5 @@ You can configure the project-level permissions that users with this role have, 
 
 ### Use role-based access control: Next steps
 
-- [Create a team and invite members: Create a team and invite members to collaborate on projects.](collaborate.md#create-a-team)
+- [Create a team and invite members: Create a team and invite members to collaborate on projects.](collaborate.md#create-and-manage-a-team)
 - [Grant API access: Create API roles to grant access to the Northflank API, with granular permissions.](secure.md#grant-api-access)

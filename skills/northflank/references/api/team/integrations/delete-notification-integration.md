@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/delete-notification
 
 Deletes a notification integration
 
-Required permission: Account > Observability > Notifications > Create
+Required permission: Account > Observability > Notifications > Delete
 
 **Path parameters:**
 

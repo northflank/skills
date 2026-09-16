@@ -12,8 +12,9 @@ Required permission: Account > Networking > Domains > Create
 - `domain`: (string) (required) The domain name to register. (pattern: ^((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+$)
 - `redirect`: {object}
   - `mode`: (string) Domain redirect mode to be used. (enum: wildcard, default)
-  - `region`: (string) Northflank PaaS region the wildcard redirect should be pointed at.
+  - `region`: (multiple options) (multiple options) (undefined)
   - `cluster`: (string) BYOC cluster the wildcard redirect should be pointed at.
+- `loadBalancer`: (string) Load balancer all subdomains of this domain route through. Only applies to wildcard-redirect domains. `vpc` requires a self-hosted cluster with the private load balancer enabled. Fixed at creation. (enum: public, vpc)
 - `options`: {object}
   - `autoVerify`: (boolean) The domain will be automatically verified on creation. Only configurable if the relevant feature flag is enabled for you account.
   - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for wildcard domains. Only applicable for wildcard-redirect domains with wildcard certificates. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
@@ -39,6 +40,7 @@ Required permission: Account > Networking > Domains > Create
     - `mode`: (string) (required) Domain redirect mode.
     - `target`: {object}
       - `record`: (string) Expected CNAME target of the wildcard redirect.
+  - `loadBalancer`: (string) Load balancer all subdomains of this domain route through. Only applies to wildcard-redirect domains. `vpc` requires a self-hosted cluster with the private load balancer enabled. Fixed at creation. (enum: public, vpc)
   - `certificates`: {object}
     - `mode`: (string) (required) Domain certificate mode.
     - `dcvRecord`: (string) DCV CNAME record used to provision wildcard certificates.
@@ -64,7 +66,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"domain":"example.com","redirect":{"mode":"default"},"certificates":{"mode":"default"}}' \
+  --data '{"domain":"example.com","redirect":{"mode":"default"},"loadBalancer":"public","certificates":{"mode":"default"}}' \
   https://api.northflank.com/v1/domains
 ```
 
@@ -74,6 +76,7 @@ const payload = {
   "redirect": {
     "mode": "default"
   },
+  "loadBalancer": "public",
   "certificates": {
     "mode": "default"
   }
@@ -97,7 +100,7 @@ import requests
 
 url = "https://api.northflank.com/v1/domains"
 
-payload = {"domain":"example.com","redirect":{"mode":"default"},"certificates":{"mode":"default"}}
+payload = {"domain":"example.com","redirect":{"mode":"default"},"loadBalancer":"public","certificates":{"mode":"default"}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -118,7 +121,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/domains"
 
-  var jsonStr = []byte(`{"domain":"example.com","redirect":{"mode":"default"},"certificates":{"mode":"default"}}`)
+  var jsonStr = []byte(`{"domain":"example.com","redirect":{"mode":"default"},"loadBalancer":"public","certificates":{"mode":"default"}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -151,6 +154,7 @@ func main() {
     "redirect": {
       "mode": "default"
     },
+    "loadBalancer": "public",
     "certificates": {
       "mode": "default"
     }
@@ -188,6 +192,7 @@ Options:
   "redirect": {
     "mode": "default"
   },
+  "loadBalancer": "public",
   "certificates": {
     "mode": "default"
   }
@@ -207,6 +212,7 @@ Options:
   "redirect": {
     "mode": "default"
   },
+  "loadBalancer": "public",
   "certificates": {
     "mode": "default"
   }
@@ -226,6 +232,7 @@ await apiClient.create.domain({
     "redirect": {
       "mode": "default"
     },
+    "loadBalancer": "public",
     "certificates": {
       "mode": "default"
     }
@@ -247,6 +254,7 @@ await apiClient.create.domain({
     "redirect": {
       "mode": "default"
     },
+    "loadBalancer": "public",
     "certificates": {
       "mode": "default"
     }

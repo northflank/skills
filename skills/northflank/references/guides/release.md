@@ -1,9 +1,10 @@
 # Release
 
-Generated from 15 application pages listed in `llms.txt`.
+Generated from 16 application pages listed in `llms.txt`.
 
 ## Pages
 
+- [Set up canary rollouts](#set-up-canary-rollouts)
 - [CI/CD on Northflank](#cicd-on-northflank)
 - [Configure workflows](#configure-workflows)
 - [Manage CI/CD](#manage-cicd)
@@ -19,6 +20,182 @@ Generated from 15 application pages listed in `llms.txt`.
 - [Set up environments](#set-up-environments)
 - [Set up preview blueprints](#set-up-preview-blueprints)
 - [Tag workloads and resources](#tag-workloads-and-resources)
+
+## Set up canary rollouts
+
+Source: https://northflank.com/docs/v1/application/release/canary-rollouts.md
+
+Canary rollouts let you release a new version of a service progressively. Traffic shifts gradually between the current version and the new version, letting you observe its behavior under real traffic before it serves all users.
+
+A rollout is controlled by a canary rollout strategy. Strategies are created at the team level and attached to deployment or combined services. When a service with a strategy deploys a new version, the new version starts alongside the current version and receives only the traffic share defined by the strategy. You then progress the rollout manually by adjusting the traffic split until you promote the canary to serve all traffic or roll back to the previous version.
+
+> [!note]
+> [Click here](https://app.northflank.com/s/account/cloud/gradual-rollouts) to view your team's canary rollout strategies.
+
+### Set up canary rollouts: Create a rollout strategy
+
+1. Navigate to **Cloud** in your team dashboard
+
+2. Click **Canary rollouts** under **Other resources**
+
+3. Click **Create new canary rollout strategy**
+
+4. Enter a strategy name
+
+5. Choose the canary rollout type
+
+6. Choose the canary strategy type:
+
+  - **Percentage split**: Routes a fixed percentage of requests to the canary version. For example, 10% canary and 90% stable routes approximately one in ten requests to the new version.
+
+  - **Header split**: Routes requests by matching HTTP headers instead of proportion. For example, requests with `x-variant: canary` go to the new version, and `x-variant: stable` go to the current one.
+
+7. Set the traffic split or header routing based on the canary strategy type selected
+
+8. (Optional) Configure strategy options:
+
+  - **Block deployment on active rollout**: Prevents new deployments from being triggered while a canary rollout is in progress. When enabled, you must promote or roll back the current rollout before deploying a new version.
+
+  - **Triggers**: Select which release sources automatically start a rollout (Template, Release flow, CD, UI, API)
+
+9. Click **Create canary rollout strategy**
+
+Your strategy is now available to attach to services.
+
+### Set up canary rollouts: Attach a strategy to a service
+
+A strategy has no effect until it is attached to a service. You can attach a strategy when creating a service or add one to an existing service.
+
+**When creating a service:**
+
+1. Under **Resources**, expand **Advanced resource options** during service creation
+
+2. Select a rollout strategy under **Canary rollout strategy**
+
+3. Create the service
+
+**In an existing service:**
+
+1. Navigate to your service dashboard
+
+2. Under **Run**, select **Resources**
+
+3. Expand **Advanced resource options**
+
+4. Select a rollout strategy under **Canary rollout strategy**
+
+5. Click **Update & restart**
+
+The next deployment will start as a rollout using your strategy's traffic split.
+
+**Remove a strategy from a service:**
+
+1. Navigate to your service dashboard
+
+2. Under **Run**, select **Resources**
+
+3. Expand **Advanced resource options**
+
+4. Under **Canary rollout strategy**, deselect the strategy
+
+5. Click **Update & restart**
+
+The service will deploy new versions normally, without canary rollouts.
+
+### Set up canary rollouts: Progress a rollout
+
+When a new version is deployed to a service with a strategy attached, the rollout is managed from the service's deployments page. The page shows the stable version, the canary version, and the amount of traffic each version is receiving.
+
+Rollouts do not advance automatically. You decide when to increase traffic to the canary based on what you see in your [metrics](observe.md#view-metrics), [logs](observe.md#view-logs), and your own application monitoring.
+
+#### Set up canary rollouts: Increase traffic to the canary
+
+Update the traffic percentages on the deployments page to shift more traffic to the canary, then save your changes. Traffic is rebalanced without redeploying either version.
+
+Increase traffic in steps that suit your release plan. For example, you might move from 10% to 25%, then 50%, observing the canary at each stage before continuing.
+
+#### Set up canary rollouts: Promote the canary
+
+When you are satisfied with the canary, promote it to make it the only version running.
+
+All traffic moves to the new version and the previous stable version is removed, ending the rollout.
+
+#### Set up canary rollouts: Roll back
+
+If the canary is not behaving as expected, roll back to move all traffic back to the previous stable version and end the rollout.
+
+The canary version is removed and the service continues serving the previous stable version.
+
+### Set up canary rollouts: Manage rollout strategies
+
+#### Set up canary rollouts: Edit a strategy
+
+1. Navigate to **Cloud** in your team dashboard
+
+2. Click **Canary rollouts** under **Other resources**
+
+3. Select the strategy you want to edit
+
+4. Edit the name, traffic split, or options
+
+5. Click **Save changes**
+
+Changes apply to new rollouts started after the update and do not affect rollouts that are already in progress.
+
+#### Set up canary rollouts: Delete a strategy
+
+> [!note]
+> You cannot delete a strategy while any service using it has an ongoing rollout. Once there are no ongoing rollouts, deleting the strategy detaches it from all services using it. Those services will continue running, but future deployments will no longer use canary rollouts.
+
+1. Navigate to **Cloud** in your team dashboard
+
+2. Click **Canary rollouts** under **Other resources**
+
+3. Select the strategy you want to delete
+
+4. Click the **Delete** icon
+
+5. Confirm the deletion
+
+The strategy is removed from all services that were using it. Those services will deploy new versions normally without canary rollouts.
+
+### Set up canary rollouts: Use canary rollouts in templates
+
+You can also manage canary rollout strategies as code using [templates](infrastructure-as-code.md#infrastructure-as-code-on-northflank), allowing you to provision the strategy and attach it to services in the same template.
+
+#### Set up canary rollouts: Create a strategy in a template
+
+Use a [rollout strategy node](infrastructure-as-code.md#template-nodes-rollout-strategy) to create or update a canary rollout strategy in your team. As a team resource node, it does not require a project context to run.
+
+```json
+{
+  "kind": "RolloutStrategy",
+  "ref": "canary-strategy",
+  "spec": {
+    "name": "canary-10-percent",
+    "type": "canary",
+    "details": {
+      "canaryStrategy": "percentage",
+      "config": {
+        "canaryPercentage": 10,
+        "stablePercentage": 90
+      }
+    }
+  }
+}
+```
+
+#### Set up canary rollouts: Attach a strategy in a template
+
+Set `gradualRolloutStrategyId` in the `deployment` object of a [deployment service](infrastructure-as-code.md#template-nodes-deployment-service) or [combined service](infrastructure-as-code.md#template-nodes-combined-service) node to attach a strategy to the service.
+
+You can [reference](infrastructure-as-code.md#make-a-template-dynamic) a strategy created earlier in the same template, so the strategy and the services using it are created in a single run.
+
+### Set up canary rollouts: Next steps
+
+- [Set up preview blueprints: Create preview blueprints to automatically create preview environments for your branches and pull requests.](release.md#set-up-preview-blueprints)
+- [Manage preview blueprints: Manage active previews, manually create test environments, and configure automatic cleanup.](release.md#manage-preview-blueprints)
+- [Run migrations: Run database migrations and update your deployments simultaneously when you update your schema.](release.md#run-migrations)
 
 ## CI/CD on Northflank
 
@@ -396,6 +573,8 @@ Continuous deployment can be enabled on combined services, deployment services, 
 
 You can enable and disable CD using the toggle in the header of the service or job.
 
+If you want new versions to reach your users progressively rather than all at once, you can attach a [canary rollout strategy](release.md#set-up-canary-rollouts) to a service and shift traffic to the new version as you monitor it.
+
 > [!note] CD override
 > CD will be automatically disabled if a build is deployed manually, or via a [template](infrastructure-as-code.md#infrastructure-as-code-on-northflank) or [release flow](https://northflank.com/docs/v1/application/release/configure-a-release-flow).
 
@@ -427,6 +606,7 @@ You can configure a job to run automatically when the source image is changed, i
 
 - [Set up a pipeline and release flow: Manage your deployments and release your updates in an intuitive pipeline with release flows.](release.md#create-a-pipeline-and-release-flow)
 - [Configure a release flow: Learn how to use the visual editor or code to configure a release flow.](release.md#configure-a-release-flow)
+- [Use canary rollouts: Release new versions progressively by shifting traffic between the stable and canary versions of your service.](release.md#set-up-canary-rollouts)
 
 ## Manage preview blueprints
 
@@ -2256,6 +2436,8 @@ Click on a workflow and click **view runs**.
 
 This displays a list of previous and current workflow runs and their status. You can also see when the workflow was run, and when it was completed.
 
+Open a run to inspect its nodes. When View diff is available, you can [inspect and download recorded resource changes](infrastructure-as-code.md#run-a-template-view-resource-changes).
+
 #### Run and manage workflows: Node statuses
 
 Pending: the node or workflow will run when previous steps are executed successfully
@@ -2281,6 +2463,7 @@ The workflow will execute again with the same configuration and arguments as the
 
 ### Run and manage workflows: Next steps
 
+- [Use canary rollouts: Release new versions progressively by shifting traffic between the stable and canary versions of your service.](release.md#set-up-canary-rollouts)
 - [Set up preview blueprints: Create preview blueprints to automatically create preview environments for your branches and pull requests.](release.md#set-up-preview-blueprints)
 - [Manage preview blueprints: Manage active previews, manually create test environments, and configure automatic cleanup.](release.md#manage-preview-blueprints)
 - [Run migrations: Run database migrations and update your deployments simultaneously when you update your schema.](release.md#run-migrations)
@@ -2452,6 +2635,8 @@ An environment will be created with a default name (e.g., `New environment 1`).
 3. Click the checkmark icon to save
 
 Your environment is now created. You can add workflows, services, jobs, and addons to it.
+
+You can [restrict secret groups to selected environments](secure.md#manage-secret-groups-restrict-by-environment) to share values with their services and jobs.
 
 ### Set up environments: Configure workflows in an environment
 

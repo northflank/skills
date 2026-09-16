@@ -167,13 +167,42 @@ Northflank currently supports GitLab Enterprise/Community Edition.
 
 ### Build code from a self-hosted VCS: Add a self-hosted VCS
 
-To add a self-hosted VCS navigate to the Git section, underneath integrations on the team settings page, click 'add a self-hosted VCS' and select the type of VCS you would like to integrate. Follow the application specific instructions to integrate your self-hosted VCS. You can choose how team members can access the repositories on the self-hosted VCS after adding it to Northflank.
+You can connect a self-hosted Git service to Northflank if your repositories are hosted on your own infrastructure.
+
+> [!note]
+> [Click here](https://app.northflank.com/s/account/integrations/vcs) to add a self-hosted VCS.
+
+1. In your team dashboard, click **Integrations**.
+
+2. Click **Git**.
+
+3. Click **Add a self-hosted VCS**.
+
+4. Enter a name for the VCS.
+
+5. Select the VCS type.
+
+6. Enter the **VCS provider URL** and **Application ID**.
+
+7. Enter the **Secret**.
+
+8. Click **Submit**.
+
+After connecting your self-hosted VCS, you can configure how team members can use it.
 
 #### Build code from a self-hosted VCS: Add a self-hosted GitLab instance
 
-Navigate to your GitLab service and create a new OAuth application at `[YOUR URL]/profile/applications` or `[YOUR URL]/admin/applications` if you are an administrator. Give the application the `api` scope and set the `Redirect URI` as specified on Northflank.
+To connect a self-hosted GitLab instance, first create an OAuth application in GitLab.
 
-On Northflank enter the root domain of your self-hosted GitLab, e.g. `gitlab.yourdomain.com`, the `application ID` and the `secret` from the OAuth application.
+Create a new OAuth application at:
+
+- `[GIT_HOSTNAME]/profile/applications`
+
+- `[GIT_HOSTNAME]/admin/applications` if you are an administrator
+
+Give the application the `api` scope and set the **Redirect URI** as specified on Northflank.
+
+Save the OAuth application, then enter the **root domain** of your self-hosted GitLab instance, **Application ID**, and **Secret** in Northflank.
 
 ### Build code from a self-hosted VCS: Learn more
 

@@ -26,7 +26,7 @@ Required permission: Project > Jobs > General > Read
   - `builds`: [array of] {object}
      - `id`: (string) (required) ID of the build.
      - `branch`: (string) Name of the branch the built commit belongs to.
-     - `pullRequestId`: (number) ID of the pull request the commit belongs to. (format: float)
+     - `pullRequestId`: (multiple options) (string) | (integer)
      - `status`: (string) The status of the build. (enum: QUEUED, PENDING, UNSCHEDULABLE, STARTING, CLONING, BUILDING, UPLOADING, ABORTED, FAILURE, SUBMISSION_FAILURE, SUCCESS, CRASHED, IN_PROGRESS)
      - `sha`: (string) The sha of the built commit.
      - `registry`: {object}

@@ -21,7 +21,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
   - `arguments`: {object}
   - `triggers`: [array of] {object}
      - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
-     - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+     - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
      - `selfHostedVcsId`: (string) If vcsService is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
      - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
      - `vcsLinkId`: (string)
@@ -37,7 +37,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
     - `concurrencyPolicy`: (string) Defines the concurrency behaviour of the template with respect to parallel runs. (enum: allow, queue, forbid, latest, replace)
     - `paused`: (boolean) If `true`, the template will not run when triggered by git.
   - `gitops`: {object}
-    - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+    - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
     - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
     - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
     - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
@@ -313,6 +313,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
            - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
            - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
            - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: ^[a-zA-Z0-9-_]+$)
+           - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references. (min length: 1)
        - `id`: (multiple options) (string) The id of object to build. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of object to build. (pattern: .*\${.*}.*)
        - `type`: (string) (required) The type of the object to build. (enum: service, job)
        - `sha`: (multiple options) (string) Commit sha to build. If not provided, builds the most recent relevant commit. (min length: 40) (max length: 40) | (string) A string containing one or more references that resolve to commit sha to build. If not provided, builds the most recent relevant commit. (pattern: .*\${.*}.*)
@@ -349,7 +350,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
        - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
        - `runtimeEnvironment`: (multiple options) {object} | (string) (pattern: .*\${.*}.*)
        - `runtimeFiles`: {object}
-       - `dockerSecretMounts`: {object}
+       - `dockerSecretMounts`: (undefined)
        - `billing`: {object}
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan override to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan override to use. (pattern: .*\${.*}.*)
        - `deployment`: (multiple options) {object}
@@ -368,6 +369,12 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
              - `ephemeralStorage`: {object}
                - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
              - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
+           - `gpu`: {object}
+             - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
+             - `configuration`: {object}
+               - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+               - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+               - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
            - `internal`: {object}
              - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
              - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
@@ -388,6 +395,12 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
              - `ephemeralStorage`: {object}
                - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
              - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
+           - `gpu`: {object}
+             - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
+             - `configuration`: {object}
+               - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+               - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+               - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
            - `external`: {object}
              - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
              - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
@@ -488,6 +501,13 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
                - `shell`: (string)
                - `user`: (string)
                - `group`: (string) | {object}
+         - `kind`: (string) (required) The kind of action. (enum: Domain)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of action. (enum: verify)
+             - `data`: {object}
+               - `domain`: (multiple options) (string) The domain to verify. (pattern: ^((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+$) | (string) A string containing one or more references that resolve to the domain to verify. (pattern: .*\${.*}.*)
+               - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*)
+             - `condition`: (string) (enum: verified) | {object}
          - `kind`: (string) (required) The kind of action. (enum: VCS)
          - `spec`: (multiple options) {object}
              - `type`: (string) (required) The type of action. (enum: createRepoFromSource)
@@ -586,6 +606,12 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
                - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
                - `serviceId`: (multiple options) (string) The id of the service to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the service to monitor. (pattern: .*\${.*}.*)
                - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*) | {object}
+         - `kind`: (string) (required) The kind of condition. (enum: Domain)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of condition. (enum: verified)
+             - `data`: {object}
+               - `domain`: (multiple options) (string) The domain to monitor. (pattern: ^((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+$) | (string) A string containing one or more references that resolve to the domain to monitor. (pattern: .*\${.*}.*)
+               - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*) | {object}
          - `kind`: (string) (required) The kind of condition. (enum: VCS)
          - `spec`: (multiple options) {object}
              - `type`: (string) (required) The type of condition. (enum: createRepoFromSourceSuccess)
@@ -615,7 +641,10 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
        - `startTime`: (integer) The timestamp of the initial attempt.
        - `endTime`: (integer) The timestamp of the final attempt.
        - `diff`: {object}
-       - `data`: (undefined) The response data of the Release node.
+       - `data`: {object}
+         - `buildSettings`: {object}
+           - `dockerfile`: {object}
+             - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
      - `spec`: {object}
        - `type`: (string) (required) (enum: build, deployment, registry)
        - `origin`: (multiple options) {object}
@@ -656,7 +685,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
      - `spec`: (multiple options) {object}
          - `kind`: (string) (required) The kind of message to send. (enum: VCS)
          - `spec`: {object}
-           - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+           - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
            - `repoUrl`: (multiple options) (string) URL of the Git repo to send this message to. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to send this message to. (pattern: .*\${.*}.*)
@@ -773,7 +802,7 @@ Required permission: Project > PreviewBlueprints > Runs > Abort
        - `diff`: {object}
        - `data`: (undefined) The response data of the RunTemplate node.
      - `spec`: {object}
-       - `templateType`: (string) (required) (enum: template, release-flow-template, preview-env-template, workflow, preview-blueprint, template-teardown, workflow-teardown, preview-blueprint-teardown)
+       - `templateType`: (string) (required) (enum: workflow, template)
        - `templateId`: (multiple options) (multiple options) (string) The id of the workflow to run. (pattern: ^((?<projectId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)\/)?(?<internalId>[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?)$) (min length: 3) (max length: 79) | (string) A string containing one or more references that resolve to the id of the workflow to run. (pattern: .*\${.*}.*) | (multiple options) (string) The id of the template to run. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the template to run. (pattern: .*\${.*}.*)
        - `arguments`: {object}
          - `variables`: [array of] {object}

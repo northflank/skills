@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/use-the-api.md
 
 The Northflank API allows you to interact with every Northflank feature and all your resources using HTTP requests.
 
-The API is available at [https://api.northflank.com/v1/](https://api.northflank.com/v1/). Before using the API you'll need to [sign up](https://app.northflank.com/signup), and if you're using Northflank with others, [create a team](../guides/collaborate.md#create-a-team). You'll also need to [link a Git service](../guides/getting-started.md#link-your-git-account) (if you want to build code from your private Git repositories).
+The API is available at [https://api.northflank.com/v1/](https://api.northflank.com/v1/). Before using the API you'll need to [sign up](https://app.northflank.com/signup), and if you're using Northflank with others, [create a team](../guides/collaborate.md#create-and-manage-a-team). You'll also need to [link a Git service](../guides/getting-started.md#link-your-git-account) (if you want to build code from your private Git repositories).
 
 You can find the required permissions, path and object parameters, and examples requests and responses for all API endpoints, categorised by the type of resource or task, in the menu under API reference. You can also find the API parameters for your existing Northflank resources in the Northflank application by opening the options menu  in your resource header and selecting `view specification`.
 

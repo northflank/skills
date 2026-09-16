@@ -164,6 +164,9 @@ Required permission: Account > Cloud > Clusters > Read
        - `networking`: {object}
          - `overlayNetwork`: (boolean) Whether overlay networking is enabled for this cluster.
          - `overlayCIDR`: (string) CIDR range for the overlay network. (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
+         - `istio`: {object}
+           - `enablePublicLoadBalancer`: (boolean) Whether the cluster runs a public ingress load balancer. Defaults to true.
+           - `enablePrivateLoadBalancer`: (boolean) Whether the cluster runs a private (VPC-only) ingress load balancer. Defaults to false.
        - `vanityDomains`: {object}
          - `apps`: {object}
            - `zoneName`: (string) (required)

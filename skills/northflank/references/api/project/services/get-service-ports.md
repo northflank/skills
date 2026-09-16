@@ -28,7 +28,9 @@ Required permission: Project > Services > General > Read
      - `internalPort`: (integer) (required) The port number.
      - `protocol`: (string) (required) The protocol used by the port. (enum: HTTP, HTTP/2, TCP, UDP)
      - `public`: (boolean) (required) If true, the port is exposed publicly.
+     - `vpcAccessible`: (boolean) If true, the port is exposed on the cluster's private (VPC) load balancer.
      - `dns`: (string) DNS entry for this port.
+     - `vpcDns`: (string) VPC DNS entry for this port.
      - `domains`: [array of] {object}
          - `name`: (string) (required) The custom domain redirecting to this port.
          - `certificate`: {object}
@@ -49,6 +51,7 @@ Required permission: Project > Services > General > Read
          - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
          - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
          - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+         - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
          - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
        - `verificationMode`: (string) Mode used to verify multiple security features like ip policies and SSO authentication (enum: or, and)
        - `headers`: [array of] {object}
@@ -77,7 +80,9 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/ports
         "internalPort": 8080,
         "protocol": "HTTP",
         "public": true,
+        "vpcAccessible": false,
         "dns": "p01--example-service--default-service--user-abc1.salvo.code.run",
+        "vpcDns": "p01--example-service--default-service--user-abc1--vpc.salvo.code.run",
         "domains": [
           {
             "name": "app.example.com",
@@ -147,7 +152,9 @@ Options:
       "internalPort": 8080,
       "protocol": "HTTP",
       "public": true,
+      "vpcAccessible": false,
       "dns": "p01--example-service--default-service--user-abc1.salvo.code.run",
+      "vpcDns": "p01--example-service--default-service--user-abc1--vpc.salvo.code.run",
       "domains": [
         {
           "name": "app.example.com",
@@ -214,7 +221,9 @@ await apiClient.get.service.ports({
         "internalPort": 8080,
         "protocol": "HTTP",
         "public": true,
+        "vpcAccessible": false,
         "dns": "p01--example-service--default-service--user-abc1.salvo.code.run",
+        "vpcDns": "p01--example-service--default-service--user-abc1--vpc.salvo.code.run",
         "domains": [
           {
             "name": "app.example.com",

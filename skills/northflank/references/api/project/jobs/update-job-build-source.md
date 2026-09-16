@@ -22,7 +22,7 @@ Required permission: Project > Jobs > General > Update
 
 {object}
 - `projectUrl`: (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
-- `projectType`: (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+- `projectType`: (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
 - `projectBranch`: (string) The name of the branch to use.
 - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
 - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.

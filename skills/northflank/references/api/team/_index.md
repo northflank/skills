@@ -10,7 +10,7 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 - [Billing](billing/_index.md) — 4 endpoints
 - [Cloud Providers](cloud-providers/_index.md) — 18 endpoints
 - [Container Snapshots](container-snapshots/_index.md) — 3 endpoints
-- [Domains](domains/_index.md) — 26 endpoints
+- [Domains](domains/_index.md) — 27 endpoints
 - [Egress Ips](egress-ips/_index.md) — 6 endpoints
 - [Integrations](integrations/_index.md) — 38 endpoints
 - [Jobs](jobs/_index.md) — 1 endpoints
@@ -25,4 +25,4 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 - [Tags](tags/_index.md) — 6 endpoints
 - [Team Members](team-members/_index.md) — 3 endpoints
 - [Team Roles](team-roles/_index.md) — 9 endpoints
-- [Templates](templates/_index.md) — 9 endpoints
+- [Templates](templates/_index.md) — 10 endpoints

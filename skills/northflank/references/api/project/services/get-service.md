@@ -41,6 +41,7 @@ Required permission: Project > Services > General > Read
         - `buildEngine`: (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko)
         - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
         - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
+        - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
         - `buildkit`: {object}
           - `useCache`: (boolean) Use persistent storage to cache build layers.
           - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
@@ -106,7 +107,7 @@ Required permission: Project > Services > General > Read
        - `useCache`: (boolean) Should intermediate image layers be cached?
    - `vcsData`: {object}
      - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
-     - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+     - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
      - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
      - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
      - `vcsLinkId`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24)
@@ -130,6 +131,7 @@ Required permission: Project > Services > General > Read
       - `name`: (string) (required) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8)
       - `internalPort`: (integer) (required) The port number.
       - `public`: (boolean) If true, the port will be exposed publicly.
+      - `vpcAccessible`: (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer.
       - `security`: {object}
         - `credentials`: [array of] {object}
             - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
@@ -147,6 +149,7 @@ Required permission: Project > Services > General > Read
           - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
           - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
           - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+          - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
           - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
         - `headers`: [array of] (multiple options) {object}
               - `regexMode`: (boolean)
@@ -189,6 +192,7 @@ Required permission: Project > Services > General > Read
                     - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                     - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                     - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                    - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                     - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                   - `headers`: [array of] (multiple options) {object}
                         - `regexMode`: (boolean)
@@ -214,6 +218,7 @@ Required permission: Project > Services > General > Read
                     - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                     - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                     - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                    - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                     - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                   - `headers`: [array of] (multiple options) {object}
                         - `regexMode`: (boolean)
@@ -226,7 +231,7 @@ Required permission: Project > Services > General > Read
       - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
       - `advancedOptions`: {object}
         - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
-      - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+      - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
    - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
    - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
    - `bundleData`: {object}
@@ -241,6 +246,7 @@ Required permission: Project > Services > General > Read
         - `buildEngine`: (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko)
         - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
         - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
+        - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
         - `buildkit`: {object}
           - `useCache`: (boolean) Use persistent storage to cache build layers.
           - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
@@ -401,7 +407,7 @@ Required permission: Project > Services > General > Read
        - `useCache`: (boolean) Should intermediate image layers be cached?
    - `vcsData`: {object}
      - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
-     - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+     - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
      - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
      - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
      - `vcsLinkId`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24)
@@ -425,6 +431,7 @@ Required permission: Project > Services > General > Read
       - `name`: (string) (required) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8)
       - `internalPort`: (integer) (required) The port number.
       - `public`: (boolean) If true, the port will be exposed publicly.
+      - `vpcAccessible`: (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer.
       - `security`: {object}
         - `credentials`: [array of] {object}
             - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
@@ -442,6 +449,7 @@ Required permission: Project > Services > General > Read
           - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
           - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
           - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+          - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
           - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
         - `headers`: [array of] (multiple options) {object}
               - `regexMode`: (boolean)
@@ -484,6 +492,7 @@ Required permission: Project > Services > General > Read
                     - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                     - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                     - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                    - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                     - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                   - `headers`: [array of] (multiple options) {object}
                         - `regexMode`: (boolean)
@@ -509,6 +518,7 @@ Required permission: Project > Services > General > Read
                     - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                     - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                     - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                    - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                     - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                   - `headers`: [array of] (multiple options) {object}
                         - `regexMode`: (boolean)
@@ -521,7 +531,7 @@ Required permission: Project > Services > General > Read
       - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
       - `advancedOptions`: {object}
         - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
-      - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+      - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
    - `runtimeEnvironment`: {object}
    - `runtimeFiles`: {object}
    - `healthChecks`: [array of] {object}
@@ -619,6 +629,7 @@ Required permission: Project > Services > General > Read
      - `containerSnapshot`: {object}
        - `restoreFrom`: (string) The successful container snapshot to restore the service from. (format: uuid)
        - `capture`: {object}
+         - `backupDestinationId`: (string) The backup destination for termination snapshots.
          - `onTermination`: (boolean) Creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts.
          - `retention`: {object}
            - `maxSnapshots`: (integer) The maximum number of termination snapshots retained for the service.
@@ -786,6 +797,7 @@ OR
         "name": "p01",
         "internalPort": 8080,
         "public": true,
+        "vpcAccessible": false,
         "security": {
           "credentials": [
             {
@@ -1091,6 +1103,7 @@ OR
         "name": "p01",
         "internalPort": 8080,
         "public": true,
+        "vpcAccessible": false,
         "security": {
           "credentials": [
             {
@@ -1457,6 +1470,7 @@ OR
       "name": "p01",
       "internalPort": 8080,
       "public": true,
+      "vpcAccessible": false,
       "security": {
         "credentials": [
           {
@@ -1760,6 +1774,7 @@ OR
       "name": "p01",
       "internalPort": 8080,
       "public": true,
+      "vpcAccessible": false,
       "security": {
         "credentials": [
           {
@@ -2128,6 +2143,7 @@ OR
         "name": "p01",
         "internalPort": 8080,
         "public": true,
+        "vpcAccessible": false,
         "security": {
           "credentials": [
             {
@@ -2436,6 +2452,7 @@ OR
         "name": "p01",
         "internalPort": 8080,
         "public": true,
+        "vpcAccessible": false,
         "security": {
           "credentials": [
             {

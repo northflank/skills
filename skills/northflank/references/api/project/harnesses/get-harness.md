@@ -18,6 +18,7 @@ Required permission: Project > Harnesses > General > Read
 - `data`: {object}
   - `name`: (string) (required) The name of the harness. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
   - `description`: (string) A description of the harness. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
+  - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `billing`: {object}
     - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -31,6 +32,7 @@ Required permission: Project > Harnesses > General > Read
      - `name`: (string) (required) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8)
      - `internalPort`: (integer) (required) The port number.
      - `public`: (boolean) If true, the port will be exposed publicly.
+     - `vpcAccessible`: (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer.
      - `security`: {object}
        - `credentials`: [array of] {object}
            - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
@@ -48,6 +50,7 @@ Required permission: Project > Harnesses > General > Read
          - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
          - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
          - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+         - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
          - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
        - `headers`: [array of] (multiple options) {object}
              - `regexMode`: (boolean)
@@ -90,6 +93,7 @@ Required permission: Project > Harnesses > General > Read
                    - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                    - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                    - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                   - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                    - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                  - `headers`: [array of] (multiple options) {object}
                        - `regexMode`: (boolean)
@@ -115,6 +119,7 @@ Required permission: Project > Harnesses > General > Read
                    - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                    - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                    - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
+                   - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                    - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
                  - `headers`: [array of] (multiple options) {object}
                        - `regexMode`: (boolean)
@@ -127,10 +132,10 @@ Required permission: Project > Harnesses > General > Read
      - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
      - `advancedOptions`: {object}
        - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
-     - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+     - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
   - `source`: {object}
     - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
-    - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+    - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
     - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
     - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
     - `vcsLinkId`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24)
@@ -139,7 +144,7 @@ Required permission: Project > Harnesses > General > Read
   - `additionalRepositories`: [array of] {object}
      - `source`: {object}
        - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
-       - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+       - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
        - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
        - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
        - `vcsLinkId`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24)
@@ -148,7 +153,7 @@ Required permission: Project > Harnesses > General > Read
      - `directory`: (string) (required) Folder to clone the repository into, relative to /home/harness. (pattern: ^(?!\.{1,2}$)[A-Za-z0-9._-]+$) (max length: 237)
   - `repositoryData`: {object}
     - `name`: (string) (required) Name of the new repository to create. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
-    - `projectType`: (string) (required) The VCS provider to create the repository on. (enum: bitbucket, gitlab, github, self-hosted, azure)
+    - `projectType`: (string) (required) The VCS provider to create the repository on. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
     - `vcsLinkId`: (string) (required) Linked account ID under which to create the repository. (min length: 24) (max length: 24)
     - `accountLogin`: (string) Linked account login to create the repository under.
     - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
@@ -165,12 +170,22 @@ Required permission: Project > Harnesses > General > Read
         - `gpuType`: (string) (required) The type of GPU to use.
         - `gpuCount`: (integer) The number of GPUs to allocate.
         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
+    - `imageSource`: (string) Container image source. Managed uses the Northflank harness image, internal uses a Northflank build service, and external uses a registry image. (enum: managed, internal, external)
+    - `internal`: {object}
+      - `id`: (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
+      - `branch`: (string) Branch to deploy
+      - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
+      - `buildId`: (string) ID of the build that should be deployed
+    - `external`: {object}
+      - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
+      - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
     - `storage`: {object}
       - `ephemeralStorage`: {object}
         - `storageSize`: (integer) Ephemeral storage per container in MB
-    - `workspaceSize`: (integer) Size of the persistent workspace volume in MiB. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims.
+    - `persistentWorkspace`: (boolean) Use a persistent workspace volume. Defaults to true on creation. Prefers ReadWriteMany, falling back to ReadWriteOnce. When false, files are lost on container restart, redeployment or stop. Cannot be changed after creation.
+    - `workspaceSize`: (integer) Size of the persistent workspace volume in MiB. Only available with persistence enabled. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims.
   - `harness`: {object}
-    - `type`: (string) (required) The harness environment type to run. (enum: codex, claude, pi, none)
+    - `type`: (string) (required) The harness environment type to run. (enum: codex, claude, pi, opencode, cursor, none)
     - `authMode`: (string) How the harness authenticates: `apiKey` (a provider key is stored) or `account` (interactive/account login, no key). (enum: apiKey, account)
     - `apiKey`: (string) Masked API key used by the harness environment. Absent for `account` harnesses.
     - `cloneDirectory`: (string) Absolute path the repo is cloned into in the harness container.
@@ -213,6 +228,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/harnesses/{harnessId}
         "name": "p01",
         "internalPort": 8080,
         "public": true,
+        "vpcAccessible": false,
         "security": {
           "credentials": [
             {
@@ -360,11 +376,21 @@ GET /v1/teams/{teamId}/projects/{projectId}/harnesses/{harnessId}
       }
     },
     "deployment": {
+      "internal": {
+        "id": "example-build-service",
+        "branch": "master",
+        "buildId": "premium-guide-6393"
+      },
+      "external": {
+        "imagePath": "nginx:latest",
+        "credentials": "example-credentials"
+      },
       "storage": {
         "ephemeralStorage": {
           "storageSize": 1024
         }
       },
+      "persistentWorkspace": true,
       "workspaceSize": 10240
     },
     "harness": {
@@ -425,6 +451,7 @@ Options:
       "name": "p01",
       "internalPort": 8080,
       "public": true,
+      "vpcAccessible": false,
       "security": {
         "credentials": [
           {
@@ -572,11 +599,21 @@ Options:
     }
   },
   "deployment": {
+    "internal": {
+      "id": "example-build-service",
+      "branch": "master",
+      "buildId": "premium-guide-6393"
+    },
+    "external": {
+      "imagePath": "nginx:latest",
+      "credentials": "example-credentials"
+    },
     "storage": {
       "ephemeralStorage": {
         "storageSize": 1024
       }
     },
+    "persistentWorkspace": true,
     "workspaceSize": 10240
   },
   "harness": {
@@ -634,6 +671,7 @@ await apiClient.get.harness({
         "name": "p01",
         "internalPort": 8080,
         "public": true,
+        "vpcAccessible": false,
         "security": {
           "credentials": [
             {
@@ -781,11 +819,21 @@ await apiClient.get.harness({
       }
     },
     "deployment": {
+      "internal": {
+        "id": "example-build-service",
+        "branch": "master",
+        "buildId": "premium-guide-6393"
+      },
+      "external": {
+        "imagePath": "nginx:latest",
+        "credentials": "example-credentials"
+      },
       "storage": {
         "ephemeralStorage": {
           "storageSize": 1024
         }
       },
+      "persistentWorkspace": true,
       "workspaceSize": 10240
     },
     "harness": {

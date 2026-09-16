@@ -38,7 +38,7 @@ Required permission: Account > Networking > NetworkPolicies > Create
      - `name`: (string) (required) (pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$) (max length: 63)
      - `header`: (string) (required) (pattern: ^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$) (max length: 256)
      - `hosts`: [array of] (string) (max length: 253)
-     - `value`: (multiple options) (string) | {object}
+     - `value`: (string) (required)
 
 ### API reference
 

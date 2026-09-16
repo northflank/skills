@@ -79,6 +79,12 @@ Required permission: Account > Templates > General > Create
      - `spec`: {object}
        - `domain`: (multiple options) (string) The domain the path should be created for. (pattern: ^((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+$) | (string) A string containing one or more references that resolve to the domain the path should be created for. (pattern: .*\${.*}.*)
        - `name`: (multiple options) (string) Subdomain prepended to the domain name | (string) A string containing one or more references that resolve to subdomain prepended to the domain name (pattern: .*\${.*}.*)
+       - `loadBalancer`: (multiple options) (string) Cluster load balancer the subdomain resolves on. Defaults to public, and cannot differ from the parent domain where that domain pins one (enum: public, vpc) | (string) A string containing one or more references that resolve to cluster load balancer the subdomain resolves on. Defaults to public, and cannot differ from the parent domain where that domain pins one (pattern: .*\${.*}.*)
+       - `certificateValidationMethod`: (multiple options) (string) How the subdomain's TLS certificate is validated and issued. Only applies where the subdomain manages its own certificate (enum: http, dcv, imported) | (string) A string containing one or more references that resolve to how the subdomain's TLS certificate is validated and issued. Only applies where the subdomain manages its own certificate (pattern: .*\${.*}.*)
+       - `certificate`: {object}
+         - `certificate`: {object}
+           - `privateKey`: (multiple options) (string) Certificate private key. | (string) A string containing one or more references that resolve to certificate private key. (pattern: .*\${.*}.*)
+           - `certificateChain`: (multiple options) (string) Certificate chain. May consist of one or more certificates. | (string) A string containing one or more references that resolve to certificate chain. May consist of one or more certificates. (pattern: .*\${.*}.*)
        - `options`: {object}
          - `tlsMode`: (string) Desired TLS mode for the subdomain. (enum: default, passthrough)
          - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
@@ -121,6 +127,25 @@ Required permission: Account > Templates > General > Create
                  - `cacheCondition`: (string) (required) (min length: 1) (max length: 512)
                  - `staleTtl`: (number) (required) (format: float)
                  - `ttl`: (number) (required) (format: float) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: Domain)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `spec`: {object}
+       - `domain`: (multiple options) (string) The domain name to register. (pattern: ^((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+$) | (string) A string containing one or more references that resolve to the domain name to register. (pattern: .*\${.*}.*)
+       - `redirect`: {object}
+         - `mode`: (string) Domain redirect mode to be used. (enum: wildcard, default)
+         - `region`: (multiple options) (string) Northflank PaaS region the wildcard redirect should be pointed at. | (string) A string containing one or more references that resolve to northflank PaaS region the wildcard redirect should be pointed at. (pattern: .*\${.*}.*)
+         - `cluster`: (multiple options) (string) BYOC cluster the wildcard redirect should be pointed at. | (string) A string containing one or more references that resolve to bYOC cluster the wildcard redirect should be pointed at. (pattern: .*\${.*}.*)
+       - `loadBalancer`: (multiple options) (string) Load balancer all subdomains of this domain route through. Only applies to wildcard-redirect domains. `vpc` requires a self-hosted cluster with the private load balancer enabled. Fixed at creation. (enum: public, vpc) | (string) A string containing one or more references that resolve to load balancer all subdomains of this domain route through. Only applies to wildcard-redirect domains. `vpc` requires a self-hosted cluster with the private load balancer enabled. Fixed at creation. (pattern: .*\${.*}.*)
+       - `options`: {object}
+         - `autoVerify`: (multiple options) (boolean) The domain will be automatically verified on creation. Only configurable if the relevant feature flag is enabled for you account. | (string) A string containing one or more references that resolve to the domain will be automatically verified on creation. Only configurable if the relevant feature flag is enabled for you account. (pattern: .*\${.*}.*)
+         - `minTlsProtocolVersion`: (multiple options) (string) Minimum TLS protocol version for wildcard domains. Only applicable for wildcard-redirect domains with wildcard certificates. (enum: TLSV1_1, TLSV1_2, TLSV1_3) | (string) A string containing one or more references that resolve to minimum TLS protocol version for wildcard domains. Only applicable for wildcard-redirect domains with wildcard certificates. (pattern: .*\${.*}.*)
+         - `tlsMode`: (multiple options) (string) TLS mode for wildcard domains. Only applicable for wildcard-redirect domains with wildcard certificates. (enum: default, passthrough) | (string) A string containing one or more references that resolve to tLS mode for wildcard domains. Only applicable for wildcard-redirect domains with wildcard certificates. (pattern: .*\${.*}.*)
+       - `certificates`: {object}
+         - `mode`: (string) Certificate provisioning mode to be used. (enum: wildcard, wildcard-import, default)
+         - `certificateInput`: (multiple options) {object}
+             - `privateKey`: (string) (required) Certificate private key.
+             - `certificateChain`: (string) (required) Certificate chain. May consist of one or more certificates. | (string) (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: SubdomainPath)
      - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
@@ -483,6 +508,9 @@ Required permission: Account > Templates > General > Create
          - `networking`: {object}
            - `overlayNetwork`: (boolean) Whether overlay networking is enabled for this cluster.
            - `overlayCIDR`: (string) CIDR range for the overlay network. (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
+           - `istio`: {object}
+             - `enablePublicLoadBalancer`: (multiple options) (boolean) Whether the cluster runs a public ingress load balancer. Defaults to true. | (string) A string containing one or more references that resolve to whether the cluster runs a public ingress load balancer. Defaults to true. (pattern: .*\${.*}.*)
+             - `enablePrivateLoadBalancer`: (multiple options) (boolean) Whether the cluster runs a private (VPC-only) ingress load balancer. Defaults to false. | (string) A string containing one or more references that resolve to whether the cluster runs a private (VPC-only) ingress load balancer. Defaults to false. (pattern: .*\${.*}.*)
          - `vanityDomains`: {object}
            - `apps`: {object}
              - `zoneName`: (string) (required)
@@ -707,6 +735,9 @@ Required permission: Account > Templates > General > Create
          - `networking`: {object}
            - `overlayNetwork`: (boolean) Whether overlay networking is enabled for this cluster.
            - `overlayCIDR`: (string) CIDR range for the overlay network. (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
+           - `istio`: {object}
+             - `enablePublicLoadBalancer`: (multiple options) (boolean) Whether the cluster runs a public ingress load balancer. Defaults to true. | (string) A string containing one or more references that resolve to whether the cluster runs a public ingress load balancer. Defaults to true. (pattern: .*\${.*}.*)
+             - `enablePrivateLoadBalancer`: (multiple options) (boolean) Whether the cluster runs a private (VPC-only) ingress load balancer. Defaults to false. | (string) A string containing one or more references that resolve to whether the cluster runs a private (VPC-only) ingress load balancer. Defaults to false. (pattern: .*\${.*}.*)
          - `vanityDomains`: {object}
            - `apps`: {object}
              - `zoneName`: (string) (required)
@@ -1002,7 +1033,7 @@ Required permission: Account > Templates > General > Create
        - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
        - `vcsData`: {object}
          - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
-         - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+         - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
          - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -1015,6 +1046,7 @@ Required permission: Account > Templates > General > Create
            - `buildEngine`: (multiple options) (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko) | (string) A string containing one or more references that resolve to build engine to use. Defaults to recommended build engine `buildkit` (pattern: .*\${.*}.*)
            - `dockerFilePath`: (multiple options) (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$) | (string) A string containing one or more references that resolve to the file path of the Dockerfile. (pattern: .*\${.*}.*)
            - `dockerWorkDir`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
+           - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
            - `buildkit`: {object}
              - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
              - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
@@ -1074,7 +1106,7 @@ Required permission: Account > Templates > General > Create
        - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
        - `vcsData`: {object}
          - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
-         - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+         - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
          - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -1087,6 +1119,7 @@ Required permission: Account > Templates > General > Create
              - `buildEngine`: (multiple options) (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko) | (string) A string containing one or more references that resolve to build engine to use. Defaults to recommended build engine `buildkit` (pattern: .*\${.*}.*)
              - `dockerFilePath`: (multiple options) (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$) | (string) A string containing one or more references that resolve to the file path of the Dockerfile. (pattern: .*\${.*}.*)
              - `dockerWorkDir`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
+             - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
              - `buildkit`: {object}
                - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
                - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
@@ -1127,6 +1160,8 @@ Required permission: Account > Templates > General > Create
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: CombinedService)
      - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `options`: {object}
+       - `allowUnlinkingDomains`: (multiple options) (boolean) Allows the template to remove existing domain assignments from this service. | (string) A string containing one or more references that resolve to allows the template to remove existing domain assignments from this service. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `description`: (multiple options) (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the service. (pattern: .*\${.*}.*)
        - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -1189,6 +1224,7 @@ Required permission: Account > Templates > General > Create
            - `name`: (multiple options) (string) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8) | (string) A string containing one or more references that resolve to the name used to identify the port. (pattern: .*\${.*}.*)
            - `internalPort`: (multiple options) (integer) The port number. | (string) A string containing one or more references that resolve to the port number. (pattern: .*\${.*}.*)
            - `public`: (multiple options) (boolean) If true, the port will be exposed publicly. | (string) A string containing one or more references that resolve to if true, the port will be exposed publicly. (pattern: .*\${.*}.*)
+           - `vpcAccessible`: (multiple options) (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer. | (string) A string containing one or more references that resolve to if true, the port will be exposed on the cluster's private (VPC) load balancer. (pattern: .*\${.*}.*)
            - `security`: {object}
              - `credentials`: [array of] {object}
                  - `username`: (multiple options) (string) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the username to access the service (pattern: .*\${.*}.*)
@@ -1206,6 +1242,7 @@ Required permission: Account > Templates > General > Create
                - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+               - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
              - `headers`: [array of] (multiple options) {object}
                    - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -1248,6 +1285,7 @@ Required permission: Account > Templates > General > Create
                            - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                            - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                            - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                            - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
                          - `headers`: [array of] (multiple options) {object}
                                - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -1273,6 +1311,7 @@ Required permission: Account > Templates > General > Create
                            - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                            - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                            - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                            - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
                          - `headers`: [array of] (multiple options) {object}
                                - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -1285,12 +1324,12 @@ Required permission: Account > Templates > General > Create
            - `disableNfDomain`: (multiple options) (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains. | (string) A string containing one or more references that resolve to disable routing on the default code.run domain for public HTTP ports with custom domains. (pattern: .*\${.*}.*)
            - `advancedOptions`: {object}
              - `enableTlsPassthrough`: (multiple options) (boolean) Whether this port should use pass through mode for TLS | (string) A string containing one or more references that resolve to whether this port should use pass through mode for TLS (pattern: .*\${.*}.*)
-           - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+           - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
        - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
        - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
        - `vcsData`: {object}
          - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
-         - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+         - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
          - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -1307,6 +1346,7 @@ Required permission: Account > Templates > General > Create
            - `buildEngine`: (multiple options) (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko) | (string) A string containing one or more references that resolve to build engine to use. Defaults to recommended build engine `buildkit` (pattern: .*\${.*}.*)
            - `dockerFilePath`: (multiple options) (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$) | (string) A string containing one or more references that resolve to the file path of the Dockerfile. (pattern: .*\${.*}.*)
            - `dockerWorkDir`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
+           - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
            - `buildkit`: {object}
              - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
              - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
@@ -1381,6 +1421,8 @@ Required permission: Account > Templates > General > Create
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: CombinedService)
      - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `options`: {object}
+       - `allowUnlinkingDomains`: (multiple options) (boolean) Allows the template to remove existing domain assignments from this service. | (string) A string containing one or more references that resolve to allows the template to remove existing domain assignments from this service. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `name`: (multiple options) (string) The name of the service. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the name of the service. (pattern: .*\${.*}.*)
        - `description`: (multiple options) (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the service. (pattern: .*\${.*}.*)
@@ -1450,6 +1492,7 @@ Required permission: Account > Templates > General > Create
            - `name`: (multiple options) (string) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8) | (string) A string containing one or more references that resolve to the name used to identify the port. (pattern: .*\${.*}.*)
            - `internalPort`: (multiple options) (integer) The port number. | (string) A string containing one or more references that resolve to the port number. (pattern: .*\${.*}.*)
            - `public`: (multiple options) (boolean) If true, the port will be exposed publicly. | (string) A string containing one or more references that resolve to if true, the port will be exposed publicly. (pattern: .*\${.*}.*)
+           - `vpcAccessible`: (multiple options) (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer. | (string) A string containing one or more references that resolve to if true, the port will be exposed on the cluster's private (VPC) load balancer. (pattern: .*\${.*}.*)
            - `security`: {object}
              - `credentials`: [array of] {object}
                  - `username`: (multiple options) (string) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the username to access the service (pattern: .*\${.*}.*)
@@ -1467,6 +1510,7 @@ Required permission: Account > Templates > General > Create
                - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+               - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
              - `headers`: [array of] (multiple options) {object}
                    - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -1509,6 +1553,7 @@ Required permission: Account > Templates > General > Create
                            - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                            - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                            - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                            - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
                          - `headers`: [array of] (multiple options) {object}
                                - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -1534,6 +1579,7 @@ Required permission: Account > Templates > General > Create
                            - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                            - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                            - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                            - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
                          - `headers`: [array of] (multiple options) {object}
                                - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -1546,12 +1592,12 @@ Required permission: Account > Templates > General > Create
            - `disableNfDomain`: (multiple options) (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains. | (string) A string containing one or more references that resolve to disable routing on the default code.run domain for public HTTP ports with custom domains. (pattern: .*\${.*}.*)
            - `advancedOptions`: {object}
              - `enableTlsPassthrough`: (multiple options) (boolean) Whether this port should use pass through mode for TLS | (string) A string containing one or more references that resolve to whether this port should use pass through mode for TLS (pattern: .*\${.*}.*)
-           - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+           - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
        - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
        - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
        - `vcsData`: {object}
          - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
-         - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+         - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
          - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -1568,6 +1614,7 @@ Required permission: Account > Templates > General > Create
              - `buildEngine`: (multiple options) (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko) | (string) A string containing one or more references that resolve to build engine to use. Defaults to recommended build engine `buildkit` (pattern: .*\${.*}.*)
              - `dockerFilePath`: (multiple options) (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$) | (string) A string containing one or more references that resolve to the file path of the Dockerfile. (pattern: .*\${.*}.*)
              - `dockerWorkDir`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
+             - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
              - `buildkit`: {object}
                - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
                - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
@@ -1647,6 +1694,8 @@ Required permission: Account > Templates > General > Create
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: DeploymentService)
      - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `options`: {object}
+       - `allowUnlinkingDomains`: (multiple options) (boolean) Allows the template to remove existing domain assignments from this service. | (string) A string containing one or more references that resolve to allows the template to remove existing domain assignments from this service. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `description`: (multiple options) (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the service. (pattern: .*\${.*}.*)
        - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -1721,6 +1770,7 @@ Required permission: Account > Templates > General > Create
            - `name`: (multiple options) (string) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8) | (string) A string containing one or more references that resolve to the name used to identify the port. (pattern: .*\${.*}.*)
            - `internalPort`: (multiple options) (integer) The port number. | (string) A string containing one or more references that resolve to the port number. (pattern: .*\${.*}.*)
            - `public`: (multiple options) (boolean) If true, the port will be exposed publicly. | (string) A string containing one or more references that resolve to if true, the port will be exposed publicly. (pattern: .*\${.*}.*)
+           - `vpcAccessible`: (multiple options) (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer. | (string) A string containing one or more references that resolve to if true, the port will be exposed on the cluster's private (VPC) load balancer. (pattern: .*\${.*}.*)
            - `security`: {object}
              - `credentials`: [array of] {object}
                  - `username`: (multiple options) (string) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the username to access the service (pattern: .*\${.*}.*)
@@ -1738,6 +1788,7 @@ Required permission: Account > Templates > General > Create
                - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+               - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
              - `headers`: [array of] (multiple options) {object}
                    - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -1780,6 +1831,7 @@ Required permission: Account > Templates > General > Create
                            - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                            - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                            - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                            - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
                          - `headers`: [array of] (multiple options) {object}
                                - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -1805,6 +1857,7 @@ Required permission: Account > Templates > General > Create
                            - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                            - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                            - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                            - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
                          - `headers`: [array of] (multiple options) {object}
                                - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -1817,7 +1870,7 @@ Required permission: Account > Templates > General > Create
            - `disableNfDomain`: (multiple options) (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains. | (string) A string containing one or more references that resolve to disable routing on the default code.run domain for public HTTP ports with custom domains. (pattern: .*\${.*}.*)
            - `advancedOptions`: {object}
              - `enableTlsPassthrough`: (multiple options) (boolean) Whether this port should use pass through mode for TLS | (string) A string containing one or more references that resolve to whether this port should use pass through mode for TLS (pattern: .*\${.*}.*)
-           - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+           - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
        - `runtimeEnvironment`: (multiple options) {object} | (string) (pattern: .*\${.*}.*)
        - `runtimeFiles`: {object}
        - `healthChecks`: [array of] {object}
@@ -1865,6 +1918,8 @@ Required permission: Account > Templates > General > Create
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: DeploymentService)
      - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `options`: {object}
+       - `allowUnlinkingDomains`: (multiple options) (boolean) Allows the template to remove existing domain assignments from this service. | (string) A string containing one or more references that resolve to allows the template to remove existing domain assignments from this service. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `name`: (multiple options) (string) The name of the service. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the name of the service. (pattern: .*\${.*}.*)
        - `description`: (multiple options) (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the service. (pattern: .*\${.*}.*)
@@ -1932,6 +1987,7 @@ Required permission: Account > Templates > General > Create
          - `containerSnapshot`: {object}
            - `restoreFrom`: (multiple options) (string) The successful container snapshot to restore the service from. (format: uuid) | (string) A string containing one or more references that resolve to the successful container snapshot to restore the service from. (pattern: .*\${.*}.*)
            - `capture`: {object}
+             - `backupDestinationId`: (multiple options) (string) The backup destination for termination snapshots. | (string) A string containing one or more references that resolve to the backup destination for termination snapshots. (pattern: .*\${.*}.*)
              - `onTermination`: (multiple options) (boolean) Creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts. | (string) A string containing one or more references that resolve to creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts. (pattern: .*\${.*}.*)
              - `retention`: {object}
                - `maxSnapshots`: (multiple options) (integer) The maximum number of termination snapshots retained for the service. | (string) A string containing one or more references that resolve to the maximum number of termination snapshots retained for the service. (pattern: .*\${.*}.*)
@@ -1948,6 +2004,7 @@ Required permission: Account > Templates > General > Create
            - `name`: (multiple options) (string) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8) | (string) A string containing one or more references that resolve to the name used to identify the port. (pattern: .*\${.*}.*)
            - `internalPort`: (multiple options) (integer) The port number. | (string) A string containing one or more references that resolve to the port number. (pattern: .*\${.*}.*)
            - `public`: (multiple options) (boolean) If true, the port will be exposed publicly. | (string) A string containing one or more references that resolve to if true, the port will be exposed publicly. (pattern: .*\${.*}.*)
+           - `vpcAccessible`: (multiple options) (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer. | (string) A string containing one or more references that resolve to if true, the port will be exposed on the cluster's private (VPC) load balancer. (pattern: .*\${.*}.*)
            - `security`: {object}
              - `credentials`: [array of] {object}
                  - `username`: (multiple options) (string) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the username to access the service (pattern: .*\${.*}.*)
@@ -1965,6 +2022,7 @@ Required permission: Account > Templates > General > Create
                - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+               - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
              - `headers`: [array of] (multiple options) {object}
                    - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -2007,6 +2065,7 @@ Required permission: Account > Templates > General > Create
                            - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                            - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                            - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                            - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
                          - `headers`: [array of] (multiple options) {object}
                                - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -2032,6 +2091,7 @@ Required permission: Account > Templates > General > Create
                            - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                            - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                            - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                            - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
                          - `headers`: [array of] (multiple options) {object}
                                - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -2044,7 +2104,7 @@ Required permission: Account > Templates > General > Create
            - `disableNfDomain`: (multiple options) (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains. | (string) A string containing one or more references that resolve to disable routing on the default code.run domain for public HTTP ports with custom domains. (pattern: .*\${.*}.*)
            - `advancedOptions`: {object}
              - `enableTlsPassthrough`: (multiple options) (boolean) Whether this port should use pass through mode for TLS | (string) A string containing one or more references that resolve to whether this port should use pass through mode for TLS (pattern: .*\${.*}.*)
-           - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+           - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
        - `runtimeEnvironment`: (multiple options) {object} | (string) (pattern: .*\${.*}.*)
        - `runtimeFiles`: {object}
        - `healthChecks`: [array of] {object}
@@ -2096,6 +2156,7 @@ Required permission: Account > Templates > General > Create
      - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `description`: (multiple options) (string) A description of the harness. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the harness. (pattern: .*\${.*}.*)
+       - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
        - `tags`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
        - `billing`: {object}
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
@@ -2112,14 +2173,24 @@ Required permission: Account > Templates > General > Create
              - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
              - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
              - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
+         - `imageSource`: (multiple options) (string) Container image source. Managed uses the Northflank harness image, internal uses a Northflank build service, and external uses a registry image. (enum: managed, internal, external) | (string) A string containing one or more references that resolve to container image source. Managed uses the Northflank harness image, internal uses a Northflank build service, and external uses a registry image. (pattern: .*\${.*}.*)
+         - `internal`: {object}
+           - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+           - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
+           - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
+           - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
+         - `external`: {object}
+           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
+           - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
          - `storage`: {object}
            - `ephemeralStorage`: {object}
              - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
-         - `workspaceSize`: (multiple options) (integer) Size of the persistent workspace volume in MiB. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims. | (string) A string containing one or more references that resolve to size of the persistent workspace volume in MiB. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims. (pattern: .*\${.*}.*)
+         - `workspaceSize`: (multiple options) (integer) Size of the persistent workspace volume in MiB. Only available with persistence enabled. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims. | (string) A string containing one or more references that resolve to size of the persistent workspace volume in MiB. Only available with persistence enabled. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims. (pattern: .*\${.*}.*)
        - `ports`: [array of] {object}
            - `name`: (multiple options) (string) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8) | (string) A string containing one or more references that resolve to the name used to identify the port. (pattern: .*\${.*}.*)
            - `internalPort`: (multiple options) (integer) The port number. | (string) A string containing one or more references that resolve to the port number. (pattern: .*\${.*}.*)
            - `public`: (multiple options) (boolean) If true, the port will be exposed publicly. | (string) A string containing one or more references that resolve to if true, the port will be exposed publicly. (pattern: .*\${.*}.*)
+           - `vpcAccessible`: (multiple options) (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer. | (string) A string containing one or more references that resolve to if true, the port will be exposed on the cluster's private (VPC) load balancer. (pattern: .*\${.*}.*)
            - `security`: {object}
              - `credentials`: [array of] {object}
                  - `username`: (multiple options) (string) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the username to access the service (pattern: .*\${.*}.*)
@@ -2137,6 +2208,7 @@ Required permission: Account > Templates > General > Create
                - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+               - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
              - `headers`: [array of] (multiple options) {object}
                    - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -2179,6 +2251,7 @@ Required permission: Account > Templates > General > Create
                            - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                            - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                            - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                            - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
                          - `headers`: [array of] (multiple options) {object}
                                - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -2204,6 +2277,7 @@ Required permission: Account > Templates > General > Create
                            - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                            - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                            - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                            - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
                          - `headers`: [array of] (multiple options) {object}
                                - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -2216,10 +2290,10 @@ Required permission: Account > Templates > General > Create
            - `disableNfDomain`: (multiple options) (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains. | (string) A string containing one or more references that resolve to disable routing on the default code.run domain for public HTTP ports with custom domains. (pattern: .*\${.*}.*)
            - `advancedOptions`: {object}
              - `enableTlsPassthrough`: (multiple options) (boolean) Whether this port should use pass through mode for TLS | (string) A string containing one or more references that resolve to whether this port should use pass through mode for TLS (pattern: .*\${.*}.*)
-           - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+           - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
        - `source`: {object}
          - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
-         - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+         - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
          - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -2228,7 +2302,7 @@ Required permission: Account > Templates > General > Create
        - `additionalRepositories`: [array of] {object}
            - `source`: {object}
              - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
-             - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+             - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
              - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
              - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
              - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -2236,7 +2310,7 @@ Required permission: Account > Templates > General > Create
              - `publicRepo`: (multiple options) (boolean) Whether the linked repository is public. | (string) A string containing one or more references that resolve to whether the linked repository is public. (pattern: .*\${.*}.*)
            - `directory`: (multiple options) (string) Folder to clone the repository into, relative to /home/harness. (pattern: ^(?!\.{1,2}$)[A-Za-z0-9._-]+$) (max length: 237) | (string) A string containing one or more references that resolve to folder to clone the repository into, relative to /home/harness. (pattern: .*\${.*}.*)
        - `harness`: {object}
-         - `authMode`: (multiple options) (string) How Codex and Claude authenticate. Pi requires `account`; agentless harnesses omit this field. When omitted for Codex or Claude, `apiKey` is inferred if an apiKey is provided. (enum: apiKey, account) | (string) A string containing one or more references that resolve to how Codex and Claude authenticate. Pi requires `account`; agentless harnesses omit this field. When omitted for Codex or Claude, `apiKey` is inferred if an apiKey is provided. (pattern: .*\${.*}.*)
+         - `authMode`: (multiple options) (string) How Codex, Claude and Cursor authenticate. Pi and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (enum: apiKey, account) | (string) A string containing one or more references that resolve to how Codex, Claude and Cursor authenticate. Pi and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (pattern: .*\${.*}.*)
          - `apiKey`: (multiple options) (string) API key used by the harness environment. | (string) A string containing one or more references that resolve to aPI key used by the harness environment. (pattern: .*\${.*}.*)
        - `runtimeEnvironment`: (multiple options) {object} | (string) (pattern: .*\${.*}.*)
        - `runtimeFiles`: {object}
@@ -2249,6 +2323,7 @@ Required permission: Account > Templates > General > Create
        - `name`: (multiple options) (string) The name of the harness. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the name of the harness. (pattern: .*\${.*}.*)
        - `description`: (multiple options) (string) A description of the harness. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the harness. (pattern: .*\${.*}.*)
        - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+       - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
        - `tags`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
        - `billing`: {object}
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
@@ -2265,14 +2340,25 @@ Required permission: Account > Templates > General > Create
              - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
              - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
              - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
+         - `imageSource`: (multiple options) (string) Container image source. Managed uses the Northflank harness image, internal uses a Northflank build service, and external uses a registry image. (enum: managed, internal, external) | (string) A string containing one or more references that resolve to container image source. Managed uses the Northflank harness image, internal uses a Northflank build service, and external uses a registry image. (pattern: .*\${.*}.*)
+         - `internal`: {object}
+           - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+           - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
+           - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
+           - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
+         - `external`: {object}
+           - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
+           - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
          - `storage`: {object}
            - `ephemeralStorage`: {object}
              - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
-         - `workspaceSize`: (multiple options) (integer) Size of the persistent workspace volume in MiB. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims. | (string) A string containing one or more references that resolve to size of the persistent workspace volume in MiB. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims. (pattern: .*\${.*}.*)
+         - `persistentWorkspace`: (multiple options) (boolean) Use a persistent workspace volume. Defaults to true on creation. Prefers ReadWriteMany, falling back to ReadWriteOnce. When false, files are lost on container restart, redeployment or stop. Cannot be changed after creation. | (string) A string containing one or more references that resolve to use a persistent workspace volume. Defaults to true on creation. Prefers ReadWriteMany, falling back to ReadWriteOnce. When false, files are lost on container restart, redeployment or stop. Cannot be changed after creation. (pattern: .*\${.*}.*)
+         - `workspaceSize`: (multiple options) (integer) Size of the persistent workspace volume in MiB. Only available with persistence enabled. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims. | (string) A string containing one or more references that resolve to size of the persistent workspace volume in MiB. Only available with persistence enabled. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims. (pattern: .*\${.*}.*)
        - `ports`: [array of] {object}
            - `name`: (multiple options) (string) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8) | (string) A string containing one or more references that resolve to the name used to identify the port. (pattern: .*\${.*}.*)
            - `internalPort`: (multiple options) (integer) The port number. | (string) A string containing one or more references that resolve to the port number. (pattern: .*\${.*}.*)
            - `public`: (multiple options) (boolean) If true, the port will be exposed publicly. | (string) A string containing one or more references that resolve to if true, the port will be exposed publicly. (pattern: .*\${.*}.*)
+           - `vpcAccessible`: (multiple options) (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer. | (string) A string containing one or more references that resolve to if true, the port will be exposed on the cluster's private (VPC) load balancer. (pattern: .*\${.*}.*)
            - `security`: {object}
              - `credentials`: [array of] {object}
                  - `username`: (multiple options) (string) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the username to access the service (pattern: .*\${.*}.*)
@@ -2290,6 +2376,7 @@ Required permission: Account > Templates > General > Create
                - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+               - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
              - `headers`: [array of] (multiple options) {object}
                    - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -2332,6 +2419,7 @@ Required permission: Account > Templates > General > Create
                            - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                            - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                            - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                            - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
                          - `headers`: [array of] (multiple options) {object}
                                - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -2357,6 +2445,7 @@ Required permission: Account > Templates > General > Create
                            - `allowAnyOrgUsers`: (multiple options) (boolean) Allow entire organization to access this service | (string) A string containing one or more references that resolve to allow entire organization to access this service (pattern: .*\${.*}.*)
                            - `validateInternalTraffic`: (multiple options) (boolean) Enforce internal traffic through SSO authentication flow | (string) A string containing one or more references that resolve to enforce internal traffic through SSO authentication flow (pattern: .*\${.*}.*)
                            - `setCookieOnRootDomain`: (multiple options) (boolean) Set SSO authentication cookie on root domain | (string) A string containing one or more references that resolve to set SSO authentication cookie on root domain (pattern: .*\${.*}.*)
+                           - `noindexRedirect`: (multiple options) (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect | (string) A string containing one or more references that resolve to add an X-Robots-Tag: noindex response header to the SSO authentication redirect (pattern: .*\${.*}.*)
                            - `allowInternalTrafficViaPublicDns`: (multiple options) (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow | (string) A string containing one or more references that resolve to allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow (pattern: .*\${.*}.*)
                          - `headers`: [array of] (multiple options) {object}
                                - `regexMode`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
@@ -2369,10 +2458,10 @@ Required permission: Account > Templates > General > Create
            - `disableNfDomain`: (multiple options) (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains. | (string) A string containing one or more references that resolve to disable routing on the default code.run domain for public HTTP ports with custom domains. (pattern: .*\${.*}.*)
            - `advancedOptions`: {object}
              - `enableTlsPassthrough`: (multiple options) (boolean) Whether this port should use pass through mode for TLS | (string) A string containing one or more references that resolve to whether this port should use pass through mode for TLS (pattern: .*\${.*}.*)
-           - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+           - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
        - `source`: {object}
          - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
-         - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+         - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
          - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -2381,7 +2470,7 @@ Required permission: Account > Templates > General > Create
        - `additionalRepositories`: [array of] {object}
            - `source`: {object}
              - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
-             - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+             - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
              - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
              - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
              - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -2389,10 +2478,10 @@ Required permission: Account > Templates > General > Create
              - `publicRepo`: (multiple options) (boolean) Whether the linked repository is public. | (string) A string containing one or more references that resolve to whether the linked repository is public. (pattern: .*\${.*}.*)
            - `directory`: (multiple options) (string) Folder to clone the repository into, relative to /home/harness. (pattern: ^(?!\.{1,2}$)[A-Za-z0-9._-]+$) (max length: 237) | (string) A string containing one or more references that resolve to folder to clone the repository into, relative to /home/harness. (pattern: .*\${.*}.*)
        - `harness`: {object}
-         - `type`: (multiple options) (string) The harness environment type to run. (enum: codex, claude, pi, none) | (string) A string containing one or more references that resolve to the harness environment type to run. (pattern: .*\${.*}.*)
-         - `authMode`: (multiple options) (string) How Codex and Claude authenticate. Pi requires `account`; agentless harnesses omit this field. When omitted for Codex or Claude, `apiKey` is inferred if an apiKey is provided. (enum: apiKey, account) | (string) A string containing one or more references that resolve to how Codex and Claude authenticate. Pi requires `account`; agentless harnesses omit this field. When omitted for Codex or Claude, `apiKey` is inferred if an apiKey is provided. (pattern: .*\${.*}.*)
+         - `type`: (multiple options) (string) The harness environment type to run. (enum: codex, claude, pi, opencode, cursor, none) | (string) A string containing one or more references that resolve to the harness environment type to run. (pattern: .*\${.*}.*)
+         - `authMode`: (multiple options) (string) How Codex, Claude and Cursor authenticate. Pi and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (enum: apiKey, account) | (string) A string containing one or more references that resolve to how Codex, Claude and Cursor authenticate. Pi and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (pattern: .*\${.*}.*)
          - `apiKey`: (multiple options) (string) API key used by the harness environment. | (string) A string containing one or more references that resolve to aPI key used by the harness environment. (pattern: .*\${.*}.*)
-         - `cloneDirectory`: (multiple options) (string) Absolute path the repo is cloned into in the harness container. Must be /home/harness or a directory inside it, the path backed by the harness's persistent workspace volume. Defaults to /home/harness. Can only be set when creating the harness. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to absolute path the repo is cloned into in the harness container. Must be /home/harness or a directory inside it, the path backed by the harness's persistent workspace volume. Defaults to /home/harness. Can only be set when creating the harness. (pattern: .*\${.*}.*)
+         - `cloneDirectory`: (multiple options) (string) Absolute path the repo is cloned into in the harness container. Must be /home/harness or a directory inside it. This workspace is persisted only when deployment.persistentWorkspace is enabled. Defaults to /home/harness. Can only be set when creating the harness. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to absolute path the repo is cloned into in the harness container. Must be /home/harness or a directory inside it. This workspace is persisted only when deployment.persistentWorkspace is enabled. Defaults to /home/harness. Can only be set when creating the harness. (pattern: .*\${.*}.*)
        - `runtimeEnvironment`: (multiple options) {object} | (string) (pattern: .*\${.*}.*)
        - `runtimeFiles`: {object}
      - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
@@ -2552,7 +2641,7 @@ Required permission: Account > Templates > General > Create
            - `annotations`: {object}
          - `vcs`: {object}
            - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
-           - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+           - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
            - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -2589,6 +2678,7 @@ Required permission: Account > Templates > General > Create
            - `buildEngine`: (multiple options) (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko) | (string) A string containing one or more references that resolve to build engine to use. Defaults to recommended build engine `buildkit` (pattern: .*\${.*}.*)
            - `dockerFilePath`: (multiple options) (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$) | (string) A string containing one or more references that resolve to the file path of the Dockerfile. (pattern: .*\${.*}.*)
            - `dockerWorkDir`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
+           - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
            - `buildkit`: {object}
              - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
              - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
@@ -2671,7 +2761,7 @@ Required permission: Account > Templates > General > Create
            - `annotations`: {object}
          - `vcs`: {object}
            - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
-           - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+           - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
            - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -2709,6 +2799,7 @@ Required permission: Account > Templates > General > Create
              - `buildEngine`: (multiple options) (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko) | (string) A string containing one or more references that resolve to build engine to use. Defaults to recommended build engine `buildkit` (pattern: .*\${.*}.*)
              - `dockerFilePath`: (multiple options) (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$) | (string) A string containing one or more references that resolve to the file path of the Dockerfile. (pattern: .*\${.*}.*)
              - `dockerWorkDir`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
+             - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
              - `buildkit`: {object}
                - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
                - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
@@ -2787,7 +2878,7 @@ Required permission: Account > Templates > General > Create
            - `annotations`: {object}
          - `vcs`: {object}
            - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
-           - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+           - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
            - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -2824,6 +2915,7 @@ Required permission: Account > Templates > General > Create
            - `buildEngine`: (multiple options) (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko) | (string) A string containing one or more references that resolve to build engine to use. Defaults to recommended build engine `buildkit` (pattern: .*\${.*}.*)
            - `dockerFilePath`: (multiple options) (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$) | (string) A string containing one or more references that resolve to the file path of the Dockerfile. (pattern: .*\${.*}.*)
            - `dockerWorkDir`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
+           - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
            - `buildkit`: {object}
              - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
              - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
@@ -2903,7 +2995,7 @@ Required permission: Account > Templates > General > Create
            - `annotations`: {object}
          - `vcs`: {object}
            - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
-           - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+           - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
            - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -2941,6 +3033,7 @@ Required permission: Account > Templates > General > Create
              - `buildEngine`: (multiple options) (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko) | (string) A string containing one or more references that resolve to build engine to use. Defaults to recommended build engine `buildkit` (pattern: .*\${.*}.*)
              - `dockerFilePath`: (multiple options) (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$) | (string) A string containing one or more references that resolve to the file path of the Dockerfile. (pattern: .*\${.*}.*)
              - `dockerWorkDir`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
+             - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
              - `buildkit`: {object}
                - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
                - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
@@ -3016,7 +3109,7 @@ Required permission: Account > Templates > General > Create
            - `annotations`: {object}
          - `vcs`: {object}
            - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
-           - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+           - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
            - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -3053,6 +3146,7 @@ Required permission: Account > Templates > General > Create
            - `buildEngine`: (multiple options) (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko) | (string) A string containing one or more references that resolve to build engine to use. Defaults to recommended build engine `buildkit` (pattern: .*\${.*}.*)
            - `dockerFilePath`: (multiple options) (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$) | (string) A string containing one or more references that resolve to the file path of the Dockerfile. (pattern: .*\${.*}.*)
            - `dockerWorkDir`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
+           - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
            - `buildkit`: {object}
              - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
              - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
@@ -3137,7 +3231,7 @@ Required permission: Account > Templates > General > Create
            - `annotations`: {object}
          - `vcs`: {object}
            - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
-           - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+           - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
            - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -3175,6 +3269,7 @@ Required permission: Account > Templates > General > Create
              - `buildEngine`: (multiple options) (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko) | (string) A string containing one or more references that resolve to build engine to use. Defaults to recommended build engine `buildkit` (pattern: .*\${.*}.*)
              - `dockerFilePath`: (multiple options) (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$) | (string) A string containing one or more references that resolve to the file path of the Dockerfile. (pattern: .*\${.*}.*)
              - `dockerWorkDir`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
+             - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
              - `buildkit`: {object}
                - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
                - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
@@ -3216,6 +3311,8 @@ Required permission: Account > Templates > General > Create
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Addon)
      - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `options`: {object}
+       - `upgradeOnVersionMismatch`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
      - `spec`: (multiple options) {object}
          - `description`: (multiple options) (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the addon. (pattern: .*\${.*}.*)
          - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -3232,6 +3329,7 @@ Required permission: Account > Templates > General > Create
              - `maxSizeMib`: (integer) Maximum disk size in mebibytes. When set, autoscaling will not expand storage beyond this value. Must be greater than the current storage size.
          - `tlsEnabled`: (boolean) Enables access to the addon via TLS (if supported by the addon type).
          - `externalAccessEnabled`: (boolean) Enables external access to the addon via TLS (if supported by the addon type).
+         - `vpcAccessible`: (boolean) Exposes the addon on the cluster's private (VPC) load balancer. Mutually exclusive with `externalAccessEnabled`.
          - `ipPolicies`: [array of] {object}
              - `addresses`: [array of] (string) An IP address used by this rule
              - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
@@ -3277,6 +3375,8 @@ Required permission: Account > Templates > General > Create
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: Addon)
      - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `options`: {object}
+       - `upgradeOnVersionMismatch`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
      - `spec`: (multiple options) {object}
          - `name`: (multiple options) (string) The name of the addon. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the name of the addon. (pattern: .*\${.*}.*)
          - `description`: (multiple options) (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the addon. (pattern: .*\${.*}.*)
@@ -3302,10 +3402,12 @@ Required permission: Account > Templates > General > Create
          - `source`: (multiple options) {object}
              - `projectId`: (multiple options) (string) ID of the project of the source addon. Only required if not the same as target addon (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the project of the source addon. Only required if not the same as target addon (pattern: .*\${.*}.*)
              - `addonId`: (multiple options) (string) ID of the addon to fork. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the addon to fork. (pattern: .*\${.*}.*)
-             - `backupId`: (multiple options) (string) ID of a backup belonging to that addon to use for the fork. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of a backup belonging to that addon to use for the fork. (pattern: .*\${.*}.*) | {object}
+             - `backupId`: (multiple options) (string) ID of a backup belonging to that addon to use for the fork. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of a backup belonging to that addon to use for the fork. (pattern: .*\${.*}.*)
+             - `backupType`: (multiple options) (string) Type of backup to select when backupId is `latest`. Defaults to `snapshot`. (enum: snapshot, global) | (string) A string containing one or more references that resolve to type of backup to select when backupId is `latest`. Defaults to `snapshot`. (pattern: .*\${.*}.*) | {object}
              - `backupUid`: (multiple options) (string) Uid of the backup (format: uuid) | (string) A string containing one or more references that resolve to uid of the backup (pattern: .*\${.*}.*)
          - `tlsEnabled`: (boolean) Enables access to the addon via TLS (if supported by the addon type).
          - `externalAccessEnabled`: (boolean) Enables external access to the addon via TLS (if supported by the addon type).
+         - `vpcAccessible`: (boolean) Exposes the addon on the cluster's private (VPC) load balancer. Mutually exclusive with `externalAccessEnabled`.
          - `ipPolicies`: [array of] {object}
              - `addresses`: [array of] (string) An IP address used by this rule
              - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
@@ -3538,6 +3640,7 @@ Required permission: Account > Templates > General > Create
      - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
      - `spec`: {object}
        - `description`: (multiple options) (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) (pattern: .*\${.*}.*)
+       - `priority`: (multiple options) (integer) The priority used to select a workload identity for each provider. | (string) A string containing one or more references that resolve to the priority used to select a workload identity for each provider. (pattern: .*\${.*}.*)
        - `spec`: {object}
          - `provider`: (multiple options) {object}
              - `type`: (string) (required) (enum: aws)
@@ -3588,6 +3691,7 @@ Required permission: Account > Templates > General > Create
      - `spec`: {object}
        - `name`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
        - `description`: (multiple options) (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) (pattern: .*\${.*}.*)
+       - `priority`: (multiple options) (integer) The priority used to select a workload identity for each provider. | (string) A string containing one or more references that resolve to the priority used to select a workload identity for each provider. (pattern: .*\${.*}.*)
        - `spec`: {object}
          - `providerLinkId`: (multiple options) (string) The internal ID of the BYOC provider integration to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the internal ID of the BYOC provider integration to use. (pattern: .*\${.*}.*)
          - `roleMode`: (string) (required) (enum: managed, existing)
@@ -3674,7 +3778,7 @@ Required permission: Account > Templates > General > Create
                - `resetOnUpdate`: (boolean) If `true`, the expiry time for an existing preview will be reset when it is ran again.
            - `arguments`: {object}
            - `gitops`: {object}
-             - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+             - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
              - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
              - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
              - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
@@ -3685,7 +3789,7 @@ Required permission: Account > Templates > General > Create
            - `spec`: (undefined)
            - `triggers`: [array of] {object}
                - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
-               - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+               - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
                - `selfHostedVcsId`: (multiple options) (string) If vcsService is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if vcsService is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
                - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
                - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -3708,7 +3812,7 @@ Required permission: Account > Templates > General > Create
                  - `concurrencyPolicy`: (string) Defines the concurrency behaviour of the template with respect to parallel runs. (enum: allow, queue, forbid, latest, replace)
                  - `paused`: (boolean) If `true`, the template will not run when triggered by git.
                - `gitops`: {object}
-                 - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+                 - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
                  - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
                  - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
                  - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
@@ -3720,7 +3824,7 @@ Required permission: Account > Templates > General > Create
                - `richInputs`: [array of] (undefined)
                - `triggers`: [array of] {object}
                    - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
-                   - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+                   - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
                    - `selfHostedVcsId`: (multiple options) (string) If vcsService is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if vcsService is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
                    - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
                    - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -3780,7 +3884,7 @@ Required permission: Account > Templates > General > Create
                - `resetOnUpdate`: (boolean) If `true`, the expiry time for an existing preview will be reset when it is ran again.
            - `arguments`: {object}
            - `gitops`: {object}
-             - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+             - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
              - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
              - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
              - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
@@ -3791,7 +3895,7 @@ Required permission: Account > Templates > General > Create
            - `spec`: (undefined)
            - `triggers`: [array of] {object}
                - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
-               - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+               - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
                - `selfHostedVcsId`: (multiple options) (string) If vcsService is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if vcsService is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
                - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
                - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -3814,7 +3918,7 @@ Required permission: Account > Templates > General > Create
                  - `concurrencyPolicy`: (string) Defines the concurrency behaviour of the template with respect to parallel runs. (enum: allow, queue, forbid, latest, replace)
                  - `paused`: (boolean) If `true`, the template will not run when triggered by git.
                - `gitops`: {object}
-                 - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+                 - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
                  - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
                  - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
                  - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
@@ -3826,7 +3930,7 @@ Required permission: Account > Templates > General > Create
                - `richInputs`: [array of] (undefined)
                - `triggers`: [array of] {object}
                    - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
-                   - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+                   - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
                    - `selfHostedVcsId`: (multiple options) (string) If vcsService is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if vcsService is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
                    - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
                    - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -3919,6 +4023,7 @@ Required permission: Account > Templates > General > Create
            - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
            - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
            - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: ^[a-zA-Z0-9-_]+$)
+           - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references. (min length: 1)
        - `id`: (multiple options) (string) The id of object to build. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of object to build. (pattern: .*\${.*}.*)
        - `type`: (string) (required) The type of the object to build. (enum: service, job)
        - `sha`: (multiple options) (string) Commit sha to build. If not provided, builds the most recent relevant commit. (min length: 40) (max length: 40) | (string) A string containing one or more references that resolve to commit sha to build. If not provided, builds the most recent relevant commit. (pattern: .*\${.*}.*)
@@ -3935,7 +4040,7 @@ Required permission: Account > Templates > General > Create
        - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
        - `runtimeEnvironment`: (multiple options) {object} | (string) (pattern: .*\${.*}.*)
        - `runtimeFiles`: {object}
-       - `dockerSecretMounts`: {object}
+       - `dockerSecretMounts`: (undefined)
        - `billing`: {object}
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan override to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan override to use. (pattern: .*\${.*}.*)
        - `deployment`: (multiple options) {object}
@@ -3954,6 +4059,12 @@ Required permission: Account > Templates > General > Create
              - `ephemeralStorage`: {object}
                - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
              - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
+           - `gpu`: {object}
+             - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
+             - `configuration`: {object}
+               - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+               - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+               - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
            - `internal`: {object}
              - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
              - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
@@ -3974,6 +4085,12 @@ Required permission: Account > Templates > General > Create
              - `ephemeralStorage`: {object}
                - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
              - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
+           - `gpu`: {object}
+             - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
+             - `configuration`: {object}
+               - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+               - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+               - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
            - `external`: {object}
              - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
              - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
@@ -4034,6 +4151,13 @@ Required permission: Account > Templates > General > Create
                - `shell`: (string)
                - `user`: (string)
                - `group`: (string) | {object}
+         - `kind`: (string) (required) The kind of action. (enum: Domain)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of action. (enum: verify)
+             - `data`: {object}
+               - `domain`: (multiple options) (string) The domain to verify. (pattern: ^((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+$) | (string) A string containing one or more references that resolve to the domain to verify. (pattern: .*\${.*}.*)
+               - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*)
+             - `condition`: (string) (enum: verified) | {object}
          - `kind`: (string) (required) The kind of action. (enum: VCS)
          - `spec`: (multiple options) {object}
              - `type`: (string) (required) The type of action. (enum: createRepoFromSource)
@@ -4112,6 +4236,12 @@ Required permission: Account > Templates > General > Create
                - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
                - `serviceId`: (multiple options) (string) The id of the service to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the service to monitor. (pattern: .*\${.*}.*)
                - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*) | {object}
+         - `kind`: (string) (required) The kind of condition. (enum: Domain)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of condition. (enum: verified)
+             - `data`: {object}
+               - `domain`: (multiple options) (string) The domain to monitor. (pattern: ^((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+$) | (string) A string containing one or more references that resolve to the domain to monitor. (pattern: .*\${.*}.*)
+               - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*) | {object}
          - `kind`: (string) (required) The kind of condition. (enum: VCS)
          - `spec`: (multiple options) {object}
              - `type`: (string) (required) The type of condition. (enum: createRepoFromSourceSuccess)
@@ -4134,7 +4264,7 @@ Required permission: Account > Templates > General > Create
      - `spec`: (multiple options) {object}
          - `kind`: (string) (required) The kind of message to send. (enum: VCS)
          - `spec`: {object}
-           - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+           - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
            - `repoUrl`: (multiple options) (string) URL of the Git repo to send this message to. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to send this message to. (pattern: .*\${.*}.*)
@@ -4262,6 +4392,76 @@ Required permission: Account > Templates > General > Create
                  - `weight`: (multiple options) (integer) Traffic weight for this backend | (string) A string containing one or more references that resolve to traffic weight for this backend (pattern: .*\${.*}.*)
      - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: NetworkPolicy)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `spec`: {object}
+       - `name`: (multiple options) (string) The name of the network policy. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the name of the network policy. (pattern: .*\${.*}.*)
+       - `description`: (multiple options) (string) The description of the network policy. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to the description of the network policy. (pattern: .*\${.*}.*)
+       - `spec`: {object}
+         - `restrictions`: {object}
+           - `projects`: {object}
+             - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `items`: (multiple options) [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+             - `restrictionMode`: (multiple options) (string) (enum: in, notIn) | (string) (pattern: .*\${.*}.*)
+           - `tags`: {object}
+             - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `items`: (multiple options) [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+             - `matchCondition`: (multiple options) (string) (enum: or, and) | (string) (pattern: .*\${.*}.*)
+         - `egress`: {object}
+           - `denyAll`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `allowTo`: (multiple options) [array of] (multiple options) (string) (pattern: ^(?!.*\${.*}).*$) (min length: 1) | (string) (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to external destinations that egress traffic is allowed to (pattern: .*\${.*}.*)
+           - `allowToTags`: (multiple options) [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to tags of workloads that egress traffic is allowed to (pattern: .*\${.*}.*)
+           - `allowToProjects`: (multiple options) [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to projects that egress traffic is allowed to (pattern: .*\${.*}.*)
+         - `ingress`: {object}
+           - `denyAll`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `allowFromTags`: (multiple options) [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to tags of workloads that ingress traffic is allowed from (pattern: .*\${.*}.*)
+           - `allowFromProjects`: (multiple options) [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to projects that ingress traffic is allowed from (pattern: .*\${.*}.*)
+         - `loadBalancerIngress`: {object}
+           - `targets`: (multiple options) [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to load balancer internal IDs this ingress rule applies to. (pattern: .*\${.*}.*)
+           - `mode`: (multiple options) (string) Whether the listed source ranges are allowed or denied. (enum: allowList, denyList) | (string) A string containing one or more references that resolve to whether the listed source ranges are allowed or denied. (pattern: .*\${.*}.*)
+           - `cidrs`: (multiple options) [array of] (multiple options) (string) | (string) (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to source IP addresses and CIDR ranges. (pattern: .*\${.*}.*)
+         - `egressSecretInjection`: (multiple options) [array of] {object}
+               - `name`: (multiple options) (string) (pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$) (max length: 63) | (string) (pattern: .*\${.*}.*)
+               - `header`: (multiple options) (string) (pattern: ^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$) (max length: 256) | (string) (pattern: .*\${.*}.*)
+               - `hosts`: (multiple options) [array of] (multiple options) (string) (pattern: ^(?!.*\${.*}).*$) (max length: 253) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+               - `value`: (multiple options) (string) (pattern: ^(?!.*\${.*}).*$) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+     - `updateMode`: (string) (required) Partially updates only the supplied fields on an existing resource. (enum: patch) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: NetworkPolicy)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `spec`: {object}
+       - `name`: (multiple options) (string) The name of the network policy. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the name of the network policy. (pattern: .*\${.*}.*)
+       - `description`: (multiple options) (string) The description of the network policy. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to the description of the network policy. (pattern: .*\${.*}.*)
+       - `spec`: {object}
+         - `restrictions`: {object}
+           - `projects`: {object}
+             - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `items`: (multiple options) [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+             - `restrictionMode`: (multiple options) (string) (enum: in, notIn) | (string) (pattern: .*\${.*}.*)
+           - `tags`: {object}
+             - `enabled`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+             - `items`: (multiple options) [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+             - `matchCondition`: (multiple options) (string) (enum: or, and) | (string) (pattern: .*\${.*}.*)
+         - `egress`: {object}
+           - `denyAll`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `allowTo`: (multiple options) [array of] (multiple options) (string) (pattern: ^(?!.*\${.*}).*$) (min length: 1) | (string) (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to external destinations that egress traffic is allowed to (pattern: .*\${.*}.*)
+           - `allowToTags`: (multiple options) [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to tags of workloads that egress traffic is allowed to (pattern: .*\${.*}.*)
+           - `allowToProjects`: (multiple options) [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to projects that egress traffic is allowed to (pattern: .*\${.*}.*)
+         - `ingress`: {object}
+           - `denyAll`: (multiple options) (boolean) | (string) (pattern: .*\${.*}.*)
+           - `allowFromTags`: (multiple options) [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to tags of workloads that ingress traffic is allowed from (pattern: .*\${.*}.*)
+           - `allowFromProjects`: (multiple options) [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to projects that ingress traffic is allowed from (pattern: .*\${.*}.*)
+         - `loadBalancerIngress`: {object}
+           - `targets`: (multiple options) [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to load balancer internal IDs this ingress rule applies to. (pattern: .*\${.*}.*)
+           - `mode`: (multiple options) (string) Whether the listed source ranges are allowed or denied. (enum: allowList, denyList) | (string) A string containing one or more references that resolve to whether the listed source ranges are allowed or denied. (pattern: .*\${.*}.*)
+           - `cidrs`: (multiple options) [array of] (multiple options) (string) | (string) (pattern: .*\${.*}.*) | (string) A string containing one or more references that resolve to source IP addresses and CIDR ranges. (pattern: .*\${.*}.*)
+         - `egressSecretInjection`: (multiple options) [array of] {object}
+               - `name`: (multiple options) (string) (pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$) (max length: 63) | (string) (pattern: .*\${.*}.*)
+               - `header`: (multiple options) (string) (pattern: ^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$) (max length: 256) | (string) (pattern: .*\${.*}.*)
+               - `hosts`: (multiple options) [array of] (multiple options) (string) (pattern: ^(?!.*\${.*}).*$) (max length: 253) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+               - `value`: (multiple options) (string) (pattern: ^(?!.*\${.*}).*$) | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+     - `updateMode`: (string) Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource. (enum: put, create) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: OpenTofu)
      - `condition`: (string) (enum: success)
      - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
@@ -4300,7 +4500,7 @@ Required permission: Account > Templates > General > Create
        - `apiVersion`: (string) (required) The version of the Northflank API to run the template against. (enum: v1.2)
        - `arguments`: {object}
        - `gitops`: {object}
-         - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+         - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
          - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
          - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
          - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
@@ -4316,7 +4516,7 @@ Required permission: Account > Templates > General > Create
              - `kind`: (string) (required) (enum: vcs-push)
              - `spec`: {object}
                - `vcs`: {object}
-                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
                  - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
                  - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
                  - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -4335,7 +4535,7 @@ Required permission: Account > Templates > General > Create
              - `kind`: (string) (required) (enum: vcs-pr)
              - `spec`: {object}
                - `vcs`: {object}
-                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
                  - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
                  - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
                  - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -4361,7 +4561,7 @@ Required permission: Account > Templates > General > Create
              - `kind`: (string) (required) (enum: vcs-release)
              - `spec`: {object}
                - `vcs`: {object}
-                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
                  - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
                  - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
                  - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -4372,7 +4572,7 @@ Required permission: Account > Templates > General > Create
              - `kind`: (string) (required) (enum: vcs-pr-label)
              - `spec`: {object}
                - `vcs`: {object}
-                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
                  - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
                  - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
                  - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -4395,7 +4595,7 @@ Required permission: Account > Templates > General > Create
              - `kind`: (string) (required) (enum: vcs-check-suite)
              - `spec`: {object}
                - `vcs`: {object}
-                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
                  - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
                  - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
                  - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -4437,7 +4637,7 @@ Required permission: Account > Templates > General > Create
        - `apiVersion`: (string) (required) The version of the Northflank API to run the template against. (enum: v1.2)
        - `arguments`: {object}
        - `gitops`: {object}
-         - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+         - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
          - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
          - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
          - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
@@ -4452,7 +4652,7 @@ Required permission: Account > Templates > General > Create
              - `kind`: (string) (required) (enum: vcs-push)
              - `spec`: {object}
                - `vcs`: {object}
-                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
                  - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
                  - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
                  - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -4471,7 +4671,7 @@ Required permission: Account > Templates > General > Create
              - `kind`: (string) (required) (enum: vcs-pr)
              - `spec`: {object}
                - `vcs`: {object}
-                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
                  - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
                  - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
                  - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -4497,7 +4697,7 @@ Required permission: Account > Templates > General > Create
              - `kind`: (string) (required) (enum: vcs-release)
              - `spec`: {object}
                - `vcs`: {object}
-                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
                  - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
                  - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
                  - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -4508,7 +4708,7 @@ Required permission: Account > Templates > General > Create
              - `kind`: (string) (required) (enum: vcs-pr-label)
              - `spec`: {object}
                - `vcs`: {object}
-                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
                  - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
                  - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
                  - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -4531,7 +4731,7 @@ Required permission: Account > Templates > General > Create
              - `kind`: (string) (required) (enum: vcs-check-suite)
              - `spec`: {object}
                - `vcs`: {object}
-                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
                  - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
                  - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
                  - `vcsLinkId`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (pattern: .*\${.*}.*)
@@ -4603,242 +4803,267 @@ Required permission: Account > Templates > General > Create
        - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
   - `teardownSpec`: {object}
     - `spec`: (multiple options) {object}
-        - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
-        - `kind`: (string) (required) The kind of node. (enum: Workflow)
-        - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
-        - `spec`: (undefined) (required) | {object}
-        - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
-        - `kind`: (string) (required) The kind of node. (enum: JobRun)
-        - `condition`: (string) (enum: success)
-        - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
-        - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
-        - `spec`: {object}
-          - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
-          - `runtimeEnvironment`: (multiple options) {object} | (string) (pattern: .*\${.*}.*)
-          - `runtimeFiles`: {object}
-          - `dockerSecretMounts`: {object}
-          - `billing`: {object}
-            - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan override to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan override to use. (pattern: .*\${.*}.*)
-          - `deployment`: (multiple options) {object}
-              - `docker`: {object}
-                - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
-                - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
-                - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
-              - `buildpack`: {object}
-                - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
-                - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
-                - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
-                - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
-              - `storage`: {object}
-                - `useHdbStorage`: (boolean)
-                - `usePdSsdStorage`: (boolean)
-                - `ephemeralStorage`: {object}
-                  - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
-                - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
-              - `internal`: {object}
-                - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
-                - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
-                - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
-                - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*) | {object}
-              - `docker`: {object}
-                - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
-                - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
-                - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
-              - `buildpack`: {object}
-                - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
-                - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
-                - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
-                - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
-              - `storage`: {object}
-                - `useHdbStorage`: (boolean)
-                - `usePdSsdStorage`: (boolean)
-                - `ephemeralStorage`: {object}
-                  - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
-                - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
-              - `external`: {object}
-                - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
-                - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
-          - `jobId`: (multiple options) (string) The ID of the job to run. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the ID of the job to run. (pattern: .*\${.*}.*) | {object}
-        - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
-        - `kind`: (string) (required) The kind of node. (enum: LoopWorkflow)
-        - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
-        - `spec`: {object}
-          - `iterations`: (multiple options) [array of] (multiple options) {object} | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
-          - `steps`: [array of] (undefined) | {object}
-        - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
-        - `kind`: (string) (required) The kind of node. (enum: Action)
-        - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
-        - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
-        - `spec`: (multiple options) {object}
-            - `kind`: (string) (required) The kind of action. (enum: Addon)
-            - `spec`: (multiple options) {object}
-                - `type`: (string) (required) The type of action. (enum: restart)
-                - `data`: {object}
-                  - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
-                  - `addonId`: (multiple options) (string) The id of the addon to restart. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the addon to restart. (pattern: .*\${.*}.*)
-                  - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*)
-                - `condition`: (string) (enum: running) | {object}
-            - `kind`: (string) (required) The kind of action. (enum: AddonBackup)
-            - `spec`: (multiple options) {object}
-                - `type`: (string) (required) The type of action. (enum: restore)
-                - `data`: {object}
-                  - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
-                  - `addonId`: (multiple options) (string) The id of the addon to restore a backup to. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the addon to restore a backup to. (pattern: .*\${.*}.*)
-                  - `backupId`: (multiple options) (string) The id of the backup to restore. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the backup to restore. (pattern: .*\${.*}.*)
-                  - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*)
-                - `condition`: (string) (enum: success) | {object}
-            - `kind`: (string) (required) The kind of action. (enum: Job)
-            - `spec`: (multiple options) {object}
-                - `type`: (string) (required) The type of action. (enum: execute)
-                - `data`: {object}
-                  - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
-                  - `jobId`: (multiple options) (string) The id of the job to run the command in. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the job to run the command in. (pattern: .*\${.*}.*)
-                  - `command`: (string) (required)
-                  - `shell`: (string)
-                  - `user`: (string)
-                  - `group`: (string) | {object}
-            - `kind`: (string) (required) The kind of action. (enum: Service)
-            - `spec`: (multiple options) {object}
-                - `type`: (string) (required) The type of action. (enum: restart)
-                - `data`: {object}
-                  - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
-                  - `serviceId`: (multiple options) (string) The id of the service to restart. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the service to restart. (pattern: .*\${.*}.*)
-                  - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*)
-                - `condition`: (string) (enum: running) | {object}
-                - `type`: (string) (required) The type of action. (enum: execute)
-                - `data`: {object}
-                  - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
-                  - `serviceId`: (multiple options) (string) The id of the service to run the command in. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the service to run the command in. (pattern: .*\${.*}.*)
-                  - `options`: {object}
-                    - `dispatchOnly`: (boolean) Specify whether the command output should be awaited the node should succeed after having sent the command.
-                  - `command`: (string) (required)
-                  - `shell`: (string)
-                  - `user`: (string)
-                  - `group`: (string) | {object}
-            - `kind`: (string) (required) The kind of action. (enum: VCS)
-            - `spec`: (multiple options) {object}
-                - `type`: (string) (required) The type of action. (enum: createRepoFromSource)
-                - `data`: {object}
-                  - `sourceData`: {object}
-                    - `publicRepo`: (multiple options) (boolean) Whether the source repository is a public repository. | (string) A string containing one or more references that resolve to whether the source repository is a public repository. (pattern: .*\${.*}.*)
-                    - `vcsService`: (multiple options) (string) The VCS provider of the source repository. | (string) A string containing one or more references that resolve to the VCS provider of the source repository. (pattern: .*\${.*}.*)
-                    - `oauthProvider`: (multiple options) (string) The OAuth provider used to access the source repository. | (string) A string containing one or more references that resolve to the OAuth provider used to access the source repository. (pattern: .*\${.*}.*)
-                    - `repoUrl`: (multiple options) (string) URL of the source Git repo. | (string) A string containing one or more references that resolve to uRL of the source Git repo. (pattern: .*\${.*}.*)
-                    - `branch`: (multiple options) (string) The name of the branch to use. | (string) A string containing one or more references that resolve to the name of the branch to use. (pattern: .*\${.*}.*)
-                    - `accountLogin`: (multiple options) (string) The login name of the linked VCS account used to access the source repository. | (string) A string containing one or more references that resolve to the login name of the linked VCS account used to access the source repository. (pattern: .*\${.*}.*)
-                    - `commitSha`: (multiple options) (string) The SHA of the commit to use. | (string) A string containing one or more references that resolve to the SHA of the commit to use. (pattern: .*\${.*}.*)
-                    - `directory`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
-                    - `vcsLinkId`: (multiple options) (string) The ID of the linked VCS account to use. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to the ID of the linked VCS account to use. (pattern: .*\${.*}.*)
-                    - `selfHostedVcsId`: (multiple options) (string) The ID of the self-hosted VCS to use. | (string) A string containing one or more references that resolve to the ID of the self-hosted VCS to use. (pattern: .*\${.*}.*)
-                  - `targetData`: {object}
-                    - `name`: (multiple options) (string) The name of the repository to create. | (string) A string containing one or more references that resolve to the name of the repository to create. (pattern: .*\${.*}.*)
-                    - `description`: (multiple options) (string) A description of the repository to create. | (string) A string containing one or more references that resolve to a description of the repository to create. (pattern: .*\${.*}.*)
-                    - `privateRepo`: (multiple options) (boolean) Whether the repository should be created as a private repository. | (string) A string containing one or more references that resolve to whether the repository should be created as a private repository. (pattern: .*\${.*}.*)
-                    - `branch`: (multiple options) (string) The repository branch. | (string) A string containing one or more references that resolve to the repository branch. (pattern: .*\${.*}.*)
-                    - `context`: (multiple options) (string) The owner context (user or organisation) the repository should be created in. | (string) A string containing one or more references that resolve to the owner context (user or organisation) the repository should be created in. (pattern: .*\${.*}.*)
-                    - `folder`: (multiple options) (string) The folder or project the repository should be created in, if supported by the VCS provider. | (string) A string containing one or more references that resolve to the folder or project the repository should be created in, if supported by the VCS provider. (pattern: .*\${.*}.*)
-                    - `accountLogin`: (multiple options) (string) The login name of the linked VCS account used to create the repository. | (string) A string containing one or more references that resolve to the login name of the linked VCS account used to create the repository. (pattern: .*\${.*}.*)
-                    - `vcsLinkId`: (multiple options) (string) The ID of the linked VCS account to use. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to the ID of the linked VCS account to use. (pattern: .*\${.*}.*)
-                    - `oauthProvider`: (multiple options) (string) The OAuth provider used to create the repository. | (string) A string containing one or more references that resolve to the OAuth provider used to create the repository. (pattern: .*\${.*}.*)
-                    - `vcsService`: (multiple options) (string) The VCS provider to create the repository with. | (string) A string containing one or more references that resolve to the VCS provider to create the repository with. (pattern: .*\${.*}.*)
-                    - `selfHostedVcsId`: (multiple options) (string) The ID of the self-hosted VCS to use. | (string) A string containing one or more references that resolve to the ID of the self-hosted VCS to use. (pattern: .*\${.*}.*) | {object}
-        - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
-        - `kind`: (string) (required) The kind of node. (enum: Condition)
-        - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
-        - `spec`: (multiple options) {object}
-            - `kind`: (string) (required) The kind of condition. (enum: Addon)
-            - `spec`: (multiple options) {object}
-                - `type`: (string) (required) The type of condition. (enum: running)
-                - `data`: {object}
-                  - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
-                  - `addonId`: (multiple options) (string) The id of the addon to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the addon to monitor. (pattern: .*\${.*}.*)
-                  - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*) | {object}
-            - `kind`: (string) (required) The kind of condition. (enum: AddonBackup)
-            - `spec`: (multiple options) {object}
-                - `type`: (string) (required) The type of condition. (enum: success)
-                - `data`: {object}
-                  - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
-                  - `addonId`: (multiple options) (string) The id of the addon to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the addon to monitor. (pattern: .*\${.*}.*)
-                  - `backupId`: (multiple options) (string) The id of the backup to monitor. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the backup to monitor. (pattern: .*\${.*}.*) | {object}
-            - `kind`: (string) (required) The kind of condition. (enum: AddonImport)
-            - `spec`: (multiple options) {object}
-                - `type`: (string) (required) The type of condition. (enum: success)
-                - `data`: {object}
-                  - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
-                  - `addonId`: (multiple options) (string) The id of the addon to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the addon to monitor. (pattern: .*\${.*}.*)
-                  - `importId`: (multiple options) (string) The id of the import to monitor. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the import to monitor. (pattern: .*\${.*}.*) | {object}
-            - `kind`: (string) (required) The kind of condition. (enum: Build)
-            - `spec`: (multiple options) {object}
-                - `type`: (string) (required) The type of condition. (enum: success)
-                - `data`: {object}
-                  - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
-                  - `buildId`: (multiple options) (string) The id of the build to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the build to monitor. (pattern: .*\${.*}.*) | {object}
-            - `kind`: (string) (required) The kind of condition. (enum: BYOCCluster)
-            - `spec`: (multiple options) {object}
-                - `type`: (string) (required) The type of condition. (enum: running)
-                - `data`: {object}
-                  - `clusterId`: (multiple options) (string) The id of the cluster to monitor. (pattern: ^[a-z]-?[a-z0-9]+(-[a-z0-9]+)*$) (min length: 3) (max length: 20) | (string) A string containing one or more references that resolve to the id of the cluster to monitor. (pattern: .*\${.*}.*)
-                  - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*) | {object}
-            - `kind`: (string) (required) The kind of condition. (enum: JobRun)
-            - `spec`: (multiple options) {object}
-                - `type`: (string) (required) The type of condition. (enum: success)
-                - `data`: {object}
-                  - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
-                  - `jobId`: (multiple options) (string) The id of the job to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the job to monitor. (pattern: .*\${.*}.*)
-                  - `runId`: (multiple options) (string) The id of the job run to monitor. | (string) A string containing one or more references that resolve to the id of the job run to monitor. (pattern: .*\${.*}.*) | {object}
-            - `kind`: (string) (required) The kind of condition. (enum: Service)
-            - `spec`: (multiple options) {object}
-                - `type`: (string) (required) The type of condition. (enum: running)
-                - `data`: {object}
-                  - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
-                  - `serviceId`: (multiple options) (string) The id of the service to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the service to monitor. (pattern: .*\${.*}.*)
-                  - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*) | {object}
-            - `kind`: (string) (required) The kind of condition. (enum: VCS)
-            - `spec`: (multiple options) {object}
-                - `type`: (string) (required) The type of condition. (enum: createRepoFromSourceSuccess)
-                - `data`: {object}
-                  - `trackerId`: (multiple options) (string) The tracker id outputted from the 'createRepoFromSource' action to monitor. | (string) A string containing one or more references that resolve to the tracker id outputted from the 'createRepoFromSource' action to monitor. (pattern: .*\${.*}.*) | {object}
-        - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
-        - `kind`: (string) (required) The kind of node. (enum: Message)
-        - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
-        - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
-        - `spec`: (multiple options) {object}
-            - `kind`: (string) (required) The kind of message to send. (enum: VCS)
-            - `spec`: {object}
-              - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
-              - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
-              - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
-              - `repoUrl`: (multiple options) (string) URL of the Git repo to send this message to. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to send this message to. (pattern: .*\${.*}.*)
-              - `pullRequestId`: (multiple options) (string) The ID of the pull request to comment on. | (string) A string containing one or more references that resolve to the ID of the pull request to comment on. (pattern: .*\${.*}.*)
-              - `message`: (multiple options) (string) The rich text message to comment. | (string) A string containing one or more references that resolve to the rich text message to comment. (pattern: .*\${.*}.*) | {object}
-            - `kind`: (string) (required) The kind of message to send. (enum: SLACK)
-            - `spec`: {object}
-              - `webhookUrl`: (multiple options) (string) The Slack webhook URL to send messages to. | (string) A string containing one or more references that resolve to the Slack webhook URL to send messages to. (pattern: .*\${.*}.*)
-              - `integrationInternalId`: (multiple options) (string) The ID of an existing Slack integration to use. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the ID of an existing Slack integration to use. (pattern: .*\${.*}.*)
-              - `message`: (multiple options) (string) The message content to send to Slack. Supports markdown formatting. | (string) A string containing one or more references that resolve to the message content to send to Slack. Supports markdown formatting. (pattern: .*\${.*}.*) | {object}
-            - `kind`: (string) (required) The kind of message to send. (enum: RAW_WEBHOOK)
-            - `spec`: {object}
-              - `webhookUrl`: (multiple options) (string) The webhook URL to send messages to. | (string) A string containing one or more references that resolve to the webhook URL to send messages to. (pattern: .*\${.*}.*)
-              - `message`: (multiple options) (string) The message content to send to the webhook. | (string) A string containing one or more references that resolve to the message content to send to the webhook. (pattern: .*\${.*}.*) | {object}
-        - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
-        - `kind`: (string) (required) The kind of node. (enum: LoopData)
-        - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
-        - `spec`: {object} | {object}
-        - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
-        - `kind`: (string) (required) The kind of node. (enum: OpenTofuDestroy)
-        - `condition`: (string) (enum: success)
-        - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
-        - `spec`: {object}
-          - `nodeRef`: (string) (required) The `ref` value of the `OpenTofu` node in the parent template whose state should be destroyed. | {object}
-        - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
-        - `kind`: (string) (required) The kind of node. (enum: Approval)
-        - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
-        - `spec`: {object}
-          - `amount`: (integer) (required)
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: Workflow)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `spec`: (undefined) (required) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: JobRun)
+     - `condition`: (string) (enum: success)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `spec`: {object}
+       - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+       - `runtimeEnvironment`: (multiple options) {object} | (string) (pattern: .*\${.*}.*)
+       - `runtimeFiles`: {object}
+       - `dockerSecretMounts`: (undefined)
+       - `billing`: {object}
+         - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan override to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan override to use. (pattern: .*\${.*}.*)
+       - `deployment`: (multiple options) {object}
+           - `docker`: {object}
+             - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
+             - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
+             - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
+           - `buildpack`: {object}
+             - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
+             - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
+             - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
+             - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
+           - `storage`: {object}
+             - `useHdbStorage`: (boolean)
+             - `usePdSsdStorage`: (boolean)
+             - `ephemeralStorage`: {object}
+               - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
+             - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
+           - `gpu`: {object}
+             - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
+             - `configuration`: {object}
+               - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+               - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+               - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
+           - `internal`: {object}
+             - `id`: (multiple options) (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id` | (string) A string containing one or more references that resolve to iD of the build service to deploy (pattern: .*\${.*}.*)
+             - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
+             - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
+             - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*) | {object}
+           - `docker`: {object}
+             - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
+             - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
+             - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
+           - `buildpack`: {object}
+             - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
+             - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
+             - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
+             - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
+           - `storage`: {object}
+             - `useHdbStorage`: (boolean)
+             - `usePdSsdStorage`: (boolean)
+             - `ephemeralStorage`: {object}
+               - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
+             - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
+           - `gpu`: {object}
+             - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
+             - `configuration`: {object}
+               - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+               - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+               - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
+           - `external`: {object}
+             - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
+             - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
+       - `jobId`: (multiple options) (string) The ID of the job to run. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the ID of the job to run. (pattern: .*\${.*}.*) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: LoopWorkflow)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `spec`: {object}
+       - `iterations`: (multiple options) [array of] (multiple options) {object} | (string) (pattern: .*\${.*}.*) | (string) (pattern: .*\${.*}.*)
+       - `steps`: [array of] (undefined) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: Action)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `spec`: (multiple options) {object}
+         - `kind`: (string) (required) The kind of action. (enum: Addon)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of action. (enum: restart)
+             - `data`: {object}
+               - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+               - `addonId`: (multiple options) (string) The id of the addon to restart. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the addon to restart. (pattern: .*\${.*}.*)
+               - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*)
+             - `condition`: (string) (enum: running) | {object}
+         - `kind`: (string) (required) The kind of action. (enum: AddonBackup)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of action. (enum: restore)
+             - `data`: {object}
+               - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+               - `addonId`: (multiple options) (string) The id of the addon to restore a backup to. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the addon to restore a backup to. (pattern: .*\${.*}.*)
+               - `backupId`: (multiple options) (string) The id of the backup to restore. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the backup to restore. (pattern: .*\${.*}.*)
+               - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*)
+             - `condition`: (string) (enum: success) | {object}
+         - `kind`: (string) (required) The kind of action. (enum: Job)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of action. (enum: execute)
+             - `data`: {object}
+               - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+               - `jobId`: (multiple options) (string) The id of the job to run the command in. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the job to run the command in. (pattern: .*\${.*}.*)
+               - `command`: (string) (required)
+               - `shell`: (string)
+               - `user`: (string)
+               - `group`: (string) | {object}
+         - `kind`: (string) (required) The kind of action. (enum: Service)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of action. (enum: restart)
+             - `data`: {object}
+               - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+               - `serviceId`: (multiple options) (string) The id of the service to restart. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the service to restart. (pattern: .*\${.*}.*)
+               - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*)
+             - `condition`: (string) (enum: running) | {object}
+             - `type`: (string) (required) The type of action. (enum: execute)
+             - `data`: {object}
+               - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+               - `serviceId`: (multiple options) (string) The id of the service to run the command in. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the service to run the command in. (pattern: .*\${.*}.*)
+               - `options`: {object}
+                 - `dispatchOnly`: (boolean) Specify whether the command output should be awaited the node should succeed after having sent the command.
+               - `command`: (string) (required)
+               - `shell`: (string)
+               - `user`: (string)
+               - `group`: (string) | {object}
+         - `kind`: (string) (required) The kind of action. (enum: Domain)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of action. (enum: verify)
+             - `data`: {object}
+               - `domain`: (multiple options) (string) The domain to verify. (pattern: ^((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+$) | (string) A string containing one or more references that resolve to the domain to verify. (pattern: .*\${.*}.*)
+               - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*)
+             - `condition`: (string) (enum: verified) | {object}
+         - `kind`: (string) (required) The kind of action. (enum: VCS)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of action. (enum: createRepoFromSource)
+             - `data`: {object}
+               - `sourceData`: {object}
+                 - `publicRepo`: (multiple options) (boolean) Whether the source repository is a public repository. | (string) A string containing one or more references that resolve to whether the source repository is a public repository. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider of the source repository. | (string) A string containing one or more references that resolve to the VCS provider of the source repository. (pattern: .*\${.*}.*)
+                 - `oauthProvider`: (multiple options) (string) The OAuth provider used to access the source repository. | (string) A string containing one or more references that resolve to the OAuth provider used to access the source repository. (pattern: .*\${.*}.*)
+                 - `repoUrl`: (multiple options) (string) URL of the source Git repo. | (string) A string containing one or more references that resolve to uRL of the source Git repo. (pattern: .*\${.*}.*)
+                 - `branch`: (multiple options) (string) The name of the branch to use. | (string) A string containing one or more references that resolve to the name of the branch to use. (pattern: .*\${.*}.*)
+                 - `accountLogin`: (multiple options) (string) The login name of the linked VCS account used to access the source repository. | (string) A string containing one or more references that resolve to the login name of the linked VCS account used to access the source repository. (pattern: .*\${.*}.*)
+                 - `commitSha`: (multiple options) (string) The SHA of the commit to use. | (string) A string containing one or more references that resolve to the SHA of the commit to use. (pattern: .*\${.*}.*)
+                 - `directory`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
+                 - `vcsLinkId`: (multiple options) (string) The ID of the linked VCS account to use. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to the ID of the linked VCS account to use. (pattern: .*\${.*}.*)
+                 - `selfHostedVcsId`: (multiple options) (string) The ID of the self-hosted VCS to use. | (string) A string containing one or more references that resolve to the ID of the self-hosted VCS to use. (pattern: .*\${.*}.*)
+               - `targetData`: {object}
+                 - `name`: (multiple options) (string) The name of the repository to create. | (string) A string containing one or more references that resolve to the name of the repository to create. (pattern: .*\${.*}.*)
+                 - `description`: (multiple options) (string) A description of the repository to create. | (string) A string containing one or more references that resolve to a description of the repository to create. (pattern: .*\${.*}.*)
+                 - `privateRepo`: (multiple options) (boolean) Whether the repository should be created as a private repository. | (string) A string containing one or more references that resolve to whether the repository should be created as a private repository. (pattern: .*\${.*}.*)
+                 - `branch`: (multiple options) (string) The repository branch. | (string) A string containing one or more references that resolve to the repository branch. (pattern: .*\${.*}.*)
+                 - `context`: (multiple options) (string) The owner context (user or organisation) the repository should be created in. | (string) A string containing one or more references that resolve to the owner context (user or organisation) the repository should be created in. (pattern: .*\${.*}.*)
+                 - `folder`: (multiple options) (string) The folder or project the repository should be created in, if supported by the VCS provider. | (string) A string containing one or more references that resolve to the folder or project the repository should be created in, if supported by the VCS provider. (pattern: .*\${.*}.*)
+                 - `accountLogin`: (multiple options) (string) The login name of the linked VCS account used to create the repository. | (string) A string containing one or more references that resolve to the login name of the linked VCS account used to create the repository. (pattern: .*\${.*}.*)
+                 - `vcsLinkId`: (multiple options) (string) The ID of the linked VCS account to use. (min length: 24) (max length: 24) | (string) A string containing one or more references that resolve to the ID of the linked VCS account to use. (pattern: .*\${.*}.*)
+                 - `oauthProvider`: (multiple options) (string) The OAuth provider used to create the repository. | (string) A string containing one or more references that resolve to the OAuth provider used to create the repository. (pattern: .*\${.*}.*)
+                 - `vcsService`: (multiple options) (string) The VCS provider to create the repository with. | (string) A string containing one or more references that resolve to the VCS provider to create the repository with. (pattern: .*\${.*}.*)
+                 - `selfHostedVcsId`: (multiple options) (string) The ID of the self-hosted VCS to use. | (string) A string containing one or more references that resolve to the ID of the self-hosted VCS to use. (pattern: .*\${.*}.*) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: Condition)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `spec`: (multiple options) {object}
+         - `kind`: (string) (required) The kind of condition. (enum: Addon)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of condition. (enum: running)
+             - `data`: {object}
+               - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+               - `addonId`: (multiple options) (string) The id of the addon to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the addon to monitor. (pattern: .*\${.*}.*)
+               - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*) | {object}
+         - `kind`: (string) (required) The kind of condition. (enum: AddonBackup)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of condition. (enum: success)
+             - `data`: {object}
+               - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+               - `addonId`: (multiple options) (string) The id of the addon to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the addon to monitor. (pattern: .*\${.*}.*)
+               - `backupId`: (multiple options) (string) The id of the backup to monitor. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the backup to monitor. (pattern: .*\${.*}.*) | {object}
+         - `kind`: (string) (required) The kind of condition. (enum: AddonImport)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of condition. (enum: success)
+             - `data`: {object}
+               - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+               - `addonId`: (multiple options) (string) The id of the addon to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the addon to monitor. (pattern: .*\${.*}.*)
+               - `importId`: (multiple options) (string) The id of the import to monitor. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the import to monitor. (pattern: .*\${.*}.*) | {object}
+         - `kind`: (string) (required) The kind of condition. (enum: Build)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of condition. (enum: success)
+             - `data`: {object}
+               - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+               - `buildId`: (multiple options) (string) The id of the build to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the build to monitor. (pattern: .*\${.*}.*) | {object}
+         - `kind`: (string) (required) The kind of condition. (enum: BYOCCluster)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of condition. (enum: running)
+             - `data`: {object}
+               - `clusterId`: (multiple options) (string) The id of the cluster to monitor. (pattern: ^[a-z]-?[a-z0-9]+(-[a-z0-9]+)*$) (min length: 3) (max length: 20) | (string) A string containing one or more references that resolve to the id of the cluster to monitor. (pattern: .*\${.*}.*)
+               - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*) | {object}
+         - `kind`: (string) (required) The kind of condition. (enum: JobRun)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of condition. (enum: success)
+             - `data`: {object}
+               - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+               - `jobId`: (multiple options) (string) The id of the job to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the job to monitor. (pattern: .*\${.*}.*)
+               - `runId`: (multiple options) (string) The id of the job run to monitor. | (string) A string containing one or more references that resolve to the id of the job run to monitor. (pattern: .*\${.*}.*) | {object}
+         - `kind`: (string) (required) The kind of condition. (enum: Service)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of condition. (enum: running)
+             - `data`: {object}
+               - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
+               - `serviceId`: (multiple options) (string) The id of the service to monitor. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the id of the service to monitor. (pattern: .*\${.*}.*)
+               - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*) | {object}
+         - `kind`: (string) (required) The kind of condition. (enum: Domain)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of condition. (enum: verified)
+             - `data`: {object}
+               - `domain`: (multiple options) (string) The domain to monitor. (pattern: ^((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+$) | (string) A string containing one or more references that resolve to the domain to monitor. (pattern: .*\${.*}.*)
+               - `timeoutDuration`: (multiple options) (integer) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed. | (string) A template reference that resolves to a timeout duration in seconds (pattern: .*\${.*}.*) | {object}
+         - `kind`: (string) (required) The kind of condition. (enum: VCS)
+         - `spec`: (multiple options) {object}
+             - `type`: (string) (required) The type of condition. (enum: createRepoFromSourceSuccess)
+             - `data`: {object}
+               - `trackerId`: (multiple options) (string) The tracker id outputted from the 'createRepoFromSource' action to monitor. | (string) A string containing one or more references that resolve to the tracker id outputted from the 'createRepoFromSource' action to monitor. (pattern: .*\${.*}.*) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: Message)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `runNodeOnce`: (multiple options) (string) (enum: true, false) | (string) (pattern: .*\${.*}.*)
+     - `spec`: (multiple options) {object}
+         - `kind`: (string) (required) The kind of message to send. (enum: VCS)
+         - `spec`: {object}
+           - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
+           - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
+           - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
+           - `repoUrl`: (multiple options) (string) URL of the Git repo to send this message to. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to send this message to. (pattern: .*\${.*}.*)
+           - `pullRequestId`: (multiple options) (string) The ID of the pull request to comment on. | (string) A string containing one or more references that resolve to the ID of the pull request to comment on. (pattern: .*\${.*}.*)
+           - `message`: (multiple options) (string) The rich text message to comment. | (string) A string containing one or more references that resolve to the rich text message to comment. (pattern: .*\${.*}.*) | {object}
+         - `kind`: (string) (required) The kind of message to send. (enum: SLACK)
+         - `spec`: {object}
+           - `webhookUrl`: (multiple options) (string) The Slack webhook URL to send messages to. | (string) A string containing one or more references that resolve to the Slack webhook URL to send messages to. (pattern: .*\${.*}.*)
+           - `integrationInternalId`: (multiple options) (string) The ID of an existing Slack integration to use. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the ID of an existing Slack integration to use. (pattern: .*\${.*}.*)
+           - `message`: (multiple options) (string) The message content to send to Slack. Supports markdown formatting. | (string) A string containing one or more references that resolve to the message content to send to Slack. Supports markdown formatting. (pattern: .*\${.*}.*) | {object}
+         - `kind`: (string) (required) The kind of message to send. (enum: RAW_WEBHOOK)
+         - `spec`: {object}
+           - `webhookUrl`: (multiple options) (string) The webhook URL to send messages to. | (string) A string containing one or more references that resolve to the webhook URL to send messages to. (pattern: .*\${.*}.*)
+           - `message`: (multiple options) (string) The message content to send to the webhook. | (string) A string containing one or more references that resolve to the message content to send to the webhook. (pattern: .*\${.*}.*) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: LoopData)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `spec`: {object} | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: OpenTofuDestroy)
+     - `condition`: (string) (enum: success)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `spec`: {object}
+       - `nodeRef`: (string) (required) The `ref` value of the `OpenTofu` node in the parent template whose state should be destroyed. | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: Approval)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `spec`: {object}
+       - `amount`: (integer) (required)
     - `failurePolicy`: (string) Controls what happens if the teardown spec fails or times out. `ignore` (default) — proceed with resource deletion regardless. `block` — halt deletion and set the environment to `teardown_failed` (enum: ignore, block)
   - `id`: (string) (required) Identifier for the template (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `gitops`: {object}
-    - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure)
+    - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
     - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
     - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
     - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.

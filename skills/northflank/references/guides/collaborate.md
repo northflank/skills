@@ -5,109 +5,215 @@ Generated from 5 application pages listed in `llms.txt`.
 ## Pages
 
 - [Collaborate on Northflank](#collaborate-on-northflank)
-- [Create a team](#create-a-team)
+- [Create and manage a team](#create-and-manage-a-team)
 - [Delete teams and accounts](#delete-teams-and-accounts)
-- [Manage an organisation](#manage-an-organisation)
+- [Create and manage an organisation](#create-and-manage-an-organisation)
 - [Manage Git integrations](#manage-git-integrations)
 
 ## Collaborate on Northflank
 
 Source: https://northflank.com/docs/v1/application/collaborate/collaborate-on-northflank.md
 
-Collaborative working is built into Northflank, at no extra cost. All of your resources are contained in teams which you can work in solo, or invite colleagues to join you.
+Build and deploy with your team on Northflank. Invite colleagues to your team, control access with roles and permissions, and manage multiple teams from one place.
+
+Collaboration is free. You only pay for the resources your team uses.
+
+### Collaborate on Northflank: How collaboration works
+
+Northflank has three main parts for collaboration:
+
+- **Teams:** Workspaces where you manage projects, integrations, and team members.
+
+- **Organisations:** Manage multiple teams from one place with centralised billing, user management, security settings, and team oversight.
+
+- **Access control:** Control what team members and applications can access and do across your teams and organisations using roles, permissions, and API tokens.
+
+### Collaborate on Northflank: When to use teams vs organisations
+
+You can start with a team and move it into an organisation later, so you don't need to create an organisation from the start.
+
+**Use a team if:**
+
+- You're working solo or with a small group.
+
+- You want a simple workspace for your projects.
+
+- Your work fits within a single team.
+
+**Use an organisation if:**
+
+- You manage multiple teams, such as teams for different departments or projects.
+
+- You want to manage users and billing across multiple teams.
+
+- You want to apply security settings across your teams.
+
+- You want to manage users through your identity provider, such as with SSO.
 
 ### Collaborate on Northflank: Teams
 
-Teams contain your Northflank projects, and include your integrated domains, Git accounts and image registries, and more.
+A team is your workspace on Northflank. It contains your projects, integrations, and team members.
 
-You can work securely using role-based access control and API tokens to grant the correct access and permissions to colleagues and applications.
+You can invite colleagues to your team and control what they can do with roles and permissions. You can also create separate teams for different groups or projects.
+
+- [Create a team and invite members: Create a team and invite members to collaborate on projects.](collaborate.md#create-and-manage-a-team)
+- [Manage Git integrations: Add accounts for Git services and restrict namespaces.](collaborate.md#manage-git-integrations)
 
 ### Collaborate on Northflank: Organisations
 
-Organisations allow you to manage multiple teams with centralised control over billing and reporting, user management, and security.
+An organisation lets you manage multiple teams from one place. This is useful for larger groups or companies where different teams work on separate projects.
 
-- [Create a team and invite members: Create a team and invite members to collaborate on projects.](collaborate.md#create-a-team)
-- [Manage your organisation on Northflank: Manage users, security, billing, and multiple teams with a Northflank organisation.](collaborate.md#manage-an-organisation)
-- [Manage Git integrations: Add accounts for Git services and restrict namespaces.](collaborate.md#manage-git-integrations)
+With an organisation, you can manage users, billing, and reporting across your teams, apply security settings such as SSO and MFA, and connect your identity provider to manage user access.
+
+You can convert an existing team into an organisation from the team's settings. This lets you start with a team and add organisation-level management as your needs grow.
+
+- [Create and manage an organisation on Northflank: Create and manage users, security, billing, and multiple teams with a Northflank organisation.](collaborate.md#create-and-manage-an-organisation)
+- [Security on Northflank: Protect your infrastructure and data on Northflank with multi-factor authentication, securely injected secrets, network security, and role-based access control.](secure.md#security-on-northflank)
+
+### Collaborate on Northflank: Access control
+
+Use roles and permissions to control what team members can do across your teams and organisations. You can create custom roles with specific permissions and assign them to team members.
+
 - [Configure role-based access control: Grant granular permissions and manage users with roles for teams and organisations.](secure.md#use-role-based-access-control)
 - [Grant API access: Create API roles to grant access to the Northflank API, with granular permissions.](secure.md#grant-api-access)
-- [Manage template versions on Northflank: Use the template drafts system to review, accept, or reject proposed changes to your team's Northflank templates.](infrastructure-as-code.md#manage-template-versions)
+- [Generate API tokens: Generate an API token to access your team and project.](secure.md#grant-api-access-generate-an-api-token)
 - [Audit logs: Monitor and review events affecting your organisation, teams, projects, and resources.](observe.md#audit-logs)
 
-## Create a team
+## Create and manage a team
 
 Source: https://northflank.com/docs/v1/application/collaborate/create-a-team.md
 
-Your team contains your account settings, integrations, and projects.
+A team is your workspace on Northflank. It contains your projects, integrations, and team members.
 
-![A team dashboard in the Northflank application](https://assets.northflank.com/documentation/v1/application/collaborate/create-a-team/team-dashboard.png)
+You can start with a team and invite colleagues to work together. If you later need to manage multiple teams, you can convert your team into an organisation.
 
-To create a new team select team from the create new menu, or create team from your account dashboard. Enter a team name, select a billing plan, and enter a contact email. You can also invite people to the new team via email.
-
-> [!note] Organisations
-> You can also create and manage teams with  [an organisation](https://northflank.com/docs/collaborate/manage-an-organisation). This allows you to manage users and access across teams, and integrate your user directory and other enterprise features.
-
-Your team name must be unique and will be used to refer to resources in your team projects, and used to generate Northflank DNS entries for your deployment's [public ports](network.md#configure-ports-public-ports). Your team email address will receive important notifications and billing information.
-
-After verifying your team email you can link a Git account, configure integrations and settings, and create a new project.
-
-Any resources consumed by your team will be billed to the team, and only the payment method linked to the team account will be charged.
+### Create and manage a team: Create a team
 
 > [!note]
 > [Click here](https://app.northflank.com/s/account/teams/new) to create a new team.
 
-![Creating a team in the Northflank application](https://assets.northflank.com/documentation/v1/application/collaborate/create-a-team/create-team.png)
+1. From your Northflank dashboard, press CMD+K or click the search icon.
 
-### Create a team: Invite members to your team
+2. Click **Create new**, then select **Team**.
 
-You can invite members to your team from the members page under your team's account settings.
+3. Enter a name for your team.
 
-You can invite one or more users to join your team by their email address. If they do not already have a Northflank account they will be prompted to create one, but they do not need to add payment information to use the team account.
+4. Enter a contact and billing email.
 
-You can set roles for invited users, and modify them on the members page afterwards. If a user has not yet accepted their invitation to join the team they will appear in the invited members section.
+5. Choose a plan.
 
-### Create a team: Manage team security
+6. Invite teammates if needed.
 
-#### Create a team: Role-based access control
+7. Click **Create team**.
 
-You can limit the access team members have to resources and actions by configuring and assigning [RBAC roles](secure.md#use-role-based-access-control). Roles can be created on the RBAC roles page, and assigned when editing the role, or from the team members page.
+Your team is now ready to use. You can invite members, connect your Git account, configure integrations, and create your first project.
 
-#### Create a team: API access
+> [!note]
+> Team names must be unique. Standalone team names must be unique globally, while organisation team names must be unique within the organisation.
 
-To allow team members to create API tokens to access team resources, you must first create an [API token role](secure.md#grant-api-access). Team members can then create API tokens for their accounts using these roles, and you can specify which team members have access to an API role.
+### Create and manage a team: Invite members to your team
 
-#### Create a team: Multifactor Authentication
+You can invite colleagues from your team's settings.
 
-You can enable require MFA to enforce multifactor authentication for your team members. Team members will be prompted to [set up an authenticator application for their Northflank account](secure.md#enable-single-sign-on-and-multi-factor-authentication-multi-factor-authentication) before they can access Northflank, and they will need to enter their one-time passcode on every log in attempt.
+> [!note]
+> [Click here](https://app.northflank.com/s/account/settings/members/invite) to invite your teammates.
 
-You can also set a maximum login session duration in hours, which will automatically log team members out and require them to re-authenticate after the time period.
+1. In your team dashboard, click the **Team** icon.
 
-### Create a team: Transfer ownership of a team
+2. Click **Members** under **Access**.
 
-The team owner has full permissions in a team and cannot be removed by other members, even if they have [permissions to manage team members](secure.md#use-role-based-access-control). The owner also cannot leave the team without transferring ownership to another member.
+3. Click **Invite members**.
 
-To change ownership of a team the current owner must navigate to the members page and transfer  ownership to another member.
+4. Enter the email addresses of the people you want to invite and select a role for each teammate.
 
-### Create a team: Next steps
+5. Click **Invite**.
+
+Invited users can join your team using the email invitation. If they don't already have a Northflank account, they can create one when they accept the invitation.
+
+You can change a member's role later from the **Members** page.
+
+### Create and manage a team: Manage team security
+
+#### Create and manage a team: Role-based access control
+
+Use [RBAC roles](secure.md#use-role-based-access-control) to control what team members can access and do. You can create roles with specific permissions and assign them to team members from the RBAC roles page or the team members page.
+
+#### Create and manage a team: API access
+
+API token access is managed through [RBAC roles](secure.md#use-role-based-access-control). Assign the appropriate role to team members who need to create API tokens for team resources.
+
+#### Create and manage a team: Multifactor Authentication
+
+You can require team members to use multifactor authentication (MFA) to access your team.
+
+When MFA is required, team members must [set up an authenticator application for their Northflank account](secure.md#enable-single-sign-on-and-multi-factor-authentication-multi-factor-authentication) before they can access Northflank. They must also enter their one-time passcode each time they log in.
+
+You can also set a maximum login session duration in hours. After the session expires, team members are logged out and must sign in again. If a user belongs to multiple teams with different session duration settings, the shortest duration is applied.
+
+### Create and manage a team: Transfer ownership of a team
+
+The team owner has full permissions and cannot be removed from the team by other members.
+
+You can transfer team ownership to another team member from your team's settings.
+
+> [!note]
+> [Click here](https://app.northflank.com/s/account/settings/members/invite) to access your member page.
+
+1. In your team dashboard, click the **Team** icon.
+
+2. Click **Members** under **Access**.
+
+3. Click the transfer ownership icon () next to the member you want to transfer ownership to.
+
+4. Click **Transfer**.
+
+Ownership is transferred immediately to the selected team member.
+
+### Create and manage a team: Convert a team to an organisation
+
+If you already have a team, you can convert it to an organisation. Your existing team will become a team within the new organisation.
+
+> [!note]
+> You cannot convert a team into an organisation if you are already a member of an organisation.
+
+> [!note]
+> [Click here](https://app.northflank.com/s/account/settings) to access your team settings page.
+
+1. In your team dashboard, click the **Team** icon.
+
+2. Click **Settings** in the sidebar.
+
+3. Under **Organisation**, click **Convert to organisation**.
+
+4. Enter the organisation name.
+
+5. Click **Convert to organisation**.
+
+Your organisation is created with your existing team under it.
+
+### Create and manage a team: Next steps
 
 - [Link your Git account: Integrate your Git accounts with Northflank to start building and deploying your code.](getting-started.md#link-your-git-account)
 - [Create a project: Create a project to contain your services, persistent data, secrets, and more.](getting-started.md#create-a-project)
 - [Add a card: Add a credit or debit card to your user or team account, and select the card to charge.](billing.md#add-a-card)
 - [Configure role-based access control: Grant granular permissions and manage users with roles for teams and organisations.](secure.md#use-role-based-access-control)
 - [Grant API access: Create API roles to grant access to the Northflank API, with granular permissions.](secure.md#grant-api-access)
-- [Manage your organisation on Northflank: Manage users, security, billing, and multiple teams with a Northflank organisation.](collaborate.md#manage-an-organisation)
+- [Create and manage an organisation on Northflank: Create and manage users, security, billing, and multiple teams with a Northflank organisation.](collaborate.md#create-and-manage-an-organisation)
 
 ## Delete teams and accounts
 
 Source: https://northflank.com/docs/v1/application/collaborate/delete-teams-and-accounts.md
 
-You can permanently delete teams, organizations, and user accounts from their settings pages. Deletion is irreversible and removes all associated data.
+You can permanently delete teams, organisations, and user accounts from their respective settings pages. Deletion is irreversible.
 
-To delete a team, organization, or user account, you must be the **owner**. Other team members or organization members cannot delete these entities.
+You must be the **owner** to delete a team or organisation. Users can delete their own accounts. For SSO-provisioned accounts, organisation administrators can also deprovision users.
 
 ### Delete teams and accounts: Delete a team
 
 To delete a team:
+
+> [!note]
+> [Click here](https://app.northflank.com/s/team/settings) to access your team settings page.
 
 1. Navigate to [Team Settings](https://app.northflank.com/s/team/settings)
 
@@ -121,27 +227,33 @@ To delete a team:
 
 All projects, services, databases, and resources within the team will be permanently deleted.
 
-### Delete teams and accounts: Delete an organization
+### Delete teams and accounts: Delete an organisation
 
-To delete an organization:
+To delete an organisation:
 
-1. Navigate to [Organization Settings](https://app.northflank.com/s/teamOrOrg/settings)
+> [!note]
+> [Click here](https://app.northflank.com/s/teamOrOrg/settings) to access your organisation settings page.
+
+1. Navigate to [Organisation Settings](https://app.northflank.com/s/teamOrOrg/settings)
 
 2. Scroll to the **Danger zone** section
 
-3. Click **Delete organization**
+3. Click **Delete organisation**
 
 4. Confirm the deletion
 
 5. Click **Confirm deletion**
 
-All teams, billing information, and organization data will be permanently deleted.
+All teams, billing information, and organisation data will be permanently deleted.
 
 ### Delete teams and accounts: Delete your user account
 
 To delete your user account:
 
-1. Navigate to [Account Settings](https://app.northflank.com/s/account/settings/profile)
+> [!note]
+> [Click here](https://app.northflank.com/s/context/settings/profile) to access your account settings page.
+
+1. Navigate to [Account Settings](https://app.northflank.com/s/context/settings/profile)
 
 2. Scroll to the **Danger zone** section
 
@@ -165,7 +277,7 @@ Once deleted, you cannot recover:
 
 - Billing history
 
-- Team or organization settings
+- Team or organisation settings
 
 - Custom domains and configurations
 
@@ -173,15 +285,15 @@ Once deleted, you cannot recover:
 
 Ensure all running services, databases, and workloads are stopped before deletion. Active resources may continue to incur charges until fully terminated.
 
-**Team and organization ownership**
+**Team and organisation ownership**
 
 If you're the only owner:
 
 - Transfer ownership to another member before deletion, or
 
-- Delete the team/organization entirely
+- Delete the team/organisation entirely
 
-If there are other owners, they can continue managing the team/organization after you leave.
+If there are other owners, they can continue managing the team/organisation after you leave.
 
 ### Delete teams and accounts: Before deleting
 
@@ -193,7 +305,7 @@ If there are other owners, they can continue managing the team/organization afte
 
 - Download logs and metrics if needed
 
-**Review invoices or usage:**
+**Review invoices and usage:**
 
 - Any pending invoice will have to be paid
 
@@ -203,65 +315,102 @@ Ensure there are no remaining questions regarding billing before proceeding.
 
 **Notify team members:**
 
-- Inform team members if you're deleting a shared team or organization
+- Inform team members if you're deleting a shared team or organisation
 
-- Give them time to backup data they need
+- Give them time to back up data they need
 
 ### Delete teams and accounts: Next steps
 
 - [Build from a Git repository: Start building from your linked Git repositories in minutes.](build.md#build-code-from-a-git-repository)
 - [Run an image continuously: Deploy a built image as a continuously-running service.](run.md#run-an-image-continuously)
 
-## Manage an organisation
+## Create and manage an organisation
 
 Source: https://northflank.com/docs/v1/application/collaborate/manage-an-organisation.md
 
-Organisations on Northflank allow you to manage multiple teams. You can provision and manage users by syncing your user directory, add your own single sign-on (SSO) identity provider, and configure security for your organisation.
+An organisation lets you manage multiple teams from one place. You can manage users and billing across teams, apply security settings, and control access to your organisation's resources.
 
-![Viewing an organisation's dashboard in the Northflank application](https://assets.northflank.com/documentation/v1/application/collaborate/manage-an-organisation/org-dashboard.png)
+You can create an organisation from your user dashboard, or convert an existing team into an organisation.
+
+### Create and manage an organisation: Create an organisation
 
 > [!note]
-> [Click here](https://cal.com/team/northflank/northflank-enterprise) to schedule a call about on-boarding your organisation to Northflank.
+> [Click here](https://app.northflank.com/s/context/orgs/new) to create a new organisation.
 
-### Manage an organisation: Create an organisation
+1. From your Northflank dashboard, press CMD+K or click the search icon.
 
-You can create an organisation in the Northflank application from your user dashboard's organisations page.
+2. Click **Create new**, then select **Organisation**.
 
-You can also [schedule a call](https://cal.com/team/northflank/northflank-enterprise) to discuss on-boarding your organisation to Northflank, and selecting the right plan for your needs.
+3. Enter a name for your organisation.
 
-![Creating an organisation in the Northflank application](https://assets.northflank.com/documentation/v1/application/collaborate/manage-an-organisation/create-organisation.png)
+4. Enter a contact and billing email.
 
-### Manage an organisation: Manage organisation security
+5. Choose a plan.
 
-#### Manage an organisation: Restrict teams and members
+6. Invite teammates if needed.
 
-In your organisation settings you can:
+7. Click **Create organisation**.
 
-- prevent members of your organisation from joining teams on Northflank that do not belong to your organisation
+Your organisation is now ready to use. You can add teams, invite members, configure security, and manage billing from your organisation.
 
-- prevent users that are not members of your organisation from being added to organisation teams
+> [!note]
+> You can also [schedule a call](https://cal.com/team/northflank/northflank-enterprise) to discuss onboarding your organisation and choosing the right plan for your needs.
 
-- restrict organisation invites to email addresses at your linked domains (if you have [configured single sign-on](collaborate.md#manage-an-organisation-configure-single-sign-on))
+### Create and manage an organisation: Convert a team to an organisation
 
-![Editing an organisation's settings in the Northflank application](https://assets.northflank.com/documentation/v1/application/collaborate/manage-an-organisation/org-settings.png)
+If you already have a team, you can convert it to an organisation. Your existing team will become a team within the new organisation.
 
-#### Manage an organisation: Multifactor Authentication
+> [!note]
+> You cannot convert a team into an organisation if you are already a member of an organisation.
 
-You can enable require MFA from your organisation's security page to enforce multifactor authentication for your organisation members. Organisation members will be prompted to [set up an authenticator application for their Northflank account](secure.md#enable-single-sign-on-and-multi-factor-authentication-multi-factor-authentication) before they can access Northflank, and they will need to enter their one-time passcode on every log in attempt.
+> [!note]
+> [Click here](https://app.northflank.com/s/account/settings) to access your team settings page.
+
+1. In your team dashboard, click the **Team** icon.
+
+2. Click **Settings** in the sidebar.
+
+3. Under **Organisation**, click **Convert to organisation**.
+
+4. Enter the organisation name.
+
+5. Click **Convert to organisation**.
+
+### Create and manage an organisation: Manage organisation security
+
+#### Create and manage an organisation: Restrict teams and members
+
+You need permission to manage organisation settings to use these controls on the organisation settings page:
+
+- **Disable members joining external teams:** Organisation members cannot join teams that do not belong to the organisation.
+
+- **Disable inviting external users to organisation teams:** Users who are not members of the organisation cannot be invited to its teams.
+
+- **Use template draft system:** Teams in the organisation must use the template draft system instead of editing templates directly.
+
+- **Disable team cluster creation**: Block new team-owned clusters. Existing clusters are not affected. Teams can still deploy onto organisation clusters with the required access.
+
+- **Disable PaaS deployments:** Teams in the organisation cannot create projects in Northflank PaaS regions. Projects can only be created on BYOC clusters.
+
+- **Disable PaaS registry:** Teams in the organisation cannot use the Northflank PaaS registry. Projects must use a self-hosted registry.
+
+- **Restrict secret groups by default:** Changes the default value of the **Restrict secret group** option when a team in the organisation creates a new secret group. This does not enforce the restriction, and the setting can still be changed when creating the secret group. Existing secret groups are not affected.
+
+#### Create and manage an organisation: Multifactor Authentication
+
+You can enable **require MFA** from your organisation's security page to enforce multifactor authentication for your organisation members. Organisation members will be prompted to [set up an authenticator application for their Northflank account](secure.md#enable-single-sign-on-and-multi-factor-authentication-multi-factor-authentication) before they can access Northflank, and they will need to enter their one-time passcode on every log in attempt.
 
 You can also set a maximum login session duration in hours, which will automatically log organisation members out and require them to re-authenticate after the time period.
 
-#### Manage an organisation: Clear member login sessions
+#### Create and manage an organisation: Clear member login sessions
 
-You can clear member login sessions from your organisation's security page to immediately log out all user accounts from your organisation.
+You can **clear member login sessions** from your organisation's security page to immediately log out all user accounts from your organisation.
 
-### Manage an organisation: Create organisation roles
+### Create and manage an organisation: Create organisation roles
 
 You can [manage user roles on an organisational level](secure.md#use-role-based-access-control-create-organisation-roles) to ensure compliance with your security policies, restrict users to specific teams, and grant organisational permissions.
 
-![Creating an organisational role in the Northflank application](https://assets.northflank.com/documentation/v1/application/collaborate/manage-an-organisation/org-role.png)
-
-### Manage an organisation: Manage organisation billing
+### Create and manage an organisation: Manage organisation billing
 
 You can add your payment method and tax ID for an organisation to [manage billing for all teams](billing.md#pricing-on-northflank) in the organisation.
 
@@ -269,65 +418,114 @@ As well monitoring spend by project and resource type, you can also monitor spen
 
 Invoices for each team's usage can be downloaded from the team billing page.
 
-![Viewing an organisation's billing page in the Northflank application](https://assets.northflank.com/documentation/v1/application/collaborate/manage-an-organisation/org-billing.png)
+You can receive [organisation billing notifications](observe.md#configure-notification-integrations-organisation-notifications) through a notification integration.
 
-### Manage an organisation: Configure single sign-on (SSO)
-
-You can link your existing authentication with Northflank to allow your users to sign in using SSO.
-
-Northflank uses [WorkOS SSO](https://workos.com/single-sign-on) to integrate Northflank with your identity provider using SAML and OpenID Connect (OIDC).
-
-To enable single sign-on, follow these steps:
-
-- While viewing an organisation, navigate to Settings.
-
-- Under Single Sign On, enter one or more domain names associated with your organisation, e.g. `example.com`. You should input all the domain names that are associated with the email addresses of organisation members.
-
-- Optionally, you can Allow port security SSO with external domains. This does not affect organisation members signing into Northflank, but can allow users with external domains in your identity provider to access services, if enabled for that service.
-
-- Then, you can Set-up SSO. This will redirect you to the single sign-on setup, provided via WorkOS. Follow the instructions on the pages provided. At the end of the setup, you will be prompted to test the connection. When this test succeeds, your identity provider will be linked to Northflank.
-
-Users from your identity provider can now sign up and log in to Northflank. To avoid logging in via a non-SSO account, users should log in via the Log in with Organisation Single Sign On option on the login page, or navigate to [app.northflank.com/sso-login](https://app.northflank.com/sso-login).
-
-Some identity providers also support directly logging in via your organisation’s external dashboard.
-
-By default, accounts are created via JIT (Just In Time) provisioning - accounts are not created automatically and will instead be created when a user signs in for the first time.
-
-When a user logs in to Northflank for the first time via SSO, they will automatically be a member of the organisation. Additionally, these users cannot create teams or resources that do not belong to the organisation, and cannot leave the organisation without deactivating the account.
-
-To reconfigure the settings provided during setup, click the Configure SSO button. To disable Single Sign-On, click Disable SSO.
-
-#### Manage an organisation: Converting an existing account
-
-A team member with an account that was not created through SSO must continue to log in via username and password. However, an organisation admin can convert their existing account to a SSO account. On the Members page, select the user you wish to convert to SSO. In the top right, click the Convert to SSO button. The user can then log in to Northflank via SSO, and their account will no longer be able to be accessed via username and password.
-
-> [!warning]
-> Converting an account to SSO is a destructive action and cannot be reversed. If a user is a member of any teams
-outside of their organisation, they will not be able to be converted to an SSO account - they should leave or delete
-any teams they are a part of that do not belong to the organisation.
-
-#### Manage an organisation: Configuring SSO Settings
-
-After linking your identity provider you can also select how users can be invited to teams in your organisation:
-
-- Select SSO only to disable manual invites. This will prevent users in the organisation from inviting users by email address. Users will only be able to sign up via your SSO.
-
-- Enable require approval for any SSO sign-ups. When a user creates an account using SSO they will be added to a queue until their request is confirmed or rejected. This conflicts with automatically [provisioning users with directory sync](collaborate.md#manage-an-organisation-sync-your-directory), and cannot/should not be enabled at the same time.
+### Create and manage an organisation: Configure single sign-on (SSO)
 
 > [!note] Unlock SSO and directory sync
 > Contact [support@northflank.com](mailto:support@northflank.com) or [schedule a meeting](https://cal.com/team/northflank/northflank-enterprise) to enable single sign-on and directory sync for your organisation.
 
-### Manage an organisation: Sync your directory
+You can connect your identity provider to Northflank so organisation members can sign in using single sign-on (SSO).
 
-You can sync your user directory with Northflank to update users on Northflank based on their directory groups.
+Northflank uses [WorkOS SSO](https://workos.com/single-sign-on) to connect your identity provider using SAML or OpenID Connect (OIDC).
 
-You can enable Automatically provision organisation members to automatically provision organisation users on Northflank. You can restrict automatic provisioning to selected directory groups, so only users for teams using Northflank are automatically created.
+> [!note]
+> [Click here](https://app.northflank.com/s/context/settings/sso) to configure SSO.
 
-Roles can be synced with directory groups to enable you to assign and remove roles from users by updating their directory groups.
+1. In your organisation dashboard, click the **Organisation** icon.
 
-Northflank uses [WorkOS Directory Sync](https://workos.com/directory-sync) to integrate Northflank with your directory. You must have enabled [single sign-on](collaborate.md#manage-an-organisation-configure-single-sign-on) to use directory sync.
+2. Click **SSO** in the sidebar.
 
-### Manage an organisation: Next steps
+3. Under **Link your organisation**, click **Add domain** and enter the domain associated with your organisation, such as `example.com`.
+
+4. Add any other domains used by your organisation.
+
+5. If needed, enable **Allow port security SSO with external domains**. This allows users with external domains in your identity provider to access services that have this option enabled.
+
+6. Click **Update**.
+
+7. Under **SSO**, click **Set-up SSO**.
+
+8. Follow the instructions provided by WorkOS to connect your identity provider.
+
+9. Refresh connections to make sure SSO is working.
+
+Once SSO is configured, users from your identity provider can sign up and sign in to Northflank using your organisation's SSO.
+
+Users can sign in using **Log in with Organisation Single Sign On** on the Northflank login page, or directly at [app.northflank.com/sso-login](https://app.northflank.com/sso-login).
+
+Some identity providers also support signing in directly from your organisation's external dashboard.
+
+By default, Northflank uses just-in-time (JIT) provisioning. A user's Northflank account is created when they sign in for the first time using SSO.
+
+When a user signs in for the first time using your organisation's SSO, they automatically become a member of the organisation. They cannot create teams or resources outside the organisation or leave the organisation without deactivating their account.
+
+You can update your SSO configuration by clicking **Configure SSO**. To disable SSO, click **Disable SSO**.
+
+#### Create and manage an organisation: Configure SSO settings
+
+After configuring SSO, you can control how users join your organisation.
+
+- **SSO only:** Disables manual email invitations. Users must join through your organisation's SSO.
+
+- **Require approval for SSO sign-ups:** Adds new SSO users to an approval queue until an organisation admin approves or rejects their request.
+
+- **Restrict invites to domain:** Invites can only be sent to email addresses on the organisation’s domain. Requires at least one domain to be configured for this organisation.
+
+> [!note]
+> Do not enable **Require approval for SSO sign-ups** if you use directory sync to automatically provision organisation members.
+
+#### Create and manage an organisation: Convert an existing account to SSO
+
+You can convert an existing organisation member's Northflank account to an SSO account.
+
+> [!note]
+> [Click here](https://app.northflank.com/s/context/settings/members) to access your organisation's members page.
+
+1. Open your organisation's **Members** page.
+
+2. Select the member you want to convert.
+
+3. Click **Convert to SSO**.
+
+The member can then sign in to Northflank using your organisation's SSO instead of their username and password.
+
+> [!warning]
+> Converting an account to SSO cannot be undone. The member must also leave or delete any teams outside your organisation before their account can be converted.
+
+### Create and manage an organisation: Sync your directory
+
+You can connect your organisation's user directory to Northflank to automatically manage organisation members based on directory groups.
+
+Northflank uses [WorkOS Directory Sync](https://workos.com/directory-sync) to connect your directory.
+
+> [!note]
+> You must configure [single sign-on](collaborate.md#create-and-manage-an-organisation-configure-single-sign-on) before you can set up directory sync.
+
+#### Create and manage an organisation: Set up directory sync
+
+> [!note]
+> [Click here](https://app.northflank.com/s/context/settings/sso) to configure directory sync.
+
+1. In your organisation dashboard, click the **Organisation** icon.
+
+2. Click **SSO** in the sidebar.
+
+3. Under **Directory sync**, click **Set-up directory sync**.
+
+4. Follow the instructions provided by WorkOS to connect your user directory.
+
+5. Refresh connections to make sure directory sync is working.
+
+#### Create and manage an organisation: Configure directory sync settings
+
+- **Automatically provision organisation members:** Automatically create Northflank accounts for users in your directory. You can restrict provisioning to specific directory groups.
+
+- **Only sync users in specific directory groups:** Restrict automatic provisioning to selected directory groups, so only users in those groups are added to your organisation.
+
+- **Sync roles with directory groups:** Automatically assign or remove Northflank roles based on a user's directory group membership.
+
+### Create and manage an organisation: Next steps
 
 - [Link your Git account: Integrate your Git accounts with Northflank to start building and deploying your code.](getting-started.md#link-your-git-account)
 - [Create a project: Create a project to contain your services, persistent data, secrets, and more.](getting-started.md#create-a-project)
@@ -339,58 +537,91 @@ Northflank uses [WorkOS Directory Sync](https://workos.com/directory-sync) to in
 
 Source: https://northflank.com/docs/v1/application/collaborate/manage-git-integrations.md
 
-Teams can link multiple accounts per Git service and self-hosted VCS.
+Connect your Git accounts to Northflank so you can build and deploy from your repositories.
 
-> [!note]
-> [Click here](https://app.northflank.com/s/account/integrations/vcs) to view your Git namespaces.
-
-![The Git integrations page on a team account in the Northflank application, showing a self-hosted VCS](https://assets.northflank.com/documentation/v1/application/collaborate/manage-git-integrations/team-git-page.png)
+You can connect multiple accounts from GitHub, GitLab, Bitbucket, and other supported Git services. You can also connect a self-hosted Git service.
 
 ### Manage Git integrations: Add a Git account
 
-To add a Git account to your team account, navigate to the Git section under integrations in the team dashboard and click  link on the relevant service. For GitHub you will be asked which account to link, for all other services the currently-logged-in account will be added.
-Team users must have the manage Git permission on one of their assigned roles to add or remove accounts.
+You can connect a Git account to your team from the **Integrations** section in your team dashboard.
+
+> [!note]
+> [Click here](https://app.northflank.com/s/account/integrations/vcs) to connect a Git account.
+
+1. In your team dashboard, click **Integrations**.
+
+2. Click **Git**.
+
+3. Click **Link** next to the Git service you want to connect.
+
+4. Follow the instructions for the Git service.
+
+For GitHub, you can choose which GitHub account or organisation to connect. For other Git services, Northflank connects the account you are currently signed in to.
+
+Once connected, you can use repositories from the account to build and deploy services on Northflank.
 
 ### Manage Git integrations: Add a self-hosted VCS
 
-To add a self-hosted VCS navigate to the Git section, underneath integrations on the team settings page, click 'add a self-hosted VCS' and select the type of VCS you would like to integrate. Follow the application specific instructions to integrate your self-hosted VCS. You can choose how team members can access the repositories on the self-hosted VCS after adding it to Northflank.
+You can connect a self-hosted Git service to Northflank if your repositories are hosted on your own infrastructure.
+
+> [!note]
+> [Click here](https://app.northflank.com/s/account/integrations/vcs) to add a self-hosted VCS.
+
+1. In your team dashboard, click **Integrations**.
+
+2. Click **Git**.
+
+3. Click **Add a self-hosted VCS**.
+
+4. Enter a name for the VCS.
+
+5. Select the VCS type.
+
+6. Enter the **VCS provider URL** and **Application ID**.
+
+7. Enter the **Secret**.
+
+8. Click **Submit**.
+
+After connecting your self-hosted VCS, you can configure how team members can use it.
 
 #### Manage Git integrations: Add a self-hosted GitLab instance
 
-Navigate to your GitLab service and create a new OAuth application at `[YOUR URL]/profile/applications` or `[YOUR URL]/admin/applications` if you are an administrator. Give the application the `api` scope and set the `Redirect URI` as specified on Northflank.
+To connect a self-hosted GitLab instance, first create an OAuth application in GitLab.
 
-On Northflank enter the root domain of your self-hosted GitLab, e.g. `gitlab.yourdomain.com`, the `application ID` and the `secret` from the OAuth application.
+Create a new OAuth application at:
+
+- `[GIT_HOSTNAME]/profile/applications`
+
+- `[GIT_HOSTNAME]/admin/applications` if you are an administrator
+
+Give the application the `api` scope and set the **Redirect URI** as specified on Northflank.
+
+Save the OAuth application, then enter the **root domain** of your self-hosted GitLab instance, **Application ID**, and **Secret** in Northflank.
 
 ### Manage Git integrations: Self-hosted VCS settings
 
-Settings for a self-hosted VCS can be configured by navigating to the team account's Git integrations page and clicking the options button  on the card for the self-hosted VCS.
+You can update the settings of your self-hosted VCS:
 
-##### Manage Git integrations: Personal & team use
+1. In your team dashboard, click **Integrations**.
 
-Select personal use to allow team members to use the self-hosted VCS to build and run from the repositories on this service in their user account's projects as well as in team projects. Team members will need to link their account on the VCS service to Northflank in their own user account settings.
+2. Click **Git**.
 
-Select team use only to only allow team members to build and run from the repositories on this service in team projects.
+3. Click the setting button  on the self-hosted VCS you want to configure.
 
-##### Manage Git integrations: Application configuration
+4. Update the **VCS provider URL**, **Application ID**, and **Secret**.
 
-You can update the `VCS provider URL`, `application ID` and `secret` from the OAuth application.
+5. Click **Update self-hosted settings**.
 
-### Manage Git integrations: Restrict namespaces
+### Manage Git integrations: Restrict repository access
 
-On team accounts you may need to restrict access to certain namespaces on your linked Git accounts.
+You can restrict which repositories team members can access when connecting Git accounts to Northflank.
 
-GitHub account restrictions are managed on GitHub by selecting which account/organisation to install the Northflank GitHub app on, and then granting access to specific repositories on that account.
+For GitHub, you can manage repository access when installing the Northflank GitHub app. You can choose which GitHub account or organisation to install the app on and which repositories the app can access.
 
-Your linked GitLab and Bitbucket accounts can be restricted to certain namespaces by opening the settings on the respective entry. Select restricted and pick the contexts you want your team members to access. Remove a namespace from the list to revoke access. The namespaces available to your team will be displayed on the git integrations page in the section for the relevant service.
-Remove a namespace from the list in the selected account to revoke access.
+For GitLab and Bitbucket, you can restrict access to specific namespaces from the account settings in Northflank.
 
-New namespaces can be created in your Gitlab and Bitbucket accounts by creating new projects.
-
-#### Manage Git integrations: Restrict self-hosted VCS access
-
-You can restrict access to the repositories in your self-hosted VCS by selecting specific owners within the self-hosted VCS's settings. Team members will be able to build and run from repositories belonging to the selected namespaces, if your account has access to them.
-
-Unrestricted access means team members will be able to create services and jobs from every repository that the linked account can access.
+For self-hosted VCS, you can restrict access to specific owners from the self-hosted VCS settings.
 
 ### Manage Git integrations: Next steps
 

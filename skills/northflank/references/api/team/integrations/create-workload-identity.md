@@ -16,6 +16,7 @@ Required permission: Account > Cloud > WorkloadIdentities > Create
 {object}
 - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
+- `priority`: (integer) The priority used to select a workload identity for each provider.
 - `spec`: {object}
   - `providerLinkId`: (string) (required) The internal ID of the BYOC provider integration to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `roleMode`: (string) (required) (enum: managed, existing)
@@ -68,6 +69,7 @@ Required permission: Account > Cloud > WorkloadIdentities > Create
   - `id`: (string) (required) ID of the workload identity (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
+  - `priority`: (integer) The priority used to select a workload identity for each provider.
   - `spec`: {object}
     - `providerLinkId`: (string) (required) The internal ID of the BYOC provider integration to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `roleMode`: (string) (required) (enum: managed, existing)
@@ -131,13 +133,14 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"Example Workload Identity","spec":{"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}},"providerLinkId":"string","roleMode":"managed","provider":{"type":"aws","policyDocument":{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":"string","Resource":"*"}}}}}' \
+  --data '{"name":"Example Workload Identity","priority":10,"spec":{"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}},"providerLinkId":"string","roleMode":"managed","provider":{"type":"aws","policyDocument":{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":"string","Resource":"*"}}}}}' \
   https://api.northflank.com/v1/workload-identities
 ```
 
 ```javascript
 const payload = {
   "name": "Example Workload Identity",
+  "priority": 10,
   "spec": {
     "restrictions": {
       "projects": {
@@ -182,7 +185,7 @@ import requests
 
 url = "https://api.northflank.com/v1/workload-identities"
 
-payload = {"name":"Example Workload Identity","spec":{"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}},"providerLinkId":"string","roleMode":"managed","provider":{"type":"aws","policyDocument":{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":"string","Resource":"*"}}}}}
+payload = {"name":"Example Workload Identity","priority":10,"spec":{"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}},"providerLinkId":"string","roleMode":"managed","provider":{"type":"aws","policyDocument":{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":"string","Resource":"*"}}}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -203,7 +206,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/workload-identities"
 
-  var jsonStr = []byte(`{"name":"Example Workload Identity","spec":{"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}},"providerLinkId":"string","roleMode":"managed","provider":{"type":"aws","policyDocument":{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":"string","Resource":"*"}}}}}`)
+  var jsonStr = []byte(`{"name":"Example Workload Identity","priority":10,"spec":{"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}},"providerLinkId":"string","roleMode":"managed","provider":{"type":"aws","policyDocument":{"Version":"2012-10-17","Statement":{"Effect":"Allow","Action":"string","Resource":"*"}}}}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -231,6 +234,7 @@ func main() {
   "data": {
     "id": "example-workload-identity",
     "name": "Example Workload Identity",
+    "priority": 10,
     "spec": {
       "restrictions": {
         "projects": {
@@ -267,6 +271,7 @@ Options:
 ```json
 {
   "name": "Example Workload Identity",
+  "priority": 10,
   "spec": {
     "restrictions": {
       "projects": {
@@ -302,6 +307,7 @@ Options:
 {
   "id": "example-workload-identity",
   "name": "Example Workload Identity",
+  "priority": 10,
   "spec": {
     "restrictions": {
       "projects": {
@@ -327,6 +333,7 @@ await apiClient.create.workloadIdentities({
   options: {},
   data: {
     "name": "Example Workload Identity",
+    "priority": 10,
     "spec": {
       "restrictions": {
         "projects": {
@@ -364,6 +371,7 @@ await apiClient.create.workloadIdentities({
   "data": {
     "id": "example-workload-identity",
     "name": "Example Workload Identity",
+    "priority": 10,
     "spec": {
       "restrictions": {
         "projects": {

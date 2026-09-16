@@ -38,6 +38,7 @@ Required permission: Project > Addons > General > Read
         - `networking`: {object}
           - `tlsEnabled`: (boolean) (required) Whether this addon is provisioned with a TLS certificate.
           - `externalAccessEnabled`: (boolean) (required) Whether this addon is publicly accessible via the internet.
+          - `vpcAccessible`: (boolean) Whether this addon is exposed on the cluster's private (VPC) load balancer.
           - `ipPolicies`: [array of] {object}
               - `address`: (string) (required) An IP address used by this rule.
               - `action`: (string) (required) The action for this rule. (enum: DENY, ALLOW)
@@ -96,6 +97,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}
         "networking": {
           "tlsEnabled": true,
           "externalAccessEnabled": true,
+          "vpcAccessible": false,
           "ipPolicies": [
             {
               "address": "127.0.0.1",
@@ -177,6 +179,7 @@ Options:
       "networking": {
         "tlsEnabled": true,
         "externalAccessEnabled": true,
+        "vpcAccessible": false,
         "ipPolicies": [
           {
             "address": "127.0.0.1",
@@ -255,6 +258,7 @@ await apiClient.get.addon({
         "networking": {
           "tlsEnabled": true,
           "externalAccessEnabled": true,
+          "vpcAccessible": false,
           "ipPolicies": [
             {
               "address": "127.0.0.1",

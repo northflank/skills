@@ -40,10 +40,11 @@ Required permission: Project > Jobs > General > Read
    - `internal`: {object}
      - `appId`: (string) (required) Full identifier of deployed entity
      - `nfObjectId`: (string) (required) ID of deployed entity
-     - `repository`: (string) (required) URL of the repository being deployed
-     - `branch`: (string) (required) Branch of the repo being deployed
+     - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
+     - `repository`: (string) URL of the Git repository being deployed
+     - `branch`: (string) (required) Branch or source label of the build being deployed
      - `buildId`: (string) (required) ID of the build currently deployed.
-     - `buildSHA`: (string) (required) Commit SHA being deployed. `latest` means the latest commit is automatically being deployed.
+     - `buildSHA`: (string) (required) Revision being deployed. `latest` deploys the latest matching build.
      - `deployedSHA`: (string) Currently deployed commit SHA. If buildSHA is set to `latest`, this will show the SHA of the latest commit.
      - `nfObjectType`: (string) (required) Type of deployed entity (enum: service, job) | {object}
    - `region`: (string) Region where this service is deployed and/or built
@@ -96,6 +97,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/deployment
     "internal": {
       "appId": "/example-user/default-project/example-service",
       "nfObjectId": "example-service",
+      "buildSource": "git",
       "repository": "https://github.com/northflank/gatsby-with-northflank",
       "branch": "master",
       "buildId": "incredible-land-3266",
@@ -174,6 +176,7 @@ Options:
   "internal": {
     "appId": "/example-user/default-project/example-service",
     "nfObjectId": "example-service",
+    "buildSource": "git",
     "repository": "https://github.com/northflank/gatsby-with-northflank",
     "branch": "master",
     "buildId": "incredible-land-3266",
@@ -247,6 +250,7 @@ await apiClient.get.job.deployment({
     "internal": {
       "appId": "/example-user/default-project/example-service",
       "nfObjectId": "example-service",
+      "buildSource": "git",
       "repository": "https://github.com/northflank/gatsby-with-northflank",
       "branch": "master",
       "buildId": "incredible-land-3266",

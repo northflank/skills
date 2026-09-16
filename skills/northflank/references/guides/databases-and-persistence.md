@@ -574,14 +574,14 @@ An addon with multiple replicas either consists of:
 
 - a sharded distribution, where data is replicated across multiple replicas, but each replica may not contain the full dataset
 
-How an addon manages additional replicas, and replica failures, depends on the type of addon deployed. With automated failover, a secondary replica will be promoted to a primary using a failure detection mechanism. This means that after a primary failure, writes are typically available again within less than 30 seconds. For addons which don’t support automated failover, it can take several minutes until the primary replica is restarted and available again. In the severe case of a complete failure of the primary replica (such as disk failure) write downtime can be longer as the primary needs to be recovered manually.
+Recovery depends on the addon type and the failure. For primary-secondary addons, automated failover promotes another replica to primary. Without automated failover, writes remain unavailable until the primary restarts or is replaced. Disk failures can require manual recovery. Your application must handle connection failures during recovery.
 
 | Addon | Replication strategy | Failover strategy |
 | --- | --- | --- |
 | PostgreSQL | Primary-secondary | Automated failover: a read replica is promoted to primary |
 | MongoDB® | Primary-secondary | Automated failover: a read replica is promoted to primary |
-| MySQL | Primary-secondary | Read-only: writes unavailable until primary replica is replaced |
-| MySQL (InnoDB Cluster) | Group Replication | Automated failover: Group Replication elects a new primary |
+| [Standard MySQL](databases-and-persistence.md#configure-addons-for-high-availability-mysql) | Primary-secondary | Read-only: writes unavailable until the primary recovers or is replaced |
+| [MySQL HA (InnoDB Cluster)](databases-and-persistence.md#configure-addons-for-high-availability-mysql) | Group Replication | Automated failover: Group Replication elects a new primary |
 | Redis® | Primary-secondary | Read-only: writes unavailable until primary replica is replaced OR Automated failover if deployed with Sentinel |
 | MinIO® | Sharding | Damaged data is restored using healthy shards, failing replicas will be replaced |
 | RabbitMQ (quorum queue) | Primary-secondary | Automated failover: a queue follower is promoted to leader |
@@ -671,7 +671,7 @@ Northflank's MySQL HA addon provides automated failover and high availability us
 
 ##### Configure addons for high availability: Architecture
 
-InnoDB Cluster deploys three nodes in a single-writer, multi-reader configuration. MySQL Router is included and runs transparently — your application connects using the same connection string as a standard MySQL addon, and the Router directs writes to the current primary and distributes reads across all nodes. A separate `HOST_READ` secret is also available if you want to direct read-only traffic explicitly.
+InnoDB Cluster requires at least three database nodes, with one primary for writes. MySQL Router is enabled by default and routes connections to the database nodes. Use the addon's connection details for read-write access, or `HOST_READ` for read-only access.
 
 Enabling InnoDB Cluster is a toggle at addon creation time and cannot be changed after creation.
 
@@ -679,37 +679,29 @@ Enabling InnoDB Cluster is a toggle at addon creation time and cannot be changed
 
 MySQL Group Replication has schema requirements that must be met for replication to function correctly. The most important requirement is that **every table must have a primary key**. Review the full list of [Group Replication requirements](https://dev.mysql.com/doc/refman/9.6/en/group-replication-requirements.html) before migrating existing data or creating new schemas.
 
-##### Configure addons for high availability: MySQL Router connection pooling
+##### Configure addons for high availability: MySQL Router connections
 
-MySQL Router maintains a persistent pool of backend connections, which reduces the overhead of establishing new connections for each client request. This has practical advantages over connecting directly through a Kubernetes service:
-
-- **Reduced connection overhead** — Router reuses backend connections across multiple client connections, reducing TCP and authentication handshake costs at scale.
-
-- **Connection limiting** — Router caps backend connections independently of how many clients connect, protecting MySQL nodes from connection storms during traffic spikes.
-
-- **Faster failover recovery** — On primary election, Router detects the topology change and reroutes connections faster than waiting for the Kubernetes service label reconciliation loop, reducing the disruption window visible to your application.
-
-In routerless mode, you give up these benefits in exchange for direct node access — the Kubernetes service still handles failover via label updates, but there is no connection pooling or topology-aware rerouting at the proxy layer.
+MySQL Router routes new connections to available database nodes and limits the total number of client connections. Router connection limits do not replace connection management in your application.
 
 ##### Configure addons for high availability: Routerless mode
 
-You can disable the Router to run in routerless mode, where your application connects directly to the primary node via a Kubernetes service. This can be changed on an existing InnoDB Cluster addon at any time.
+You can disable the Router on an existing InnoDB Cluster addon to connect to database nodes without the Router.
 
 In routerless mode:
 
-- The connection string points to the primary or read-only node via a Kubernetes service.
+- The read-write connection points to the primary, and the read-only connection points to read replicas.
 
-- On failover, Group Replication still elects a new primary automatically. The Kubernetes service updates to point to the new primary, so connections resume without manual intervention after a brief transition period.
+- Automated failover still applies, but connections can fail while routing updates to the new primary.
 
 Routerless mode is suitable for workloads that require direct database access or cannot use an intermediary proxy.
 
 ##### Configure addons for high availability: Automated failover
 
-If the primary node becomes unavailable, Group Replication automatically elects a new primary from the remaining nodes. Read and write operations continue without application-level intervention. After a defined period, the cluster automatically fails back to the preferred primary node (replica-0) with proper connection draining to avoid disruption.
+If the primary becomes unavailable and a majority of nodes remain connected, Group Replication automatically elects a new primary. Connections can fail during this transition. Configure your application to reconnect and handle failed transactions.
 
 ##### Configure addons for high availability: Quorum loss recovery
 
-If two or more nodes fail simultaneously, the cluster loses quorum and enters read-only protection mode to prevent split-brain scenarios. Northflank has automatic quorum recovery in place, which triggers after a delay (default: 2 minutes) to distinguish a genuine quorum loss from a transient network issue before attempting recovery.
+Quorum is the majority of nodes required to agree on writes. If the cluster loses this majority, it cannot accept writes. Northflank attempts automatic recovery, but recovery time depends on the failure.
 
 ##### Configure addons for high availability: Node rejoin
 
@@ -1179,10 +1171,10 @@ Your database will be accessible by workloads within the same project using the 
 | --- | --- | --- | --- | --- |
 | [MongoDB](https://www.mongodb.com/docs/manual/) | 8.0.26, 8.0.20, 8.0.17, 7.0.37, 7.0.31, 7.0.28, 7.0.21, 6.0.27, 6.0.24, 5.0.31, 4.4.15, 4.2.21 | MongoDB® is a document-oriented database program that uses JSON-like documents with schema. | Native or disk | Yes |
 | [Redis](https://redis.io/) | 8.8.0, 8.6.4, 8.6.1, 8.4.4, 8.4.2, 8.4.0, 7.2.14, 7.2.13, 7.2.12, 7.2.4, 6.2.21 | Redis® implements a distributed, in-memory key-value database with optional durability. | Disk | Yes |
-| [MySQL](https://www.mysql.com/) | 9.6.0, 8.4.9, 8.4.8, 8.0.46, 8.0.45 | MySQL is a fast, reliable, scalable, and easy to use open-source relational database system. | Native or disk | Yes (cannot be changed after creation) |
+| [MySQL](https://www.mysql.com/) | 9.7.2, 9.6.0, 8.4.11, 8.4.9, 8.0.46 | MySQL is a fast, reliable, scalable, and easy to use open-source relational database system. | Native or disk | Yes (cannot be changed after creation) |
 | [PostgreSQL](https://www.postgresql.org/) | 18, 17, 16, 15, 14, 13, 12 | PostgreSQL is a free and open-source relational database management system. High availability with Patroni | Native or disk | Yes |
 | [MinIO](https://min.io/) | 2025.10.15 | MinIO® is a High Performance Object Storage with an Amazon S3 cloud storage service compatible API. | Disk | Yes |
-| [RabbitMQ](https://www.rabbitmq.com/) | 4.3.2, 4.2.8, 4.0.9, 3.13.7, 3.12.14 | RabbitMQ is an open source message broker software that implements the Advanced Message Queuing Protocol (AMQP). | Disk | Yes |
+| [RabbitMQ](https://www.rabbitmq.com/) | 4.3.5, 4.3.2, 4.2.9, 4.2.8, 4.0.9, 3.13.7, 3.12.14 | RabbitMQ is an open source message broker software that implements the Advanced Message Queuing Protocol (AMQP). | Disk | Yes |
 
 ### Deploy a database: Advanced configuration
 
@@ -1491,7 +1483,7 @@ This guide explains how to quickly and easily deploy and use [MySQL](https://www
 
 | Available versions | Description | Backups | TLS |
 | --- | --- | --- | --- |
-| 9.6.0, 8.4.9, 8.4.8, 8.0.46, 8.0.45 | MySQL is a fast, reliable, scalable, and easy to use open-source relational database system. | Native or disk | Yes (cannot be changed after creation) |
+| 9.7.2, 9.6.0, 8.4.11, 8.4.9, 8.0.46 | MySQL is a fast, reliable, scalable, and easy to use open-source relational database system. | Native or disk | Yes (cannot be changed after creation) |
 
 ### Deploy MySQL on Northflank: Deploy MySQL
 
@@ -1799,7 +1791,7 @@ This guide explains how to quickly and easily deploy and use [RabbitMQ](https://
 
 | Available versions | Description | Backups | TLS |
 | --- | --- | --- | --- |
-| 4.3.2, 4.2.8, 4.0.9, 3.13.7, 3.12.14 | RabbitMQ is an open source message broker software that implements the Advanced Message Queuing Protocol (AMQP). | Disk | Yes |
+| 4.3.5, 4.3.2, 4.2.9, 4.2.8, 4.0.9, 3.13.7, 3.12.14 | RabbitMQ is an open source message broker software that implements the Advanced Message Queuing Protocol (AMQP). | Disk | Yes |
 
 ### Deploy RabbitMQ on Northflank: Deploy RabbitMQ
 
@@ -3649,9 +3641,29 @@ You can increase the vCPU and memory dedicated to an addon on the resources page
 
 You can increase the storage space dedicated to a database on the resources page.
 
-You should increase the storage space for your database once it is over 50% full.
+You cannot reduce the storage space assigned to a database after increasing it, either manually or automatically.
 
-You cannot reduce the storage space assigned to a database after increasing it.
+#### Scale a database: Storage warnings
+
+The addon list and header show a warning when volume usage reaches its warning threshold. You need permission to view addon metrics to see these warnings. Missing metrics or a missing warning do not establish that storage space is sufficient.
+
+Open the addon's [volume metrics](observe.md#view-metrics) to inspect usage, then increase storage or configure disk auto-resize below. The warning itself does not start a resize or send a notification.
+
+#### Scale a database: Configure disk auto-resize
+
+You can enable disk auto-resize on your addon's resources page to automatically increase its storage when the volume reaches a selected usage threshold. Disk auto-resize is available when the underlying storage supports volume expansion.
+
+![Configuring disk auto-resize for an addon in the Northflank application](https://assets.northflank.com/documentation/v1/application/databases-and-persistence/scale-a-database/disk-auto-resize.png)
+
+You can configure the following options:
+
+- Resize threshold: select `75%` or `90%` volume usage. The default threshold is `90%`.
+
+- Set maximum size: optionally limit the storage size that the addon can automatically grow to.
+
+When the volume reaches the selected threshold, Northflank increases it to the next supported storage size. A volume can be automatically resized at most once every six hours and, if you set a maximum size, will not grow beyond it.
+
+Saving the disk auto-resize configuration restarts the addon. Subsequent automatic storage increases do not restart the addon. You will be billed for the increased storage from the time the volume is resized.
 
 ### Scale a database: Scale replicas
 
