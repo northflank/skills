@@ -11,34 +11,33 @@ Northflank is a developer platform for building, deploying, and scaling workload
 
 **Base API URL:** `https://api.northflank.com/v1/`  
 **Auth:** `Authorization: Bearer <token>`  
-**Rate limit:** 1000 req/hr (`x-ratelimit-remaining` header)
+**Rate limits:** Use the response rate-limit headers; limits depend on the account and server configuration.
 
 ## Before You Start
 
-Before writing any Northflank code, verify setup:
+Use the interface requested by the user. Check prerequisites only for that interface:
 
-1. **CLI or JS client?** Pick the interface that matches who's doing the work:
-   - **Prefer the CLI** when *you* (the agent) are operating on the user's Northflank account on their behalf — deploying a service, tailing logs, exec-ing into a container, forwarding a port, restarting a workload, inspecting state. The CLI uses the user's existing `northflank login` session, doesn't require an extra token in the environment, and keeps one-off operations auditable.
-   - **Use the JS client (`@northflank/js-client`) or REST API** when the *user* is building a feature, product, or automation **on top of** Northflank — i.e. code that will run in their app, script, or service. That's when you want a programmatic SDK, typed responses, retries, and an `NF_API_TOKEN` baked into their deployment.
-   - Rule of thumb: if the artefact of the task is "the operation happened," reach for the CLI. If the artefact is "code the user keeps and runs later," reach for the SDK.
+1. **MCP:** When connected, use its tools for platform operations. Do not install the CLI or request another API token for operations the MCP already supports. Use `deploy_app` for new image/Git apps, `deploy_job` for jobs, and detailed tools for existing resources or advanced settings.
+2. **CLI:** Use the user's existing `northflank login` session for CLI operations, local tunnels, exec, or workflows unavailable through the connected MCP. Check `northflank --help` only when using the CLI.
+3. **JS client or REST:** Use these when writing code the user will keep and run. Check for `@northflank/js-client` only when that code needs it. Resolve credentials through the user's existing setup; never print tokens.
+4. **Account and project:** Reuse known context. Project IDs are slugs, such as `my-project`. With MCP, call `get_auth_context` only when team or workload scope is unknown. Own-project workload credentials should use `workload.projectId`; do not enumerate all projects. For a requested new project, pass `newProject` to the deployment workflow.
 
-2. **CLI installed?** Check `northflank --help`. If missing:
-   ```bash
-   npm install -g @northflank/cli
-   # or
-   yarn global add @northflank/cli
-   ```
+## MCP not connected?
 
-3. **JS client installed?** Check `package.json` for `@northflank/js-client`. If missing:
-   ```bash
-   npm install @northflank/js-client
-   # or
-   yarn add @northflank/js-client
-   ```
+Follow [Connect your agent to Northflank](https://northflank.com/docs/v1/application/ai-agents/mcp-server) for client-specific setup and authentication.
 
-4. **API token set?** Check the environment for `NF_API_TOKEN` (or equivalent). If not set, tell the user to create one from their team page: **Team page → Team settings (top right) → API → Tokens → Create API token**. They also need an API role with appropriate permissions under **Team settings → API → Roles**.
+The hosted endpoint is `https://mcp.northflank.com/mcp`. It uses Streamable HTTP with `Authorization: Bearer <team API token>`. Team workload identity tokens are also supported. MCP OAuth login is not available in this setup.
 
-5. **Project ID known?** Most operations require a `projectId`. It's the slug of the project name (e.g. `"My Project"` → `my-project`). If using the CLI, set a default with `northflank context use project` or pass it explicitly. If using the JS client, list projects with `apiClient.list.projects({})`.
+Installing this skill does not configure the MCP server or grant account access. Help the user configure their requested client using the guide. Keep credentials in the client's secret storage or process environment, never in chat or committed files. Do not install the CLI as a prerequisite for the hosted MCP.
+
+After connection, use `get_auth_context` once if the team or access scope is unknown. For rotating workload tokens, use a client that reads the mounted token before requests or refreshes it after authentication fails. A static environment value does not refresh it.
+
+## Deploy with MCP
+
+1. **Inspect only what deployment needs.** For a local repository, read the remote, branch, HEAD and working-tree state once. Inspect the relevant Dockerfile or build configuration and listening port. Do not clone an already available checkout, scan the whole application, or run unrelated checks. Git deployment uses remote content: account for uncommitted or unpushed changes before claiming to deploy the local branch. Do not silently discard changes or push without user authorization.
+2. **Reuse context.** Keep known IDs and deployment choices. Use MCP inline schemas and compact discovery first; request omitted constraints only when needed. Do not repeat repository inspection or catalogue calls after authorization.
+3. **Follow the tool workflow.** Use `deploy_app`, `deploy_job` or `create_database` for supported new workloads. Let their results direct Git authorization, recovery and status checks. Retain original inputs and returned resource/session IDs. Open authorization links when a browser is available; otherwise show the link and wait. Workload identities require a team member to grant missing Git access.
+4. **Report the evidence.** Follow returned phases, next steps and polling intervals. A live source revision does not prove that a specific rebuild of that commit is deployed. Check a web endpoint before claiming application health. Recover from existing resources after partial failure; do not repeat creation or execution blindly.
 
 ## Destructive Operations — Always Confirm First
 
@@ -49,7 +48,7 @@ Destructive operations include, at minimum:
 - `delete service` / `apiClient.delete.service` — irreversible; loses container state and any service-scoped configuration
 - **`delete addon` / `apiClient.delete.addon`** — **EXTRA CARE**: addons hold persistent data (databases, queues, caches). Deletion is irreversible and **destroys all data** unless the user has a recent backup. Always confirm the addon name back to the user, ask whether a backup exists, and do not proceed without an explicit "yes, delete `<addon-id>`."
 - `delete volume` — destroys persistent disk contents
-- `delete project` — wipes the entire namespace and every resource in it
+- `delete project` — removes a project; the MCP tool requires it to be empty. Recursive deletion through another interface also deletes its resources
 - `delete secret` — may break running workloads that depend on those keys
 - `delete job` — removes the job and its run history
 - `delete template` / running a template that destroys resources
@@ -527,7 +526,7 @@ await apiClient.start.job.run({ parameters: { projectId: 'my-project', jobId: 'd
 2. **Addon storage and replicas** can only increase, never decrease after creation.
 3. **Secret groups with addon links** auto-update connection strings when add-ons rotate credentials or change.
 4. **Port names** max 8 chars, must start with a letter.
-5. **Rate limit is 1000/hr** — batch operations, check `x-ratelimit-remaining`.
+5. **Rate limits vary** — check the response rate-limit headers and pace operations accordingly.
 6. **`put.*` methods use upsert semantics** — create if missing, update if present. Useful for idempotent IaC.
 7. **Pause ≠ delete** — paused services stop billing for compute but keep config and volumes.
 8. **`northflank exec --cmd "..."` swallows output without a TTY** — in CI, agent harnesses, or anything wrapped in `bash -c`, stdout/stderr are silently discarded. Wrap with `script -q /dev/null northflank exec ...` (macOS/BSD) or `script -qfc 'northflank exec ...' /dev/null` (Linux) to capture output.
