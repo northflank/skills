@@ -2147,7 +2147,7 @@ Example preview environment template
     {
       "accountLogin": "northflank-platform",
       "vcsService": "github",
-      "repoUrl": "https://github.com/northflank-platform/postgres-demo",
+      "repoUrl": "https://github.com/example/project-1",
       "branchRestrictions": [],
       "prRestrictions": [
         "*"
@@ -2171,7 +2171,7 @@ Example preview environment template
     {
       "accountLogin": "northflank-platform",
       "vcsService": "github",
-      "repoUrl": "https://github.com/northflank-platform/redis-demo",
+      "repoUrl": "https://github.com/example/project-2",
       "branchRestrictions": [],
       "prRestrictions": [
         "*"

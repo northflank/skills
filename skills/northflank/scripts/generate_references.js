@@ -24,7 +24,22 @@ const DOC_URL_PATTERN = /https:\/\/northflank\.com\/docs\/[^\s)>\]]+\.md/g;
 const HTTP_PATH_PATTERN = /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+([/][v]1\/\S+)\s*$/gm;
 const HEADING_PATTERN = /^(#{1,6})\s+(.*)$/;
 // Add repositories only after confirming that they are publicly accessible.
-const PUBLIC_NORTHFLANK_REPOSITORIES = new Set(["skills", "deploy-to-northflank"]);
+const PUBLIC_NORTHFLANK_REPOSITORIES = new Set([
+  "northflank-examples/angular-js-example",
+  "northflank-examples/mock-job",
+  "northflank-examples/next-js-example",
+  "northflank-examples/node-express-example",
+  "northflank-examples/php-laravel-example",
+  "northflank-examples/python-django-example",
+  "northflank-examples/python-flask-example",
+  "northflank-examples/remix-postgres-redis-demo",
+  "northflank-examples/ruby-on-rails-example",
+  "northflank-examples/rust-example",
+  "northflank-guides/deploy-payload-on-northflank",
+  "northflank-guides/deploy-payload-on-northflank-with-atlas",
+  "northflank/deploy-to-northflank",
+  "northflank/skills",
+]);
 
 const SCRIPT_DIR = __dirname;
 const SKILL_DIR = path.resolve(SCRIPT_DIR, "..");
@@ -244,23 +259,30 @@ class NorthflankReferenceBuilder {
   filterRepositoryLinks(text) {
     const isPublic = (repository) => PUBLIC_NORTHFLANK_REPOSITORIES.has(repository.toLowerCase().replace(/\.git$/, ""));
     const nonPublicRepositories = new Set(
-      [...text.matchAll(/https?:\/\/github\.com\/northflank\/([\w.-]+)/gi)]
+      [...text.matchAll(/https?:\/\/github\.com\/(northflank(?:-[\w-]+)?\/[\w.-]+)/gi)]
         .map((match) => match[1]).filter((repository) => !isPublic(repository)),
     );
+    const placeholders = new Map([...nonPublicRepositories].map((repository, index) => [
+      repository.toLowerCase(), `example/project${nonPublicRepositories.size > 1 ? `-${index + 1}` : ""}`,
+    ]));
     for (const repository of nonPublicRepositories) {
-      text = text.replaceAll(`"northflank/${repository}"`, '"example/project"')
-        .replaceAll(`"${repository}"`, '"project"');
+      const placeholder = placeholders.get(repository.toLowerCase());
+      if (text.includes(`"full_name": "${repository}"`)) {
+        text = text.replace(/("name":\s*)"([^"]+)"/g, (match, prefix, name) =>
+          name === repository.split("/")[1] ? `${prefix}"${placeholder.split("/")[1]}"` : match);
+      }
+      text = text.replaceAll(`"${repository}"`, `"${placeholder}"`);
     }
     if (nonPublicRepositories.size && text.includes('"full_name": "example/project"')) {
-      text = text.replace(/("login":\s*)"northflank"/g, '$1"example"');
+      text = text.replace(/("login":\s*)"northflank(?:-[\w-]+)?"/g, '$1"example"');
     }
     const withoutPrivateMarkdownLinks = text.replace(
-      /\[([^\]]+)\]\(https?:\/\/github\.com\/northflank\/([\w.-]+)(?:[/?#][^\s)]*)?\)/gi,
+      /\[([^\]]+)\]\(https?:\/\/github\.com\/(northflank(?:-[\w-]+)?\/[\w.-]+)(?:[/?#][^\s)]*)?\)/gi,
       (link, label, repository) => isPublic(repository) ? link : label,
     );
     return withoutPrivateMarkdownLinks.replace(
-      /https?:\/\/github\.com\/northflank\/([\w.-]+)(?:[/?#][^\s<>"'`\\)\]]*)?/gi,
-      (url, repository) => isPublic(repository) ? url : "https://github.com/example/project",
+      /https?:\/\/github\.com\/(northflank(?:-[\w-]+)?\/[\w.-]+)(?:[/?#][^\s<>"'`\\)\]]*)?/gi,
+      (url, repository) => isPublic(repository) ? url : `https://github.com/${placeholders.get(repository.toLowerCase())}`,
     );
   }
 
