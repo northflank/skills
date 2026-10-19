@@ -29,7 +29,7 @@ On older API versions, if the error says `exceeds maximum ephemeral storage capa
 
 If the error says runtime ephemeral storage exceeds the project allowance, first check GPU enablement, nested configuration, and the plan. Do not lower GPU storage to the CPU quota or request a quota increase before checking the request. CPU requests use account/project quotas.
 
-Shared memory (`deployment.storage.shmSize`) is optional and defaults to 64 MiB. The API does not increase it automatically for GPUs. If the workload needs more, set it explicitly within the GPU plan's system RAM. Persistent volume size is separate from ephemeral storage.
+Shared memory (`deployment.storage.shmSize`) uses system RAM and is optional. For managed GPU workloads, the API defaults it to system RAM per GPU multiplied by `gpuCount`. Smaller explicit values are preserved and values above that limit are capped. Changing the GPU type or count reapplies this rule to the existing value. CPU and BYOC workloads retain the 64 MiB default. Shared memory, GPU memory, ephemeral storage, and persistent volume size are separate resources.
 
 If the corrected request still fails, report the error, region, GPU type/count, plan ID, and storage size to support. Do not include credentials or keep retrying the unchanged request.
 

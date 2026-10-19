@@ -15,10 +15,10 @@ Northflank is a developer platform for building, deploying, and scaling workload
 
 ## Before You Start
 
-Use the interface requested by the user. Check prerequisites only for that interface:
+Use the interface requested by the user and reuse their existing authenticated setup. MCP offers guided workflows directly in a coding agent; the CLI is also a good choice for platform operations and local development. If no interface is specified, a connected MCP is a convenient starting point. Check prerequisites for the interface you use:
 
-1. **MCP:** When connected, use its tools for platform operations. Do not install the CLI or request another API token for operations the MCP already supports. Use `deploy_app` for new image/Git apps, `deploy_job` for jobs, and detailed tools for existing resources or advanced settings.
-2. **CLI:** Use the user's existing `northflank login` session for CLI operations, local tunnels, exec, or workflows unavailable through the connected MCP. Check `northflank --help` only when using the CLI.
+1. **MCP:** Use its guided tools to deploy and manage resources from the agent. Use `deploy_app` for new image/Git apps, `deploy_job` for jobs, and detailed tools for existing resources or advanced settings. Reuse the connection's authentication.
+2. **CLI:** Use the user's existing `northflank login` session for deployments, resource management, local tunnels, exec, and shell workflows. Check the relevant command's `--help` when using it.
 3. **JS client or REST:** Use these when writing code the user will keep and run. Check for `@northflank/js-client` only when that code needs it. Resolve credentials through the user's existing setup; never print tokens.
 4. **Account and project:** Reuse known context. Project IDs are slugs, such as `my-project`. With MCP, call `get_auth_context` only when team or workload scope is unknown. Own-project workload credentials should use `workload.projectId`; do not enumerate all projects. For a requested new project, pass `newProject` to the deployment workflow.
 
@@ -28,7 +28,7 @@ Follow [Connect your agent to Northflank](https://northflank.com/docs/v1/applica
 
 The hosted endpoint is `https://mcp.northflank.com/mcp`. It uses Streamable HTTP with `Authorization: Bearer <team API token>`. Team workload identity tokens are also supported. MCP OAuth login is not available in this setup.
 
-Installing this skill does not configure the MCP server or grant account access. Help the user configure their requested client using the guide. Keep credentials in the client's secret storage or process environment, never in chat or committed files. Do not install the CLI as a prerequisite for the hosted MCP.
+Installing this skill does not configure the MCP server or grant account access. Help the user configure their requested client using the guide. Keep credentials in the client's secret storage or process environment, never in chat or committed files. The hosted MCP can be configured independently of the CLI.
 
 After connection, use `get_auth_context` once if the team or access scope is unknown. For rotating workload tokens, use a client that reads the mounted token before requests or refreshes it after authentication fails. A static environment value does not refresh it.
 
@@ -484,7 +484,7 @@ data: {
 - Set GPU configuration under `deployment.gpu.configuration`. Include `deployment.gpu.enabled: true`; placing it under `billing` does not enable GPU validation.
 - Counts vary by region. Query the target region's `gpuDevices[].countOptions`, not a global union of counts.
 - H100 1×/8× plans are `nf-gpu-h100-80-1g` / `nf-gpu-h100-80-8g`. RTX PRO 6000 1×/8× plans are `nf-gpu-rtx-pro-6000-96-1g` / `nf-gpu-rtx-pro-6000-96-8g`. `us-central` supports these configurations.
-- Ephemeral storage is optional for managed GPU workloads. The API sets `deployment.storage.ephemeralStorage.storageSize` from the GPU type and count, overriding supplied values. Shared memory is separate: `deployment.storage.shmSize` is optional and defaults to 64 MiB. Set it explicitly within the plan's system RAM if the workload needs more. The example requests 32 GiB. For allocations and older API errors, read [references/gpu-storage.md](references/gpu-storage.md).
+- Ephemeral storage is optional for managed GPU workloads. The API sets `deployment.storage.ephemeralStorage.storageSize` from the GPU type and count, overriding supplied values. Shared memory is separate: `deployment.storage.shmSize` is optional. For managed GPUs it defaults to system RAM per GPU multiplied by `gpuCount`; smaller explicit values are preserved and larger values are capped. CPU and BYOC workloads retain the 64 MiB default. The example explicitly requests 32 GiB. For allocations and older API errors, read [references/gpu-storage.md](references/gpu-storage.md).
 - GPU billing is per GPU per hour, on top of the bundled compute. Pricing and per-region availability live in [references/plans.md](references/plans.md).
 
 For BYOC clusters, GPU node types come from the cloud provider — query with `apiClient.list.cloudProviders.nodeTypes({ options: { hasGpu: true } })` and define custom resource plans (see `references/guides/bring-your-own-cloud.md#create-custom-resource-plans`). Timeslicing is supported on BYOC, not on managed cloud.
@@ -601,17 +601,19 @@ await apiClient.start.job.run({ parameters: { projectId: 'my-project', jobId: 'd
 
 ## Reference Cheat Sheet
 
+Use MCP workflows when they fit the task, or the CLI/SDK equivalents for the user's chosen interface. The entries below provide starting points for each.
+
 | I want to... | Check here |
 |---|---|
-| Deploy a service from a pre-built image | `apiClient.create.service.deployment` / `northflank create service deployment` |
-| Build and deploy a service from a Git repo | `apiClient.create.service.combined` / `northflank create service combined`; `references/guides/build.md` |
+| Deploy a service from a pre-built image | MCP `deploy_app`; `apiClient.create.service.deployment` / `northflank create service deployment` |
+| Build and deploy a service from a Git repo | MCP `deploy_app`; `apiClient.create.service.combined` / `northflank create service combined`; `references/guides/build.md` |
 | Run a one-off command or shell session in a container | `apiClient.exec.execServiceCommand` / `northflank exec service`; `references/api/execute-command.md` |
 | Tail or fetch logs from a service, job, or addon | `apiClient.get.service.logTail` / `northflank get service logs -f`; `references/api/log-tailing.md` |
 | Forward a private service or addon port to localhost | `northflank forward service`; `references/api/forwarding.md` |
-| Provision a managed database (Postgres, Redis, Mongo, MySQL…) | `apiClient.create.addon` / `northflank create addon`; `references/guides/databases-and-persistence.md` |
+| Provision a managed database (Postgres, Redis, Mongo, MySQL…) | MCP `create_database`; `apiClient.create.addon` / `northflank create addon`; `references/guides/databases-and-persistence.md` |
 | Wire database credentials into a service via secret groups | `apiClient.create.secret` with `addonDependencies` / `northflank create secret`; `references/api/project/secrets/_index.md` |
-| Create a cron or manual job | `apiClient.create.job` with `settings.cron` / `northflank create job cron|manual`; `references/api/project/jobs/_index.md` |
-| Configure autoscaling, replicas, or resource sizing | `deployment.autoscaling.horizontal` field; `references/guides/scale.md` |
+| Create a cron or manual job | MCP `deploy_job`; `apiClient.create.job` with `settings.cron` / `northflank create job cron|manual`; `references/api/project/jobs/_index.md` |
+| Configure autoscaling, replicas, or resource sizing | `autoscaling.horizontal` field; `references/guides/scale.md` |
 | Pick a compute or GPU plan (sizes, pricing, regions) | [references/plans.md](references/plans.md) — auto-generated from `/v1/plans` and `/v1/regions`; slug patterns in [Compute & GPU Plans](#compute--gpu-plans) |
 | Set up CI/CD: pipelines, release flows, preview environments | `references/guides/release.md` |
 | Define infrastructure as code (templates, GitOps, OpenTofu) | `apiClient.create.template` / `northflank create template`; `references/guides/infrastructure-as-code.md` |
@@ -621,7 +623,7 @@ await apiClient.start.job.run({ parameters: { projectId: 'my-project', jobId: 'd
 | Configure ports, network policies, egress IPs, Tailscale | `references/guides/network.md` |
 | Set up log sinks, metrics, alerts, health checks | `references/guides/observe.md` |
 | Run GPU workloads | `references/guides/gpu-workloads.md` |
-| Spin up an AI sandbox / microVM | A sandbox is just a service — use `apiClient.create.service.deployment` / `northflank create service deployment` (no `sandbox` verb exists); `references/guides/sandboxes.md` |
+| Spin up an AI sandbox / microVM | A sandbox is a service — use MCP `deploy_app`, or `apiClient.create.service.deployment` / `northflank create service deployment` (no `sandbox` verb exists); `references/guides/sandboxes.md` |
 | Deploy on your own cluster (BYOC/BYOK on AWS/GCP/Azure/CoreWeave) | `references/guides/bring-your-own-cloud.md` |
 | Manage teams, RBAC, SSO/MFA, API tokens | `references/guides/secure.md`, `references/guides/collaborate.md` |
 | Pause, resume, restart, or delete a resource | `apiClient.{pause,resume,restart,delete}.service` / `northflank {pause,resume,restart,delete} service` — re-read **Destructive Operations** before any delete |

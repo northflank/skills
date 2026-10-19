@@ -52,6 +52,8 @@ If your editor supports loading skills from a directory, copy `skills/northflank
 
 ## Usage
 
+For guided deployments and resource management from your coding agent, [connect the Northflank MCP server](https://northflank.com/docs/v1/application/ai-agents/mcp-server). The skill also supports the Northflank CLI and SDK workflows, so you can use your existing tools and authentication. Installing the skill and connecting MCP are separate setup steps.
+
 After installation, ask your coding agent to do Northflank work directly. The skill should load automatically when the task involves Northflank projects, services, jobs, addons, preview environments, release workflows, AI sandboxes, GPU workloads, domains, secrets, templates, or the Northflank API and CLI.
 
 Examples:
