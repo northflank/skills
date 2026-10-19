@@ -17,6 +17,7 @@ Required permission: Project > Jobs > General > Read
 {object}
 - `data`: {object}
   - `id`: (string) (required) Identifier for the job
+  - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
   - `appId`: (string) (required) Full identifier used for job deployment
   - `name`: (string) (required) Job name
   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -59,9 +60,7 @@ Required permission: Project > Jobs > General > Read
        - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
        - `buildkit`: {object}
          - `useCache`: (boolean) Use persistent storage to cache build layers.
-         - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-         - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-         - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+         - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
      - `storage`: {object}
        - `ephemeralStorage`: {object}
          - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -78,8 +77,6 @@ Required permission: Project > Jobs > General > Read
       - `useCache`: (boolean) Should build dependencies be cached?
     - `buildkit`: {object}
       - `useCache`: (boolean) Should intermediate image layers be cached?
-      - `useInternalCache`: (boolean) Should use persistent storage to store all layers?
-      - `internalCacheStorage`: (boolean) Storage size to use for internal cache
     - `kaniko`: {object}
       - `useCache`: (boolean) Should intermediate image layers be cached?
   - `disabledCI`: (boolean) (required) Whether Continuous Integration is disabled
@@ -128,6 +125,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}
 {
   "data": {
     "id": "example-job",
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
     "appId": "/example-user/default-project/example-job",
     "name": "Example Job",
     "description": "This is the job description",
@@ -136,7 +134,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}
     "jobType": "cron",
     "createdAt": "2021-01-20T11:19:53.175Z",
     "vcsData": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "selfHostedVcsId": "example-team/self-hosted-vcs",
       "projectBranch": "master",
@@ -251,6 +249,7 @@ Options:
 ```json
 {
   "id": "example-job",
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
   "appId": "/example-user/default-project/example-job",
   "name": "Example Job",
   "description": "This is the job description",
@@ -259,7 +258,7 @@ Options:
   "jobType": "cron",
   "createdAt": "2021-01-20T11:19:53.175Z",
   "vcsData": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "selfHostedVcsId": "example-team/self-hosted-vcs",
     "projectBranch": "master",
@@ -354,6 +353,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.job({
   parameters: {
@@ -371,6 +372,7 @@ await apiClient.get.job({
 {
   "data": {
     "id": "example-job",
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
     "appId": "/example-user/default-project/example-job",
     "name": "Example Job",
     "description": "This is the job description",
@@ -379,7 +381,7 @@ await apiClient.get.job({
     "jobType": "cron",
     "createdAt": "2021-01-20T11:19:53.175Z",
     "vcsData": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "selfHostedVcsId": "example-team/self-hosted-vcs",
       "projectBranch": "master",
@@ -471,5 +473,140 @@ await apiClient.get.job({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.job(
+    job_id="example-job",
+    project_id="default-project",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "example-job",
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
+  "appId": "/example-user/default-project/example-job",
+  "name": "Example Job",
+  "description": "This is the job description",
+  "projectId": "default-project",
+  "stageId": "staging",
+  "jobType": "cron",
+  "createdAt": "2021-01-20T11:19:53.175Z",
+  "vcsData": {
+    "projectUrl": "https://github.com/example/project",
+    "projectType": "github",
+    "selfHostedVcsId": "example-team/self-hosted-vcs",
+    "projectBranch": "master",
+    "publicRepo": false,
+    "dockerWorkDir": "/",
+    "dockerFilePath": "/Dockerfile"
+  },
+  "buildConfiguration": {
+    "pathIgnoreRules": [
+      "README.md"
+    ],
+    "isAllowList": false,
+    "ciIgnoreFlags": [
+      "[skip ci]",
+      "[ci skip]",
+      "[no ci]",
+      "[skip nf]",
+      "[nf skip]",
+      "[northflank skip]",
+      "[skip northflank]"
+    ],
+    "ignoreEmptyCommits": false,
+    "dockerCredentials": [
+      "example-docker-credential"
+    ],
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 16384
+      }
+    }
+  },
+  "buildSettings": {
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 16384
+      }
+    },
+    "dockerfile": {
+      "buildEngine": "buildkit",
+      "dockerFilePath": "/Dockerfile",
+      "dockerWorkDir": "/",
+      "buildkit": {
+        "useCache": true,
+        "cacheStorageSize": 32768
+      }
+    }
+  },
+  "buildEngineConfiguration": {
+    "buildEngine": "buildpack",
+    "buildpack": {
+      "builder": "HEROKU_24",
+      "buildpackLocators": [
+        "https://buildpack-registry.heroku.com/cnb/mars/create-react-app"
+      ]
+    }
+  },
+  "disabledCI": false,
+  "disabledCD": false,
+  "deployment": {
+    "region": "europe-west",
+    "buildpack": {
+      "configType": "default"
+    },
+    "docker": {
+      "configType": "default",
+      "customCommand": "nginx -g"
+    },
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 1024
+      }
+    }
+  },
+  "billing": {
+    "deploymentPlan": "nf-compute-20"
+  },
+  "suspended": false,
+  "settings": {
+    "cron": {
+      "schedule": "30 8 * * *",
+      "concurrencyPolicy": "Allow"
+    },
+    "backoffLimit": 0,
+    "activeDeadlineSeconds": 600
+  },
+  "cluster": {
+    "id": "nf-europe-west",
+    "name": "nf-europe-west",
+    "namespace": "ns-8zy2mcjh9zn2",
+    "loadBalancers": [
+      "lb.659200800000000000000000.northflank.com"
+    ]
+  },
+  "tags": []
 }
 ```

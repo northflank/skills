@@ -6,7 +6,7 @@ This endpoint is deprecated and will be removed in the future. Please avoid maki
 
 Requests should instead use the relevant GET endpoint.
 
-[Use /jobs/get-job instead](get-job.md)
+[Use /project/jobs/get-job instead](get-job.md)
 
 Get details about the runtime environment accessible by the given job. Also requires the permission 'Project > Secrets > General > Read'
 
@@ -157,6 +157,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.job.runtimeEnvironmentDetails({
   parameters: {
@@ -210,5 +212,72 @@ await apiClient.get.job.runtimeEnvironmentDetails({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.job.runtime_environment_details(
+    job_id="example-job",
+    project_id="default-project",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "runtimeEnvironment": {
+    "MY_VARIABLE_NAME": {
+      "value": "abcdef123456",
+      "inheritedFrom": "example-secret",
+      "addonId": "example-addon",
+      "priority": 10,
+      "overriding": [
+        {
+          "value": "ffffffffffff",
+          "inheritedFrom": "secret-2",
+          "addonId": "addon-2",
+          "priority": 0
+        }
+      ]
+    }
+  },
+  "runtimeFiles": {
+    "/dir/fileName": {
+      "value": {
+        "/dir/fileName": {
+          "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+          "encoding": "utf-8"
+        },
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      },
+      "inheritedFrom": "example-secret",
+      "priority": 10,
+      "overriding": [
+        {
+          "value": "ffffffffffff",
+          "inheritedFrom": "secret-2",
+          "priority": 0
+        }
+      ]
+    }
+  }
 }
 ```

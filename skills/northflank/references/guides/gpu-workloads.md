@@ -117,7 +117,9 @@ To get started you'll need a [cloud account](bring-your-own-cloud.md#use-other-c
 To run GPU workloads you must have GPU-enabled node-types available. You can deploy GPU node pools on an existing cluster, or create a new one. The GPU nodes you want to use must be available in the region that your cluster is deployed in.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/cluster/new) to deploy a new cluster.
+
 You should [create one node pool](bring-your-own-cloud.md#deploy-and-scale-node-pools) of non-GPU nodes with at least 4 vCPU and 8GB memory to provision Northflank system components.
 
 Next, create a node pool and select the type of GPU node you want to deploy. Most GPU node types are listed as accelerator optimised and you can type this category into the node type dropdown to filter nodes, or search by node type name.
@@ -170,6 +172,7 @@ You can enable timeslicing to enable multiple GPU workloads to schedule per GPU,
 Each workload is guaranteed the same amount of GPU execution time, but there is no guarantee on GPU memory allocation per workload. Each workload scheduled will try to use as much GPU resources as possible, which depends on the number of GPU workloads that are deployed to the node and the resources each workload requests. Workloads schedule processes on the GPU and each workload may schedule multiple processes on a GPU. This means the number of processes running on a GPU and the number of workloads scheduled per GPU are not a one-to-one ratio.
 
 > [!important]
+>
 > Timesliced workloads are not fault or memory isolated. For example, if one workload on a time-sliced GPU crashes due to a memory error, all workloads sharing the GPU will crash.
 
 ### Deploy GPUs in your own cloud: GPU workload scheduling
@@ -206,6 +209,7 @@ Check the [pricing page](https://northflank.com/pricing) to find out more about 
 To deploy GPU workloads on Northflank's managed cloud, you'll first need to create a new project in a GPU-enabled region.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/projects/new) to create a project.
 
 1. Navigate to the Northflank dashboard and click **Create Project**
@@ -225,6 +229,7 @@ Any services or jobs deployed in this project will have GPU options available in
 To deploy workloads with GPU access:
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/project/create/service) to create a service.
 
 1. Navigate to the **Services** tab in your project dashboard and click **Create service**
@@ -270,12 +275,16 @@ You can deploy services and run jobs on Northflank with GPU access, using Northf
 
 This lets you run GPU workloads for AI, ML, data analysis, simulations, graphics rendering, and other tasks which require high-performance computing on Northflank.
 
+For a task guide that connects hosting, deployment, and configuration, read [Run GPU workloads](use-cases.md#run-gpu-workloads). For model serving, read [Host a model on GPUs](use-cases.md#host-a-model-on-gpus).
+
 ### GPUs on Northflank: Deploy GPUs on Northflank's managed cloud
 
 You can create GPU-enabled projects on Northflank's managed cloud and only pay for the resources consumed, so you can deploy workloads with access powerful GPUs without having to configure your own Kubernetes clusters.
 
 - [Deploy a GPU project on Northflank: Deploy a GPU-enabled project on Northflank's managed cloud.](gpu-workloads.md#deploy-gpus-on-northflanks-managed-cloud-deploy-a-gpu-enabled-project)
 - [Deploy a GPU workload on Northflank's managed cloud: Deploy a GPU-enabled workload on Northflank's managed cloud.](gpu-workloads.md#deploy-gpus-on-northflanks-managed-cloud-deploy-a-gpu-workload-on-northflank)
+
+See [resource plans and quotas](billing.md#compute-plans-and-quota) for compute plan IDs, GPU plans, and supported GPU counts by region.
 
 ### GPUs on Northflank: Deploy GPUs in your own cloud
 

@@ -93,6 +93,39 @@ Required permission: Account > Cloud > Clusters > Update
     - `platform`: {object}
       - `architecture`: (string) Platform architecture of the underlying node type. (enum: amd64, arm64)
     - `labels`: {object}
+- `restrictions`: {object}
+  - `enabled`: (boolean) (required) Enable or disable BYOC restrictions for this entity
+  - `teams`: [array of] {object}
+     - `teamId`: (string) (required) The ID of the team that has access to this BYOC cluster (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 45)
+- `gcp`: {object}
+  - `networking`: {object}
+    - `network`: (string) Name of the GCP network the cluster should be created in. By default a new network will be created.
+    - `subnetwork`: (string) Name of the GCP subnetwork the cluster should be created in. By default a new subnetwork will be created.
+  - `enableAuthorizedIpRanges`: (boolean) Whether access to the Kubernetes API server should be restricted to authorized IP ranges.
+  - `authorizedIpRanges`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
+  - `projectId`: (string) GCP Project ID (pattern: ^[a-z][a-z0-9-]{4,28}[a-z0-9]$)
+- `aws`: {object}
+  - `enablePublicAccessCidrs`: (boolean) Whether access to the public Kubernetes API endpoint should be restricted to specific CIDR ranges.
+  - `publicAccessCidrs`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
+  - `subnetConfiguration`: {object}
+    - `mode`: (string) (required) The mode of the AWS subnet configuration (enum: default-subnets-for-azs, explicit-subnets)
+    - `vpcId`: (string) Id of the VPC
+    - `subnets`: [array of] (string)
+  - `vpcEgress`: (boolean) If egress traffic from the cluster should come from a single static egress IP.
+- `azure`: {object}
+  - `networking`: {object}
+    - `vnetConfiguration`: {object}
+      - `mode`: (string) (required) The vnet mode to use for this cluster. Use this to switch between creation of a new vnet per cluster or specifying a custom vnet. (enum: create-default, custom-vnet)
+      - `vnetId`: (string) Azure vnetId that should be used for this cluster. By default a new vnet will be created.
+    - `networkPluginMode`: (string) Optional setting to configure overlay mode on Azure. (enum: overlay)
+  - `enableAuthorizedIpRanges`: (boolean) Whether access to the Kubernetes API server should be restricted to authorized IP ranges.
+  - `authorizedIpRanges`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
+- `byok`: {object}
+  - `nodePoolProviderIdLabel`: (string) (required) The node label used to identify which provider node pool a node belongs to.
+- `coordinates`: {object}
+  - `latitude`: (number) (required) (format: float)
+  - `longitude`: (number) (required) (format: float)
+- `region`: (string) Region of the cluster. Can only be updated for BYOK clusters.
 - `settings`: {object}
   - `builds`: {object}
     - `mode`: (string) Determines where builds are run: on Northflank infrastructure (paas), on this cluster (internal) or on a dedicated build cluster (build-cluster). (enum: paas, internal, build-cluster)
@@ -123,7 +156,14 @@ Required permission: Account > Cloud > Clusters > Update
     - `overlayCIDR`: (string) CIDR range for the overlay network. (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
     - `istio`: {object}
       - `enablePublicLoadBalancer`: (boolean) Whether the cluster runs a public ingress load balancer. Defaults to true.
-      - `enablePrivateLoadBalancer`: (boolean) Whether the cluster runs a private (VPC-only) ingress load balancer. Defaults to false.
+      - `enablePrivateLoadBalancer`: (boolean) Whether the cluster runs a VPC ingress load balancer. Defaults to false; BYOK exposure is customer-controlled.
+      - `privateLoadBalancerAwsSecurityGroupId`: (string) Customer-managed frontend security group for a private AWS NLB managed by the AWS Load Balancer Controller. (pattern: ^sg-(?:[a-f0-9]{8}|[a-f0-9]{17})$)
+      - `publicLoadBalancer`: {object}
+        - `serviceAnnotations`: {object}
+        - `loadBalancerClass`: (string) (pattern: ^(?:(?=[^/]{1,253}\/)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\/)?[a-zA-Z0-9](?:[a-zA-Z0-9_.-]{0,61}[a-zA-Z0-9])?(?![\s\S]))
+      - `privateLoadBalancer`: {object}
+        - `serviceAnnotations`: {object}
+        - `loadBalancerClass`: (string) (pattern: ^(?:(?=[^/]{1,253}\/)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\/)?[a-zA-Z0-9](?:[a-zA-Z0-9_.-]{0,61}[a-zA-Z0-9])?(?![\s\S]))
   - `vanityDomains`: {object}
     - `apps`: {object}
       - `zoneName`: (string) (required)
@@ -174,39 +214,6 @@ Required permission: Account > Cloud > Clusters > Update
     - `addons`: {object}
       - `cpu`: (number) (required) (format: float)
       - `memory`: (number) (required) (format: float)
-- `restrictions`: {object}
-  - `enabled`: (boolean) (required) Enable or disable BYOC restrictions for this entity
-  - `teams`: [array of] {object}
-     - `teamId`: (string) (required) The ID of the team that has access to this BYOC cluster (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 45)
-- `gcp`: {object}
-  - `networking`: {object}
-    - `network`: (string) Name of the GCP network the cluster should be created in. By default a new network will be created.
-    - `subnetwork`: (string) Name of the GCP subnetwork the cluster should be created in. By default a new subnetwork will be created.
-  - `enableAuthorizedIpRanges`: (boolean) Whether access to the Kubernetes API server should be restricted to authorized IP ranges.
-  - `authorizedIpRanges`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
-  - `projectId`: (string) GCP Project ID (pattern: ^[a-z][a-z0-9-]{4,28}[a-z0-9]$)
-- `aws`: {object}
-  - `enablePublicAccessCidrs`: (boolean) Whether access to the public Kubernetes API endpoint should be restricted to specific CIDR ranges.
-  - `publicAccessCidrs`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
-  - `subnetConfiguration`: {object}
-    - `mode`: (string) (required) The mode of the AWS subnet configuration (enum: default-subnets-for-azs, explicit-subnets)
-    - `vpcId`: (string) Id of the VPC
-    - `subnets`: [array of] (string)
-  - `vpcEgress`: (boolean) If egress traffic from the cluster should come from a single static egress IP.
-- `azure`: {object}
-  - `networking`: {object}
-    - `vnetConfiguration`: {object}
-      - `mode`: (string) (required) The vnet mode to use for this cluster. Use this to switch between creation of a new vnet per cluster or specifying a custom vnet. (enum: create-default, custom-vnet)
-      - `vnetId`: (string) Azure vnetId that should be used for this cluster. By default a new vnet will be created.
-    - `networkPluginMode`: (string) Optional setting to configure overlay mode on Azure. (enum: overlay)
-  - `enableAuthorizedIpRanges`: (boolean) Whether access to the Kubernetes API server should be restricted to authorized IP ranges.
-  - `authorizedIpRanges`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
-- `byok`: {object}
-  - `nodePoolProviderIdLabel`: (string) (required) The node label used to identify which provider node pool a node belongs to.
-- `coordinates`: {object}
-  - `latitude`: (number) (required) (format: float)
-  - `longitude`: (number) (required) (format: float)
-- `region`: (string) Region of the cluster. Can only be updated for BYOK clusters.
 
 **Response body:**
 
@@ -216,7 +223,7 @@ Required permission: Account > Cloud > Clusters > Update
   - `name`: (string) (required) The name of the cluster. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 20)
   - `entityType`: (string) (enum: org, team)
   - `description`: (string) The description of the cluster. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, byok)
+  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, aws-eusc, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, byok)
   - `region`: (string) Region of the cluster. Can only be updated for BYOK clusters.
   - `status`: {object}
     - `state`: {object}
@@ -362,7 +369,14 @@ Required permission: Account > Cloud > Clusters > Update
       - `overlayCIDR`: (string) CIDR range for the overlay network. (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
       - `istio`: {object}
         - `enablePublicLoadBalancer`: (boolean) Whether the cluster runs a public ingress load balancer. Defaults to true.
-        - `enablePrivateLoadBalancer`: (boolean) Whether the cluster runs a private (VPC-only) ingress load balancer. Defaults to false.
+        - `enablePrivateLoadBalancer`: (boolean) Whether the cluster runs a VPC ingress load balancer. Defaults to false; BYOK exposure is customer-controlled.
+        - `privateLoadBalancerAwsSecurityGroupId`: (string) Customer-managed frontend security group for a private AWS NLB managed by the AWS Load Balancer Controller. (pattern: ^sg-(?:[a-f0-9]{8}|[a-f0-9]{17})$)
+        - `publicLoadBalancer`: {object}
+          - `serviceAnnotations`: {object}
+          - `loadBalancerClass`: (string) (pattern: ^(?:(?=[^/]{1,253}\/)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\/)?[a-zA-Z0-9](?:[a-zA-Z0-9_.-]{0,61}[a-zA-Z0-9])?(?![\s\S]))
+        - `privateLoadBalancer`: {object}
+          - `serviceAnnotations`: {object}
+          - `loadBalancerClass`: (string) (pattern: ^(?:(?=[^/]{1,253}\/)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\/)?[a-zA-Z0-9](?:[a-zA-Z0-9_.-]{0,61}[a-zA-Z0-9])?(?![\s\S]))
     - `vanityDomains`: {object}
       - `apps`: {object}
         - `zoneName`: (string) (required)
@@ -481,7 +495,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
-  --data '{"name":"GCP Cluster 1","description":"This is a new cluster.","kubernetesVersion":"1.30","nodePools":[{"id":"6aa96121-0345-43ad-bade-af36d540c222","nodeType":"n2-standard-8","nodeCount":3,"autoscaling":{"enabled":true,"min":0,"max":10},"preemptible":false,"diskSize":100}],"settings":{"builds":{"plan":"nf-compute-200"},"registry":{"registryId":"my-registry-credentials"},"requestModifiers":{"services":{"cpu":0.5,"memory":0.8},"jobs":{"cpu":0.5,"memory":0.8},"builds":{"cpu":0.2,"memory":0.5},"addons":{"cpu":0.5,"memory":0.8}}},"aws":{"subnetConfiguration":{"subnets":["eu-west-1a","eu-west-1a"],"mode":"default-subnets-for-azs"}},"region":"europe-west2"}' \
+  --data '{"name":"GCP Cluster 1","description":"This is a new cluster.","kubernetesVersion":"1.30","nodePools":[{"id":"6aa96121-0345-43ad-bade-af36d540c222","nodeType":"n2-standard-8","nodeCount":3,"autoscaling":{"enabled":true,"min":0,"max":10},"preemptible":false,"diskSize":100}],"aws":{"subnetConfiguration":{"subnets":["eu-west-1a","eu-west-1a"],"mode":"default-subnets-for-azs"}},"region":"europe-west2","settings":{"builds":{"plan":"nf-compute-200"},"registry":{"registryId":"my-registry-credentials"},"requestModifiers":{"services":{"cpu":0.5,"memory":0.8},"jobs":{"cpu":0.5,"memory":0.8},"builds":{"cpu":0.2,"memory":0.5},"addons":{"cpu":0.5,"memory":0.8}}}}' \
   https://api.northflank.com/v1/cloud-providers/clusters/{clusterId}
 ```
 
@@ -504,6 +518,16 @@ const payload = {
       "diskSize": 100
     }
   ],
+  "aws": {
+    "subnetConfiguration": {
+      "subnets": [
+        "eu-west-1a",
+        "eu-west-1a"
+      ],
+      "mode": "default-subnets-for-azs"
+    }
+  },
+  "region": "europe-west2",
   "settings": {
     "builds": {
       "plan": "nf-compute-200"
@@ -529,17 +553,7 @@ const payload = {
         "memory": 0.8
       }
     }
-  },
-  "aws": {
-    "subnetConfiguration": {
-      "subnets": [
-        "eu-west-1a",
-        "eu-west-1a"
-      ],
-      "mode": "default-subnets-for-azs"
-    }
-  },
-  "region": "europe-west2"
+  }
 }
 
 const response = await fetch('https://api.northflank.com/v1/cloud-providers/clusters/{clusterId}', {
@@ -560,7 +574,7 @@ import requests
 
 url = "https://api.northflank.com/v1/cloud-providers/clusters/{clusterId}"
 
-payload = {"name":"GCP Cluster 1","description":"This is a new cluster.","kubernetesVersion":"1.30","nodePools":[{"id":"6aa96121-0345-43ad-bade-af36d540c222","nodeType":"n2-standard-8","nodeCount":3,"autoscaling":{"enabled":true,"min":0,"max":10},"preemptible":false,"diskSize":100}],"settings":{"builds":{"plan":"nf-compute-200"},"registry":{"registryId":"my-registry-credentials"},"requestModifiers":{"services":{"cpu":0.5,"memory":0.8},"jobs":{"cpu":0.5,"memory":0.8},"builds":{"cpu":0.2,"memory":0.5},"addons":{"cpu":0.5,"memory":0.8}}},"aws":{"subnetConfiguration":{"subnets":["eu-west-1a","eu-west-1a"],"mode":"default-subnets-for-azs"}},"region":"europe-west2"}
+payload = {"name":"GCP Cluster 1","description":"This is a new cluster.","kubernetesVersion":"1.30","nodePools":[{"id":"6aa96121-0345-43ad-bade-af36d540c222","nodeType":"n2-standard-8","nodeCount":3,"autoscaling":{"enabled":true,"min":0,"max":10},"preemptible":false,"diskSize":100}],"aws":{"subnetConfiguration":{"subnets":["eu-west-1a","eu-west-1a"],"mode":"default-subnets-for-azs"}},"region":"europe-west2","settings":{"builds":{"plan":"nf-compute-200"},"registry":{"registryId":"my-registry-credentials"},"requestModifiers":{"services":{"cpu":0.5,"memory":0.8},"jobs":{"cpu":0.5,"memory":0.8},"builds":{"cpu":0.2,"memory":0.5},"addons":{"cpu":0.5,"memory":0.8}}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PATCH", url, headers = headers, json = payload)
@@ -581,7 +595,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/cloud-providers/clusters/{clusterId}"
 
-  var jsonStr = []byte(`{"name":"GCP Cluster 1","description":"This is a new cluster.","kubernetesVersion":"1.30","nodePools":[{"id":"6aa96121-0345-43ad-bade-af36d540c222","nodeType":"n2-standard-8","nodeCount":3,"autoscaling":{"enabled":true,"min":0,"max":10},"preemptible":false,"diskSize":100}],"settings":{"builds":{"plan":"nf-compute-200"},"registry":{"registryId":"my-registry-credentials"},"requestModifiers":{"services":{"cpu":0.5,"memory":0.8},"jobs":{"cpu":0.5,"memory":0.8},"builds":{"cpu":0.2,"memory":0.5},"addons":{"cpu":0.5,"memory":0.8}}},"aws":{"subnetConfiguration":{"subnets":["eu-west-1a","eu-west-1a"],"mode":"default-subnets-for-azs"}},"region":"europe-west2"}`)
+  var jsonStr = []byte(`{"name":"GCP Cluster 1","description":"This is a new cluster.","kubernetesVersion":"1.30","nodePools":[{"id":"6aa96121-0345-43ad-bade-af36d540c222","nodeType":"n2-standard-8","nodeCount":3,"autoscaling":{"enabled":true,"min":0,"max":10},"preemptible":false,"diskSize":100}],"aws":{"subnetConfiguration":{"subnets":["eu-west-1a","eu-west-1a"],"mode":"default-subnets-for-azs"}},"region":"europe-west2","settings":{"builds":{"plan":"nf-compute-200"},"registry":{"registryId":"my-registry-credentials"},"requestModifiers":{"services":{"cpu":0.5,"memory":0.8},"jobs":{"cpu":0.5,"memory":0.8},"builds":{"cpu":0.2,"memory":0.5},"addons":{"cpu":0.5,"memory":0.8}}}}`)
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -723,6 +737,16 @@ Options:
       "diskSize": 100
     }
   ],
+  "aws": {
+    "subnetConfiguration": {
+      "subnets": [
+        "eu-west-1a",
+        "eu-west-1a"
+      ],
+      "mode": "default-subnets-for-azs"
+    }
+  },
+  "region": "europe-west2",
   "settings": {
     "builds": {
       "plan": "nf-compute-200"
@@ -748,17 +772,7 @@ Options:
         "memory": 0.8
       }
     }
-  },
-  "aws": {
-    "subnetConfiguration": {
-      "subnets": [
-        "eu-west-1a",
-        "eu-west-1a"
-      ],
-      "mode": "default-subnets-for-azs"
-    }
-  },
-  "region": "europe-west2"
+  }
 }
 ```
 
@@ -850,7 +864,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.patch.cloud.cluster({
@@ -875,6 +889,16 @@ await apiClient.patch.cloud.cluster({
         "diskSize": 100
       }
     ],
+    "aws": {
+      "subnetConfiguration": {
+        "subnets": [
+          "eu-west-1a",
+          "eu-west-1a"
+        ],
+        "mode": "default-subnets-for-azs"
+      }
+    },
+    "region": "europe-west2",
     "settings": {
       "builds": {
         "plan": "nf-compute-200"
@@ -900,17 +924,7 @@ await apiClient.patch.cloud.cluster({
           "memory": 0.8
         }
       }
-    },
-    "aws": {
-      "subnetConfiguration": {
-        "subnets": [
-          "eu-west-1a",
-          "eu-west-1a"
-        ],
-        "mode": "default-subnets-for-azs"
-      }
-    },
-    "region": "europe-west2"
+    }
   }
 });
 ```
@@ -1001,5 +1015,161 @@ await apiClient.patch.cloud.cluster({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.patch.cloud.cluster(
+    cluster_id="gcp-cluster-1",
+    data={
+        "name": "GCP Cluster 1",
+        "description": "This is a new cluster.",
+        "kubernetesVersion": "1.30",
+        "nodePools": [{
+            "id": "6aa96121-0345-43ad-bade-af36d540c222",
+            "nodeType": "n2-standard-8",
+            "nodeCount": 3,
+            "autoscaling": {
+                "enabled": True,
+                "min": 0,
+                "max": 10,
+            },
+            "preemptible": False,
+            "diskSize": 100,
+        }],
+        "aws": {
+            "subnetConfiguration": {
+                "subnets": ["eu-west-1a", "eu-west-1a"],
+                "mode": "default-subnets-for-azs",
+            },
+        },
+        "region": "europe-west2",
+        "settings": {
+            "builds": {
+                "plan": "nf-compute-200",
+            },
+            "registry": {
+                "registryId": "my-registry-credentials",
+            },
+            "requestModifiers": {
+                "services": {
+                    "cpu": 0.5,
+                    "memory": 0.8,
+                },
+                "jobs": {
+                    "cpu": 0.5,
+                    "memory": 0.8,
+                },
+                "builds": {
+                    "cpu": 0.2,
+                    "memory": 0.5,
+                },
+                "addons": {
+                    "cpu": 0.5,
+                    "memory": 0.8,
+                },
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "gcp-cluster-1",
+  "name": "GCP Cluster 1",
+  "entityType": "team",
+  "description": "This is a new cluster.",
+  "provider": "gcp",
+  "region": "europe-west2",
+  "status": {
+    "state": {
+      "state": "running"
+    }
+  },
+  "kubernetesVersion": "1.30",
+  "integrationId": "gcp-integration",
+  "nodePools": [
+    {
+      "id": "6aa96121-0345-43ad-bade-af36d540c222",
+      "nodeType": "n2-standard-8",
+      "nodeCount": 3,
+      "autoscaling": {
+        "enabled": true,
+        "min": 0,
+        "max": 10
+      },
+      "computeResources": {
+        "gpu": {
+          "type": "h100",
+          "resources": {
+            "memoryInfo": {
+              "sizeInGiB": 80
+            }
+          },
+          "count": 1
+        }
+      },
+      "preemptible": false,
+      "diskSize": 100
+    }
+  ],
+  "settings": {
+    "builds": {
+      "plan": "nf-compute-200"
+    },
+    "registry": {
+      "registryId": "my-registry-credentials"
+    },
+    "requestModifiers": {
+      "services": {
+        "cpu": 0.5,
+        "memory": 0.8
+      },
+      "jobs": {
+        "cpu": 0.5,
+        "memory": 0.8
+      },
+      "builds": {
+        "cpu": 0.2,
+        "memory": 0.5
+      },
+      "addons": {
+        "cpu": 0.5,
+        "memory": 0.8
+      }
+    }
+  },
+  "aws": {
+    "subnetConfiguration": {
+      "subnets": [
+        "eu-west-1a",
+        "eu-west-1a"
+      ],
+      "mode": "default-subnets-for-azs"
+    }
+  },
+  "dns": "xxxxxxxxxx",
+  "updatedAt": "2021-01-20T11:19:53.175Z",
+  "createdAt": "2021-01-20T11:19:53.175Z",
+  "deletionRequested": false
 }
 ```

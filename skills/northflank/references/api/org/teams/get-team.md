@@ -16,6 +16,7 @@ Required permission: Organisation > Team > General > Read
 {object}
 - `data`: {object}
   - `id`: (string) (required) ID of the team. (pattern: ^[A-Za-z0-9-]+$)
+  - `uid`: (string) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
   - `name`: (string) (required) Display name of the team.
   - `description`: (string) Description of the team.
   - `createdAt`: (string) (required) The time the team was created. (format: date-time)
@@ -33,6 +34,7 @@ GET /v1/teams/{teamId}
 {
   "data": {
     "id": "my-team",
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
     "name": "My Team",
     "description": "This is my team.",
     "createdAt": "2021-01-20T11:19:53.175Z",
@@ -62,6 +64,7 @@ Options:
 ```json
 {
   "id": "my-team",
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
   "name": "My Team",
   "description": "This is my team.",
   "createdAt": "2021-01-20T11:19:53.175Z",
@@ -89,6 +92,7 @@ await apiClient.get.team({
 {
   "data": {
     "id": "my-team",
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
     "name": "My Team",
     "description": "This is my team.",
     "createdAt": "2021-01-20T11:19:53.175Z",
@@ -97,5 +101,38 @@ await apiClient.get.team({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.team(
+    team_id="my-team",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "my-team",
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
+  "name": "My Team",
+  "description": "This is my team.",
+  "createdAt": "2021-01-20T11:19:53.175Z",
+  "updatedAt": "2021-01-20T11:19:53.175Z"
 }
 ```

@@ -227,7 +227,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.create.gradualRolloutStrategy({
@@ -269,5 +269,60 @@ await apiClient.create.gradualRolloutStrategy({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.gradual_rollout_strategy(
+    data={
+        "name": "my-canary-rollout",
+        "type": "canary",
+        "options": {
+            "triggers": {
+                "releaseFromTemplate": True,
+                "releaseFromReleaseFlow": True,
+                "releaseFromCD": True,
+                "releaseFromUI": True,
+                "releaseFromApi": True,
+            },
+            "blockDeploymentOnActiveRollout": True,
+        },
+        "details": {
+            "canaryStrategy": "percentage",
+            "config": {
+                "canaryPercentage": 20,
+                "stablePercentage": 80,
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "example-identifier",
+  "name": "example-name",
+  "type": "canary",
+  "details": {
+    "canaryStrategy": "percentage"
+  }
 }
 ```

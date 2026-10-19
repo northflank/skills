@@ -212,7 +212,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.update.volume({
@@ -262,4 +262,51 @@ await apiClient.update.volume({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.volume(
+    project_id="default-project",
+    volume_id="example-volume",
+    data={
+        "mounts": [{
+            "volumeMountPath": "",
+            "containerMountPath": "/container",
+        }],
+        "spec": {
+            "storageSize": 6144,
+        },
+        "backupSchedules": [{
+            "scheduling": {
+                "interval": "weekly",
+                "minute": [30],
+                "hour": [18],
+                "day": [4],
+            },
+            "retentionTime": 7,
+        }],
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

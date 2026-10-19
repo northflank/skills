@@ -2,13 +2,14 @@
 
 Source: https://northflank.com/docs/v1/api/introduction.md
 
-Seamlessly build, deploy and scale your code, jobs and databases. Operate your infrastructure in real-time with Northflank’s API, CLI & JavaScript client.
+Build, deploy, and scale your services, jobs, and databases with the Northflank API, CLI, or JavaScript and Python clients.
 
 ### Getting started
 
 - [Use the Northflank API: Learn how to create and manage projects on Northflank programmatically using the REST API.](use-the-api.md)
 - [Use the Northflank CLI: Learn how to create and manage projects on Northflank using the command line client.](use-the-cli.md)
 - [Use the Northflank JavaScript client: Learn how to create and manage projects on Northflank programmatically using the JavaScript client.](use-the-javascript-client.md)
+- [Use the Northflank Python client: Create and manage Northflank resources with the Python client.](use-the-python-client.md)
 
 ### What you can do with the Northflank API
 

@@ -187,6 +187,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.logSink({
   parameters: {
@@ -233,5 +235,62 @@ await apiClient.get.logSink({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.log_sink(
+    log_sink_id="example-log-sink",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "name": "example-log-sink",
+  "id": "example-project",
+  "description": "This is an example log sink.",
+  "restricted": true,
+  "projects": [
+    "default-project"
+  ],
+  "options": {
+    "useCustomLabels": true,
+    "forwardCdnLogs": true,
+    "forwardIngressLogs": true,
+    "forwardMeshLogs": true
+  },
+  "sinkType": "http",
+  "createdAt": "2022-06-14 15:10:42.842Z",
+  "updatedAt": "2022-06-14 15:10:42.842Z",
+  "sinkData": {
+    "endpoint": "https://logs.example.com",
+    "encoding": {
+      "codec": "json"
+    },
+    "auth": {
+      "strategy": "basic",
+      "user": "admin",
+      "password": "password1234"
+    }
+  },
+  "status": "paused"
 }
 ```

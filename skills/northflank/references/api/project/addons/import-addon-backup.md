@@ -238,7 +238,7 @@ Import using an external archive. The database will be imported from an existing
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 Import using a connection string. The database will be imported from the live database located at the connection string's location.
 
@@ -271,4 +271,52 @@ await apiClient.import.addon.backup({
     "importUrl": "https://example.com/backup.db.gz"
   }
 });
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+live
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.import_.addon.backup(
+    addon_id="example-addon",
+    project_id="default-project",
+    data={
+        "name": "Example Backup",
+        "connectionString": "mongodb://mongodb0.example.com:27017",
+    },
+)
+print(response.data)
+```
+
+OR
+
+url
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.import_.addon.backup(
+    addon_id="example-addon",
+    project_id="default-project",
+    data={
+        "name": "Example Backup",
+        "importUrl": "https://example.com/backup.db.gz",
+    },
+)
+print(response.data)
 ```

@@ -27,26 +27,26 @@ Generated from 18 application pages listed in `llms.txt`.
 
 Source: https://northflank.com/docs/v1/application/bring-your-own-cloud/aws-launch-templates.md
 
-You can use [AWS launch templates](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) to customise the EC2 instances Northflank provisions for node pools on your AWS clusters. You select a launch template when configuring a node pool, and the specifications in the template override some of the options selected for the node pool in Northflank.
+You can create an [AWS launch template](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) to customize the EC2 instances in a node pool. You select this custom template when configuring the pool. Its settings override some of the node pool options in Northflank.
 
-Common use cases for launch templates include:
-
-- [Configuring nested virtualization](bring-your-own-cloud.md#use-aws-launch-templates-configure-nested-virtualization) to run microVM workload isolation (Kata Containers) on eligible non-metal instance types, for example the `m8i` series
+Common uses for custom launch templates include:
 
 - [Configuring node disks](bring-your-own-cloud.md#use-aws-launch-templates-configure-node-disks), such as volume type, IOPS, and throughput, or using local SSDs
 
 - [Configuring Capacity Blocks](bring-your-own-cloud.md#use-aws-launch-templates-configure-capacity-blocks) to reserve GPU nodes for a specific time period
 
+- [Enabling microVM support](bring-your-own-cloud.md#use-aws-launch-templates-enable-microvm-support) on eligible non-metal instances when using a custom template
+
 > [!note]
-> Custom AWS launch templates are available on [enterprise
-plans](../enterprise). Contact Northflank if the feature is not enabled on
-your account.
+>
+> Custom AWS launch templates are available on [enterprise plans](enterprise.md). Contact Northflank if the feature is not enabled on
+> your account.
 
 ### Use AWS launch templates: Configure Northflank permissions
 
-You must give Northflank permissions to use launch templates in your AWS integration. You can create a new integration, or update an existing integration by adding Custom Launch Templates to the desired features.
+To use a custom launch template, add BYOC - Custom Launch Templates to your AWS integration.
 
-For an existing integration, copy the updated AWS inline policy into your IAM role, then click Update in Northflank to save the integration changes. For a new integration, follow the instructions as normal.
+For an existing integration, apply the updated AWS policy to its IAM role or user. Then click Update in Northflank to save the integration changes. For a new integration, follow the [AWS account setup guide](bring-your-own-cloud.md#amazon-web-services-on-northflank).
 
 AWS launch templates permissions
 
@@ -58,7 +58,7 @@ ec2:RunInstances
 
 ### Use AWS launch templates: Create a launch template
 
-Launch templates are region-specific, so create your launch template in the same region as your AWS cluster. You can create a launch template in your [EC2 dashboard in the AWS console](https://console.aws.amazon.com/ec2/), from the Launch templates page under instances:
+If you use a custom launch template, create it in the same region as your AWS cluster. You can create one in the [EC2 dashboard in the AWS console](https://console.aws.amazon.com/ec2/), from the Launch templates page under instances:
 
 1. Click Create launch template and enter a name for the launch template
 
@@ -78,7 +78,7 @@ Launch templates are region-specific, so create your launch template in the same
 
   - Enable Encrypted if required
 
-5. Continue to the relevant section below and configure the options required for your use case: [nested virtualization](bring-your-own-cloud.md#use-aws-launch-templates-configure-nested-virtualization), [node disks](bring-your-own-cloud.md#use-aws-launch-templates-configure-node-disks), or [Capacity Blocks](bring-your-own-cloud.md#use-aws-launch-templates-configure-capacity-blocks)
+5. Configure the template for your use case: [node disks](bring-your-own-cloud.md#use-aws-launch-templates-configure-node-disks), [Capacity Blocks](bring-your-own-cloud.md#use-aws-launch-templates-configure-capacity-blocks), or [microVM support](bring-your-own-cloud.md#use-aws-launch-templates-use-an-external-launch-template)
 
 6. Click Create launch template
 
@@ -87,36 +87,12 @@ Launch templates are region-specific, so create your launch template in the same
 The volume defined in the launch template will override the disk specified for a node pool on Northflank.
 
 > [!warning]
+>
 > Do not configure the subnets, shutdown behaviour, or IAM instance profile in
-the launch template, as these are handled by Northflank. Configuring resources
-not mentioned in this guide may cause issues scheduling and managing nodes
-with Northflank. Learn more about [launch template configuration](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html)
-or contact [support@northflank.com](mailto:support@northflank.com) to discuss other use cases.
-
-### Use AWS launch templates: Configure nested virtualization
-
-You can enable nested virtualization to run workloads with [microVM isolation](sandboxes.md#deploy-sandboxes-in-your-cloud) (Kata Containers) on eligible non-metal instance types.
-
-Bare metal instances support microVM workloads without a launch template. Non-metal instance types that support nested virtualization, for example the `m8i`, `c8i`, `r8i`, and `m7i` families, can run microVM workloads only when their node pool uses a launch template with nested virtualization enabled. See the [AWS documentation on nested virtualization](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-ec2-nested-virtualization.html) for the full list of supported instance types.
-
-> [!warning]
-> At the time of writing (September 2026), AWS is investigating a hypervisor
-issue observed on virtualized `m8i` instances running approximately 50–60 or
-more nested VMs on one node. The issue can cause the EC2 instance to reboot,
-restarting workloads on that node. Until AWS confirms a fix and supported
-density, spread microVM workloads across more nodes and avoid approaching this
-density. Contact [support@northflank.com](mailto:support@northflank.com) for guidance on high-density
-deployments.
-
-First, complete the [common launch template configuration](bring-your-own-cloud.md#use-aws-launch-templates-create-a-launch-template), including the required node boot volume. Then, in your launch template:
-
-1. Select an instance type that supports nested virtualization, for example `m8i.2xlarge`. This will override the instance type you select on the node pool in Northflank.
-
-2. Under Advanced details, locate Nested virtualization and set the field to Enabled
-
-All instance types that can be provisioned in a node pool must support nested virtualization for microVM workloads to be schedulable on the pool.
-
-You can configure the sandbox technology for your workloads globally in your cluster settings, or for specific workloads using tags. See [deploy sandboxes in your cloud](sandboxes.md#deploy-sandboxes-in-your-cloud) for more information.
+> the launch template, as these are handled by Northflank. Configuring resources
+> not mentioned in this guide may cause issues scheduling and managing nodes
+> with Northflank. Learn more about [launch template configuration](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html)
+> or contact [support@northflank.com](mailto:support@northflank.com) to discuss other use cases.
 
 ### Use AWS launch templates: Configure node disks
 
@@ -162,19 +138,53 @@ Nodes will not join the node pool until the date and time of the capacity reserv
 
 EKS begins draining nodes and scales the node pool to zero 40 minutes before the reservation expires. EC2 begins terminating instances 30 minutes before expiry. Checkpoint or move workloads before draining begins. If your cluster has no other node pools with nodes that these workloads can schedule on, they will remain unscheduled until the required capacity is added.
 
+### Use AWS launch templates: Enable microVM support
+
+[MicroVM workloads](sandboxes.md#sandboxes-in-your-own-cloud) require bare-metal instances or eligible non-metal instances with nested virtualization enabled. Nested virtualization lets a virtual machine run other virtual machines. Northflank enables it automatically for eligible new node pools that do not use a custom launch template.
+
+The `m8i`, `c8i`, `r8i`, and `m7i` families include instance types that support nested virtualization. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-ec2-nested-virtualization.html) for supported types. For a non-metal node pool, every instance type it uses must support nested virtualization.
+
+> [!warning]
+>
+> At the time of writing (September 2026), AWS is investigating a hypervisor
+> issue observed on virtualized `m8i` instances running approximately 50–60 or
+> more nested VMs on one node. The issue can cause the EC2 instance to reboot,
+> restarting workloads on that node. Until AWS confirms a fix and supported
+> density, spread microVM workloads across more nodes and avoid approaching this
+> density. Contact [support@northflank.com](mailto:support@northflank.com) for guidance on high-density
+> deployments.
+
+To use automatic setup on non-metal instances:
+
+1. If Northflank recommends an AWS permission update, follow the [AWS permissions guide](bring-your-own-cloud.md#amazon-web-services-on-northflank-generate-and-view-required-permissions) first.
+
+2. [Add a new node pool](bring-your-own-cloud.md#deploy-and-scale-node-pools) with a supported instance type, without selecting a custom launch template.
+
+3. For an existing cluster, select Update node pools. For a new cluster, complete the cluster creation form.
+
+Northflank enables nested virtualization for the new pool. Existing node pools keep their configuration.
+
+You can configure the sandbox technology for your workloads globally in your cluster settings, or for specific workloads using tags. See [sandboxes in your own cloud](sandboxes.md#sandboxes-in-your-own-cloud) for more information.
+
+#### Use AWS launch templates: Use a custom launch template
+
+You can also enable nested virtualization in a custom launch template. First, complete the [launch template configuration](bring-your-own-cloud.md#use-aws-launch-templates-create-a-launch-template), including the required node boot volume. Then, in your template:
+
+1. Select an instance type that supports nested virtualization, for example `m8i.2xlarge`. This will override the instance type you select on the node pool in Northflank.
+
+2. Under Advanced details, locate Nested virtualization and set the field to Enabled
+
 ### Use AWS launch templates: Use a launch template in Northflank
 
-To use a launch template, select an existing AWS cluster on Northflank, or [create a new one](bring-your-own-cloud.md#amazon-web-services-on-northflank-create-a-cluster). Configure the cluster as normal with a node pool for system components, and any other required node pools.
+To use a custom launch template, select an existing AWS cluster on Northflank, or [create a new one](bring-your-own-cloud.md#amazon-web-services-on-northflank-create-a-cluster). Configure the cluster as normal with a node pool for system components, and any other required node pools.
 
 Create a new node pool and [configure it as normal](bring-your-own-cloud.md#deploy-and-scale-node-pools), selecting the node type, disk size, and availability zone. Then expand the Advanced section:
 
-1. Locate AWS launch template configuration
+1. Under External launch template, select the Launch template ID created earlier.
 
-2. Select the launch template created earlier from the drop-down
+2. Select the Launch template version. Updating a launch template in AWS creates a new version. Existing node pools keep using the version they were configured with.
 
-3. Select the launch template version. Updating a launch template in AWS creates a new version. Existing node pools keep using the version they were configured with.
-
-4. Update the scheduling rules, if required, for example to reserve the pool for specific workloads
+3. Update the scheduling rules, if required, for example to reserve the pool for specific workloads.
 
 ![Creating a node pool with an AWS launch template in the Northflank application](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/aws-on-northflank/node-pool-launch-template.png)
 
@@ -190,27 +200,45 @@ When the node pool is created, the launch template's instance type and boot volu
 
 Source: https://northflank.com/docs/v1/application/bring-your-own-cloud/aws-on-northflank.md
 
-You can integrate your Amazon Web Services account to create and manage clusters using Northflank.
+Connect your Amazon Web Services account to manage clusters, access registries, or use other [integration features](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank).
 
-To add your AWS account navigate to the clusters page in your account settings and create a new integration.
+To add your AWS account, open Integrations → Cloud providers. In an organization, use Cloud → Provider links. If you already have provider links, select Create provider link. Otherwise, select Add provider link beside your provider.
 
 > [!note]
-> [Click here](https://app.northflank.com/s/account/cloud/clusters/integrations/new/aws) to create a new AWS integration.
-You can create an integration using a [cross-account role](bring-your-own-cloud.md#amazon-web-services-on-northflank-add-your-account-with-a-cross-account-role) (recommended), or with an [IAM user](bring-your-own-cloud.md#amazon-web-services-on-northflank-add-your-account-with-an-iam-user) (legacy method).
+>
+> [Click here](https://app.northflank.com/s/account/cloud/integrations/new/aws) to create a new AWS integration.
 
-After integrating your account, you can [create a new cluster](bring-your-own-cloud.md#amazon-web-services-on-northflank-create-a-cluster).
+Use a [cross-account role](bring-your-own-cloud.md#amazon-web-services-on-northflank-add-your-account-with-a-cross-account-role) when it supports your selected features. You can also connect with an [IAM user access key](bring-your-own-cloud.md#amazon-web-services-on-northflank-add-your-account-with-an-iam-user).
+
+After connecting the account, continue to [registry setup](run.md#save-registry-credentials-cloud-provider-registries) or [cluster creation](bring-your-own-cloud.md#amazon-web-services-on-northflank-create-a-cluster).
+
+> [!note] AWS European Sovereign Cloud
+>
+> Northflank also supports AWS European Sovereign Cloud, a separate AWS environment in the European Union with its own accounts and credentials. Access requires account enablement through Northflank support. For sovereign deployments, use the [sovereign provider link](https://app.northflank.com/s/account/cloud/integrations/new/aws-eusc) and [cluster creation](https://app.northflank.com/s/account/cloud/clusters/new/aws-eusc) forms with the AWS procedures below.
 
 ### Amazon Web Services on Northflank: Generate and view required permissions
 
-When you create your AWS account integration you can select the features you want to use with Northflank, such as custom VPC and static egress. Additional features may require extra permissions.
+Select the features that your AWS integration needs. Northflank shows the corresponding permissions as a table and a policy that you can copy.
 
-After selecting the features you want to use you can review the required permissions in a table, or the entire inline policy as JSON, and copy it to your clipboard.
+For ECR access, select Docker Registries. To push project builds, also select Docker Registry Push. The generated push policy includes permission to create ECR repositories.
 
-You can check existing integrations have all the necessary permissions by opening an integration from your team's clusters page and clicking verify all permissions.
+For cluster deployment, select BYOC and any required features, such as BYOC - Custom VPC or BYOC - Static Egress. Registry-only integrations do not require these cluster features.
 
-You can view the inline policy required for Northflank to set up a cluster on AWS with a custom VPC and static egress below.
+For a team, open Integrations → Cloud providers. For an organization, open Cloud → Provider links. Select your AWS integration and open its Edit tab.
 
-AWS inline policy
+New BYOC integrations use the latest AWS permissions policy. Existing integrations can retain an older policy. If you see AWS permission update recommended:
+
+1. Apply the displayed Standard AWS policy to the IAM role or user for this integration.
+
+2. Select Verify all permissions under Credentials.
+
+3. Click Update to save the integration.
+
+If you add features, apply the updated policy shown in Northflank before saving the integration. You can use Verify all permissions under Credentials to check an existing integration at any time.
+
+The following policy is a cluster example with custom VPC and static egress permissions. Use the policy shown in Northflank for your current feature selection.
+
+AWS policy
 
 ```json
 {
@@ -222,22 +250,31 @@ AWS inline policy
       "Action": [
         "ec2:AllocateAddress",
         "ec2:AssociateRouteTable",
+        "ec2:CreateLaunchTemplate",
+        "ec2:CreateLaunchTemplateVersion",
         "ec2:CreateNatGateway",
         "ec2:CreateRoute",
         "ec2:CreateRouteTable",
         "ec2:CreateSubnet",
         "ec2:CreateTags",
+        "ec2:DeleteLaunchTemplate",
+        "ec2:DeleteLaunchTemplateVersions",
         "ec2:DeleteNatGateway",
         "ec2:DeleteRoute",
         "ec2:DeleteRouteTable",
         "ec2:DeleteSubnet",
+        "ec2:DeleteTags",
         "ec2:DescribeAddresses",
+        "ec2:DescribeLaunchTemplates",
+        "ec2:DescribeLaunchTemplateVersions",
         "ec2:DescribeNatGateways",
         "ec2:DescribeRouteTables",
         "ec2:DescribeSubnets",
         "ec2:DescribeVpcs",
         "ec2:DisassociateRouteTable",
+        "ec2:ModifyLaunchTemplate",
         "ec2:ReleaseAddress",
+        "ec2:RunInstances",
         "eks:AssociateAccessPolicy",
         "eks:CreateAccessEntry",
         "eks:CreateAddon",
@@ -298,63 +335,103 @@ AWS inline policy
 
 ### Amazon Web Services on Northflank: Add your account with a cross-account role
 
-It is recommended that you use a cross-account role to integrate your AWS account with Northflank. This method is more secure, as Northflank doesn't store a long-term secret but rather requests a new token every time account access is required.
+A cross-account role grants Northflank access to your AWS account through temporary credentials. Use this method when it is available for your selected features.
 
 > [!note] Requirements
+>
 > You will need the following to get started:
+>
+> - Permission to create [IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies-cross-account-resource-access.html) and assign their policies in your AWS account
+> - For cluster deployment: sufficient [quotas](bring-your-own-cloud.md#amazon-web-services-on-northflank-check-your-quotas) to deploy your cluster
 
-- permission to create new [roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies-cross-account-resource-access.html) in your AWS account
-- sufficient [quotas](bring-your-own-cloud.md#amazon-web-services-on-northflank-check-your-quotas) to deploy your cluster
+For registry access, select Docker Registries and, for project builds, Docker Registry Push. You do not need to select BYOC unless this integration also manages clusters.
 
-To integrate AWS with a cross-account role:
+1. Open Integrations → Cloud providers. In an organization, use Cloud → Provider links.
 
-1. Navigate to your Northflank account settings and open the clusters page
+2. Open the [AWS provider link form](https://app.northflank.com/s/account/cloud/integrations/new/aws).
 
-2. [Create a new cloud provider integration](https://app.northflank.com/s/account/cloud/clusters/integrations/new/aws) and select Amazon Web Services as the provider
+3. Under Basic information, enter a Name. Select the features you need under Desired features.
 
-3. Select Amazon Web Services as the provider and choose the features you want to use with Northflank. Select cross account role as the credential method and copy the custom trust policy.
+4. In Credentials, select Cross-account role.
 
-4. Open your [AWS IAM console](https://console.aws.amazon.com/iam/home) and open the roles page
+5. Select Copy Custom trust policy.
 
-5. Create a new role, select custom trust policy and paste in the trust policy from Northflank. Skip the remaining steps, name and save the role.
+6. Open Roles in the [AWS IAM console](https://console.aws.amazon.com/iam/home).
 
-6. Return to Northflank and review the permissions required for your integration. Copy the AWS inline policy and return to your AWS console.
+7. Select Create role → Custom trust policy.
 
-7. Find your new AWS IAM role in the list on the roles page, open it, click add permissions, and select create inline policy. Paste in and save the inline policy you copied from Northflank.
+8. Paste the copied policy.
 
-8. Copy the IAM role ARN to Northflank and create the integration
+9. Name and save the role.
 
-You can now configure and deploy new clusters in your AWS account. You can update your integration with a new shared secret and IAM role ARN. If this role does not have permission to manage existing clusters, you will be unable to edit those clusters and deleting them via AWS may leave orphaned resources.
+10. In Northflank, select Copy AWS inline policy under Required permissions.
+
+11. Open the new role's Permissions tab in AWS.
+
+12. Select Add permissions → Create inline policy.
+
+13. Paste the copied policy into the JSON editor. Save the policy with a name.
+
+14. In Northflank, enter the IAM role ARN under Credentials.
+
+15. Select Create provider link.
+
+You can now use the integration for its selected features. To deploy a cluster, continue to [create a cluster](bring-your-own-cloud.md#amazon-web-services-on-northflank-create-a-cluster).
+
+You can update the integration's shared secret and role ARN.
+
+> [!warning] Keep access to existing resources
+>
+> Keep access to existing resources when you change the role. Without that access, Northflank cannot manage those resources, and deleting clusters directly in AWS can leave unused resources.
 
 ### Amazon Web Services on Northflank: Add your account with an IAM user
 
-You can add your account to Northflank by providing the access and secret keys for an IAM user. This is a legacy method, it is recommended that you instead integrate using a [cross-account role](bring-your-own-cloud.md#amazon-web-services-on-northflank-add-your-amazon-account-with-a-cross-account-role).
+You can integrate AWS with an IAM user's access key and secret key. Prefer a [cross-account role](bring-your-own-cloud.md#amazon-web-services-on-northflank-add-your-account-with-a-cross-account-role) when it supports your selected features, because it uses temporary credentials.
 
 > [!note] Requirements
+>
 > You will need the following to get started:
+>
+> - Permission to create [IAM users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html), manage their access keys, and assign policies in your AWS account
+> - For cluster deployment: sufficient [quotas](bring-your-own-cloud.md#amazon-web-services-on-northflank-check-your-quotas) to deploy your cluster
 
-- permission to create new [IAM users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html) in your AWS account
-- sufficient [quotas](bring-your-own-cloud.md#amazon-web-services-on-northflank-check-your-quotas) to deploy your cluster
+For registry access, select Docker Registries and, for project builds, Docker Registry Push. You do not need to select BYOC unless this integration also manages clusters.
 
-To add your AWS account to Northflank with an IAM user:
+1. Open Integrations → Cloud providers. In an organization, use Cloud → Provider links.
 
-1. Navigate to your Northflank account settings and open the clusters page
+2. Open the [AWS provider link form](https://app.northflank.com/s/account/cloud/integrations/new/aws).
 
-2. [Create a new cloud provider integration](https://app.northflank.com/s/account/cloud/clusters/integrations/new/aws)
+3. Under Basic information, enter a Name. Select the features you need under Desired features.
 
-3. Select Amazon Web Services as the provider and choose the features you want to use with Northflank
+4. In Credentials, select Access key.
 
-4. Review the required permissions and copy the AWS inline policy
+5. Select Copy AWS inline policy under Required permissions.
 
-5. Open your [AWS IAM console](https://console.aws.amazon.com/iam/home), open the users page and create a new user without console access. Skip the remaining steps and save the user.
+6. Open Users in the [AWS IAM console](https://console.aws.amazon.com/iam/home).
 
-6. In the new user click add permissions and select create inline policy. Paste in and save the inline policy you copied from Northflank.
+7. Create and save a user without console access.
 
-7. Open security credentials in your new user and click create access key. Select the `third-party service` use case and click next. Enter a description that will help you recognise your key (e.g. `Northflank BYOC`) and create access key.
+8. Open the user's Permissions tab.
 
-8. Enter the `access key` and `secret key` for the user you created into the Northflank integration form and create the integration
+9. Select Add permissions → Create inline policy.
 
-You can edit the integration at any time to update the secrets, if required. If the new secrets do not have permission to manage existing clusters, you will be unable to edit those clusters and deleting them via AWS may leave orphaned resources.
+10. Paste the copied policy into the JSON editor. Save the policy with a name.
+
+11. Under Security credentials, select Create access key.
+
+12. Select the Third-party service use case and continue.
+
+13. Enter a description for the access key. Select Create access key.
+
+14. In Northflank, enter the Access key and Secret key under Credentials.
+
+15. Select Create provider link.
+
+You can update the integration's credentials when required.
+
+> [!warning] Keep access to existing resources
+>
+> Keep access to existing resources when you replace credentials. Without that access, Northflank cannot manage those resources, and deleting clusters directly in AWS can leave unused resources.
 
 ### Amazon Web Services on Northflank: Check your quotas
 
@@ -368,9 +445,10 @@ For example, to increase the number of node pools you can deploy on AWS using th
 
 ### Amazon Web Services on Northflank: Create a cluster
 
-To add a new cluster, navigate to the clusters page in your account settings and click create cluster.
+Open Clusters in your team. In an organization, open Cloud → Clusters. Click Create cluster, or Add cluster for your first cluster.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/clusters/new/aws) to create a new AWS cluster.
 
 ![Create a new cluster in the Northflank application](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/create-a-kubernetes-cluster-with-Northflank/create-cluster.png)
@@ -383,7 +461,7 @@ When you create a cluster you can select which [Virtual Private Cloud](https://d
 
 The [default VPC](https://docs.aws.amazon.com/vpc/latest/userguide/work-with-default-vpc.html) includes public subnets for each availability zone, and its components cannot be modified. You should not use the default VPC for production deployments.
 
-For production deployments you should [use a custom VPC](bring-your-own-cloud.md#amazon-web-services-on-northflank-use-a-custom-vpc) to deploy into a private node pool with no public access, or to access other services in your AWS account. Separate VPCs are defined for each [region](bring-your-own-cloud.md#amazon-web-services-on-northflank-check-your-quotas).
+For production deployments, [use a custom VPC](bring-your-own-cloud.md#amazon-web-services-on-northflank-use-a-custom-vpc) to select private subnets or access other services in your AWS account. Private nodes can still receive workload traffic through public ingress. See [Public and VPC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress) for cluster ingress choices. Separate VPCs are defined for each [region](bring-your-own-cloud.md#amazon-web-services-on-northflank-check-your-quotas).
 
 You can select which subnets (and therefore availability zones) will host the control plane components for your cluster, this has no impact on the subnets that you can select for node pools. You should select between 2 and 4 subnets for the cluster's control plane.
 
@@ -392,6 +470,7 @@ You can select which subnets (and therefore availability zones) will host the co
 You can now configure the node pools for your cluster. Node pools can also be added, deleted, and updated after creating your cluster. Click add node pool to add another pool.
 
 > [!note] Minimum cluster requirements
+>
 > Each cluster requires at least one node pool, and a combined minimum of 8 vCPU and 16GB memory across all node pools.
 
 The number of pods that can be scheduled on each node is determined by networking and node scheduling limits.
@@ -415,11 +494,14 @@ When you create the cluster Northflank will begin installing system components i
 When you create a new cluster you can select a custom VPC that you have defined in your account and selected region. You can create and manage your VPCs in the [AWS console](https://console.aws.amazon.com/vpcconsole/). You must create a subnet in each availability zone that you want to use, and your VPC must include at least one public subnet.
 
 > [!note]
+>
 > Learn more about [Amazon EKS networking requirements for VPC and subnets](https://docs.aws.amazon.com/eks/latest/userguide/network-reqs.html).
 
 #### Amazon Web Services on Northflank: Subnets
 
-Public subnets must be associated with an internet gateway, and private subnets require a NAT gateway for egress. You can use a single NAT for multiple private subnets, but this may become a bottleneck for high-traffic applications. Workloads deployed to a node pool with a private subnet will be able to communicate with other resources in your VPC and initiate internet connections via the NAT gateway, but will not be exposed to unsolicited ingress requests. [Read more about connecting your VPC here](https://docs.aws.amazon.com/vpc/latest/userguide/extend-intro.html).
+Public subnets require an internet gateway. Private subnets require a NAT gateway for internet egress. A NAT gateway lets resources with private addresses initiate internet connections. You can use one NAT gateway for multiple private subnets, but high traffic can exceed its capacity.
+
+Workloads on private nodes can communicate within your VPC and initiate internet connections through the NAT gateway. They can also receive public requests through a public ingress load balancer. See [Public and VPC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress) to control workload ingress. [Read more about connecting your VPC here](https://docs.aws.amazon.com/vpc/latest/userguide/extend-intro.html).
 
 #### Amazon Web Services on Northflank: Security
 
@@ -462,7 +544,7 @@ Custom VPC example
 
 You can select which subnets (and therefore availability zones) will host the control plane components for your cluster, this has no impact on the subnets that you can select for node pools. You should select between 2 and 4 subnets for the cluster's control plane.
 
-Your VPC must have one public subnet to allow Northflank to manage the cluster, although you are recommended to have at least two public subnets in different availability zones. You do not need to select a public subnet for the cluster.
+Keep at least one public subnet in your custom VPC, including for private-only ingress. You do not need to select that public subnet for the cluster.
 
 ### Amazon Web Services on Northflank: Enable egress via a static IP
 
@@ -472,17 +554,19 @@ If you are using a custom VPC, you must set up your own static egress IP for you
 
 ### Amazon Web Services on Northflank: Deploy to private nodes
 
-You can use Northflank to deploy workloads to nodes in private subnets. This prevents public ingress requests to these workloads, they will only be able to receive traffic from resources in your VPC and from external sources where your workloads have initiated the request.
+Private subnets prevent direct connections from the internet to your nodes. Workloads on private nodes can still receive traffic through a public ingress load balancer. Subnet placement alone does not make workload ingress private.
 
-You will need to create a cluster with a [custom VPC](bring-your-own-cloud.md#amazon-web-services-on-northflank-create-a-cluster) that has private subnets configured on it, then select an availability zone with a private subnet when you create a new node pool.
+To use private nodes, create a cluster with a [custom VPC](bring-your-own-cloud.md#amazon-web-services-on-northflank-use-a-custom-vpc) that contains private subnets. Select a private subnet when you create a node pool.
 
-You can then [create a project on your cluster](bring-your-own-cloud.md#deploy-workloads-to-your-cluster), and use [node pool labels and Northflank tags](bring-your-own-cloud.md#deploy-workloads-to-your-cluster-deploy-workloads-to-specific-node-pools) to schedule workloads to your private nodes.
+You can then [create a project on your cluster](bring-your-own-cloud.md#deploy-workloads-to-your-cluster). Use [node pool labels and Northflank tags](bring-your-own-cloud.md#deploy-workloads-to-your-cluster-deploy-workloads-to-specific-node-pools) to schedule workloads to private nodes.
+
+See [Public and VPC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress) for private ingress, client connectivity, and AWS limitations.
 
 ### Amazon Web Services on Northflank: Use AWS launch templates
 
-Northflank supports the use of AWS launch templates to customise the EC2 instances provisioned for node pools on your AWS clusters, for example to enable nested virtualization, configure node disks, or use Capacity Blocks.
+You can use custom AWS launch templates to customize the EC2 instances in your node pools. For example, configure node disks or use Capacity Blocks.
 
-See [use AWS launch templates](bring-your-own-cloud.md#use-aws-launch-templates) for the use cases and setup instructions.
+See [use AWS launch templates](bring-your-own-cloud.md#use-aws-launch-templates) for use cases and setup instructions.
 
 ### Amazon Web Services on Northflank: Recommended configuration
 
@@ -517,57 +601,91 @@ You can manage your cluster's security group in your AWS console under EC2 secur
 
 Source: https://northflank.com/docs/v1/application/bring-your-own-cloud/azure-on-northflank.md
 
-You can integrate your Microsoft Azure account to create and manage clusters using Northflank.
+Connect your Microsoft Azure account to manage clusters, access registries, or use other [integration features](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank).
 
-To add your Azure account navigate to the clusters page in your account settings and create a new integration.
+To add your Azure account, open Integrations → Cloud providers. In an organization, use Cloud → Provider links. If you already have provider links, select Create provider link. Otherwise, select Add provider link beside your provider.
 
 > [!note]
-> [Click here](https://app.northflank.com/s/account/cloud/clusters/integrations/new/azure) to create a new Azure integration.
-After integrating your account, you can [create a new cluster](bring-your-own-cloud.md#microsoft-azure-on-northflank-create-a-cluster).
+>
+> [Click here](https://app.northflank.com/s/account/cloud/integrations/new/azure) to create a new Azure integration.
+
+After connecting the account, continue to [registry setup](run.md#save-registry-credentials-cloud-provider-registries) or [cluster creation](bring-your-own-cloud.md#microsoft-azure-on-northflank-create-a-cluster).
 
 ### Microsoft Azure on Northflank: Add your Azure account
 
+Create a Microsoft Entra ID application to connect your Azure subscription to Northflank.
+
 > [!note] Requirements
+>
 > You will need the following to get started:
+>
+> - Permission to register applications and create client secrets in Microsoft Entra ID
+> - Permission to assign roles on the subscription, such as Owner or User Access Administrator
+> - For cluster deployment: sufficient [quotas](bring-your-own-cloud.md#microsoft-azure-on-northflank-check-your-quotas) to deploy your cluster
 
-- **Microsoft Entra ID:** permission to register an application and create a client secret. These permissions are available by default in most tenants, or through the **Application Administrator** or **Cloud Application Administrator** role
-- **Azure subscription:** **Owner** or **User Access Administrator** access to the subscription you want to connect to Northflank.
-
-It is recommended that you create a new Microsoft Entra ID application to integrate with Northflank:
+If your tenant restricts application registration, Application Administrator or Cloud Application Administrator can provide the required application permissions.
 
 #### Microsoft Azure on Northflank: Start the integration in Northflank
 
-1. Navigate to your Northflank account settings and open the clusters page
+1. Open Integrations → Cloud providers. In an organization, use Cloud → Provider links.
 
-2. [Create a new cloud provider integration](https://app.northflank.com/s/account/cloud/clusters/integrations/new/azure) and select Azure as the provider
+2. Open the [Azure provider link form](https://app.northflank.com/s/account/cloud/integrations/new/azure).
+
+3. Under Basic information, enter a Name.
+
+4. Select the features you need under Desired features.
+
+For registry access, select Docker Registries and, for project builds, Docker Registry Push. Select BYOC only if this integration also manages clusters.
 
 #### Microsoft Azure on Northflank: Register an application in Entra ID
 
-The following steps require you to switch between Azure Portal and the Northflank integration form. As you create the application, copy the requested values from Azure Portal into the corresponding fields in Northflank.
+Copy each requested value into Credentials in Northflank as you complete these steps.
 
-1. Open [Azure Portal](https://portal.azure.com/) and navigate to [Microsoft Entra ID](https://portal.azure.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/Overview)
+1. Open Microsoft Entra ID in the [Azure portal](https://portal.azure.com/).
 
-2. [Register a new application](https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app) with Microsoft Entra ID from the add menu, or from the app registrations page. Copy the directory (tenant) ID and the application (client) ID to the Northflank form.
+2. Open App registrations and [register a new application](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app).
 
-3. In your new application click the link for `managed application in local directory` (your application's name) and copy the application's object ID from properties to Northflank.
+3. Copy the directory (tenant) ID and application (client) ID into Northflank.
 
-4. Go back to your application overview and open the certificates and secrets page. Create a new client secret, and copy the secret value (not the secret ID) to Northflank.
+4. Open the link for Managed application in local directory.
+
+5. Copy the object ID from that application's properties into Northflank.
+
+6. Return to the application registration and open Certificates & secrets.
+
+7. Create a client secret and copy its value into Northflank.
+
+Use the secret value, rather than its ID.
 
 #### Microsoft Azure on Northflank: Grant the application access to your subscription
 
-1. Navigate to [subscriptions](https://portal.azure.com/#view/Microsoft_Azure_Billing/SubscriptionsBlade) and select an existing subscription, or create a new one. For security, the subscription you use with Northflank should have only the necessary permissions allocated to it.
+The Northflank Azure integration requires the Contributor role on the connected subscription, including for registry use. Registry pull and push roles alone do not replace this integration requirement.
 
-2. Open access control (IAM) and add a new role assignment to the subscription. Select the [contributor role](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) from privileged administrator roles.
+1. Open Subscriptions in Azure and select the subscription to connect.
 
-3. Open the members page in the new role and assign access to `user, group, or service principal`. Select members and add your Active Directory application. You may need to start typing the name of your application for it to appear in the member selection menu.
+2. Open Access control (IAM) and add a role assignment.
 
-4. Open resource providers in your subscription, search for and select the provider `Microsoft.ContainerService`. Click register to add the provider to the subscription.
+3. Select the [Contributor role](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/privileged#contributor).
 
-5. Copy the subscription ID to Northflank and create the integration
+4. Under Members, select User, group, or service principal.
 
-You can now configure and deploy new clusters in your Azure account.
+5. Select your application's service principal and save the assignment.
 
-You can edit the integration at any time to update the secrets, if required. If the new secrets do not have permission to manage existing clusters, you will be unable to edit those clusters and deleting them via Azure Active Directory may leave orphaned resources.
+6. For cluster deployment, open Resource providers and register `Microsoft.ContainerService`.
+
+7. Copy the subscription ID into Subscription ID under Credentials in Northflank.
+
+8. Select Create provider link.
+
+For registry use, connect an existing Azure Container Registry in this subscription. The registry uses the `Microsoft.ContainerRegistry` resource provider. See [Azure resource provider registration](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/resource-providers-and-types) if Azure reports a registration error.
+
+For cluster deployment, continue to [quotas](bring-your-own-cloud.md#microsoft-azure-on-northflank-check-your-quotas) and [cluster creation](bring-your-own-cloud.md#microsoft-azure-on-northflank-create-a-cluster).
+
+You can update the integration's credentials when required.
+
+> [!warning] Keep access to existing resources
+>
+> Keep access to existing resources when you replace credentials. Without that access, Northflank cannot manage those resources, and deleting clusters directly in Azure can leave unused resources.
 
 ### Microsoft Azure on Northflank: Check your quotas
 
@@ -581,9 +699,10 @@ For example, to increase the number of node pools you can deploy on Azure using 
 
 ### Microsoft Azure on Northflank: Create a cluster
 
-To add a new cluster, navigate to the clusters page in your account settings and click create cluster.
+Open Clusters in your team. In an organization, open Cloud → Clusters. Click Create cluster, or Add cluster for your first cluster.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/clusters/new/azure) to create a new Azure cluster.
 
 ![Create a new cluster in the Northflank application](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/create-a-kubernetes-cluster-with-Northflank/create-cluster.png)
@@ -595,8 +714,10 @@ Enter a name for the cluster and select Azure as the cloud provider. Choose your
 You can now configure the node pools for your cluster. Node pools can also be added, deleted, and updated after creating your cluster. Click add node pool to add another pool.
 
 > [!note] Azure system node pool
+>
 > Each cluster requires at least one node pool, and a combined minimum of 8 vCPU and 16GB memory across all node pools.
-One node pool must be assigned as the system node pool to schedule non-user workloads. For best performance you should assign it more than one node and disable autoscaling.
+>
+> One node pool must be assigned as the system node pool to schedule non-user workloads. For best performance you should assign it more than one node and disable autoscaling.
 
 Each node can schedule up to 250 pods (minus system pods). The actual number of pods per node will usually be limited by resource requests and [request modifiers](bring-your-own-cloud.md#configure-your-cluster-configure-resources) for smaller nodes.
 
@@ -616,9 +737,9 @@ When you create the cluster Northflank will begin installing system components i
 
 ### Microsoft Azure on Northflank: Deploy to private nodes
 
-On Azure AKS nodes are private by default, and will not allow public ingress requests.
+Azure AKS nodes have no public IP addresses by default. This prevents direct connections from the internet to the nodes. Workloads on private nodes can still receive traffic through an ingress load balancer.
 
-Northflank installs a load balancer to provide public ingress only via the ports you configure on the Northflank platform.
+Northflank installs public ingress by default. Eligible clusters can use private ingress or both paths. See [Public and VPC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress) for availability and configuration.
 
 ### Microsoft Azure on Northflank: Next steps
 
@@ -777,15 +898,17 @@ Contact Northflank support if:
 
 Source: https://northflank.com/docs/v1/application/bring-your-own-cloud/civo-on-northflank.md
 
-To add your Civo account to Northflank, navigate to the clusters page in your account settings and create a new integration.
+To add your Civo account to Northflank, open Integrations → Cloud providers in your team. In an organization, open Cloud → Provider links.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/clusters/integrations/new/civo) to create a new Civo integration.
+
 You must have [sufficient resource quotas](bring-your-own-cloud.md#civo-on-northflank-check-your-quotas) available in your Civo account to deploy a cluster using Northflank.
 
 ### Civo on Northflank: Add your Civo account to Northflank
 
-1. Navigate to your Northflank account settings and open the clusters page
+1. Open Integrations → Cloud providers in your team. In an organization, open Cloud → Provider links.
 
 2. [Create a new cloud provider integration](https://app.northflank.com/s/account/cloud/clusters/integrations/new/civo) and select Civo as the provider
 
@@ -799,8 +922,8 @@ You can edit the integration at any time to update the API key, if required. You
 
 > [!note]
 >
-- Disk snapshots for addon backups are not currently available on Civo clusters.
-- Spot instances are not available on Civo clusters.
+> - Disk snapshots for addon backups are not currently available on Civo clusters.
+> - Spot instances are not available on Civo clusters.
 
 ### Civo on Northflank: Check your quotas
 
@@ -812,9 +935,10 @@ Learn more on the [Civo documentation on quotas](https://www.civo.com/docs/accou
 
 ### Civo on Northflank: Create a cluster
 
-To add a new cluster, navigate to the clusters page in your account settings and click create cluster.
+Open Clusters in your team. In an organization, open Cloud → Clusters. Click Create cluster, or Add cluster for your first cluster.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/clusters/new/civo) to create a new Civo cluster.
 
 ![Create a new cluster in the Northflank application](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/create-a-kubernetes-cluster-with-Northflank/create-cluster.png)
@@ -826,6 +950,7 @@ Enter a name for the cluster and select Civo as the cloud provider. Choose your 
 You can now configure the node pools for your cluster. Node pools can also be added, deleted, and updated after creating your cluster. Click add node pool to add another pool.
 
 > [!note] Minimum cluster requirements
+>
 > Each cluster requires at least one node pool, and a combined minimum of 8 vCPU and 16GB memory across all node pools.
 
 Each node can schedule up to 256 pods (minus system pods). The actual number of pods per node will usually be limited by resource requests and [request modifiers](bring-your-own-cloud.md#configure-your-cluster-configure-resources) for smaller nodes.
@@ -857,10 +982,9 @@ Source: https://northflank.com/docs/v1/application/bring-your-own-cloud/configur
 
 > [!note] Using BYOC or managed cloud?
 >
-
-- **Using BYOC clusters?** You're in the right place.
-
-- **Using Northflank's managed cloud?** See [Configure egress IPs for PaaS](network.md#configure-egress-ips).
+> - **Using BYOC clusters?** You're in the right place.
+>
+> - **Using Northflank's managed cloud?** See [Configure egress IPs for PaaS](network.md#configure-egress-ips).
 
 Static egress IPs allow you to configure fixed IP addresses for outbound traffic from pods on private subnets in your BYOC cluster. This is useful when you need to whitelist your cluster's IP in third-party services, meet security requirements, or configure firewall rules for external API access.
 
@@ -1236,6 +1360,7 @@ Follow the same steps as Option 1, step 2.
 6. Click **Review + create** → **Create**
 
 > [!note] Configure Northflank cluster
+>
 > Ensure your node pools are not configured with **Use public node IPs** (disabled by default). Any node pools that have public IPs enabled will route egress traffic through their own IP and not the static IP. Recreate them with public IPs disabled to ensure they use the new static egress IP.
 
 ### Configure static egress IPs: Verify your setup
@@ -1335,9 +1460,17 @@ Your workloads can then access cloud resources (S3 buckets, Cloud Storage, datab
 
 ### Configure workload identity: Create a workload identity
 
+Use an AWS or GCP [cloud integration](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank) with the workload identity features available to your account. Select Workload Identity for access to existing identity resources. To let Northflank create and manage identity resources, also select Workload Identity Managed and grant the required cloud permissions.
+
+For AWS, use a [cross-account role](bring-your-own-cloud.md#amazon-web-services-on-northflank-add-your-account-with-a-cross-account-role) or [access key](bring-your-own-cloud.md#amazon-web-services-on-northflank-add-your-account-with-an-iam-user). For GCP, use Service account key. These integration credentials are separate from the temporary credentials that workloads receive.
+
+For sovereign resources, use an [AWS European Sovereign Cloud integration](bring-your-own-cloud.md#amazon-web-services-on-northflank-aws-european-sovereign-cloud). Use `arn:aws-eusc:` in resource and role ARNs, for example `arn:aws-eusc:s3:::my-bucket/*`.
+
 To create a workload identity:
 
-1. Navigate to [**Cloud** → **Workload identities**](https://app.northflank.com/s/team/cloud/workload-identities/new)
+1. Open [Integrations → Workload identities](https://app.northflank.com/s/account/cloud/workload-identities).
+
+2. Select Create workload identity.
 
 #### Configure workload identity: Basic information
 
@@ -1345,7 +1478,7 @@ To create a workload identity:
 
 2. **Description**: (Optional) Describe what this identity is used for
 
-3. **Provider**: Select the cloud provider (AWS or GCP)
+3. Provider: Select Amazon Web Services, AWS European Sovereign Cloud, or Google Cloud Platform.
 
 Set Priority to an integer from `0` to `100`. The default is `10`.
 
@@ -1447,7 +1580,7 @@ Or click **Create** to save the configuration without installing.
 
 To change an existing workload identity:
 
-1. Open [Cloud → Workload identities](https://app.northflank.com/s/team/cloud/workload-identities).
+1. Open [Integrations → Workload identities](https://app.northflank.com/s/team/cloud/workload-identities).
 
 2. Select the workload identity.
 
@@ -1528,19 +1661,19 @@ This example shows a complete workflow for giving a service access to an S3 buck
 
 **Setup:**
 
-1. Navigate to **Cloud** → **Workload identities** → **Create new workload identity**
+1. Open Integrations → Workload identities and select Create workload identity.
 
 2. Configure:
 
-  - **Name**: `s3-bucket-access`
+  - Name: `s3-bucket-access`
 
-  - **Provider**: AWS
+  - Provider: AWS
 
-  - **Integration**: Select your AWS integration
+  - Integration: Select your AWS integration
 
-  - **Project restriction**: Enable and select your project
+  - Project restriction: Enable and select your project
 
-3. In **Permission details**, add this policy:
+3. In Permission details, add this policy:
 
 ```json
 {
@@ -1558,7 +1691,7 @@ This example shows a complete workflow for giving a service access to an S3 buck
 }
 ```
 
-1. Click **Create and install**
+1. Click Create and install
 
 **Application code:**
 
@@ -1625,10 +1758,89 @@ If running containers still use a previous identity, follow the [instructions to
 
 Source: https://northflank.com/docs/v1/application/bring-your-own-cloud/configure-your-cluster.md
 
-You can configure how Northflank will manage volume deletion, builds, and resources requests for your cluster.
+You can configure ingress, volume deletion, builds, and resource requests for your cluster. See [Public and VPC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress) for network choices and availability.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/clusters) to view your clusters.
+
+### Configure your cluster: Public and VPC ingress
+
+Ingress is incoming traffic to your workloads. A VPC is a virtual private cloud network.
+
+Private nodes, project-internal networking, and VPC ingress control different parts of the network:
+
+- Private nodes use private addresses or subnets. Their workloads can still receive traffic through a public ingress load balancer.
+
+- Project-internal networking connects workloads through their internal addresses within a project.
+
+- VPC ingress exposes selected workloads through a private load balancer. Clients need network connectivity to the VPC to reach it.
+
+Private subnet placement does not make workload ingress private. Private ingress does not make the Kubernetes API endpoint private or disable internet egress. It does not create an air-gapped cluster, which is isolated from external networks.
+
+#### Configure your cluster: Choose cluster ingress
+
+Northflank supports private ingress for eligible AWS, Azure, and GCP clusters. During cluster creation, the Load balancers panel offers these Provisioning options, where available:
+
+| Choice | Public ingress | VPC ingress |
+| --- | --- | --- |
+| Public | Enabled | Disabled |
+| Private | Disabled | Enabled |
+| Public & private | Enabled | Enabled |
+
+In the cluster API, `settings.networking.istio.enablePublicLoadBalancer` defaults to `true`. The field `settings.networking.istio.enablePrivateLoadBalancer` defaults to `false`. At least one ingress load balancer must remain enabled.
+
+Each workload also needs the corresponding exposure on its ports or addon. Enabling cluster ingress does not expose every workload.
+
+A [team policy](collaborate.md#create-and-manage-a-team-restrict-public-infrastructure) or [organization policy](collaborate.md#create-and-manage-an-organisation-restrict-public-infrastructure) can require private-only ingress for new clusters. It also prevents private-only clusters from enabling public ingress. Existing public ingress remains available until you disable it.
+
+> [!note] Availability
+>
+> Availability depends on your account and cluster. A visible control does not mean that an existing cluster supports ingress changes. Contact Northflank support to find out which choices your cluster supports.
+
+#### Configure your cluster: Change an existing cluster
+
+Support for switching ingress must be enabled when Northflank creates the cluster. Clusters created without this support reject later changes between these choices.
+
+Northflank applies accepted changes after the save completes. A successful save does not mean that the ingress is ready.
+
+> [!warning] Before disabling an ingress path
+>
+> Move affected clients and workload routes to an available path before disabling their current path. Disabling public or private ingress does not move its routes onto the other load balancer. Requests through the disabled path lose access as the change takes effect. Changes take time and can interrupt access.
+
+For a supported cluster, open its Settings page. In Networking, select the ingress under Provisioning options. Click Save changes.
+
+To move traffic to another ingress path:
+
+1. Save a cluster configuration that enables the destination ingress.
+
+2. Wait until its load balancer is ready.
+
+3. Configure the affected workloads and routes to use the destination ingress.
+
+4. Make sure that the workload endpoints are reachable from the intended client network.
+
+5. Move clients to the destination path.
+
+6. After no clients or workload routes require the old path, disable it in the cluster configuration.
+
+#### Configure your cluster: AWS subnet and security-group limitations
+
+Keep at least one public subnet in your AWS custom VPC, including for private-only ingress. You do not need to select that public subnet for the cluster. See [custom VPC configuration](bring-your-own-cloud.md#amazon-web-services-on-northflank-use-a-custom-vpc).
+
+Security groups control allowed network traffic. A limited AWS capability adds them to the private Network Load Balancer (NLB). Northflank selects this capability at creation for eligible clusters with all these properties:
+
+- The cluster supports changing ingress and enables private ingress at creation.
+
+- The cluster explicitly selects private subnets in at least two availability zones. These zones cover every node-pool availability zone.
+
+- The cluster uses neither overlay networking nor custom launch templates. Overlay networking adds a separate network for workloads.
+
+This capability does not automatically upgrade existing clusters. You cannot supply your own security-group IDs for it. You must configure any CloudFront integration and client connectivity to the VPC separately.
+
+> [!note] AWS availability
+>
+> Private NLB security groups require separate enablement from private ingress. Contact Northflank support before creating a cluster that requires this capability. Private ingress alone does not establish eligibility.
 
 ### Configure your cluster: Select build infrastructure
 
@@ -1652,7 +1864,7 @@ This gives you the flexibility to:
 
 #### Configure your cluster: Build using the Northflank platform as a service
 
-You can select this option to build using Northflank's platform as a service, [paying only for the usage](billing.md#pricing-on-northflank-usage-based-billing-paas) of compute resources. Specific build plans can be selected in each service or job.
+You can select this option to build using Northflank's platform as a service, [paying only for the usage](billing.md#pricing-on-northflank-usage-based-billing-on-northflanks-managed-cloud) of compute resources. Specific build plans can be selected in each service or job.
 
 #### Configure your cluster: Build on the same cluster
 
@@ -1668,12 +1880,13 @@ Reducing the request modifiers allows you to over-provision a node with containe
 
 > [!note]
 >
-- Workloads will be increasingly throttled as the node reaches full CPU utilisation and as additional pods are deployed. Consider how much CPU and memory your workloads will require when configuring request modifiers to avoid situations where nodes become oversaturated.
-- An excessively aggressive memory request modifier can lead to memory usage exceeding the node memory. This will cause the node to experience out of memory (OOM) errors and workloads will become unavailable. This can also potentially cause cascading failures across nodes.
+> - Workloads will be increasingly throttled as the node reaches full CPU utilisation and as additional pods are deployed. Consider how much CPU and memory your workloads will require when configuring request modifiers to avoid situations where nodes become oversaturated.
+> - An excessively aggressive memory request modifier can lead to memory usage exceeding the node memory. This will cause the node to experience out of memory (OOM) errors and workloads will become unavailable. This can also potentially cause cascading failures across nodes.
 
 Request modifiers affect all container deployments on the cluster, and will reduce the resources requested by all compute and build plans by the same percentage. Changing the request modifiers for addons on an existing cluster will restart any addons on the cluster.
 
 > [!note] Custom resource plans
+>
 > You can create [resource plans](bring-your-own-cloud.md#create-custom-resource-plans) for your team to deploy workloads with custom vCPU and memory requests and limits.
 
 ### Configure your cluster: Set volume deletion preferences
@@ -1699,15 +1912,17 @@ You can integrate your CoreWeave account to create and manage clusters using Nor
 
 > [!note]
 >
-- Spot instances are not available on CoreWeave clusters.
-- Builds with local cache are not supported on CoreWeave clusters.
+> - Spot instances are not available on CoreWeave clusters.
+> - Builds with local cache are not supported on CoreWeave clusters.
 
 ### CoreWeave on Northflank: Add your CoreWeave account to Northflank
 
-Navigate to `Cloud → Provider links → Create provider link` and select CoreWeave as the provider. Or use the direct link:
+Open Integrations → Cloud providers. In an organization, use Cloud → Provider links. Select Create provider link, or Add provider link if this is your first integration. Choose CoreWeave as the provider. You can also use the direct link:
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/integrations/new/coreweave) to create a new CoreWeave integration.
+
 Copy your CoreWeave access token into the `API key` field and create the provider link. If you don't have a CoreWeave access token, you can create it in the [CoreWeave console](https://console.coreweave.com/tokens).
 
 ![Create a new provider link](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/coreweave/integration-new.png)
@@ -1726,10 +1941,12 @@ Learn more on the [CoreWeave documentation on quotas](https://docs.coreweave.com
 
 ### CoreWeave on Northflank: Create a cluster
 
-Navigate to `Cloud → Clusters → Create cluster` and select CoreWeave as the provider. Or use the direct link:
+Open Clusters in your team. In an organization, open Cloud → Clusters. Select Create cluster, or Add cluster for your first cluster. Choose CoreWeave as the provider. You can also use the direct link:
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/clusters/new/coreweave) to create a new CoreWeave cluster.
+
 Enter a name for the cluster or generate one randomly. Choose your integration credentials. Select the region and the zone to deploy in.
 
 ![Create a new cluster](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/coreweave/cluster-new.png)
@@ -1749,6 +1966,7 @@ You can now configure the node pools for your cluster. Node pools can also be ad
 ![Create a nodepool for your cluster](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/coreweave/cluster-nodepool.png)
 
 > [!note] Minimum cluster requirements
+>
 > Each cluster requires at least one node pool, and a combined minimum of 8 vCPU and 16GB memory across all node pools.
 
 Each node can schedule up to 256 pods (minus system pods). The actual number of pods per node will usually be limited by resource requests and [request modifiers](bring-your-own-cloud.md#configure-your-cluster-configure-resources) for smaller nodes.
@@ -1789,6 +2007,7 @@ You can create plans that can be used with builds only, deployments only, or bot
 You can combine custom plans with [node pool labels and tags](bring-your-own-cloud.md#deploy-workloads-to-your-cluster) to manage which node pools your workloads are deployed to.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/custom-plans/new) to create a new custom plan.
 
 ### Create custom resource plans: Northflank resource configuration
@@ -1827,6 +2046,7 @@ You are recommended to provision a cluster with a node size that strikes a balan
 Check the relevant page for integrating your cloud provider on Northflank to learn more about provider-specific considerations.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/clusters) to view your clusters.
 
 ![Creating new node pools in the Northflank application](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/create-a-kubernetes-cluster-with-Northflank/create-node-pools.png)
@@ -1850,6 +2070,7 @@ You should choose a disk size based on your estimated requirements for ephemeral
 There are cloud provider specific limits on how many persistent volumes can be attached to nodes, which vary by node type.
 
 > [!note] Persistent volumes and addon disks
+>
 > Persistent volumes and addon volumes are set via network attached disks, and are unrelated to the disk size and type configured for node pools.
 
 ### Deploy and scale node pools: Choose availability zone
@@ -1878,7 +2099,7 @@ Spot instances can be a good option to reduce costs for development and testing 
 
 You can allow or disallow different workloads from being scheduled on a node pool in the advanced menu when creating or updating a node pool. This allows you to deploy on node pools with an optimal configuration for a specific type of workload.
 
-You can set scheduling rules for services, jobs, addons, and builds for each node pool. You can also select whether to restrict the [scheduling of GPU workloads](https://northflank.com/docs/v1/application/run/run-gpu-workloads#deploy-a-cluster-and-a-gpu-node-pool) for jobs and services on GPU-enabled nodes.
+You can set scheduling rules for services, jobs, addons, and builds for each node pool. You can also select whether to restrict the [scheduling of GPU workloads](gpu-workloads.md#deploy-gpus-in-your-own-cloud-gpu-workload-scheduling) for jobs and services on GPU-enabled nodes.
 
 ### Deploy and scale node pools: Add labels
 
@@ -1908,7 +2129,9 @@ You can deploy your workloads to your cluster by [creating a project](getting-st
 Any services, jobs, addons, and volumes created in this project will be deployed to the selected cluster. Workloads will be automatically scheduled to nodes based on type, load, and capacity.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/projects/new) to create a new project.
+
 When you deploy resources to a project on your cluster Northflank will attempt to schedule the workload to a node pool that meets the requirements of the workload. The node pool a workload will be scheduled to can depend on:
 
 - node capacity
@@ -1950,8 +2173,9 @@ You can create multiple node affinity rules for a tag, each with multiple match 
 If a workload's node affinity rules require it to be deployed on a node pool with no availability, it will not be deployed until there is availability on the required node pool. Availability can be increased by removing other workloads, [scaling up the number of nodes](bring-your-own-cloud.md#deploy-and-scale-node-pools-set-node-count-and-autoscaling) in the pool, or adding a new node pool with matching labels.
 
 > [!warning]
+>
 > You can create conflicting rules that prevent the deployment of workloads. If you create mandatory match expression rules that do not correspond to any labels on your node pools, a workload with the tag will never be deployed.
-If an addon is created with rules that prevent it from being deployed, it must be deleted.
+> If an addon is created with rules that prevent it from being deployed, it must be deleted.
 
 #### Deploy workloads to your cluster: Label a node pool
 
@@ -2009,15 +2233,17 @@ You can configure [zonal redundancy](databases-and-persistence.md#configure-addo
 
 Source: https://northflank.com/docs/v1/application/bring-your-own-cloud/gcp-on-northflank.md
 
-You can integrate your Google Cloud Platform account to create and manage clusters using Northflank.
+Connect your Google Cloud Platform account to manage clusters, access registries, or use other [integration features](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank).
 
-To add your GCP account navigate to the clusters page in your account settings and create a new integration.
+To add your GCP account, open Integrations → Cloud providers. In an organization, use Cloud → Provider links. If you already have provider links, select Create provider link. Otherwise, select Add provider link beside your provider.
 
 > [!note]
-> [Click here](https://app.northflank.com/s/account/cloud/clusters/integrations/new/gcp) to create a new GCP integration.
-You can create an integration using a [cross-project service account](bring-your-own-cloud.md#google-cloud-platform-on-northflank-add-your-account-with-a-cross-project-service-account) (recommended), or using a [service key](bring-your-own-cloud.md#google-cloud-platform-on-northflank-add-your-account-with-a-service-key) (legacy method).
+>
+> [Click here](https://app.northflank.com/s/account/cloud/integrations/new/gcp) to create a new GCP integration.
 
-After integrating your account, you can [create a new cluster](bring-your-own-cloud.md#google-cloud-platform-on-northflank-create-a-cluster).
+Use a [cross-project service account](bring-your-own-cloud.md#google-cloud-platform-on-northflank-add-your-account-with-a-cross-project-service-account) when it supports your selected features. You can also connect with a [service account key](bring-your-own-cloud.md#google-cloud-platform-on-northflank-add-your-account-with-a-service-key).
+
+After connecting the account, continue to [registry setup](run.md#save-registry-credentials-cloud-provider-registries) or [cluster creation](bring-your-own-cloud.md#google-cloud-platform-on-northflank-create-a-cluster).
 
 ### Google Cloud Platform on Northflank: Select or create your GCP project
 
@@ -2027,13 +2253,23 @@ You can use Northflank with an existing Google Cloud Platform project, or create
 
 1. Open your [GCP console](https://console.cloud.google.com/) and create a new project, or select an existing one.
 
-2. Ensure [billing is enabled](https://cloud.google.com/billing/docs/how-to/modify-project)
+2. Make sure that [billing is enabled](https://cloud.google.com/billing/docs/how-to/modify-project).
 
-3. Enable the [Kubernetes Engine API](https://console.cloud.google.com/marketplace/product/google/container.googleapis.com) and [Cloud Resource Manager API](https://console.cloud.google.com/marketplace/product/google/cloudresourcemanager.googleapis.com)
+3. Enable the [Cloud Resource Manager API](https://console.cloud.google.com/marketplace/product/google/cloudresourcemanager.googleapis.com).
+
+4. If you deploy a cluster with Northflank, enable the [Kubernetes Engine API](https://console.cloud.google.com/marketplace/product/google/container.googleapis.com).
+
+Registry access and workload identity do not require the Kubernetes Engine API.
 
 ### Google Cloud Platform on Northflank: Required permissions
 
-The standard Google roles [`roles/iam.serviceAccountUser` (Service Account User)](https://cloud.google.com/iam/docs/understanding-roles#service-accounts-roles) and [`roles/container.admin` (Kubernetes Engine Admin)](https://cloud.google.com/iam/docs/understanding-roles#kubernetes-engine-roles) contain all the required permissions to integrate your GCP account.
+Select the integration features you need before assigning Google Cloud roles. Northflank shows the required roles and permissions for that selection.
+
+For Docker Registries, grant Artifact Registry Reader (`roles/artifactregistry.reader`). For Docker Registry Push, also grant Artifact Registry Writer (`roles/artifactregistry.writer`). See Google's [Artifact Registry access guidance](https://cloud.google.com/artifact-registry/docs/access-control) for role details.
+
+For BYOC cluster deployment, grant Service Account User (`roles/iam.serviceAccountUser`) and Kubernetes Engine Admin (`roles/container.admin`), or roles with equivalent permissions. Additional features, such as a custom VPC, require the permissions shown in Northflank. Registry-only integrations do not need these Kubernetes roles.
+
+The list below covers the base cluster permissions. Use the current list in Northflank for your selected features.
 
 Required GCP permissions
 
@@ -2142,66 +2378,98 @@ Required GCP permissions
 
 ### Google Cloud Platform on Northflank: Add your account with a cross-project service account
 
-You can integrate your Google Cloud Platform account using a cross-project service account. Northflank will create a new service account in Google Cloud Platform which you can then grant access to your GCP project.
+A cross-project service account lets Northflank access your Google Cloud project without a service account key that you manage. Northflank creates a service account, and you grant that account access to your project.
 
 > [!note] Requirements
+>
 > You will need the following to get started:
+>
+> - A [Google Cloud project](bring-your-own-cloud.md#google-cloud-platform-on-northflank-select-or-create-your-gcp-project)
+> - Permission to grant the [required roles](bring-your-own-cloud.md#google-cloud-platform-on-northflank-required-permissions) in that project
+> - For cluster deployment: sufficient [quotas](bring-your-own-cloud.md#google-cloud-platform-on-northflank-check-your-quotas) to deploy your cluster
 
-- a [GCP project](bring-your-own-cloud.md#google-cloud-platform-on-northflank-select-or-create-your-gcp-project)
-- access to roles with the [necessary permissions](bring-your-own-cloud.md#google-cloud-platform-on-northflank-required-permissions) for your account
-- sufficient [quotas](bring-your-own-cloud.md#google-cloud-platform-on-northflank-check-your-quotas) to deploy your cluster
+For Artifact Registry access, select Docker Registries and, for project builds, Docker Registry Push. Select BYOC only if this integration also manages clusters.
 
-1. Navigate to your Northflank account settings and open the clusters page
+1. Open Integrations → Cloud providers. In an organization, use Cloud → Provider links.
 
-2. [Create a new cloud provider integration](https://app.northflank.com/s/account/cloud/clusters/integrations/new/gcp) and select Google Cloud Platform as the provider
+2. Open the [GCP provider link form](https://app.northflank.com/s/account/cloud/integrations/new/gcp).
 
-3. Name the integration, enter your [Google Project ID](https://cloud.google.com/resource-manager/docs/creating-managing-projects), and click create
+3. Under Basic information, enter a Name. Select the features you need under Desired features.
 
-4. Copy the Northflank service account email from the credentials section
+4. In Credentials, select Cross-project service account.
 
-5. Go to the [IAM page](https://console.cloud.google.com/iam-admin/iam) in your GCP console
+5. Enter your Google project ID.
 
-6. Click Grant Access and add the Northflank service account email as a principal
+6. Select Create provider link.
 
-7. Select `Service Account User` and `Kubernetes Engine Admin` as roles, or add roles with the [equivalent permissions](bring-your-own-cloud.md#google-cloud-platform-on-northflank-required-permissions-to-integrate-your-google-cloud-platform-account)
+7. On the new provider link's Edit tab, copy the Service account email from Credentials.
 
-8. Save and return to Northflank to verify the permissions
+8. Open the [IAM page](https://console.cloud.google.com/iam-admin/iam) in your Google Cloud project.
+
+9. Select Grant access. Enter the copied email as the principal.
+
+10. Assign the roles shown for your selected features in Northflank.
+
+11. Save the assignment in Google Cloud.
+
+12. In Northflank, select Verify all permissions under Credentials.
+
+> [!note] After changing permissions
+>
+> Google Cloud can take time to apply new permissions. An operation can fail before those changes apply.
+
+Wait for the updated permissions before you retry an operation.
+
+After access is available, use the integration for your registry or [create a cluster](bring-your-own-cloud.md#google-cloud-platform-on-northflank-create-a-cluster).
 
 ### Google Cloud Platform on Northflank: Add your account with a service key
 
-You can add your account to Northflank by providing the service key for an IAM user. This is a legacy method, it is recommended that you instead integrate using a [cross-project service account](bring-your-own-cloud.md#google-cloud-platform-on-northflank-add-your-google-cloud-platform-account-with-a-cross-project-service-account).
+You can integrate Google Cloud with a service account key. Use a [cross-project service account](bring-your-own-cloud.md#google-cloud-platform-on-northflank-add-your-account-with-a-cross-project-service-account) when it supports your selected features to avoid managing a long-lived key.
 
 > [!note] Requirements
+>
 > You will need the following to get started:
+>
+> - A [Google Cloud project](bring-your-own-cloud.md#google-cloud-platform-on-northflank-select-or-create-your-gcp-project)
+> - Permission to create service accounts and service account keys
+> - Permission to grant the [required roles](bring-your-own-cloud.md#google-cloud-platform-on-northflank-required-permissions) in that project
+> - For cluster deployment: sufficient [quotas](bring-your-own-cloud.md#google-cloud-platform-on-northflank-check-your-quotas) to deploy your cluster
 
-- a [GCP project](bring-your-own-cloud.md#google-cloud-platform-on-northflank-select-or-create-your-gcp-project)
-- access to roles with the [necessary permissions](bring-your-own-cloud.md#google-cloud-platform-on-northflank-required-permissions) for your account
-- sufficient [quotas](bring-your-own-cloud.md#google-cloud-platform-on-northflank-check-your-quotas) to deploy your cluster
+For Artifact Registry access, select Docker Registries and, for project builds, Docker Registry Push. Select BYOC only if this integration also manages clusters.
 
-You should create a new service account to integrate with Northflank using a service key.
+1. Open Integrations → Cloud providers. In an organization, use Cloud → Provider links.
 
-1. Navigate to the service accounts page in IAM and admin in your Google Cloud Platform project
+2. Open the [GCP provider link form](https://app.northflank.com/s/account/cloud/integrations/new/gcp).
 
-2. Create a new service account:
+3. Under Basic information, enter a Name. Select the features you need under Desired features.
 
-  1. Add a name and description, click create and continue
+4. In Credentials, select Service account key. Review the required roles.
 
-  2. Add roles with the [required permissions](bring-your-own-cloud.md#google-cloud-platform-on-northflank-required-permissions-to-integrate-your-google-cloud-platform-account)
+5. Open IAM & Admin → Service Accounts in your Google Cloud project.
 
-  3. Select the new service account and go to the keys page. Create a new key and download the key file with the type `JSON`
+6. Create a service account with a name and description.
 
-3. Navigate to your Northflank account settings and open the clusters page
+7. Assign the roles required for your selected features.
 
-4. [Create a new cloud provider integration](https://app.northflank.com/s/account/cloud/clusters/integrations/new/gcp) and select Google Cloud Platform as the provider
+8. Open the service account's Keys tab. Create a JSON key.
 
-5. Copy and paste the contents of your `keyfile.json` and create the integration
+9. Copy the downloaded JSON into Service account key (keyfile.json) in Northflank.
 
-You can now configure and deploy new clusters in your GCP account.
+10. Make sure that Google project ID matches your project.
 
-You can edit the integration at any time to update the `keyfile.json` and Google project ID, if required. If you change the Google project while there are still Northflank clusters on it, you will be unable to manage those clusters and deleting them via Google may leave orphaned resources.
+11. Select Create provider link.
 
-> [!note]
-> If you have recently added or changed permissions for your service user account they may take some time to propagate throughout Google.
+> [!note] After changing permissions
+>
+> Google Cloud can take time to apply new permissions. An operation can fail before those changes apply.
+
+Wait for the updated permissions before you retry an operation.
+
+You can update the key and Google project ID in the integration.
+
+> [!warning] Keep access to existing resources
+>
+> Keep access to existing resources when you change these values. If you change the project while it still contains Northflank clusters, Northflank cannot manage those clusters. Deleting clusters directly in Google Cloud can leave unused resources.
 
 ### Google Cloud Platform on Northflank: Check your quotas
 
@@ -2215,9 +2483,10 @@ For example, to increase the number of node pools you can deploy on Google Cloud
 
 ### Google Cloud Platform on Northflank: Create a cluster
 
-To add a new cluster, navigate to the clusters page in your account settings and click create cluster.
+Open Clusters in your team. In an organization, open Cloud → Clusters. Click Create cluster, or Add cluster for your first cluster.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/clusters/new/gcp) to create a new GCP cluster.
 
 ![Create a new cluster in the Northflank application](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/create-a-kubernetes-cluster-with-Northflank/create-cluster.png)
@@ -2231,6 +2500,7 @@ The Google project ID field will be automatically filled based on the provided c
 You can now configure the node pools for your cluster. Node pools can also be added, deleted, and updated after creating your cluster. Click add node pool to add another pool.
 
 > [!note] Minimum cluster requirements
+>
 > Each cluster requires at least one node pool, and a combined minimum of 8 vCPU and 16GB memory across all node pools.
 
 Each node can schedule up to 256 pods (minus system pods). The actual number of pods per node will usually be limited by resource requests and [request modifiers](bring-your-own-cloud.md#configure-your-cluster-configure-resources) for smaller nodes.
@@ -2251,7 +2521,13 @@ When you create the cluster Northflank will begin installing system components i
 
 ### Google Cloud Platform on Northflank: Deploy to private nodes
 
-GCP currently provides no way to provision private nodes. All nodes on GCP clusters will have public internet ingress and egress available.
+Private GCP nodes have no public IP addresses, which prevents direct connections from the internet to the nodes.
+
+To use private GCP nodes, select Enable private node IPs in the node-pool form. The corresponding API field is `gcp.enablePrivateNodes`. Private nodes require Cloud NAT on the subnet for internet egress.
+
+Node privacy and workload ingress are separate choices. Workloads on private nodes can still receive traffic through a public ingress load balancer.
+
+Eligible GCP clusters also support private ingress. See [Public and VPC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress) for availability, configuration, and client connectivity requirements.
 
 ### Google Cloud Platform on Northflank: Next steps
 
@@ -2271,11 +2547,12 @@ BYOK differs from [bring your own cloud (BYOC)](bring-your-own-cloud.md#use-othe
 Cluster import is enabled by default for most accounts. If the `Import Cluster (BYOK)` option is not available on your account, [contact Northflank](https://northflank.com/contact).
 
 > [!warning]
+>
 > **We strongly recommend importing a new, dedicated cluster.** Do not import
-clusters that run production workloads or business-critical applications, or
-that are shared with other systems or teams. The installation may fail and
-leave the cluster in an unhealthy state, and there is currently no full
-deinstallation process.
+> clusters that run production workloads or business-critical applications, or
+> that are shared with other systems or teams. The installation may fail and
+> leave the cluster in an unhealthy state, and there is currently no full
+> deinstallation process.
 
 ### Import an existing cluster (BYOK): Cluster requirements
 
@@ -2315,10 +2592,12 @@ If your cluster doesn't meet some of these requirements, or your provider requir
 
 ### Import an existing cluster (BYOK): Add your cluster credentials to Northflank
 
-Navigate to `Cloud → Provider links → Create provider link` and select `Import Cluster (BYOK)` as the provider type. Or use the direct link:
+Open Integrations → Cloud providers. In an organization, use Cloud → Provider links. Select Create provider link, or Add provider link if this is your first integration. Choose Import Cluster (BYOK) as the provider. You can also use the direct link:
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/integrations/new/byok) to create a new BYOK integration.
+
 In the credentials section, upload the kubeconfig file for your cluster.
 
 Your kubeconfig file must:
@@ -2336,15 +2615,18 @@ When you create the integration, Northflank connects to your cluster and creates
 You can edit the integration at any time to upload a new kubeconfig file, if required.
 
 > [!note]
+>
 > An integration can only be used to import one cluster. Create a new
-integration for each cluster you want to import.
+> integration for each cluster you want to import.
 
 ### Import an existing cluster (BYOK): Import your cluster
 
-Navigate to `Cloud → Clusters → Create cluster` and select `Import Cluster (BYOK)` as the provider. Or use the direct link:
+Open Clusters in your team. In an organization, open Cloud → Clusters. Select Create cluster, or Add cluster for your first cluster. Choose Import Cluster (BYOK) as the provider. You can also use the direct link:
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/clusters/new/byok) to import a cluster.
+
 Enter a name for the cluster and choose the integration for the cluster you want to import. Enter the region your cluster is deployed in, for example `us-east-1`. The region is an informational label used for display purposes.
 
 You can optionally enter geographic coordinates (latitude and longitude) for your cluster. These are used by CDN geo-routing to determine the nearest backend, and are required to use the cluster as a backend for geo-routed subdomains.
@@ -2366,8 +2648,9 @@ You can then define the storage and snapshot classes Northflank should use when 
 - Optionally configure minimum, maximum, and suggested volume sizes
 
 > [!note]
+>
 > The storage configuration cannot be changed after the cluster has been
-imported.
+> imported.
 
 #### Import an existing cluster (BYOK): Configure node pools
 
@@ -2380,13 +2663,14 @@ For each node pool, set the **node pool cluster ID label value** to the label va
 The **node pool user ID** identifies the pool when interacting with Northflank through the API, CLI, and infrastructure-as-code. It doesn't affect how nodes are matched.
 
 > [!note] Example node pool mapping
+>
 > With the node pool cluster label identifier set to `node.northflank.com/node-pool-id`, you could define these pools:
-
-| Node pool user ID | Node pool cluster ID label value | Fall back default node pool |
-| --- | --- | --- |
-| `workers` | `worker-pool` | yes |
-| `gpu` | `gpu-pool` | no |
-A node labelled `node.northflank.com/node-pool-id=gpu-pool` is assigned to the pool `gpu`. Nodes with any other value, or without the label, are assigned to the fall back default node pool `workers`.
+>
+> | Node pool user ID | Node pool cluster ID label value | Fall back default node pool |
+> | --- | --- | --- |
+> | `workers` | `worker-pool` | yes |
+> | `gpu` | `gpu-pool` | no |
+> A node labelled `node.northflank.com/node-pool-id=gpu-pool` is assigned to the pool `gpu`. Nodes with any other value, or without the label, are assigned to the fall back default node pool `workers`.
 
 For each pool you can also configure:
 
@@ -2460,12 +2744,13 @@ These features may still work if your cluster or infrastructure supplies them, b
 When you delete an imported cluster in Northflank, Northflank removes its ingress load balancers. Volume snapshots are not deleted. Other installed system components remain on the cluster, and the cluster itself and its infrastructure are never deleted.
 
 > [!warning]
+>
 > Unless volume cleanup is disabled in the cluster settings (`cleanupVolumes`,
-enabled by default), deleting an imported cluster also deletes all persistent
-volume claims in all namespaces on the cluster, all StatefulSets and all pods
-without an owner (even if they don't reference a persistent volume claim), and
-all Deployments, DaemonSets, and Jobs that reference a persistent volume
-claim. This includes volumes and workloads not managed by Northflank.
+> enabled by default), deleting an imported cluster also deletes all persistent
+> volume claims in all namespaces on the cluster, all StatefulSets and all pods
+> without an owner (even if they don't reference a persistent volume claim), and
+> all Deployments, DaemonSets, and Jobs that reference a persistent volume
+> claim. This includes volumes and workloads not managed by Northflank.
 
 We strongly recommend not running anything besides Northflank-managed workloads on an imported cluster.
 
@@ -2486,10 +2771,11 @@ We strongly recommend not running anything besides Northflank-managed workloads 
 ### Import an existing cluster (BYOK): Next steps
 
 > [!note]
+>
 > Parts of the linked guides apply to clusters provisioned by Northflank (BYOC).
-On imported clusters, node provisioning, scaling, and deletion behaviour
-differ, see [managed by Northflank vs. managed by
-you](#managed-by-northflank-vs-managed-by-you).
+> On imported clusters, node provisioning, scaling, and deletion behaviour
+> differ, see [managed by Northflank vs. managed by
+> you](#managed-by-northflank-vs-managed-by-you).
 
 - [Configure your Kubernetes cluster: Manage your clusters on other cloud providers using Northflank.](bring-your-own-cloud.md#configure-your-cluster)
 - [Deploy workloads to your cluster: Deploy services, jobs, and addons to your own cluster, and configure workloads to schedule on specific node pools.](bring-your-own-cloud.md#deploy-workloads-to-your-cluster)
@@ -2499,19 +2785,21 @@ you](#managed-by-northflank-vs-managed-by-you).
 
 Source: https://northflank.com/docs/v1/application/bring-your-own-cloud/manage-your-cluster.md
 
-You can monitor and manage your cluster from the clusters page in your account settings. The total number of clusters and resources provisioned in your cloud provider accounts is displayed at the top of your clusters page.
+To monitor and manage your cluster, open Clusters in your team. In an organization, open Cloud → Clusters. The total number of clusters and resources provisioned in your cloud provider accounts is displayed at the top of your clusters page.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/clusters) to view your clusters.
 
 ![Viewing the details of a cluster in the Northflank application](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/manage-and-use-your-kubernetes-cluster-with-Northflank/cluster-details.png)
 
 > [!warning]
+>
 > You should not edit or delete Northflank nodes or clusters via your cloud provider's interface. Doing so may leave orphaned resources which you could still be billed for by your cloud provider.
 
 ### Manage your cluster: Deploy on your cluster
 
-To begin using your chosen cloud provider on Northflank [create a new project](getting-started.md#create-a-project) and select your cluster as the provider. Learn more in [deploy workloads to your cluster](bring-your-own-cloud.md#deploy-workloads-to-your-cluster) and [run GPU workloads in your cluster](https://northflank.com/docs/v1/application/run/run-gpu-workloads).
+To begin using your chosen cloud provider on Northflank [create a new project](getting-started.md#create-a-project) and select your cluster as the provider. Learn more in [deploy workloads to your cluster](bring-your-own-cloud.md#deploy-workloads-to-your-cluster) and [run GPU workloads in your cluster](gpu-workloads.md#gpus-on-northflank).
 
 ### Manage your cluster: Monitor your cluster
 
@@ -2550,6 +2838,7 @@ You can view workloads deployed on your cluster from the cluster's project page,
 You can also open a team's project view and sort by provider.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/projects) to view your team's projects.
 
 ### Manage your cluster: Scale nodes and node pools
@@ -2575,6 +2864,7 @@ Uncordon removes the cordon from the node pool and allows workloads to be schedu
 Draining a node pool will send a signal to gracefully terminate all workloads on the node pool. Workloads will respect the [user-configured grace period](scale.md#scale-instances-set-the-grace-period-for-containers) if one is set.
 
 > [!note] Migrating addons and volumes
+>
 > If you are moving addons from one node pool to another, the new node pool must be in the same availability zone so that the workload can deploy where the disk is located. This also applies to services deployed with a persistent volume.
 
 ### Manage your cluster: Upgrade Kubernetes
@@ -2615,15 +2905,17 @@ You can integrate your Nebius account to create and manage clusters using Northf
 
 > [!note]
 >
-- Volume snapshots for addon backups are not currently available on Nebius clusters.
-- MicroVM sandboxes are not supported on Nebius clusters (but gVisor is).
+> - Volume snapshots for addon backups are not currently available on Nebius clusters.
+> - MicroVM sandboxes are not supported on Nebius clusters (but gVisor is).
 
 ### Nebius on Northflank: Add your Nebius account to Northflank
 
-Navigate to `Cloud → Provider links → Create provider link` and select Nebius as the provider. Or use the direct link:
+Open Integrations → Cloud providers. In an organization, use Cloud → Provider links. Select Create provider link, or Add provider link if this is your first integration. Choose Nebius as the provider. You can also use the direct link:
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/integrations/new/nebius) to create a new Nebius integration.
+
 First, you will need to set up a service account with an authorized key on Nebius. The service account will need to be in the `editors` group for each project that should be managed by Northflank. Follow Nebius docs to:
 
 - [Prepare a service account](https://docs.nebius.com/grpc-api/auth#prepare-a-service-account)
@@ -2648,10 +2940,12 @@ Learn more on the [Nebius documentation on quotas](https://docs.nebius.com/kuber
 
 ### Nebius on Northflank: Create a cluster
 
-Navigate to `Cloud → Clusters → Create cluster` and select Nebius as the provider. Or use the direct link:
+Open Clusters in your team. In an organization, open Cloud → Clusters. Select Create cluster, or Add cluster for your first cluster. Choose Nebius as the provider. You can also use the direct link:
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/clusters/new/nebius) to create a new Nebius cluster.
+
 Enter a name for the cluster or generate one randomly. Choose your integration credentials. Select the project and a subnet within that project to deploy the cluster in.
 
 ![Create a new cluster](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/nebius/cluster-new.png)
@@ -2667,6 +2961,7 @@ GPU node types support spot instances, while CPU node types do not.
 ![Create a nodepool for your cluster](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/nebius/cluster-nodepool.png)
 
 > [!note] Minimum cluster requirements
+>
 > Each cluster requires at least one node pool, and a combined minimum of 8 vCPU and 16GB memory across all node pools.
 
 Each node can schedule up to 256 pods (minus system pods). The actual number of pods per node will usually be limited by resource requests and [request modifiers](bring-your-own-cloud.md#configure-your-cluster-configure-resources) for smaller nodes.
@@ -2690,23 +2985,25 @@ When you create the cluster, Northflank will begin installing system components 
 
 Source: https://northflank.com/docs/v1/application/bring-your-own-cloud/oci-on-northflank.md
 
-To add your Oracle Cloud Infrastructure account to Northflank, navigate to the clusters page in your account settings and create a new integration. OCI integrations are on a regional basis, you will have to create a separate integration for each OCI region you want to deploy clusters in.
+To add your Oracle Cloud Infrastructure account to Northflank, open Integrations → Cloud providers in your team. In an organization, open Cloud → Provider links. OCI integrations are on a regional basis, you will have to create a separate integration for each OCI region you want to deploy clusters in.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/clusters/integrations/new/oci) to create a new OCI integration.
 
 ### Oracle Cloud Infrastructure on Northflank: Add your account to Northflank
 
 > [!note] Oracle Cloud Infrastructure resources
+>
 > You may find it useful to refer to the following OCI documentation while following this guide:
-
-- [Set up a tenancy and compartment](https://docs.oracle.com/en-us/iaas/Content/GSG/Concepts/settinguptenancy.htm)
-- [Add a user](https://docs.oracle.com/en-us/iaas/Content/GSG/Tasks/addingusers.htm)
-- [Find tenancy and user OCID, add a key pair](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm)
+>
+> - [Set up a tenancy and compartment](https://docs.oracle.com/en-us/iaas/Content/GSG/Concepts/settinguptenancy.htm)
+> - [Add a user](https://docs.oracle.com/en-us/iaas/Content/GSG/Tasks/addingusers.htm)
+> - [Find tenancy and user OCID, add a key pair](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm)
 
 To add your OCI account to Northflank:
 
-1. Navigate to your Northflank account settings and open the clusters page
+1. Open Integrations → Cloud providers in your team. In an organization, open Cloud → Provider links.
 
 2. [Create a new cloud provider integration](https://app.northflank.com/s/account/cloud/clusters/integrations/new/oci) and select Oracle as the provider
 
@@ -2750,9 +3047,10 @@ You will only be able to see the [Compute Shapes](https://docs.oracle.com/en-us/
 
 ### Oracle Cloud Infrastructure on Northflank: Create a cluster
 
-To add a new cluster, navigate to the clusters page in your account settings and click create cluster.
+Open Clusters in your team. In an organization, open Cloud → Clusters. Click Create cluster, or Add cluster for your first cluster.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/clusters/new/oci) to create a new OCI cluster.
 
 ![Create a new cluster in the Northflank application](https://assets.northflank.com/documentation/v1/application/bring-your-own-cloud/create-a-kubernetes-cluster-with-Northflank/create-cluster.png)
@@ -2766,6 +3064,7 @@ You must select the [Virtual Cloud Network](https://docs.oracle.com/en-us/iaas/C
 Select the subnets for the load balancer and the Kubernetes API you want to use for the cluster. These subnets will host the control plane components for your cluster and have no impact on the subnets that you can select for node pools.
 
 > [!important]
+>
 > You must select public subnets for the load balancer and Kubernetes API for Northflank to be able to manage your cluster.
 
 #### Oracle Cloud Infrastructure on Northflank: Configure node pools
@@ -2773,6 +3072,7 @@ Select the subnets for the load balancer and the Kubernetes API you want to use 
 You can now configure the node pools for your cluster. Node pools can also be added, deleted, and updated after creating your cluster. Click add node pool to add another pool.
 
 > [!note] Minimum cluster requirements
+>
 > Each cluster requires at least one node pool, and a combined minimum of 8 vCPU and 16GB memory across all node pools.
 
 Each node can schedule up to 256 pods (minus system pods). The actual number of pods per node will usually be limited by resource requests and [request modifiers](bring-your-own-cloud.md#configure-your-cluster-configure-resources) for smaller nodes.
@@ -2804,22 +3104,47 @@ You can then [create a project on your cluster](bring-your-own-cloud.md#deploy-w
 
 Source: https://northflank.com/docs/v1/application/bring-your-own-cloud/use-other-cloud-providers-with-northflank.md
 
-You can bring your own cloud to use all the features of the Northflank platform on other cloud hosting providers.
+Cloud integrations connect Northflank to your cloud account. You can use them to manage Kubernetes clusters, access container registries, and provision external resources with OpenTofu.
 
-Connect your account with Northflank to create and manage Kubernetes clusters in your own cloud account, and gain complete control of your infrastructure, data storage, security, and auditing.
+Bring Your Own Cloud (BYOC) runs Northflank workloads in your cloud account. Connect an integration to create and manage Kubernetes clusters there. Registry access does not require a BYOC cluster.
 
-You will use your existing billing relationship with your cloud provider for all resources consumed by your clusters. See [cloud provider billing](https://northflank.com/docs/v1/application/billing/cloud-provider-billing) for more information.
+Your cloud provider bills you for resources in your account. See [cloud provider billing](billing.md#pricing-on-northflank-bring-your-own-cloud) for details.
 
-You can also import an existing Kubernetes cluster to be managed by Northflank, see [import an existing cluster (BYOK)](bring-your-own-cloud.md#import-an-existing-cluster-byok).
+You can also [import an existing Kubernetes cluster (BYOK)](bring-your-own-cloud.md#import-an-existing-cluster-byok) for Northflank to manage.
 
 > [!note]
-> [Click here](https://app.northflank.com/s/account/cloud/clusters) to start deploying into your cloud account.
+>
+> [Click here](https://app.northflank.com/s/account/cloud/integrations) to connect your cloud account.
 
-### Use other cloud providers with Northflank: Integrate your cloud account and a deploy cluster
+### Use other cloud providers with Northflank: Connect your cloud account
 
-After creating an integration with your chosen cloud provider you can deploy clusters into your cloud account.
+Open Integrations → Cloud providers to connect an account. In an organization, use Cloud → Provider links. If you already have provider links, select Create provider link. Otherwise, select Add provider link beside your provider.
 
-You can create integrations with the following providers:
+Under Basic information, enter a Name. Select your Provider and Desired features before you grant cloud permissions. Selecting a feature does not grant permissions or create cloud resources.
+
+#### Use other cloud providers with Northflank: Select integration features
+
+Available features depend on the provider and your account. If a required feature is missing, contact Northflank support about availability.
+
+| Purpose | Feature and next step |
+| --- | --- |
+| Deploy clusters | Select BYOC, then follow [your provider's cluster guide](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank). |
+| Pull private images | Select Docker Registries, then [save registry credentials](run.md#save-registry-credentials-cloud-provider-registries). |
+| Store project builds in your registry | Also select Docker Registry Push, then [configure a new project](build.md#use-custom-build-registry). |
+| Provision external resources | Select OpenTofu, then [configure external infrastructure](infrastructure-as-code.md#manage-external-infrastructure). This also supports [managed external resources](databases-and-persistence.md#create-a-managed-external-addon) on AWS. |
+| Grant workloads access to cloud resources | Select the relevant Workload Identity features, then [configure workload identity](bring-your-own-cloud.md#configure-workload-identity) for AWS or GCP. |
+
+For provider authentication, follow the [AWS](cloud-integrations.md#connect-an-aws-provider-link-add-your-account-with-a-cross-account-role), [GCP](cloud-integrations.md#connect-a-google-cloud-provider-link-add-your-account-with-a-cross-project-service-account), or [Azure](cloud-integrations.md#connect-an-azure-provider-link-add-your-azure-account) authentication instructions. Select the features required for your task. You can leave BYOC unselected when you do not deploy clusters. Cluster quotas and Kubernetes permissions apply only when you also deploy clusters.
+
+#### Use other cloud providers with Northflank: Update an integration
+
+To add features, open the provider link and select its Edit tab. Under Basic information, change Desired features. Grant the additional permissions in your cloud account. Select Update in Northflank. Keep the permissions that existing resources still need.
+
+An organization can share integrations with teams and restrict which teams can use them. If a shared integration is missing, ask your organization administrator to review your team's access.
+
+The [AWS guide](bring-your-own-cloud.md#amazon-web-services-on-northflank) covers both standard AWS and [AWS European Sovereign Cloud](bring-your-own-cloud.md#amazon-web-services-on-northflank-aws-european-sovereign-cloud).
+
+The following guides cover provider authentication and cluster deployment:
 
 | Provider | Engine | Available Nodes and Regions |
 | --- | --- | --- |
@@ -2830,12 +3155,23 @@ You can create integrations with the following providers:
 | [ Oracle](https://www.oracle.com/) | [Oracle Kubernetes Engine (OKE)](https://www.oracle.com/cloud/cloud-native/kubernetes-engine/) | [View on Northflank](https://northflank.com/cloud/oci) |
 | CoreWeave | CoreWeave Kubernetes Service (CKS) | [View on Northflank](https://northflank.com/cloud/coreweave) |
 | Nebius | Nebius Managed Service for Kubernetes | [View on Northflank](https://northflank.com/cloud/nebius) |
+| AWS European Sovereign Cloud | Elastic Kubernetes Service (EKS) | [AWS European Sovereign Cloud setup](bring-your-own-cloud.md#amazon-web-services-on-northflank-aws-european-sovereign-cloud) |
 
 - [Integrate your Google account: Integrate your Google Cloud Platform account to create and manage Kubernetes clusters on GCP with Northflank.](bring-your-own-cloud.md#google-cloud-platform-on-northflank)
 - [Integrate your Amazon account: Integrate your Amazon Web Services account to create and manage Kubernetes clusters on AWS with Northflank.](bring-your-own-cloud.md#amazon-web-services-on-northflank)
 - [Integrate your Azure account: Integrate your Microsoft Azure account to create and manage Kubernetes clusters on Azure with Northflank.](bring-your-own-cloud.md#microsoft-azure-on-northflank)
 - [Integrate your Civo account: Integrate your Civo account to create and manage Kubernetes clusters on Civo with Northflank.](bring-your-own-cloud.md#civo-on-northflank)
 - [Integrate your Oracle account: Integrate your Oracle Cloud Infrastructure account to create and manage Kubernetes clusters on OCI with Northflank.](bring-your-own-cloud.md#oracle-cloud-infrastructure-on-northflank)
+
+#### Use other cloud providers with Northflank: Configure cluster features
+
+For clusters, additional integration features require permissions for specific capabilities:
+
+- BYOC - Custom VPC supports an existing cloud network on AWS or GCP. See [AWS custom VPC setup](bring-your-own-cloud.md#amazon-web-services-on-northflank-use-a-custom-vpc).
+
+- BYOC - Static Egress supports [fixed outbound IP addresses on AWS](bring-your-own-cloud.md#amazon-web-services-on-northflank-enable-egress-via-a-static-ip). Other providers use their own [static egress setup](bring-your-own-cloud.md#configure-static-egress-ips).
+
+- BYOC - Custom Launch Templates supports [custom EC2 instance configuration](bring-your-own-cloud.md#use-aws-launch-templates), including disks, nested virtualization, and Capacity Blocks.
 
 ### Use other cloud providers with Northflank: Configure your cluster
 

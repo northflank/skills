@@ -14,7 +14,7 @@ Required permission: Account > Platform > Tags > Update
 **Request body:**
 
 {object}
-- `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, and job workloads after their next deployment. Required for usage in egress IP selectors.
+- `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, job, and addon workloads after their next deployment. Required for usage in egress IP selectors and network policies.
 - `useSpotNodes`: (boolean) Schedule workloads to spot nodes
 - `useOnDemandNodes`: (boolean) Also allow workloads to schedule to on demand nodes. Only relevant if you want workloads to schedule across both spot and on demand nodes
 - `nodeAffinities`: [array of] {object}
@@ -214,7 +214,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.patch.tag({
@@ -259,4 +259,56 @@ await apiClient.patch.tag({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.patch.tag(
+    resource_tag_id="example-tag",
+    data={
+        "useAsInfrastructureLabel": False,
+        "useSpotNodes": False,
+        "useOnDemandNodes": False,
+        "sandboxing": {
+            "builds": {
+                "enabled": False,
+                "runtimeClass": "gvisor",
+            },
+            "services": {
+                "enabled": False,
+                "runtimeClass": "gvisor",
+            },
+            "addons": {
+                "enabled": False,
+                "runtimeClass": "gvisor",
+            },
+            "jobs": {
+                "enabled": False,
+                "runtimeClass": "gvisor",
+            },
+        },
+        "color": "#57637A",
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

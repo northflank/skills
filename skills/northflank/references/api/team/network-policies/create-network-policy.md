@@ -38,7 +38,7 @@ Required permission: Account > Networking > NetworkPolicies > Create
      - `name`: (string) (required) (pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$) (max length: 63)
      - `header`: (string) (required) (pattern: ^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$) (max length: 256)
      - `hosts`: [array of] (string) (max length: 253)
-     - `value`: (string) (required)
+     - `value`: (string) (required) The secret value to inject.
 
 ### API reference
 
@@ -155,7 +155,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.create.networkPolicy({
@@ -165,4 +165,28 @@ await apiClient.create.networkPolicy({
     "spec": {}
   }
 });
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.network_policy(
+    data={
+        "name": "restrict-api-ingress",
+        "description": "Restrict ingress to the api service.",
+        "spec": {},
+    },
+)
+print(response.data)
 ```

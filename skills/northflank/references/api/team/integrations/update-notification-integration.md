@@ -394,7 +394,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.update.notification({
@@ -501,4 +501,116 @@ await apiClient.update.notification({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.notification(
+    notification_id="example-notification-id",
+    data={
+        "name": "Example Notification",
+        "webhook": "https://example.com/webhooks",
+        "restricted": True,
+        "projects": ["default-project"],
+        "restrictions": {
+            "tags": {
+                "enabled": False,
+                "matchCondition": "or",
+            },
+        },
+        "events": {
+            "trigger:service:autoscaling:event": True,
+            "trigger:service:deployment:status-update": True,
+            "trigger:harness:autoscaling:event": True,
+            "trigger:harness:deployment:status-update": True,
+            "trigger:project:tailscale-regen-failure": True,
+            "trigger:addon-backup:start": True,
+            "trigger:addon-backup:success": True,
+            "trigger:addon-backup:failure": True,
+            "trigger:addon-backup:abort": True,
+            "trigger:build:start": True,
+            "trigger:build:success": True,
+            "trigger:build:failure": True,
+            "trigger:build:abort": True,
+            "trigger:job-run:start": True,
+            "trigger:job-run:success": True,
+            "trigger:job-run:failure": True,
+            "trigger:job-run:abort": True,
+            "trigger:job-run:terminate": True,
+            "trigger:release-flow-template-run:start": True,
+            "trigger:release-flow-template-run:update": True,
+            "trigger:release-flow-template-run:success": True,
+            "trigger:release-flow-template-run:failure": True,
+            "trigger:release-flow-template-run:aborted": True,
+            "trigger:template-run:queued": True,
+            "trigger:template-run:start": True,
+            "trigger:template-run:update": True,
+            "trigger:template-run:success": True,
+            "trigger:template-run:failure": True,
+            "trigger:resource:certificate-success": True,
+            "trigger:resource:certificate-final-failure": True,
+            "trigger:cdn:action-success": True,
+            "trigger:cdn:action-failure": True,
+            "trigger:cdn:action-delay": True,
+            "trigger:log-sink:paused": True,
+            "trigger:billing:billing-alert-exceeded": True,
+            "trigger:billing:invoice-payment-action-required": True,
+            "trigger:billing:invoice-payment-failed": True,
+            "trigger:billing:invoice-paid": True,
+            "trigger:billing:invoice-carried-over": True,
+            "trigger:infrastructure:service:container-crash": True,
+            "trigger:infrastructure:service:container-eviction": True,
+            "trigger:infrastructure:build:container-eviction": True,
+            "trigger:infrastructure:addon:container-crash": True,
+            "trigger:infrastructure:addon:container-eviction": True,
+            "trigger:infrastructure:job:container-crash": True,
+            "trigger:infrastructure:job:container-eviction": True,
+            "trigger:infrastructure:build:container-cpuSpike90": True,
+            "trigger:infrastructure:build:container-cpuSustained90": True,
+            "trigger:infrastructure:service:container-cpuSpike90": True,
+            "trigger:infrastructure:service:container-cpuSustained90": True,
+            "trigger:infrastructure:job:container-cpuSpike90": True,
+            "trigger:infrastructure:job:container-cpuSustained90": True,
+            "trigger:infrastructure:addon:container-cpuSpike90": True,
+            "trigger:infrastructure:addon:container-cpuSustained90": True,
+            "trigger:infrastructure:build:container-memorySpike90": True,
+            "trigger:infrastructure:build:container-memorySustained90": True,
+            "trigger:infrastructure:service:container-memorySpike90": True,
+            "trigger:infrastructure:service:container-memorySustained90": True,
+            "trigger:infrastructure:job:container-memorySpike90": True,
+            "trigger:infrastructure:job:container-memorySustained90": True,
+            "trigger:infrastructure:addon-volume:usage-75-exceeded": True,
+            "trigger:infrastructure:addon-volume:usage-90-exceeded": True,
+            "trigger:infrastructure:platform-volume:usage-75-exceeded": True,
+            "trigger:infrastructure:platform-volume:usage-90-exceeded": True,
+            "trigger:infrastructure:addon-volume:disk-autoresize-triggered": True,
+            "trigger:infrastructure:byoc:cluster:error": True,
+            "trigger:infrastructure:byoc:node-pool:error": True,
+            "trigger:infrastructure:byoc:scheduling:error": True,
+            "trigger:infrastructure:byoc:volume:error": True,
+            "trigger:infrastructure:byoc:volume:attach": True,
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

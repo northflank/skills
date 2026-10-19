@@ -156,7 +156,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.rollback.service.rollout({
@@ -182,5 +182,39 @@ await apiClient.rollback.service.rollout({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.rollback.service.rollout(
+    project_id="default-project",
+    service_id="example-service",
+    data={
+        "deployment": "6560a1b2c3d4e5f6a7b8c9d0",
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "6560a1b2c3d4e5f6a7b8c9d0"
 }
 ```

@@ -7,6 +7,7 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 | Page | API Reference | File |
 |------|---------------|------|
 | **Abort service build** | `DELETE /v1/projects/{projectId}/services/{serviceId}/build/{buildId}`<br>`DELETE /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/build/{buildId}` | [abort-service-build.md](abort-service-build.md) |
+| **Check repository access for services** | `POST /v1/projects/{projectId}/services/repo-access`<br>`POST /v1/teams/{teamId}/projects/{projectId}/services/repo-access` | [check-repository-access-for-services.md](check-repository-access-for-services.md) |
 | **Clear the build cache of a service** | `DELETE /v1/projects/{projectId}/services/{serviceId}/build-cache`<br>`DELETE /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/build-cache` | [clear-the-build-cache-of-a-service.md](clear-the-build-cache-of-a-service.md) |
 | **Create build service** | `POST /v1/projects/{projectId}/services/build`<br>`POST /v1/teams/{teamId}/projects/{projectId}/services/build` | [create-build-service.md](create-build-service.md) |
 | **Create combined service** | `POST /v1/projects/{projectId}/services/combined`<br>`POST /v1/teams/{teamId}/projects/{projectId}/services/combined` | [create-combined-service.md](create-combined-service.md) |
@@ -25,6 +26,8 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 | **Get service build** | `GET /v1/projects/{projectId}/services/{serviceId}/build/{buildId}`<br>`GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/build/{buildId}` | [get-service-build.md](get-service-build.md) |
 | **Get service deployment** | `GET /v1/projects/{projectId}/services/{serviceId}/deployment`<br>`GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/deployment` | [get-service-deployment.md](get-service-deployment.md) |
 | **Get service health checks** | `GET /v1/projects/{projectId}/services/{serviceId}/health-checks`<br>`GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/health-checks` | [get-service-health-checks.md](get-service-health-checks.md) |
+| **Get service infrastructure events** | `GET /v1/projects/{projectId}/services/{serviceId}/health/events`<br>`GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/health/events` | [get-service-infrastructure-events.md](get-service-infrastructure-events.md) |
+| **Get service instance health** | `GET /v1/projects/{projectId}/services/{serviceId}/health`<br>`GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/health` | [get-service-instance-health.md](get-service-instance-health.md) |
 | **Get service logs** | `GET /v1/projects/{projectId}/services/{serviceId}/logs`<br>`GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/logs` | [get-service-logs.md](get-service-logs.md) |
 | **Get service metrics** | `GET /v1/projects/{projectId}/services/{serviceId}/metrics`<br>`GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/metrics` | [get-service-metrics.md](get-service-metrics.md) |
 | **Get service per-replica volumes** | `GET /v1/projects/{projectId}/services/{serviceId}/per-replica-volumes`<br>`GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/per-replica-volumes` | [get-service-per-replica-volumes.md](get-service-per-replica-volumes.md) |

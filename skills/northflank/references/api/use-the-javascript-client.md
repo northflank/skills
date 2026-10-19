@@ -12,7 +12,7 @@ The [Northflank JavaScript client](https://npmjs.com/@northflank/js-client) allo
 
 You must authenticate the client using an API token. Team members can generate an API token in that team's settings, provided an [API role](../guides/secure.md#grant-api-access) has been created by a member with permissions.
 
-You can then use this token in a context provider, as demonstrated below.
+Use a team-scoped or organization-scoped token in the context provider. For team and project requests with an organization-scoped token, pass `parameters.teamId`. See [Organization API access](use-the-api.md#organization-api-access) for route selection and permissions.
 
 - [Grant API access: Create API roles to grant access to the Northflank API, with granular permissions.](../guides/secure.md#grant-api-access)
 - [Generate API tokens: Generate an API token to access your team and project.](../guides/secure.md#grant-api-access-generate-an-api-token)
@@ -79,7 +79,7 @@ Have a look at operations such as
 [update service deployment](project/services/update-service-deployment.md),
 [list builds](project/services/list-service-builds.md), and
 [view secret](project/secrets/list-project-secrets.md)
-for examples of the different options. You may need to switch to the 'JS client' tab on the right-hand side.
+for examples of the different options. Select the JS Client tab on an endpoint reference page to view JavaScript examples.
 
 ### Pagination
 
@@ -98,7 +98,15 @@ const nextPage = await resFirstPage.pagination?.getNextPage();
 
 ### Throwing errors on request failure
 
-The `ApiClient` constructor also takes an optional second boolean argument, which if set to `true` will cause the client to throw an error if the request is met with a HTTP error code response.
+By default the client does not throw on an HTTP error code. It resolves the call and returns the error on the response object, so you check `response.error` yourself.
+
+The `ApiClient` constructor takes an optional second argument of options. Set `throwErrorOnHttpErrorCode` to `true` to have the client throw instead when a request is met with an HTTP error code response:
+
+```js
+const apiClient = new ApiClient(contextProvider, {
+  throwErrorOnHttpErrorCode: true,
+});
+```
 
 ### Responses
 

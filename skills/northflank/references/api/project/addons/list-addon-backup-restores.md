@@ -18,9 +18,9 @@ Required permission: Project > Addons > General > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
-- `sourceProjectId`: (string) Specify the source projectId when referring to a global backup.
-- `sourceAddonId`: (string) Specify the source addonId when referring to a global backup.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
+- `sourceProjectId`: (string) Specify the source projectId when referring to a global backup. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
+- `sourceAddonId`: (string) Specify the source addonId when referring to a global backup. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
 
 **Response body:**
 
@@ -114,6 +114,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.addon.backup.restores({
   parameters: {
@@ -151,5 +153,46 @@ await apiClient.get.addon.backup.restores({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.addon.backup.restores(
+    addon_id="example-addon",
+    backup_id="example-backup",
+    project_id="default-project",
+    page=1,
+    per_page=50,
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "restores": [
+    {
+      "id": "668596c647fed81696a8a82c",
+      "status": "completed",
+      "restoreTimestamp": "2021-01-20T11:19:54.494Z",
+      "completedAt": "2021-01-20T11:19:54.494Z"
+    }
+  ]
 }
 ```

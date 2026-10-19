@@ -96,6 +96,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.job.build({
   parameters: {
@@ -126,5 +128,45 @@ await apiClient.get.job.build({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.job.build(
+    build_id="joyous-view-6290",
+    job_id="example-job",
+    project_id="default-project",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "joyous-view-6290",
+  "branch": "main",
+  "status": "SUCCESS",
+  "sha": "12c15e7ee25fd78f567ebf87f9178b8ad70025b3",
+  "concluded": true,
+  "createdAt": "2021-07-28T15:55:38.296Z",
+  "success": true,
+  "message": "Image successfully built",
+  "buildConcludedAt": 1606237973
 }
 ```

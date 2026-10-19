@@ -16,7 +16,7 @@ Required permission: Account > Cloud > Clusters > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 - `status`: (string) Filter the node list by state of the nodes. (enum: RUNNING, DELETED)
 
 **Response body:**
@@ -117,6 +117,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.list.cloud.cluster.nodes({
   parameters: {
@@ -157,5 +159,49 @@ await apiClient.list.cloud.cluster.nodes({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.cloud.cluster.nodes(
+    cluster_id="gcp-cluster-1",
+    page=1,
+    per_page=50,
+    status="RUNNING",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "nodes": [
+    {
+      "nodeId": "87a11ea9-3493-40d3-9f50-280c1d7c77a3",
+      "nodeName": "gke-nf-example-cluster-nf-951dfaf6-a70a-7697bc0d-n771",
+      "nodePool": "nf-951dfaf6-a70a-4550-bab6-b5364d5da20c",
+      "status": "RUNNING",
+      "zone": "us-central1-c",
+      "region": "us-central1",
+      "instanceType": "n2-standard-4",
+      "createdAt": "2000-01-01T12:00:00.000Z"
+    }
+  ]
 }
 ```

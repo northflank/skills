@@ -11,11 +11,11 @@ Required permission: Account > Git > General > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 - `vcs_service`: (string) If provided, only returns repositories belonging to this version control provider. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
 - `self_hosted_vcs_id`: (string) If provided, only returns repositories belonging to this self-hosted version control provider.
 - `account_login`: (string) If provided, only returns repositories that can be accessed by the linked version control account with this name.
-- `vcs_link_id`: (string) If provided, only returns repositories belong to that VCS link.
+- `vcs_link_id`: (string) If provided, only returns repositories belong to that VCS link. (min length: 24) (max length: 24)
 
 **Response body:**
 
@@ -53,11 +53,11 @@ GET /v1/teams/{teamId}/integrations/vcs/repos
       {
         "vcsService": "github",
         "id": "123456789",
-        "name": "gatsby-with-northflank",
-        "full_name": "northflank/gatsby-with-northflank",
-        "url": "https://github.com/northflank/gatsby-with-northflank",
+        "name": "project",
+        "full_name": "example/project",
+        "url": "https://github.com/example/project",
         "owner": {
-          "login": "northflank"
+          "login": "example"
         },
         "accountLogin": "example-user"
       }
@@ -106,11 +106,11 @@ Options:
     {
       "vcsService": "github",
       "id": "123456789",
-      "name": "gatsby-with-northflank",
-      "full_name": "northflank/gatsby-with-northflank",
-      "url": "https://github.com/northflank/gatsby-with-northflank",
+      "name": "project",
+      "full_name": "example/project",
+      "url": "https://github.com/example/project",
       "owner": {
-        "login": "northflank"
+        "login": "example"
       },
       "accountLogin": "example-user"
     }
@@ -121,6 +121,8 @@ Options:
 ### JavaScript client reference
 
 #### Example request
+
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.list.repos({
@@ -144,11 +146,11 @@ await apiClient.list.repos({
       {
         "vcsService": "github",
         "id": "123456789",
-        "name": "gatsby-with-northflank",
-        "full_name": "northflank/gatsby-with-northflank",
-        "url": "https://github.com/northflank/gatsby-with-northflank",
+        "name": "project",
+        "full_name": "example/project",
+        "url": "https://github.com/example/project",
         "owner": {
-          "login": "northflank"
+          "login": "example"
         },
         "accountLogin": "example-user"
       }
@@ -161,5 +163,50 @@ await apiClient.list.repos({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.repos(
+    account_login="example-user",
+    page=1,
+    per_page=50,
+    vcs_service="github",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "repos": [
+    {
+      "vcsService": "github",
+      "id": "123456789",
+      "name": "project",
+      "full_name": "example/project",
+      "url": "https://github.com/example/project",
+      "owner": {
+        "login": "example"
+      },
+      "accountLogin": "example-user"
+    }
+  ]
 }
 ```

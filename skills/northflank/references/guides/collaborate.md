@@ -90,6 +90,7 @@ You can start with a team and invite colleagues to work together. If you later n
 ### Create and manage a team: Create a team
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/teams/new) to create a new team.
 
 1. From your Northflank dashboard, press CMD+K or click the search icon.
@@ -109,28 +110,30 @@ You can start with a team and invite colleagues to work together. If you later n
 Your team is now ready to use. You can invite members, connect your Git account, configure integrations, and create your first project.
 
 > [!note]
+>
 > Team names must be unique. Standalone team names must be unique globally, while organisation team names must be unique within the organisation.
 
 ### Create and manage a team: Invite members to your team
 
-You can invite colleagues from your team's settings.
+You can invite colleagues from your team's Members page.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/settings/members/invite) to invite your teammates.
 
-1. In your team dashboard, click the **Team** icon.
+1. Open Members in your team.
 
-2. Click **Members** under **Access**.
+2. Click Invite member.
 
-3. Click **Invite members**.
+3. Enter the email addresses of the people you want to invite.
 
-4. Enter the email addresses of the people you want to invite and select a role for each teammate.
+4. Select a role for each teammate.
 
-5. Click **Invite**.
+5. Send the invitations.
 
-Invited users can join your team using the email invitation. If they don't already have a Northflank account, they can create one when they accept the invitation.
+Invited users can join your team using the email invitation. If they do not have a Northflank account, they can create one when they accept the invitation.
 
-You can change a member's role later from the **Members** page.
+You can change a member's role later from the Members page.
 
 ### Create and manage a team: Manage team security
 
@@ -141,6 +144,28 @@ Use [RBAC roles](secure.md#use-role-based-access-control) to control what team m
 #### Create and manage a team: API access
 
 API token access is managed through [RBAC roles](secure.md#use-role-based-access-control). Assign the appropriate role to team members who need to create API tokens for team resources.
+
+#### Create and manage a team: Restrict public infrastructure
+
+You need permission to update team settings to change these policies. Organization restrictions also apply to the team and cannot be disabled in team settings.
+
+| Policy | Effect |
+| --- | --- |
+| Prevent public BYOC load balancers | Requires new BYOC clusters to use private ingress only. Existing private-only clusters cannot enable public ingress. |
+
+Enabling this policy does not remove public ingress from existing clusters. After you disable public ingress, you cannot re-enable it while the policy applies.
+
+1. In your team, open Settings → General.
+
+2. Enable the required policies.
+
+3. Click Update.
+
+See [public and VPC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress) for cluster requirements and connectivity.
+
+#### Create and manage a team: Encryption keys
+
+Enterprise teams can [use their own KMS](secure.md#use-customer-managed-encryption-keys) to protect secrets stored by Northflank. Configure encryption in Settings → Encryption. Contact Northflank support to enable access. Configure each team separately, even when its organization uses envelope encryption.
 
 #### Create and manage a team: Multifactor Authentication
 
@@ -154,18 +179,17 @@ You can also set a maximum login session duration in hours. After the session ex
 
 The team owner has full permissions and cannot be removed from the team by other members.
 
-You can transfer team ownership to another team member from your team's settings.
+You can transfer team ownership to another team member from your team's Members page.
 
 > [!note]
-> [Click here](https://app.northflank.com/s/account/settings/members/invite) to access your member page.
+>
+> [Click here](https://app.northflank.com/s/account/settings/members) to access your member page.
 
-1. In your team dashboard, click the **Team** icon.
+1. In your team, open Members.
 
-2. Click **Members** under **Access**.
+2. Click the transfer ownership icon () next to the member you want to transfer ownership to.
 
-3. Click the transfer ownership icon () next to the member you want to transfer ownership to.
-
-4. Click **Transfer**.
+3. Click Transfer.
 
 Ownership is transferred immediately to the selected team member.
 
@@ -174,20 +198,20 @@ Ownership is transferred immediately to the selected team member.
 If you already have a team, you can convert it to an organisation. Your existing team will become a team within the new organisation.
 
 > [!note]
+>
 > You cannot convert a team into an organisation if you are already a member of an organisation.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/settings) to access your team settings page.
 
-1. In your team dashboard, click the **Team** icon.
+1. In your team, select General under Settings.
 
-2. Click **Settings** in the sidebar.
+2. Under Organisation, click Convert to organisation.
 
-3. Under **Organisation**, click **Convert to organisation**.
+3. Enter the organisation name.
 
-4. Enter the organisation name.
-
-5. Click **Convert to organisation**.
+4. Click Convert to organisation.
 
 Your organisation is created with your existing team under it.
 
@@ -213,6 +237,7 @@ You must be the **owner** to delete a team or organisation. Users can delete the
 To delete a team:
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/team/settings) to access your team settings page.
 
 1. Navigate to [Team Settings](https://app.northflank.com/s/team/settings)
@@ -232,6 +257,7 @@ All projects, services, databases, and resources within the team will be permane
 To delete an organisation:
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/teamOrOrg/settings) to access your organisation settings page.
 
 1. Navigate to [Organisation Settings](https://app.northflank.com/s/teamOrOrg/settings)
@@ -251,6 +277,7 @@ All teams, billing information, and organisation data will be permanently delete
 To delete your user account:
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/context/settings/profile) to access your account settings page.
 
 1. Navigate to [Account Settings](https://app.northflank.com/s/context/settings/profile)
@@ -335,6 +362,7 @@ You can create an organisation from your user dashboard, or convert an existing 
 ### Create and manage an organisation: Create an organisation
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/context/orgs/new) to create a new organisation.
 
 1. From your Northflank dashboard, press CMD+K or click the search icon.
@@ -354,6 +382,7 @@ You can create an organisation from your user dashboard, or convert an existing 
 Your organisation is now ready to use. You can add teams, invite members, configure security, and manage billing from your organisation.
 
 > [!note]
+>
 > You can also [schedule a call](https://cal.com/team/northflank/northflank-enterprise) to discuss onboarding your organisation and choosing the right plan for your needs.
 
 ### Create and manage an organisation: Convert a team to an organisation
@@ -361,20 +390,20 @@ Your organisation is now ready to use. You can add teams, invite members, config
 If you already have a team, you can convert it to an organisation. Your existing team will become a team within the new organisation.
 
 > [!note]
+>
 > You cannot convert a team into an organisation if you are already a member of an organisation.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/settings) to access your team settings page.
 
-1. In your team dashboard, click the **Team** icon.
+1. In your team, select General under Settings.
 
-2. Click **Settings** in the sidebar.
+2. Under Organisation, click Convert to organisation.
 
-3. Under **Organisation**, click **Convert to organisation**.
+3. Enter the organisation name.
 
-4. Enter the organisation name.
-
-5. Click **Convert to organisation**.
+4. Click Convert to organisation.
 
 ### Create and manage an organisation: Manage organisation security
 
@@ -396,6 +425,25 @@ You need permission to manage organisation settings to use these controls on the
 
 - **Restrict secret groups by default:** Changes the default value of the **Restrict secret group** option when a team in the organisation creates a new secret group. This does not enforce the restriction, and the setting can still be changed when creating the secret group. Existing secret groups are not affected.
 
+#### Create and manage an organisation: Restrict public infrastructure
+
+You need permission to manage organisation settings to change these policies. They apply across the organisation and its teams.
+
+| Policy | Effect |
+| --- | --- |
+| Prevent public addon access | Blocks public access on new addons and prevents existing private addons from enabling public access. |
+| Prevent public BYOC load balancers | Requires new BYOC clusters to use private ingress only. Existing private-only clusters cannot enable public ingress. |
+
+Enabling these policies does not remove public access from existing addons or clusters. After you disable their public access, you cannot re-enable it while the relevant policy remains enabled.
+
+1. In your organisation, select General under Settings.
+
+2. Enable the required policies.
+
+3. Select Update.
+
+For connection requirements, see [VPC addon access](databases-and-persistence.md#access-a-database-expose-a-database-to-the-vpc) and [BYOC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress).
+
 #### Create and manage an organisation: Multifactor Authentication
 
 You can enable **require MFA** from your organisation's security page to enforce multifactor authentication for your organisation members. Organisation members will be prompted to [set up an authenticator application for their Northflank account](secure.md#enable-single-sign-on-and-multi-factor-authentication-multi-factor-authentication) before they can access Northflank, and they will need to enter their one-time passcode on every log in attempt.
@@ -405,6 +453,10 @@ You can also set a maximum login session duration in hours, which will automatic
 #### Create and manage an organisation: Clear member login sessions
 
 You can **clear member login sessions** from your organisation's security page to immediately log out all user accounts from your organisation.
+
+#### Create and manage an organisation: Encryption keys
+
+Enterprise organizations can [use their own KMS](secure.md#use-customer-managed-encryption-keys) to protect secrets stored by Northflank. Configure encryption in Settings → Encryption. Contact Northflank support to enable access. The configuration applies to the organization and does not automatically configure its teams.
 
 ### Create and manage an organisation: Create organisation roles
 
@@ -423,6 +475,7 @@ You can receive [organisation billing notifications](observe.md#configure-notifi
 ### Create and manage an organisation: Configure single sign-on (SSO)
 
 > [!note] Unlock SSO and directory sync
+>
 > Contact [support@northflank.com](mailto:support@northflank.com) or [schedule a meeting](https://cal.com/team/northflank/northflank-enterprise) to enable single sign-on and directory sync for your organisation.
 
 You can connect your identity provider to Northflank so organisation members can sign in using single sign-on (SSO).
@@ -430,25 +483,24 @@ You can connect your identity provider to Northflank so organisation members can
 Northflank uses [WorkOS SSO](https://workos.com/single-sign-on) to connect your identity provider using SAML or OpenID Connect (OIDC).
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/context/settings/sso) to configure SSO.
 
-1. In your organisation dashboard, click the **Organisation** icon.
+1. In your organisation, select SSO under Settings.
 
-2. Click **SSO** in the sidebar.
+2. Under Link your organisation, click Add domain and enter the domain associated with your organisation, such as `example.com`.
 
-3. Under **Link your organisation**, click **Add domain** and enter the domain associated with your organisation, such as `example.com`.
+3. Add any other domains used by your organisation.
 
-4. Add any other domains used by your organisation.
+4. If needed, enable Allow port security SSO with external domains. This allows users with external domains in your identity provider to access services that have this option enabled.
 
-5. If needed, enable **Allow port security SSO with external domains**. This allows users with external domains in your identity provider to access services that have this option enabled.
+5. Click Update.
 
-6. Click **Update**.
+6. Under SSO, click Set-up SSO.
 
-7. Under **SSO**, click **Set-up SSO**.
+7. Follow the instructions provided by WorkOS to connect your identity provider.
 
-8. Follow the instructions provided by WorkOS to connect your identity provider.
-
-9. Refresh connections to make sure SSO is working.
+8. Refresh connections to make sure SSO is working.
 
 Once SSO is configured, users from your identity provider can sign up and sign in to Northflank using your organisation's SSO.
 
@@ -473,6 +525,7 @@ After configuring SSO, you can control how users join your organisation.
 - **Restrict invites to domain:** Invites can only be sent to email addresses on the organisation’s domain. Requires at least one domain to be configured for this organisation.
 
 > [!note]
+>
 > Do not enable **Require approval for SSO sign-ups** if you use directory sync to automatically provision organisation members.
 
 #### Create and manage an organisation: Convert an existing account to SSO
@@ -480,6 +533,7 @@ After configuring SSO, you can control how users join your organisation.
 You can convert an existing organisation member's Northflank account to an SSO account.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/context/settings/members) to access your organisation's members page.
 
 1. Open your organisation's **Members** page.
@@ -491,6 +545,7 @@ You can convert an existing organisation member's Northflank account to an SSO a
 The member can then sign in to Northflank using your organisation's SSO instead of their username and password.
 
 > [!warning]
+>
 > Converting an account to SSO cannot be undone. The member must also leave or delete any teams outside your organisation before their account can be converted.
 
 ### Create and manage an organisation: Sync your directory
@@ -500,22 +555,22 @@ You can connect your organisation's user directory to Northflank to automaticall
 Northflank uses [WorkOS Directory Sync](https://workos.com/directory-sync) to connect your directory.
 
 > [!note]
-> You must configure [single sign-on](collaborate.md#create-and-manage-an-organisation-configure-single-sign-on) before you can set up directory sync.
+>
+> You must configure [single sign-on](collaborate.md#create-and-manage-an-organisation-configure-single-sign-on-sso) before you can set up directory sync.
 
 #### Create and manage an organisation: Set up directory sync
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/context/settings/sso) to configure directory sync.
 
-1. In your organisation dashboard, click the **Organisation** icon.
+1. In your organisation, select SSO under Settings.
 
-2. Click **SSO** in the sidebar.
+2. Under Directory sync, click Set-up directory sync.
 
-3. Under **Directory sync**, click **Set-up directory sync**.
+3. Follow the instructions provided by WorkOS to connect your user directory.
 
-4. Follow the instructions provided by WorkOS to connect your user directory.
-
-5. Refresh connections to make sure directory sync is working.
+4. Refresh connections to make sure directory sync is working.
 
 #### Create and manage an organisation: Configure directory sync settings
 
@@ -546,6 +601,7 @@ You can connect multiple accounts from GitHub, GitLab, Bitbucket, and other supp
 You can connect a Git account to your team from the **Integrations** section in your team dashboard.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/integrations/vcs) to connect a Git account.
 
 1. In your team dashboard, click **Integrations**.
@@ -556,72 +612,148 @@ You can connect a Git account to your team from the **Integrations** section in 
 
 4. Follow the instructions for the Git service.
 
-For GitHub, you can choose which GitHub account or organisation to connect. For other Git services, Northflank connects the account you are currently signed in to.
+For GitHub, choose the user or organization account for the app installation. For [Cursor Origin](getting-started.md#link-your-git-account-link-cursor-origin), choose the Cursor namespace and its repository access. For GitLab, Bitbucket, and Azure DevOps OAuth connections, Northflank connects the account you are signed in to.
 
 Once connected, you can use repositories from the account to build and deploy services on Northflank.
 
 ### Manage Git integrations: Add a self-hosted VCS
 
-You can connect a self-hosted Git service to Northflank if your repositories are hosted on your own infrastructure.
+You can connect a Git provider hosted on your own infrastructure.
+
+> [!note] Requirements
+>
+> You will need the following to get started:
+>
+> - Permission to manage Git integrations in your Northflank team
+> - An HTTPS root URL, such as `[https://git.example.com](https://git.example.com)`
+> - Permission to create the provider's OAuth application or GitHub App
+> - Network access for Northflank to read the provider API and clone repositories
+> - Network access for the Git host to deliver webhooks to Northflank
+
+Webhooks notify Northflank when repository events occur, so configured builds and workflows can run automatically.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/integrations/vcs) to add a self-hosted VCS.
 
-1. In your team dashboard, click **Integrations**.
+1. Open your team's Integrations → Git providers page.
 
-2. Click **Git**.
+2. Select Add a self-hosted VCS.
 
-3. Click **Add a self-hosted VCS**.
+3. Enter a name for the integration.
 
-4. Enter a name for the VCS.
+4. Enter your Git host's root URL under VCS provider URL.
 
-5. Select the VCS type.
-
-6. Enter the **VCS provider URL** and **Application ID**.
-
-7. Enter the **Secret**.
-
-8. Click **Submit**.
-
-After connecting your self-hosted VCS, you can configure how team members can use it.
+Continue with your provider below. Once connected, you can [build from your repositories](build.md#build-code-from-a-git-repository) and [manage the integration](collaborate.md#manage-git-integrations-self-hosted-vcs-settings).
 
 #### Manage Git integrations: Add a self-hosted GitLab instance
 
-To connect a self-hosted GitLab instance, first create an OAuth application in GitLab.
+1. Select GitLab Enterprise Edition or Community Edition in Northflank.
 
-Create a new OAuth application at:
+2. Create an OAuth application on your GitLab host at `/-/user_settings/applications`. Administrators can also use `/admin/applications`.
 
-- `[GIT_HOSTNAME]/profile/applications`
+3. Give the application the `api` scope.
 
-- `[GIT_HOSTNAME]/admin/applications` if you are an administrator
+4. Enable its Confidential control.
 
-Give the application the `api` scope and set the **Redirect URI** as specified on Northflank.
+5. Set its redirect URI to the exact value shown in Northflank.
 
-Save the OAuth application, then enter the **root domain** of your self-hosted GitLab instance, **Application ID**, and **Secret** in Northflank.
+6. Enter its Application ID and Secret in Northflank.
+
+7. Select Submit.
+
+8. Authorize Northflank with the GitLab account that can access your repositories.
+
+See [GitLab's OAuth application guide](https://docs.gitlab.com/integration/oauth_provider/) for more details.
+
+#### Manage Git integrations: Add Gitea or Forgejo
+
+Gitea and Forgejo use the same connection flow. Northflank requests read and write access to repositories, including webhooks and commit statuses. The linked account needs repository owner or administrator access to manage webhooks.
+
+Before authorizing access, review the permission behavior for [Gitea](https://docs.gitea.com/development/oauth2-provider/) or [Forgejo](https://forgejo.org/docs/latest/user/authentication/oauth2-provider/).
+
+1. Select Gitea / Forgejo in Northflank.
+
+2. Create an OAuth2 application at `/user/settings/applications` on your Git host.
+
+3. If the provider offers a client-type choice, select a confidential client.
+
+4. Set its redirect URI to the exact value shown in Northflank.
+
+5. Enter its OAuth client ID and OAuth client secret in Northflank.
+
+6. Select Submit.
+
+7. Authorize Northflank with the Git account that can access your repositories.
+
+#### Manage Git integrations: Add GitHub Enterprise Server
+
+You need permission to create and install a GitHub App for the selected user or organization. App creation and repository installation are separate steps.
+
+The app requests read and write permissions. Before approving installation, review the requested access on GitHub.
+
+1. Select GitHub Enterprise in Northflank.
+
+2. Choose User or Organisation under GitHub App location type.
+
+3. For Organisation, enter the organization name under Application namespace.
+
+4. Select Submit to start GitHub App creation.
+
+5. Complete app creation on your GitHub server.
+
+6. Return to the Git integrations page in Northflank.
+
+7. On your self-hosted integration, select Link to start app installation on GitHub.
+
+8. Choose the repositories that the app can access.
+
+9. Complete the installation.
 
 ### Manage Git integrations: Self-hosted VCS settings
 
-You can update the settings of your self-hosted VCS:
+Open Integrations → Git providers in your team dashboard. Select the configuration button  on your self-hosted provider.
 
-1. In your team dashboard, click **Integrations**.
+To change the Git host address, edit VCS provider URL. Select Update self-hosted settings to save it.
 
-2. Click **Git**.
+For a verified integration, Edit application lets you replace its credentials. Changing Application ID requires the matching Client secret. Leave secret fields blank to keep their current values.
 
-3. Click the setting button  on the self-hosted VCS you want to configure.
+GitHub Enterprise also provides Webhook secret and PEM file, the GitHub App's private key.
 
-4. Update the **VCS provider URL**, **Application ID**, and **Secret**.
+> [!warning]
+>
+> Before changing the application ID or client secret, plan to relink all accounts that use this integration. Saving those credentials unlinks the existing accounts.
 
-5. Click **Update self-hosted settings**.
+1. Select Edit application.
+
+2. Enter the changed credentials for your provider.
+
+3. Select Update self-hosted settings.
+
+4. If you changed the application ID or client secret, relink the affected Git accounts.
+
+#### Manage Git integrations: Troubleshoot a self-hosted connection
+
+| Symptom | Action |
+| --- | --- |
+| OAuth authorization fails | Make sure that the redirect URI and application credentials match the values in Northflank. |
+| GitHub App setup remains pending | Select Create GitHub App to resume setup. After creating the app, link the account to install it. |
+| A repository is missing | Make sure that the linked account or app installation has access. Then refresh Connected repositories. |
+| Automatic builds do not start | Inspect webhook delivery, repository permissions, and your [build rules](build.md#build-code-from-a-git-repository-build-specific-branches-or-pull-requests). |
+
+For GitLab, Gitea, and Forgejo, the linked account page offers Repository webhooks controls to regenerate webhook tokens. GitHub Enterprise uses its GitHub App configuration instead.
 
 ### Manage Git integrations: Restrict repository access
 
 You can restrict which repositories team members can access when connecting Git accounts to Northflank.
 
-For GitHub, you can manage repository access when installing the Northflank GitHub app. You can choose which GitHub account or organisation to install the app on and which repositories the app can access.
+For GitHub and GitHub Enterprise Server, choose repository access when installing the GitHub App on a user or organization account.
 
-For GitLab and Bitbucket, you can restrict access to specific namespaces from the account settings in Northflank.
+For GitLab, self-hosted GitLab, and Bitbucket, you can restrict access to specific namespaces from the linked account's configuration in Northflank.
 
-For self-hosted VCS, you can restrict access to specific owners from the self-hosted VCS settings.
+For Gitea and Forgejo, repository access follows the linked Git account's permissions. Northflank does not offer a namespace restriction control for these providers.
+
+For [Cursor Origin](getting-started.md#link-your-git-account-manage-cursor-origin-access), choose all repositories or selected repositories during installation. Use Update installation to change access for the same Cursor namespace.
 
 ### Manage Git integrations: Next steps
 

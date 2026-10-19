@@ -16,7 +16,7 @@ Required permission: Project > Jobs > General > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 
 **Response body:**
 
@@ -24,6 +24,7 @@ Required permission: Project > Jobs > General > Read
 - `data`: {object}
   - `jobs`: [array of] {object}
      - `id`: (string) (required) Identifier for the job
+     - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
      - `projectId`: (string) (required) ID of the project that the job belongs to
      - `stageId`: (string) ID of the environment the job belongs to.
      - `appId`: (string) (required) Full identifier used for job deployment
@@ -55,6 +56,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs
     "jobs": [
       {
         "id": "example-job",
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
         "projectId": "default-project",
         "stageId": "staging",
         "appId": "/example-user/default-project/example-job",
@@ -103,6 +105,7 @@ Options:
   "jobs": [
     {
       "id": "example-job",
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
       "projectId": "default-project",
       "stageId": "staging",
       "appId": "/example-user/default-project/example-job",
@@ -120,6 +123,8 @@ Options:
 ### JavaScript client reference
 
 #### Example request
+
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.list.jobs({
@@ -143,6 +148,7 @@ await apiClient.list.jobs({
     "jobs": [
       {
         "id": "example-job",
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
         "projectId": "default-project",
         "stageId": "staging",
         "appId": "/example-user/default-project/example-job",
@@ -162,5 +168,52 @@ await apiClient.list.jobs({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.jobs(
+    project_id="default-project",
+    page=1,
+    per_page=50,
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "jobs": [
+    {
+      "id": "example-job",
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
+      "projectId": "default-project",
+      "stageId": "staging",
+      "appId": "/example-user/default-project/example-job",
+      "name": "Example Job",
+      "description": "This is the job description",
+      "jobType": "cron",
+      "disabledCI": false,
+      "disabledCD": false,
+      "suspended": false,
+      "tags": []
+    }
+  ]
 }
 ```

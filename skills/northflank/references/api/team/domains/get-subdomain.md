@@ -76,7 +76,7 @@ Required permission: Account > Networking > Subdomains > Read
             - `name`: (string) (required) (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
             - `type`: (string) (required) (enum: init, recv, hash, hit, miss, pass, fetch, error, deliver, log, none)
             - `dynamic`: (string) (required) (enum: 0, 1)
-            - `priority`: (multiple options) (number) (format: float)
+            - `priority`: (multiple options) (number) Execution priority for the VCL snippet. (format: float)
             - `content`: (string) (required)
         - `cacheSettings`: [array of] {object}
             - `id`: (string)
@@ -175,6 +175,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.subdomain({
   parameters: {
@@ -216,5 +218,56 @@ await apiClient.get.subdomain({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.subdomain(
+    domain="example.com",
+    subdomain="app",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "recordType": "CNAME",
+  "name": "site",
+  "fullName": "site.example.com",
+  "content": "site.example.com.user-1234.dns.northflank.app",
+  "verified": true,
+  "loadBalancer": "my-load-balancer",
+  "clusterLoadBalancer": "public",
+  "geoRouting": {
+    "rules": [
+      {
+        "backend": {
+          "id": "my-project/my-service",
+          "port": "http"
+        }
+      }
+    ],
+    "defaultBackend": {
+      "id": "my-project/my-service",
+      "port": "http"
+    }
+  }
 }
 ```

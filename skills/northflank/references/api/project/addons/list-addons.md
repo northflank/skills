@@ -16,7 +16,7 @@ Required permission: Project > Addons > General > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 
 **Response body:**
 
@@ -24,6 +24,7 @@ Required permission: Project > Addons > General > Read
 - `data`: {object}
   - `addons`: [array of] {object}
      - `id`: (string) (required) Identifier for the addon.
+     - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
      - `name`: (string) (required) Addon name.
      - `appId`: (string) (required) Full identifier for the addon.
      - `stageId`: (string) ID of the environment the addon belongs to.
@@ -53,6 +54,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/addons
     "addons": [
       {
         "id": "example-addon",
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
         "name": "Example Addon",
         "appId": "/example-user/default-project/example-job",
         "stageId": "staging",
@@ -100,6 +102,7 @@ Options:
   "addons": [
     {
       "id": "example-addon",
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
       "name": "Example Addon",
       "appId": "/example-user/default-project/example-job",
       "stageId": "staging",
@@ -116,6 +119,8 @@ Options:
 ### JavaScript client reference
 
 #### Example request
+
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.list.addons({
@@ -139,6 +144,7 @@ await apiClient.list.addons({
     "addons": [
       {
         "id": "example-addon",
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
         "name": "Example Addon",
         "appId": "/example-user/default-project/example-job",
         "stageId": "staging",
@@ -157,5 +163,51 @@ await apiClient.list.addons({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.addons(
+    project_id="default-project",
+    page=1,
+    per_page=50,
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "addons": [
+    {
+      "id": "example-addon",
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
+      "name": "Example Addon",
+      "appId": "/example-user/default-project/example-job",
+      "stageId": "staging",
+      "description": "This is the addon description",
+      "spec": {
+        "type": "mongodb"
+      },
+      "status": "running",
+      "tags": []
+    }
+  ]
 }
 ```

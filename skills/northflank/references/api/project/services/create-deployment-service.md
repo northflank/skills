@@ -47,7 +47,7 @@ Required permission: Project > Services > General > Create
        - `storageSize`: (integer) Ephemeral storage per container in MB
      - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
    - `strategy`: {object}
-     - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom)
+     - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate)
      - `settings`: {object}
        - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
        - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
@@ -61,7 +61,7 @@ Required permission: Project > Services > General > Create
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-   - `gradualRolloutStrategyId`: (multiple options) (undefined)
+   - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
    - `ssh`: {object}
      - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
    - `metadata`: {object}
@@ -106,7 +106,7 @@ Required permission: Project > Services > General > Create
        - `storageSize`: (integer) Ephemeral storage per container in MB
      - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
    - `strategy`: {object}
-     - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom)
+     - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate)
      - `settings`: {object}
        - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
        - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
@@ -120,7 +120,7 @@ Required permission: Project > Services > General > Create
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-   - `gradualRolloutStrategyId`: (multiple options) (undefined)
+   - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
    - `ssh`: {object}
      - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
    - `metadata`: {object}
@@ -163,7 +163,7 @@ Required permission: Project > Services > General > Create
        - `storageSize`: (integer) Ephemeral storage per container in MB
      - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
    - `strategy`: {object}
-     - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom)
+     - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate)
      - `settings`: {object}
        - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
        - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
@@ -177,7 +177,7 @@ Required permission: Project > Services > General > Create
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-   - `gradualRolloutStrategyId`: (multiple options) (undefined)
+   - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
    - `ssh`: {object}
      - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
    - `metadata`: {object}
@@ -538,7 +538,7 @@ Required permission: Project > Services > General > Create
         - `storageSize`: (integer) Ephemeral storage per container in MB
       - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
     - `strategy`: {object}
-      - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom)
+      - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate)
       - `settings`: {object}
         - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
         - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
@@ -552,7 +552,7 @@ Required permission: Project > Services > General > Create
         - `gpuCount`: (integer) The number of GPUs to allocate.
         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
     - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-    - `gradualRolloutStrategyId`: (multiple options) (undefined)
+    - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
     - `ssh`: {object}
       - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
     - `metadata`: {object}
@@ -1578,7 +1578,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.create.service.deployment({
@@ -2022,5 +2022,397 @@ await apiClient.create.service.deployment({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.service.deployment(
+    project_id="default-project",
+    data={
+        "name": "Example Service",
+        "description": "A service description",
+        "billing": {
+            "deploymentPlan": "nf-compute-20",
+        },
+        "deployment": {
+            "instances": 1,
+            "docker": {
+                "configType": "default",
+            },
+            "storage": {
+                "ephemeralStorage": {
+                    "storageSize": 1024,
+                },
+            },
+            "gradualRolloutStrategyId": "strategy-id",
+            "internal": {
+                "id": "example-build-service",
+                "branch": "master",
+                "buildSHA": "latest",
+                "buildId": "premium-guide-6393",
+            },
+        },
+        "ports": [{
+            "name": "p01",
+            "internalPort": 8080,
+            "public": True,
+            "vpcAccessible": False,
+            "security": {
+                "credentials": [{
+                    "username": "admin",
+                    "password": "password123",
+                    "type": "basic-auth",
+                }],
+                "ip": [{
+                    "addresses": ["127.0.0.1"],
+                    "action": "DENY",
+                }],
+                "policies": [{
+                    "addresses": ["127.0.0.1"],
+                    "action": "DENY",
+                }],
+                "headers": [{
+                    "regexMode": False,
+                    "name": "headerName",
+                    "value": "headerValue",
+                }],
+                "securePathConfiguration": {
+                    "rules": [{
+                        "paths": [{
+                            "routingMode": "prefix",
+                            "priority": 80,
+                            "path": "/path",
+                        }],
+                        "accessMode": "protected",
+                        "securityPolicies": {
+                            "orPolicies": {
+                                "credentials": [{
+                                    "username": "admin",
+                                    "password": "password123",
+                                    "type": "basic-auth",
+                                }],
+                                "ip": [{
+                                    "addresses": ["127.0.0.1"],
+                                    "action": "DENY",
+                                }],
+                                "policies": [{
+                                    "addresses": ["127.0.0.1"],
+                                    "action": "DENY",
+                                }],
+                                "headers": [{
+                                    "regexMode": False,
+                                    "name": "headerName",
+                                    "value": "headerValue",
+                                }],
+                            },
+                            "requiredPolicies": {
+                                "credentials": [{
+                                    "username": "admin",
+                                    "password": "password123",
+                                    "type": "basic-auth",
+                                }],
+                                "ip": [{
+                                    "addresses": ["127.0.0.1"],
+                                    "action": "DENY",
+                                }],
+                                "policies": [{
+                                    "addresses": ["127.0.0.1"],
+                                    "action": "DENY",
+                                }],
+                                "headers": [{
+                                    "regexMode": False,
+                                    "name": "headerName",
+                                    "value": "headerValue",
+                                }],
+                            },
+                        },
+                    }],
+                },
+            },
+            "domains": ["app.example.com"],
+            "protocol": "HTTP",
+        }],
+        "runtimeEnvironment": {
+            "VARIABLE_1": "abcdef",
+            "VARIABLE_2": "12345",
+        },
+        "runtimeFiles": {
+            "/dir/fileName": {
+                "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                "encoding": "utf-8",
+            },
+        },
+        "healthChecks": [{
+            "protocol": "HTTP",
+            "type": "readinessProbe",
+            "path": "/health-check",
+            "port": 8080,
+            "initialDelaySeconds": 10,
+            "periodSeconds": 60,
+            "timeoutSeconds": 1,
+            "failureThreshold": 3,
+            "successThreshold": 1,
+        }],
+        "autoscaling": {
+            "horizontal": {
+                "enabled": True,
+                "minReplicas": 1,
+                "maxReplicas": 3,
+                "userMetrics": {
+                    "enabled": True,
+                    "exposedMetricsPath": "/metrics",
+                    "exposedMetricsPort": 8080,
+                    "metrics": [{
+                        "metricName": "example-metric",
+                        "metricType": "gauge",
+                        "thresholdValue": 2,
+                    }],
+                },
+            },
+        },
+        "createOptions": {
+            "expiryTime": 86400,
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "name": "Example Service",
+  "description": "A service description",
+  "billing": {
+    "deploymentPlan": "nf-compute-20"
+  },
+  "ports": [
+    {
+      "name": "p01",
+      "internalPort": 8080,
+      "public": true,
+      "vpcAccessible": false,
+      "security": {
+        "credentials": [
+          {
+            "username": "admin",
+            "password": "password123",
+            "type": "basic-auth"
+          }
+        ],
+        "ip": [
+          {
+            "addresses": [
+              "127.0.0.1"
+            ],
+            "action": "DENY"
+          }
+        ],
+        "policies": [
+          {
+            "addresses": [
+              "127.0.0.1"
+            ],
+            "action": "DENY"
+          }
+        ],
+        "headers": [
+          {
+            "regexMode": false,
+            "name": "headerName",
+            "value": "headerValue"
+          }
+        ],
+        "securePathConfiguration": {
+          "rules": [
+            {
+              "paths": [
+                {
+                  "routingMode": "prefix",
+                  "priority": 80,
+                  "path": "/path"
+                }
+              ],
+              "accessMode": "protected",
+              "securityPolicies": {
+                "orPolicies": {
+                  "credentials": [
+                    {
+                      "username": "admin",
+                      "password": "password123",
+                      "type": "basic-auth"
+                    }
+                  ],
+                  "ip": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "policies": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "headers": [
+                    {
+                      "regexMode": false,
+                      "name": "headerName",
+                      "value": "headerValue"
+                    }
+                  ]
+                },
+                "requiredPolicies": {
+                  "credentials": [
+                    {
+                      "username": "admin",
+                      "password": "password123",
+                      "type": "basic-auth"
+                    }
+                  ],
+                  "ip": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "policies": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "headers": [
+                    {
+                      "regexMode": false,
+                      "name": "headerName",
+                      "value": "headerValue"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "domains": [
+        "app.example.com"
+      ],
+      "protocol": "HTTP"
+    }
+  ],
+  "runtimeEnvironment": {
+    "VARIABLE_1": "abcdef",
+    "VARIABLE_2": "12345"
+  },
+  "runtimeFiles": {
+    "/dir/fileName": {
+      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+      "encoding": "utf-8"
+    }
+  },
+  "healthChecks": [
+    {
+      "protocol": "HTTP",
+      "type": "readinessProbe",
+      "path": "/health-check",
+      "port": 8080,
+      "initialDelaySeconds": 10,
+      "periodSeconds": 60,
+      "timeoutSeconds": 1,
+      "failureThreshold": 3,
+      "successThreshold": 1
+    }
+  ],
+  "autoscaling": {
+    "horizontal": {
+      "enabled": true,
+      "minReplicas": 1,
+      "maxReplicas": 3,
+      "userMetrics": {
+        "enabled": true,
+        "exposedMetricsPath": "/metrics",
+        "exposedMetricsPort": 8080,
+        "metrics": [
+          {
+            "metricName": "example-metric",
+            "metricType": "gauge",
+            "thresholdValue": 2
+          }
+        ]
+      }
+    }
+  },
+  "createOptions": {
+    "expiryTime": 86400
+  },
+  "serviceType": "deployment",
+  "deployment": {
+    "instances": 1,
+    "docker": {
+      "configType": "default"
+    },
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 1024
+      }
+    },
+    "gradualRolloutStrategyId": "strategy-id",
+    "internal": {
+      "id": "example-build-service",
+      "branch": "master",
+      "buildSHA": "latest",
+      "buildId": "premium-guide-6393"
+    },
+    "external": {
+      "imagePath": "nginx:latest",
+      "credentials": "example-credentials"
+    }
+  },
+  "id": "example-service",
+  "appId": "/example-user/default-project/example-service",
+  "cluster": {
+    "id": "nf-europe-west",
+    "name": "nf-europe-west",
+    "namespace": "ns-8zy2mcjh9zn2",
+    "loadBalancers": [
+      "lb.659200800000000000000000.northflank.com"
+    ]
+  },
+  "expiryTime": "2024-01-01T00:00:00.000Z",
+  "expiredAt": "2024-01-01T00:00:00.000Z",
+  "scheduledDeletion": "2024-01-31T00:00:00.000Z",
+  "status": {
+    "deployment": {
+      "status": "COMPLETED",
+      "reason": "DEPLOYING",
+      "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+    }
+  }
 }
 ```

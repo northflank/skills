@@ -6,7 +6,7 @@ This endpoint is deprecated and will be removed in the future. Please avoid maki
 
 Requests should instead use the relevant PATCH endpoint.
 
-[Use /services/patch-combined-service instead](patch-combined-service.md)
+[Use /project/services/patch-combined-service instead](patch-combined-service.md)
 
 Updates the version control source for a given build or combined service.
 
@@ -21,7 +21,7 @@ Required permission: Project > Services > General > Update
 **Request body:**
 
 {object}
-- `projectUrl`: (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+- `projectUrl`: (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
 - `projectType`: (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
 - `projectBranch`: (string) The name of the branch to use.
 - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
@@ -46,13 +46,13 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","projectBranch":"master","accountLogin":"github-user"}' \
+  --data '{"projectUrl":"https://github.com/example/project","projectType":"github","projectBranch":"master","accountLogin":"github-user"}' \
   https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-source
 ```
 
 ```javascript
 const payload = {
-  "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+  "projectUrl": "https://github.com/example/project",
   "projectType": "github",
   "projectBranch": "master",
   "accountLogin": "github-user"
@@ -76,7 +76,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-source"
 
-payload = {"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","projectBranch":"master","accountLogin":"github-user"}
+payload = {"projectUrl":"https://github.com/example/project","projectType":"github","projectBranch":"master","accountLogin":"github-user"}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -97,7 +97,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-source"
 
-  var jsonStr = []byte(`{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","projectBranch":"master","accountLogin":"github-user"}`)
+  var jsonStr = []byte(`{"projectUrl":"https://github.com/example/project","projectType":"github","projectBranch":"master","accountLogin":"github-user"}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -148,7 +148,7 @@ Options:
 
 ```json
 {
-  "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+  "projectUrl": "https://github.com/example/project",
   "projectType": "github",
   "projectBranch": "master",
   "accountLogin": "github-user"
@@ -167,7 +167,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.update.service.buildSource({
@@ -176,7 +176,7 @@ await apiClient.update.service.buildSource({
     "serviceId": "example-service"
   },
   data: {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "projectBranch": "master",
     "accountLogin": "github-user"
@@ -195,4 +195,39 @@ await apiClient.update.service.buildSource({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.service.build_source(
+    project_id="default-project",
+    service_id="example-service",
+    data={
+        "projectUrl": "https://github.com/example/project",
+        "projectType": "github",
+        "projectBranch": "master",
+        "accountLogin": "github-user",
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

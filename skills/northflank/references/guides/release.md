@@ -30,15 +30,16 @@ Canary rollouts let you release a new version of a service progressively. Traffi
 A rollout is controlled by a canary rollout strategy. Strategies are created at the team level and attached to deployment or combined services. When a service with a strategy deploys a new version, the new version starts alongside the current version and receives only the traffic share defined by the strategy. You then progress the rollout manually by adjusting the traffic split until you promote the canary to serve all traffic or roll back to the previous version.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/gradual-rollouts) to view your team's canary rollout strategies.
 
 ### Set up canary rollouts: Create a rollout strategy
 
-1. Navigate to **Cloud** in your team dashboard
+1. Open Configuration in your team.
 
-2. Click **Canary rollouts** under **Other resources**
+2. Select Canary rollouts.
 
-3. Click **Create new canary rollout strategy**
+3. Click Create strategy (Create new canary rollout strategy if no strategies exist).
 
 4. Enter a strategy name
 
@@ -46,19 +47,19 @@ A rollout is controlled by a canary rollout strategy. Strategies are created at 
 
 6. Choose the canary strategy type:
 
-  - **Percentage split**: Routes a fixed percentage of requests to the canary version. For example, 10% canary and 90% stable routes approximately one in ten requests to the new version.
+  - Percentage: Routes a fixed percentage of requests to the canary version. For example, 10% canary and 90% stable routes approximately one in ten requests to the new version.
 
-  - **Header split**: Routes requests by matching HTTP headers instead of proportion. For example, requests with `x-variant: canary` go to the new version, and `x-variant: stable` go to the current one.
+  - Header: Routes requests by matching HTTP headers instead of proportion. For example, requests with `x-variant: canary` go to the new version, and `x-variant: stable` go to the current one.
 
 7. Set the traffic split or header routing based on the canary strategy type selected
 
 8. (Optional) Configure strategy options:
 
-  - **Block deployment on active rollout**: Prevents new deployments from being triggered while a canary rollout is in progress. When enabled, you must promote or roll back the current rollout before deploying a new version.
+  - Block deployment on active rollout: Prevents new deployments from being triggered while a canary rollout is in progress. When enabled, you must promote or roll back the current rollout before deploying a new version.
 
-  - **Triggers**: Select which release sources automatically start a rollout (Template, Release flow, CD, UI, API)
+  - Triggers: Select which release sources automatically start a rollout (Template, Release flow, CD, UI, API)
 
-9. Click **Create canary rollout strategy**
+9. Click Create canary rollout strategy
 
 Your strategy is now available to attach to services.
 
@@ -130,30 +131,31 @@ The canary version is removed and the service continues serving the previous sta
 
 #### Set up canary rollouts: Edit a strategy
 
-1. Navigate to **Cloud** in your team dashboard
+1. Open Configuration in your team.
 
-2. Click **Canary rollouts** under **Other resources**
+2. Select Canary rollouts.
 
 3. Select the strategy you want to edit
 
-4. Edit the name, traffic split, or options
+4. Edit the traffic split or other configuration
 
-5. Click **Save changes**
+5. Click Save changes
 
 Changes apply to new rollouts started after the update and do not affect rollouts that are already in progress.
 
 #### Set up canary rollouts: Delete a strategy
 
 > [!note]
+>
 > You cannot delete a strategy while any service using it has an ongoing rollout. Once there are no ongoing rollouts, deleting the strategy detaches it from all services using it. Those services will continue running, but future deployments will no longer use canary rollouts.
 
-1. Navigate to **Cloud** in your team dashboard
+1. Open Configuration in your team.
 
-2. Click **Canary rollouts** under **Other resources**
+2. Select Canary rollouts.
 
 3. Select the strategy you want to delete
 
-4. Click the **Delete** icon
+4. Click the Delete icon
 
 5. Confirm the deletion
 
@@ -274,18 +276,17 @@ Each workflow is built in a visual editor by connecting nodes that perform speci
 
 ### Configure workflows: Create a workflow
 
-> [!note]
-> There are two ways to create a workflow. Click **(+ workflow)** in an environment column to create a workflow directly in that environment. Or click the **Create workflow** button to create an unassigned workflow, which you can then drag to the desired environment.
+To create a workflow without a named environment, select Default in the first step.
 
-1. Navigate to **Environments** in your project
+1. Open your project's Dashboard. Select an environment at the top of the dashboard.
 
-2. Click **(+ workflow)** in an environment column, or click **Create workflow** to create an unassigned workflow
+2. Select Create... → Workflow. You can also select Create workflow above an existing workflow list.
 
 3. Enter a name for the workflow
 
-4. Click **Add trigger** (optional) to configure Git push, Git pull request, or cron schedule triggers
+4. Click Add trigger to configure an optional [automatic trigger](release.md#configure-workflows-add-triggers)
 
-5. Click **Continue**
+5. Click Continue
 
 The visual editor opens with your workflow nodes.
 
@@ -313,73 +314,85 @@ Workflows are built from nodes connected together. Each node performs a specific
 
 ### Configure workflows: Node types
 
-See [template nodes](infrastructure-as-code.md#template-nodes) for detailed documentation on all available node types. Common workflow nodes include:
+Workflows support a subset of [template nodes](infrastructure-as-code.md#template-nodes). The editor shows nodes available to your account.
 
-**Build nodes:** Start build, Build on trigger
+| Node group | Purpose |
+| --- | --- |
+| Build | Start a build in a service or job |
+| Deployment | Deploy a build or image, or promote a deployment |
+| Action | Run jobs, back up addons, import data, or act on resources |
+| Flow control | Run nodes in sequence, in parallel, or in a loop |
+| Condition | Wait for a resource state or operation result |
+| Approval | Wait for the required number of approvals |
+| Message | Send a notification |
+| Run template | Start another template or workflow |
 
-**Deployment nodes:** Deploy build, Deploy service
+#### Configure workflows: Run a template
 
-**Action nodes:** Run job, Run backup, Import backup, Run action
+Use Run template to start an existing template or workflow. In the node form, select Template type. Select the target template or workflow. Expand Arguments to supply values for the child run.
 
-**Control nodes:** Condition, Approval, Message
+In JSON, set `spec.templateType` to `template` or `workflow`. Set the target identifier in `spec.templateId`.
 
-**Infrastructure nodes:** Create resource, OpenTofu
+For a workflow in another project, use `project-id/workflow-id` as its identifier. The target workflow must allow access from the calling project.
+
+Enable Wait for completion to wait for the child run. In JSON, set `condition: "success"` beside the node's `kind` and `spec`. Without this condition, the node continues after starting the child run.
+
+For example, this node starts `example-workflow` in the current project and waits for it to succeed:
+
+```json
+{
+  "kind": "RunTemplate",
+  "condition": "success",
+  "spec": {
+    "templateType": "workflow",
+    "templateId": "example-workflow"
+  }
+}
+```
 
 ### Configure workflows: Configure node settings
 
-Each node type has specific settings. Click a node in the workflow editor to open its settings panel.
+Open a node in the workflow editor to configure it. The available controls depend on the node type.
 
 #### Configure workflows: Build nodes
 
-**Service or repository**: The source to build from, either an existing build service or a repository directly
+Select the source service or job and the branch or commit to build. You can use references such as `${triggers.<name>.branch}` for a branch supplied by a trigger.
 
-**Branch and commit**: Which branch or commit ref to build. Can use references like `${triggers.<name>.branch}` to build the branch that triggered the workflow
+Use the build controls to override build arguments or Docker configuration for this run.
 
-**Preview or override build configuration**: Expand to override build arguments and Docker configuration for this specific run
+| Control | Purpose |
+| --- | --- |
+| Build rules | Configures commit-message ignore flags and rules for changed file paths. |
+| Build rule fall through handling | If the commit does not match the rules, this controls whether the node fails, skips, or uses a previous build. |
+| Reuse existing builds | Reuses an available build for the selected commit when the build configuration matches. |
+| Wait for completion | Waits for a successful build before continuing. Enable this before later nodes use the image. |
+| Skip node execution | Skips this node when the workflow runs. |
 
-**Build rules**: Expand to configure commit message ignore flags, path rules and Build rule fall through handling.
+The fall-through choices are Fail, Skip the build node, and Use last build. The last choice selects the latest running or successful build for the branch or pull request. The node fails if no matching build exists.
 
-**Reuse existing builds**: Whether to reuse an existing build if available
-
-**Wait for completion**: Whether the workflow waits for the build to finish before proceeding to the next node
-
-**Skip node execution**: Skip running this node
+See [build nodes](infrastructure-as-code.md#template-nodes-action-nodes) for supported sources.
 
 #### Configure workflows: Deployment nodes
 
-**Target service or job**: The service or job to deploy to
+Select the image source and target service or job. For a service target, enable Wait for completion to wait until the service runs. Set the timeout to limit that wait.
 
-**Wait for completion**: Whether the workflow waits for the deployment to finish before proceeding to the next node
-
-**Skip node execution**: Skip running this node
-
-**Timeout duration**: How long to wait before the deployment times out
+Deploying an image to a job does not wait for a job run. To run the job, add a Run job node. Enable Wait for completion on that node before later steps depend on its result.
 
 #### Configure workflows: Action nodes
 
-**Target resource**: The service, job, or addon to act on
-
-**Action type**: The operation to perform (e.g. run job, run backup, import backup, restart service)
-
-**Parameters**: Action-specific inputs, such as the job run arguments or backup source
-
-**Retry settings**: Number of retries and delay between attempts if the action fails
+Select the operation and its target resource. Supply the fields required for that operation, such as job arguments or an addon import URL. See [action nodes](infrastructure-as-code.md#template-nodes-action-nodes) for supported operations and completion controls.
 
 #### Configure workflows: Condition nodes
 
-**Condition expression**: A boolean expression that checks the state of other resources (e.g. addon or service readiness). The workflow waits until this condition evaluates to true before proceeding.
-
-**Success and failure paths**: Connect different downstream nodes to each branch to define what happens in each case
+Select a resource and the condition to wait for. Later nodes in a sequential workflow wait until the condition succeeds. A failed condition or timeout fails the node. See [condition nodes](infrastructure-as-code.md#template-nodes-condition-nodes) for supported conditions.
 
 #### Configure workflows: Approval nodes
 
-**Approvers**: Team members who must approve before the workflow proceeds. Useful as a gate before deploying to production
-
-**Timeout**: How long to wait for approval before the run fails
+Set Number of approvals required to a positive integer. Approve the node from the run page to continue. See [approval nodes](infrastructure-as-code.md#template-nodes-approval) for the JSON field.
 
 #### Configure workflows: Message nodes
 
-Send a Slack, Discord, or webhook notification at a specific point in the workflow. Use message nodes to alert your team when a deployment to production is about to start or has completed, or once a preview environment has been provisioned.
+Choose Slack, a webhook, or a comment on a pull request in a linked repository. The message can include template arguments, functions, and references. See [message nodes](infrastructure-as-code.md#template-nodes-message-node) for supported destinations.
 
 ### Configure workflows: Use references in workflows
 
@@ -411,87 +424,99 @@ Use these references in node settings to make workflows dynamic.
 
 ### Configure workflows: Add triggers
 
-Workflows can have multiple triggers to run automatically on different events.
+Workflows can run automatically from Git events, webhook requests, or a schedule. Preview blueprints support the same trigger types. The form offers the providers and controls available to your account.
+
+To add a trigger:
+
+1. Open the editor.
+
+2. Click Add trigger.
+
+3. Select a Kind.
+
+4. Configure the trigger with the fields below.
+
+5. Save the trigger.
+
+6. Save the workflow or preview blueprint.
 
 #### Configure workflows: Git push trigger
 
-1. Click the plus sign or **Add trigger**
+Select Git push and a repository. Add at least one Branch trigger rules pattern, such as `main` or `*`. Matching pushes start a run.
 
-2. Select **Git push** from the **Kind** dropdown
-
-3. Configure:
-
-  - **Repository**: Select your repository
-
-  - **Branch rules**: Specify branches (e.g., `main`, `develop`, or `*` for all)
-
-  - **Path rules** (optional): Only trigger on changes to specific files or directories
-
-  - **Ignore rules** (optional): Skip runs for commits with specific message patterns
-
-4. Click **Save**
-
-The workflow runs automatically when commits are pushed to matching branches.
+Use Path rules to filter changes by file or directory. Use Commit message ignore flags to skip commits with matching text. See [Git build rules](build.md#build-code-from-a-git-repository-build-from-a-repository) for pattern examples.
 
 #### Configure workflows: Git pull request trigger
 
-1. Click the plus sign or **Add trigger**
+Select Git pull request and a repository. Configure Branch trigger rules for the pull request's source branch. Matching pull requests start runs when opened or updated. Path rules and commit message ignore flags can further restrict runs.
 
-2. Select **Git pull request** from the **Kind** dropdown
+#### Configure workflows: Tagged release trigger
 
-3. Configure:
+Select Tagged release and a GitHub or GitLab repository. This trigger responds to release events from the provider. On GitHub, it runs when Northflank receives a release-created event. Pushing a Git tag alone does not start this trigger.
 
-  - **Repository**: Select your repository
+#### Configure workflows: Git check suite trigger
 
-  - **Pull request rules**: Specify when to trigger
+Select Git check suite and a supported repository. Configure Branch trigger rules for the pull request's source branch. Path rules and commit message ignore flags also apply.
 
-4. Click **Save**
+On GitHub, a completed, successful check suite associated with a pull request starts a run. A check suite groups checks from one GitHub app. This trigger does not wait for every other check suite on the commit. GitHub pull requests from forks do not start this trigger.
 
-The workflow runs when pull requests are opened or updated.
+#### Configure workflows: GitHub PR label trigger
+
+Select GitHub PR label and a GitHub repository. Add the labels to match under Label trigger rules. Matching labels can start a run when applied and on later pull request updates.
+
+To restrict source branches, expand Branch rules. Enable Enable branch trigger rules. Add the branch patterns to match. Path rules and commit message ignore flags can further restrict runs.
+
+Adding another matching label does not start another run if the pull request already matched the label rules.
 
 #### Configure workflows: Cron schedule trigger
 
-1. Click the plus sign or **Add trigger**
+Select Cron schedule and enter a cron expression. Schedules use UTC and must run no more frequently than every 10 minutes. Each workflow or preview blueprint accepts one cron trigger.
 
-2. Select **Cron schedule** from the **Kind** dropdown
+See [run workflows on a schedule](release.md#run-and-manage-workflows-use-cron-schedules-to-run-workflows) for an example.
 
-3. Enter a cron expression in the **Schedule** field (times are UTC, minimum interval is 10 minutes)
+#### Configure workflows: Webhook trigger
 
-4. Click **Save**
+Select Webhook. Copy the Webhook URL. Save the trigger and its workflow or preview blueprint before using the URL.
 
-The workflow runs automatically on the configured schedule.
+The URL accepts GET or POST requests. Pass arguments as URL query parameters. See [workflow webhook requests](release.md#run-and-manage-workflows-run-a-workflow-using-a-webhook) for supported parameters.
+
+#### Configure workflows: Enable or pause triggers
+
+To pause one trigger, open its form. Turn off Enable trigger. Save the trigger and its workflow or preview blueprint. Turn the control on again to resume it.
+
+Pausing triggers does not cancel runs or delete preview environments. Manual runs remain available. Skipped trigger events are not replayed when you resume.
 
 ### Configure workflows: Configure workflow settings
 
-Click **Settings** in the workflow editor to configure workflow behavior:
+Click Settings in the workflow editor to configure workflow behavior:
 
 #### Configure workflows: Basic information
 
-**Template name**: Name of the workflow
+Template name: Name of the workflow
 
-**Description**: (Optional) Describe what this workflow does. Useful when you have multiple workflows in a project to distinguish their purpose.
+Description: (Optional) Describe what this workflow does. Useful when you have multiple workflows in a project to distinguish their purpose.
 
 #### Configure workflows: GitOps
 
 Enable GitOps to sync workflow configuration with a Git repository. Changes to the workflow definition are committed to your repo, giving you version history, code review, and the ability to roll back to a previous state.
 
+For preview blueprints, you can [use the GitOps file from the preview branch](release.md#set-up-preview-blueprints-use-branch-contents).
+
 #### Configure workflows: Concurrency policy
 
-Controls what happens when a new workflow run is triggered while a previous run is still in progress.
+Select Concurrency policy to control new runs while another run is pending or active:
 
-**Allow**: Multiple workflow runs can execute simultaneously without restriction. Suitable for workflows that act on independent resources and have no shared state, such as deploying to separate environments.
-
-**Queue**: New runs wait for previous runs to complete before starting. Use this when runs must not overlap, for example a release workflow that runs database migrations before deploying, where two concurrent runs could apply migrations out of order.
-
-**Cancel previous**: New runs cancel any in-progress runs and start immediately. Use this for workflows triggered by Git pushes where only the latest commit matters, such as building and deploying a staging environment on every push to `main`.
+| Choice | Effect |
+| --- | --- |
+| Allow | Runs can proceed in parallel. |
+| Queue | New runs wait and start in order. |
+| Forbid | Northflank does not add new runs while one is pending or active. |
+| Latest | Northflank skips earlier queued runs and keeps the newest queued run. |
+| Replace | Northflank keeps the newest queued run and stops the active run when the new run is ready. |
 
 #### Configure workflows: Cross project access
 
-Enable **Share workflow access to other projects** to allow other projects to trigger this workflow. This is useful for central workflows, for example a shared infrastructure provisioning workflow in a platform project that individual product projects can trigger as part of their own release process.
-
-#### Configure workflows: Use branch contents
-
-Enable **Enable using branch contents** to provision the preview environment according to the GitOps file in the repository branch. This means if a PR modifies the preview blueprint definition, the preview will be provisioned according to the updated definition from that branch.
+Enable Share workflow access to other projects to allow other projects to trigger this workflow. This is useful for central workflows, for example a shared infrastructure provisioning workflow in a platform project that individual product projects can trigger as part of their own release process.
 
 #### Configure workflows: Argument overrides
 
@@ -501,7 +526,7 @@ For example, you could define `target_env` with a default of `staging`, then ref
 
 #### Configure workflows: Teardown
 
-Add a teardown specification to define cleanup actions when the workflow is deleted. For example, you can use teardown to delete OpenTofu resources on external providers. Note that Northflank resources provisioned as part of a preview will already be auto-deleted, and in most cases workflows won't create resources.
+Add a teardown specification to define cleanup actions, such as running a cleanup job or removing external infrastructure. Run the teardown explicitly before deleting the workflow. Deleting a workflow does not run its teardown automatically. See [run teardown workflows](infrastructure-as-code.md#configure-teardown-workflows-run-teardown-workflows).
 
 ### Configure workflows: Save workflow
 
@@ -537,7 +562,8 @@ Continuous integration can be enabled on combined services, build services, and 
 You can enable and disable CI using the toggle in the header of the service or job.
 
 > [!note] Trigger builds in templates
-> You may want to disable CI if you prefer to start builds in [templates](infrastructure-as-code.md#infrastructure-as-code-on-northflank) or [release flows](https://northflank.com/docs/v1/application/release/configure-a-release-flow). The build service will then only build commits specified by a start build node when the template is run.
+>
+> You may want to disable CI if you prefer to start builds in [templates](infrastructure-as-code.md#infrastructure-as-code-on-northflank) or [release flows](release.md#configure-a-release-flow). The build service will then only build commits specified by a start build node when the template is run.
 
 #### Manage CI/CD: CI on a combined service
 
@@ -576,7 +602,8 @@ You can enable and disable CD using the toggle in the header of the service or j
 If you want new versions to reach your users progressively rather than all at once, you can attach a [canary rollout strategy](release.md#set-up-canary-rollouts) to a service and shift traffic to the new version as you monitor it.
 
 > [!note] CD override
-> CD will be automatically disabled if a build is deployed manually, or via a [template](infrastructure-as-code.md#infrastructure-as-code-on-northflank) or [release flow](https://northflank.com/docs/v1/application/release/configure-a-release-flow).
+>
+> CD will be automatically disabled if a build is deployed manually, or via a [template](infrastructure-as-code.md#infrastructure-as-code-on-northflank) or [release flow](release.md#configure-a-release-flow).
 
 #### Manage CI/CD: CD on a combined service
 
@@ -616,9 +643,9 @@ Preview blueprints create ephemeral environments for testing pull requests and b
 
 ### Manage preview blueprints: View preview environments
 
-1. Navigate to **Environments** in your project
+1. Open Previews in your project sidebar.
 
-2. Preview environments appear in the **Previews** section
+2. Find the preview environments beneath their blueprint
 
 3. Each preview shows:
 
@@ -634,15 +661,15 @@ Click on any preview to view its resources and access URLs.
 
 You can create a preview environment without waiting for a Git trigger:
 
-1. Navigate to **Environments**
+1. Open Previews in your project sidebar.
 
 2. Click on a preview blueprint
 
-3. Click **Run**
+3. Click Run
 
 4. Select a commit or branch
 
-5. Click **Create**
+5. Click Create
 
 This is useful for testing branches before creating pull requests or setting up demo environments.
 
@@ -662,39 +689,43 @@ Preview URLs typically follow the pattern: `service-name-pr-123.project.northfla
 
 ### Manage preview blueprints: Update a preview environment
 
-Previews automatically update when new commits are pushed to the pull request branch or watched branch.
+Matching Git events can update a preview automatically.
 
-To manually trigger an update:
+To run an existing preview again:
 
-1. Click on the preview environment
+1. Open Previews in your project sidebar.
 
-2. Click **Run**
+2. Open the preview environment under its blueprint.
 
-3. Select the new commit
+3. Click Run preview environment.
 
-4. Click **Create**
+4. Click Run in the confirmation.
 
-The preview will rebuild and redeploy with the latest code.
+The run uses the configuration and arguments from the latest run. It does not include blueprint changes saved after that run. This action does not offer a commit selector.
 
 ### Manage preview blueprints: Pause preview triggers
 
-You can temporarily stop automatic preview creation without deleting the preview blueprint:
+You can pause individual triggers without deleting the preview blueprint.
 
-1. Navigate to **Environments**
+To pause one trigger:
 
-2. Click on a preview blueprint
+1. Open the blueprint editor.
 
-3. Click **Settings**
+2. Open the trigger's form.
 
-4. Disable triggers or remove them
+3. Turn off Enable trigger.
 
-5. Click **Save**
+4. Save the trigger.
 
-Existing preview environments will remain active, but new ones will not be created automatically.
+5. Save the blueprint.
+
+Pausing a trigger does not delete environments or cancel runs. Manual preview runs remain available. Skipped trigger events are not replayed when you resume.
+
+[Automatic cleanup](release.md#manage-preview-blueprints-configure-automatic-cleanup) still applies while triggers are paused.
 
 ### Manage preview blueprints: Delete a preview environment
 
-Previews are automatically deleted when pull requests are closed or merged (if configured). To manually delete a preview:
+Northflank can [delete previews automatically](release.md#manage-preview-blueprints-configure-automatic-cleanup). To delete a preview manually:
 
 1. Click on the preview environment
 
@@ -706,23 +737,11 @@ All resources created by the preview (services, databases, volumes) are permanen
 
 ### Manage preview blueprints: Configure automatic cleanup
 
-Set policies for automatically deleting inactive previews:
+Use [preview expiry](release.md#set-up-preview-blueprints-cleanup-policies) to delete previews automatically after a configured lifetime. The expiry timer can reset each time the preview runs again. This also applies to scheduled previews.
 
-1. Open a preview blueprint
+Git providers can also request preview deletion when a pull request closes or its branch is deleted. Pausing triggers does not stop preview expiry or deletion from Git events.
 
-2. Click **Settings**
-
-3. Configure cleanup policies:
-
-  - **Delete on pull request close**: Automatically delete when PR is closed
-
-  - **Delete on pull request merge**: Automatically delete when PR is merged
-
-  - **Inactivity period**: Delete previews after X days of no commits
-
-4. Click **Save**
-
-Automatic cleanup helps manage costs and keep your project organized.
+To remove a preview sooner, [delete it manually](release.md#manage-preview-blueprints-delete-a-preview-environment).
 
 ### Manage preview blueprints: Preview environment resources
 
@@ -744,17 +763,17 @@ A default tag is automatically added to each preview environment. Secret groups 
 
 ### Manage preview blueprints: Manage preview costs
 
-Preview environments consume resources and incur costs. To manage costs:
+Preview environments incur costs while their resources run. To manage costs:
 
-- Use smaller resource plans for previews than production
+- Choose smaller resource plans in the blueprint's service and addon nodes.
 
-- Enable automatic cleanup for closed pull requests
+- Set [preview expiry](release.md#set-up-preview-blueprints-cleanup-policies) to remove previews after a chosen time.
 
-- Set maximum concurrent preview limits
+- Narrow [Git trigger rules](release.md#set-up-preview-blueprints-configure-triggers) to create only the previews you need.
 
-- Delete unused previews manually
+- Review preview resource usage.
 
-- Review preview resource usage regularly
+- [Delete previews you no longer need](release.md#manage-preview-blueprints-delete-a-preview-environment).
 
 ### Manage preview blueprints: Troubleshoot preview environments
 
@@ -790,7 +809,7 @@ To configure a release flow you will need a pipeline with the services, jobs, an
 
 You can refer to the documentation in [create a pipeline and release flow](release.md#create-a-pipeline-and-release-flow-create-a-release-flow) to learn more about creating and configuring a release flow's settings.
 
-Release flows can be created using the visual editor in the Northflank application, or configured as code, in the same way as [Northflank templates](https://northflank.com/docs/v1/application/release/infrastructure-as-code/create-a-template#use-the-visual-editor). Similarly, release flows are [structured with workflows](https://northflank.com/docs/v1/application/release/infrastructure-as-code/write-a-template#structure-a-template) and run in the same way as Northflank templates.
+Release flows can be created using the visual editor in the Northflank application, or configured as code, in the same way as [Northflank templates](infrastructure-as-code.md#create-a-template-use-the-visual-editor). Similarly, release flows are [structured with workflows](infrastructure-as-code.md#write-a-template-structure-a-template) and run in the same way as Northflank templates.
 
 This documentation also includes examples for a simple [release flow that deploys builds](release.md#configure-a-release-flow-example-build-deployment) to deployment services, and a more complex example that performs a [database migration before promoting deployments](release.md#configure-a-release-flow-example-build-promotion-with-database-migration) to the current stage.
 
@@ -798,36 +817,60 @@ This documentation also includes examples for a simple [release flow that deploy
 
 ### Configure a release flow: Release flow nodes
 
-Release flow templates have a release node specific to them with different types to deploy from a build service, from a container registry, or to promote an image from another deployment service. The remaining nodes are the same as [template nodes](https://northflank.com/docs/v1/application/release/infrastructure-as-code/template-nodes).
+Release flow templates have a release node for deployments and a [Run template](release.md#configure-workflows-run-a-template) node for starting other templates or workflows. They also support a subset of [template nodes](infrastructure-as-code.md#template-nodes), including actions, conditions, messages, and approvals. The editor shows the nodes available to your account.
 
-Some nodes have a `wait for completion` option. You can enable this so that the next steps in the workflow will only run when the node has finished and was successful. This can be useful for ensuring, for example, a job run has completed before promoting a deployment with related changes. You can also use a separate [await condition](https://northflank.com/docs/v1/application/release/infrastructure-as-code/template-nodes#condition-nodes) node to pause the workflow.
+For supported nodes, enable Wait for completion before later steps depend on their result. You can also use a separate [condition node](infrastructure-as-code.md#template-nodes-condition-nodes) to wait for a resource or operation.
 
 Release node specification
-Error fetching template node schema
+
+- {object} Release node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofRelease
+- condition
+  string one ofrunning
+- timeoutDuration
+  (multiple options: oneOf) Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed.
+
+- integer Timeout for the condition in seconds. This will fail the condition after the timeout has elapsed.min30max14400
+OR
+- string A string containing one or more references that resolve to timeout for the condition in seconds. This will fail the condition after the timeout has elapsed.pattern.*\${.*}.*
+
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the Release node.
 
 #### Configure a release flow: Deploy build
 
-Deploys an [image from a build service](https://northflank.com/docs/v1/application/release/build/build-code-from-a-git-repository) to a target deployment service or job.
+Deploys an [image from a build service](build.md#build-code-from-a-git-repository) to a target deployment service or job.
 
 To configure the node, select the build service you want to deploy from. Open the build menu to select a branch or pull request. From here you can select a specific commit to deploy, or choose to always deploy the latest build. You can filter results for branches, pull requests, or commits by typing in the dropdown.
 
 Finally, select a job or service from the pipeline stage to deploy the built image to.
 
-When you run the release flow you can optionally change the branch, pull request, or select a specific commit to deploy instead of the configured option.
+When you run the release flow, you can change the branch, pull request, or commit to deploy.
 
 #### Configure a release flow: Promote deployment
 
 Deploys images from the preceding stage to the stage that the release flow is in.
 
-To configure the node select the source service or job from the previous stage which contains the deployed image you want to promote, then select the target service or job to promote the image to. Arrows will appear in the pipeline to indicate which deployments will be promoted when a release flow is run.
+Select the source service or job from the previous stage. Select the target service or job to receive its deployed image. Arrows will appear in the pipeline to indicate which deployments will be promoted when a release flow is run.
 
 When the release flow is run, the current image deployed on the source will be deployed on the target. The image can either be built on Northflank, or deployed from a container registry.
 
 #### Configure a release flow: Deploy image
 
-Deploys an image from an [external container registry](https://northflank.com/docs/v1/application/release/run/run-an-image-from-a-container-registry) to a target deployment service or job.
+Deploys an image from an [external container registry](run.md#run-an-image-from-a-container-registry) to a target deployment service or job.
 
-To configure the node, [enter the URL](https://northflank.com/docs/v1/application/release/run/run-an-image-from-a-container-registry#image-paths) of the image you want to deploy. Northflank will try to confirm the image is accessible at the given path. If the image is private, select or create the relevant [registry credentials](https://northflank.com/docs/v1/application/release/run/save-registry-credentials).
+To configure the node, [enter the URL](run.md#run-an-image-from-a-container-registry-image-paths) of the image you want to deploy. Northflank will try to confirm the image is accessible at the given path. If the image is private, select or create the relevant [registry credentials](run.md#save-registry-credentials).
 
 Finally, select a job or service from the pipeline stage to deploy the built image to.
 
@@ -857,7 +900,7 @@ You can [use query parameters](release.md#run-and-manage-releases-run-a-release-
 
 ### Configure a release flow: Create a dynamic release flow
 
-You can use references, arguments, and functions in a release flow the same as you would in any Northflank [template](https://northflank.com/docs/v1/application/release/infrastructure-as-code/make-a-template-dynamic).
+You can use references, arguments, and functions in a release flow the same as you would in any Northflank [template](infrastructure-as-code.md#make-a-template-dynamic).
 
 #### Configure a release flow: References
 
@@ -871,13 +914,13 @@ This can be useful if you need to access details from resources created earlier,
 
 #### Configure a release flow: Arguments
 
-You can include arguments in your release flow, referenced in the format `${args.<argument-name>}`, replacing `<argument-name>` with your key. Arguments are stored in the [argument object at the top-level of the template](https://northflank.com/docs/v1/application/release/infrastructure-as-code/write-a-template#template-specification) as key-value pairs.
+You can include arguments in your release flow, referenced in the format `${args.<argument-name>}`, replacing `<argument-name>` with your key. Arguments are stored in the [argument object at the top-level of the template](infrastructure-as-code.md#write-a-template-template-specification) as key-value pairs.
 
-You can set argument overrides on the settings page of a release flow to pass [configuration values and secrets](release.md#create-a-pipeline-and-release-flow-provide-secrets-securely-to-a-template) securely to your release flow.
+You can set argument overrides on the settings page of a release flow to pass [configuration values and secrets](release.md#create-a-pipeline-and-release-flow-provide-secrets-securely-to-a-release-flow) securely to your release flow.
 
 #### Configure a release flow: Functions
 
-You can include [template functions](https://northflank.com/docs/v1/application/release/infrastructure-as-code/make-a-template-dynamic#use-northflank-functions) in your release flow, which will be evaluated when the release flow is run.
+You can include [template functions](infrastructure-as-code.md#make-a-template-dynamic-use-northflank-functions) in your release flow, which will be evaluated when the release flow is run.
 
 ### Configure a release flow: Manually select a commit or build to release
 
@@ -1177,15 +1220,18 @@ You can create a release flow for each pipeline stage, to deploy and promote bui
 To create a new pipeline either select create new from the pipelines page, or  pipeline from the create new menu.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/project/create/pipeline) to create a pipeline.
+
 Enter a name to identify and select the project resources to add to each stage. You can add resources to each stage of your pipeline in whatever configuration best represents your workflow, and add or remove resources from the pipeline after creation. Build services are not added to pipelines, but can be used in [release flows](release.md#configure-a-release-flow-release-flow-nodes) and [preview environments](release.md#set-up-a-preview-environment-build-on-trigger).
 
 ![Selecting resources to create a pipeline in the Northflank application](https://assets.northflank.com/documentation/v1/application/release/create-a-pipeline-and-release-flow/create-pipeline.png)
 
 > [!note]
+>
 > You can only include resources from the project that contains your pipeline. You can only add services and jobs that use a Northflank build service or an external image as the deployment source. This means combined services and jobs that build directly from a Git repository cannot be used in pipelines.
 
-You can also create and manage a pipeline using a [pipeline node in the template editor](https://northflank.com/docs/v1/application/release/infrastructure-as-code/write-a-template#include-release-flows-and-preview-environment-templates).
+You can also create and manage a pipeline using a [pipeline node in the template editor](infrastructure-as-code.md#template-nodes-pipeline-node).
 
 ### Create a pipeline and release flow: Use a pipeline
 
@@ -1211,9 +1257,9 @@ This will also remove any nodes related to this resource in your release flows, 
 
 You can create a release flow for a stage of your pipeline by clicking  add release flow in the release header for the specific stage.
 
-Release flows are [Northflank templates](https://northflank.com/docs/v1/application/release/infrastructure-as-code/infrastructure-as-code#create-integrations-infrastructure-and-resources-in-templates) with specific nodes and handling. You can also create and update release flows in a [pipeline node in the template editor](https://northflank.com/docs/v1/application/release/infrastructure-as-code/write-a-template#include-release-flows-and-preview-environment-templates).
+Release flows are [Northflank templates](infrastructure-as-code.md#infrastructure-as-code-on-northflank) with specific nodes and handling. You can also create and update release flows in a [pipeline node in the template editor](infrastructure-as-code.md#template-nodes-pipeline-node).
 
-You can define a release flow template using the [visual editor](https://northflank.com/docs/v1/application/release/infrastructure-as-code/create-a-template#use-the-visual-editor) to drag and drop nodes, and click on a node to edit its configuration. You can use nodes to build and deploy from a repository, promote built images from one stage to the next, backup addons, execute commands in a deployment, run migration jobs, and more.
+You can define a release flow template using the [visual editor](infrastructure-as-code.md#create-a-template-use-the-visual-editor) to drag and drop nodes, and click on a node to edit its configuration. You can use nodes to build and deploy from a repository, promote built images from one stage to the next, backup addons, execute commands in a deployment, run migration jobs, and more.
 
 Configure settings for a release flow by opening the  settings view in the editor.
 
@@ -1225,7 +1271,7 @@ See [configure a release flow](release.md#configure-a-release-flow) to learn abo
 
 ### Create a pipeline and release flow: Automatically run a release flow
 
-You can automatically run a release flow using Git triggers, or using the [webhook trigger](). You can access [values from triggers](release.md#configure-a-release-flow-create-a-dynamic-release-flow) using references.
+You can automatically run a release flow using Git triggers, or using the [webhook trigger](release.md#configure-a-release-flow-enable-webhook-for-a-release-flow). You can access [values from triggers](release.md#configure-a-release-flow-create-a-dynamic-release-flow) using references.
 
 This allows you to run your releases on merge to your relevant Git branch. For example, you could configure Git triggers in the production pipeline stage for a `production` branch, and your entire release workflow will run automatically when you push a change to your production branch, or you could include a webhook trigger with your existing tooling to run your Northflank release.
 
@@ -1237,17 +1283,17 @@ Click  add trigger to create a new Git trigger. Enter a reference for your Git t
 
 ![Adding a Git trigger to a release flow in the Northflank application](https://assets.northflank.com/documentation/v1/application/release/create-a-pipeline-and-release-flow/add-git-trigger.png)
 
-You can now define [pull request and branch rules](https://northflank.com/docs/v1/application/release/build/build-code-from-a-git-repository#build-specific-branches-or-pull-requests). Branch rules will run the template when a commit is pushed to a branch matching the given rules. Pull request rules will run the template whenever a pull request is opened for a branch matching the given rules, or a commit is pushed to a branch matching the given rules with an open pull request.
+You can now define [pull request and branch rules](build.md#build-code-from-a-git-repository-build-specific-branches-or-pull-requests). Branch rules will run the template when a commit is pushed to a branch matching the given rules. Pull request rules will run the template whenever a pull request is opened for a branch matching the given rules, or a commit is pushed to a branch matching the given rules with an open pull request.
 
-You can also add [path rules](https://northflank.com/docs/v1/application/release/build/build-code-from-a-git-repository#trigger-a-build-on-changes-to-specific-files-or-directories) and [ignore flags](https://northflank.com/docs/v1/application/release/build/build-code-from-a-git-repository#skip-ci-with-commit-messages) in order to only run the template on changes to specific files, or to skip runs when a certain commit message is included.
+You can also add [path rules](build.md#build-code-from-a-git-repository-trigger-a-build-on-changes-to-specific-files-or-directories) and [ignore flags](build.md#build-code-from-a-git-repository-skip-ci-with-commit-messages) in order to only run the template on changes to specific files, or to skip runs when a certain commit message is included.
 
 ### Create a pipeline and release flow: Manage your release flow with GitOps
 
 Northflank uses bidirectional GitOps to sync template content between Northflank and a Git repository. This allows you to maintain a single source of truth, back up your templates, and update your template on Git push.
 
-You can create and update release flows as part of a template using the [pipeline node](https://northflank.com/docs/v1/application/release/infrastructure-as-code/write-a-template#include-release-flows-and-preview-environment-templates). You can use the full visual editor to configure the release flows for each stage of a pipeline, and refer to resources and arguments contained in the parent template.
+You can create and update release flows as part of a template using the [pipeline node](infrastructure-as-code.md#template-nodes-pipeline-node). You can use the full visual editor to configure the release flows for each stage of a pipeline, and refer to resources and arguments contained in the parent template.
 
-You can then manage the parent template [using GitOps](https://northflank.com/docs/v1/application/release/infrastructure-as-code/gitops-on-northflank), and the release flow will be updated whenever the parent template is run.
+You can then manage the parent template [using GitOps](infrastructure-as-code.md#gitops-on-northflank), and the release flow will be updated whenever the parent template is run.
 
 #### Create a pipeline and release flow: Use GitOps to manage an individual release flow
 
@@ -1275,9 +1321,9 @@ You may want to queue or forbid simultaneous runs to ensure that resources are n
 
 ### Create a pipeline and release flow: Provide secrets securely to a release flow
 
-Resources in your project should have secrets [set in their configuration](https://northflank.com/docs/v1/application/release/secure/inject-secrets) directly, or inherited via [secret groups](https://northflank.com/docs/v1/application/release/secure/manage-secret-groups). You can manage which secrets are inherited by resources in different environments [using tags](https://northflank.com/docs/v1/application/release/pipeline/tag-workloads-and-resources#restrict-by-tag).
+Resources in your project should have secrets [set in their configuration](secure.md#inject-secrets) directly, or inherited via [secret groups](secure.md#manage-secret-groups). You can manage which secrets are inherited by resources in different environments [using tags](release.md#tag-workloads-and-resources-restrict-by-tag).
 
-You should not include any secrets, such as API keys, passwords, or other sensitive data directly in your template. To add configuration details or secret values you should include them in your template as [arguments](https://northflank.com/docs/v1/application/release/infrastructure-as-code/make-a-template-dynamic#add-arguments) and [set them as overrides in the settings](https://northflank.com/docs/v1/application/release/infrastructure-as-code/make-a-template-dynamic#supply-secrets-with-argument-overrides). This stores them securely on Northflank where they are only injected when the template is run.
+You should not include any secrets, such as API keys, passwords, or other sensitive data directly in your template. To add configuration details or secret values you should include them in your template as [arguments](infrastructure-as-code.md#make-a-template-dynamic-add-arguments) and [set them as overrides in the settings](infrastructure-as-code.md#make-a-template-dynamic-supply-secrets-with-argument-overrides). This stores them securely on Northflank where they are only injected when the template is run.
 
 ### Create a pipeline and release flow: Manage release flows
 
@@ -1285,7 +1331,7 @@ Each release flow header the pipeline stages show the status of recent runs, a  
 
 Learn more in [run and manage releases](release.md#run-and-manage-releases).
 
-You can pause triggers for a release flow in the header of the release flow settings. While paused, Git triggers will be inactive and requests to the webhook will return the HTTP status `202`, with a message explaining the trigger is paused. Release flows can still be run manually using the UI or the [Northflank API](https://northflank.com/docs/v1/application/api/pipelines/run-release-flow) while triggers are paused.
+You can pause triggers for a release flow in the header of the release flow settings. While paused, Git triggers will be inactive and requests to the webhook will return the HTTP status `202`, with a message explaining the trigger is paused. Release flows can still be run manually using the UI or the [Northflank API](../api/project/pipelines/run-release-flow.md) while triggers are paused.
 
 ### Create a pipeline and release flow: Delete a pipeline
 
@@ -1308,11 +1354,12 @@ Northflank will automatically create new preview environments for branches that 
 If you have configured a webhook trigger, a new preview environment will be created when you send a request to the webhook URL.
 
 > [!note] Updating preview environment templates
+>
 > If you update your preview environment template while there are existing environments, please note that when the preview is next triggered:
-
-- Resources with the same ID (name) will be updated with the new values in the template
-- If the new template changes values that cannot be patched the template run will fail and the existing preview environment will not be updated
-- Existing resources will not be automatically deleted and if you have changed resource names in the template, the new resources will be created alongside the existing ones
+>
+> - Resources with the same ID (name) will be updated with the new values in the template
+> - If the new template changes values that cannot be patched the template run will fail and the existing preview environment will not be updated
+> - Existing resources will not be automatically deleted and if you have changed resource names in the template, the new resources will be created alongside the existing ones
 
 All resources created by the preview environment will be tagged with the environment name. You are unable to assign or manage tags created by a preview environment, and they will be deleted when the environment is deleted.
 
@@ -1367,7 +1414,7 @@ You can use this to pass in secrets or configuration details for your preview en
 
 You can click  create preview in your pipeline to run your preview environment template manually.
 
-You will be prompted to select the branches and commits to use from the repository for each Git trigger. You can also override any arguments for the template. Manually-created preview environments will be given a [random name](release.md#create-and-manage-previews-choose-a-naming-convention).
+You will be prompted to select the branches and commits to use from the repository for each Git trigger. You can also override any arguments for the template. Manually-created preview environments will be given a [random name](release.md#set-up-a-preview-environment-choose-a-naming-convention).
 
 CI/CD is disabled for any manually-created environments, meaning it will not be updated when commits are pushed to the previewed branch. You can update the preview environment by creating a new preview with the same branch, which will run the preview template again.
 
@@ -1421,11 +1468,11 @@ A trigger will run the release flow whenever a change to the specified repositor
 
 You can include:
 
-- [branch and pull request rules](https://northflank.com/docs/v1/application/release/build/build-code-from-a-git-repository#build-specific-branches-or-pull-requests) to only trigger on commits to specific branches or pull requests
+- [branch and pull request rules](build.md#build-code-from-a-git-repository-build-specific-branches-or-pull-requests) to only trigger on commits to specific branches or pull requests
 
-- [path rules](https://northflank.com/docs/v1/application/release/build/build-code-from-a-git-repository#trigger-a-build-on-changes-to-specific-files-or-directories) to only trigger on changes to specific directories or files in a repository, or to ignore changes to specific directories or files
+- [path rules](build.md#build-code-from-a-git-repository-trigger-a-build-on-changes-to-specific-files-or-directories) to only trigger on changes to specific directories or files in a repository, or to ignore changes to specific directories or files
 
-- [commit message ignore flags](https://northflank.com/docs/v1/application/release/build/build-code-from-a-git-repository#skip-ci-with-commit-messages) to skip runs for commits with messages that contain certain strings
+- [commit message ignore flags](build.md#build-code-from-a-git-repository-skip-ci-with-commit-messages) to skip runs for commits with messages that contain certain strings
 
 You can [use references to obtain the values of Git triggers](release.md#configure-a-release-flow-use-git-triggers-in-a-release-flow) in your template.
 
@@ -1500,7 +1547,7 @@ You can roll back to a specific release by opening it from the [list of past rel
 
 Click  roll back to this release to return your pipeline stage to the state it was in after the selected release flow run.
 
-Deployments to services, builds, etc, will be reverted to those deployed or promoted in the selected release flow run. This will not undo any changes such as a [database migration](https://northflank.com/docs/v1/application/release/pipeline/handle-runtime-migrations), which you will need to restore manually.
+Deployments to services, builds, etc, will be reverted to those deployed or promoted in the selected release flow run. This will not undo any changes such as a [database migration](release.md#run-migrations), which you will need to restore manually.
 
 You can also choose to roll back release flow configuration, which will restore your release flow configuration to the state it was in for the selected run.
 
@@ -1560,19 +1607,19 @@ You can:
 
 - build directly from the same repository and branch as the deployment that requires migration, with CI and CD enabled on the job
 
-- deploy an image from a [build service](https://northflank.com/docs/v1/application/release/build/build-code-from-a-git-repository) that also builds the image for your deployment service, with CD enabled
+- deploy an image from a [build service](build.md#build-code-from-a-git-repository) that also builds the image for your deployment service, with CD enabled
 
 Create a new manual job with the source for your migration code, either from a repository or a build service. Enable `run on image change` on your job, select `CD & pipeline promotion` or `always`, depending on your desired workflow.
 
-Enter any necessary configuration details to run your migration, for example a [command override](https://northflank.com/docs/v1/application/release/run/override-command-entrypoint) if your migration code needs to be called with a command other than the default.
+Enter any necessary configuration details to run your migration, for example a [command override](run.md#override-command-or-entrypoint) if your migration code needs to be called with a command other than the default.
 
-Your job will now execute when your latest commit to the repository is built, so your migration should occur at the same time as your new deployment. You can check the [logs](https://northflank.com/docs/v1/application/release/observe/view-logs) for the job run to ensure it has executed successfully.
+Your job will now execute when your latest commit to the repository is built, so your migration should occur at the same time as your new deployment. You can check the [logs](observe.md#view-logs) for the job run to ensure it has executed successfully.
 
 ![Configuration settings for a job in the Northflank application to run a migration when a new build is available](https://assets.northflank.com/documentation/v1/application/release/run-migrations/ci-job-migrate.png)
 
 ### Run migrations: Migrate using command override
 
-You can run a migration using [command override](https://northflank.com/docs/v1/application/release/run/override-command-entrypoint#override-command) to execute the migration code when deploying your latest commit. This allows you to chain commands to run a migration and then start your application whenever it is redeployed.
+You can run a migration using [command override](run.md#override-command-or-entrypoint-override-command) to execute the migration code when deploying your latest commit. This allows you to chain commands to run a migration and then start your application whenever it is redeployed.
 
 Your deployment will begin redeploying as soon as you save the custom command.
 
@@ -1588,7 +1635,7 @@ bin/sh -c "node migrate/migration-code.js && node built/server.js"
 
 #### Run migrations: Use a script or process
 
-If you have added a script containing your migration command, for example in `package.json` for node-based applications or `Pipfile` for Python applications using Pipenv, you can include this in the command override. If you are building your application with buildpacks you can [add a process to your Procfile](https://northflank.com/docs/v1/application/release/run/override-command-entrypoint#buildpack-processes) and select `custom process` in the runtime mode.
+If you have added a script containing your migration command, for example in `package.json` for node-based applications or `Pipfile` for Python applications using Pipenv, you can include this in the command override. If you are building your application with buildpacks you can [add a process to your Procfile](run.md#override-command-or-entrypoint-buildpack-processes) and select `custom process` in the runtime mode.
 
 ```shell
 yarn migrate-and-run
@@ -1598,7 +1645,7 @@ yarn migrate-and-run
 
 ### Run migrations: Migrate by executing a shell command
 
-You can manually [execute commands](https://northflank.com/docs/v1/application/release/run/access-running-containers-locally#execute-commands-in-a-container) in a running workload by accessing the shell from the Northflank application, or by using the [Northflank CLI or JS client](https://northflank.com/docs/v1/application/api/execute-command).
+You can manually [execute commands](run.md#access-running-containers-locally-execute-commands-in-a-container) in a running workload by accessing the shell from the Northflank application, or by using the [Northflank CLI or JS client](../api/execute-command.md).
 
 Navigate to your deployment and ensure the commit with your migration is deployed. Open a shell for a running container and enter the command to run your migration.
 
@@ -1704,7 +1751,7 @@ A new preview environment will be created automatically when you push a commit t
 
 ![Creating a new preview environment template using the visual editor in the Northflank application.](https://assets.northflank.com/documentation/v1/application/release/create-a-preview-environment/create-preview-template-form.png)
 
-Preview environments are defined using [Northflank templates](https://northflank.com/docs/v1/application/release/infrastructure-as-code/infrastructure-as-code) to provision resources and to build and deploy your commits. They use existing [build services](https://northflank.com/docs/v1/application/release/build/build-code-from-a-git-repository) from your project to build the branch or PR for preview.
+Preview environments are defined using [Northflank templates](infrastructure-as-code.md#infrastructure-as-code-on-northflank) to provision resources and to build and deploy your commits. They use existing [build services](build.md#build-code-from-a-git-repository) from your project to build the branch or PR for preview.
 
 You can use trigger references, node references, and arguments to programmatically provision resources for your preview environment, and resources created by the preview environment are tagged for easy identification and teardown.
 
@@ -1720,17 +1767,19 @@ Learn more in [inject secrets securely and share environment resources](release.
 
 To create a preview environment, open a new or existing pipeline in your project and click the configure button  add preview template. When you create a new preview environment template it will guide you through selecting a naming convention and a Git trigger, and automatically create a [build on trigger](release.md#set-up-a-preview-environment-build-on-trigger) node in your template.
 
-You can also create and manage a preview environment using a [pipeline node in the template editor](https://northflank.com/docs/v1/application/release/infrastructure-as-code/write-a-template#include-release-flows-and-preview-environment-templates).
+You can also create and manage a preview environment using a [pipeline node in the template editor](infrastructure-as-code.md#template-nodes-pipeline-node).
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/project/v2-pipelines) to select a pipeline and create a preview environment in it.
+
 You can edit an existing preview environment configuration with the  settings button in a pipeline, or run a template that updates the preview environment template.
 
 ### Set up a preview environment: Choose a naming convention
 
 When you create a new preview environment you will be prompted to choose a naming convention. You can change the naming convention in the preview environment template settings.
 
-The naming convention for a preview environment will determine the name of the preview environment and resources within it, to distinguish the preview environment from your permanent project resources.
+The naming convention determines each preview environment's name.
 
 | Convention | Description |
 | --- | --- |
@@ -1739,11 +1788,9 @@ The naming convention for a preview environment will determine the name of the p
 | Timestamp | Uses the current date and time in the format `yy-mm-dd-hhmm`, for example `24-01-31-1301` |
 | Random words | Uses the Northflank name generator to provide two random words, for example `general-question` |
 
-You can then choose whether the generated portion of the name will be attached to the start (prefix) or the end (suffix) of the names for your resources.
+For pull request IDs, branch names, and timestamps, choose Prefix or Suffix. The visual editor adds the preview name before or after resource names. Random words does not offer this control.
 
 The name of a preview environment is available within the preview environment template as the argument `name`, accessible in the format `${args.name}`.
-
-Any names you assign to resources in the preview environment template (using the visual editor) will automatically have the naming convention applied when the template is run.
 
 | Naming convention | Preview environment name | Resource name | Resource name template value | Resulting name |
 | --- | --- | --- | --- | --- |
@@ -1752,6 +1799,7 @@ Any names you assign to resources in the preview environment template (using the
 If a run is triggered by an event that does not match your selected convention the preview will use a randomly-generated name instead.
 
 > [!note]
+>
 > Resource names are limited to 39 characters, you must ensure your naming convention combined with your resource names do not exceed this limit.
 
 ### Set up a preview environment: Add a Git trigger
@@ -1768,9 +1816,9 @@ The values from the triggers can be used in your template to build and deploy th
 
 #### Set up a preview environment: Custom rules
 
-You can define custom [pull request and branch rules](https://northflank.com/docs/v1/application/release/build/build-code-from-a-git-repository#build-specific-branches-or-pull-requests) instead of creating a new preview environment for all branches or pull requests. Branch rules will run the template when a commit is pushed to a branch matching the given rules. Pull request rules will run the template whenever a pull request is opened for a branch matching the given rules, or a commit is pushed to a branch matching the given rules with an open pull request.
+You can define custom [pull request and branch rules](build.md#build-code-from-a-git-repository-build-specific-branches-or-pull-requests) instead of creating a new preview environment for all branches or pull requests. Branch rules will run the template when a commit is pushed to a branch matching the given rules. Pull request rules will run the template whenever a pull request is opened for a branch matching the given rules, or a commit is pushed to a branch matching the given rules with an open pull request.
 
-You can also add [path rules](https://northflank.com/docs/v1/application/release/build/build-code-from-a-git-repository#trigger-a-build-on-changes-to-specific-files-or-directories) and [ignore flags](https://northflank.com/docs/v1/application/release/build/build-code-from-a-git-repository#skip-ci-with-commit-messages) to only create a preview when changes are made to specific files, or to skip runs when a certain commit message is included.
+You can also add [path rules](build.md#build-code-from-a-git-repository-trigger-a-build-on-changes-to-specific-files-or-directories) and [ignore flags](build.md#build-code-from-a-git-repository-skip-ci-with-commit-messages) to only create a preview when changes are made to specific files, or to skip runs when a certain commit message is included.
 
 #### Set up a preview environment: Reference triggers in your template
 
@@ -1796,6 +1844,7 @@ The node will use the branch and commit passed by the trigger. You can specify a
 After adding a build on trigger node you can use the  deploy to service or  deploy to job to create a deployment service or job that uses the build from the build on trigger node.
 
 > [!note]
+>
 > The build on trigger node will not override the repository of the chosen build service. The build service will attempt to build the branch specified by the provided trigger, if it does not exist on the build service repository the build will fail.
 
 The node has the following configurable settings:
@@ -1810,10 +1859,29 @@ The node has the following configurable settings:
 | Build configuration (advanced) | Preview and override build arguments to be used |
 | Reuse existing builds | Use an existing build for the commit if one is available, otherwise a new build will be triggered |
 | Wait for completion | If selected, the next node or workflow will not run until the build has completed |
-| Skip node execution | Use references, functions, or arguments that resolve to a boolean to conditionally [skip the node](https://northflank.com/docs/v1/application/release/infrastructure-as-code/write-a-template#control-node-execution) |
+| Skip node execution | Use references, functions, or arguments that resolve to a boolean to conditionally [skip the node](infrastructure-as-code.md#write-a-template-control-node-execution) |
 
 Build on trigger node specification and example
-Error fetching template node schemaAn example of a build on trigger node specification, which obtains the `branch` and `sha` to build from a trigger called `application`. It will use the `main` branch by default, it will use an existing build of the commit if one is available, and will wait until the build has completed before allowing the template to progress. It does not pass any build overrides, so the build service will use the default configuration.
+
+- {object} BuildSource node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofBuildSource
+- condition
+  string one ofsuccess
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the BuildSource node.
+
+An example of a build on trigger node specification, which obtains the `branch` and `sha` to build from a trigger called `application`. It will use the `main` branch by default, it will use an existing build of the commit if one is available, and will wait until the build has completed before allowing the template to progress. It does not pass any build overrides, so the build service will use the default configuration.
 
 ```JSON
 {
@@ -1842,7 +1910,7 @@ Your preview environment should have [one or more triggers](release.md#set-up-a-
 
 You can then deploy the new builds from the build on trigger nodes in deployment service nodes, or using job nodes.
 
-You can add nodes for the other resources required in your environment, such as addons, secret groups. You can base these on existing resources in your project by [copying their specification](https://northflank.com/docs/v1/application/release/infrastructure-as-code/create-a-template#create-from-an-existing-project-or-resource) and pasting the code into a new node.
+You can add nodes for the other resources required in your environment, such as addons, secret groups. You can base these on existing resources in your project by [copying their specification](infrastructure-as-code.md#create-a-template-create-from-an-existing-project-or-resource) and pasting the code into a new node.
 
 Depending on your requirements you may want to duplicate your entire development environment, including databases, services, and jobs, or deploy some resources for the preview environment and [share databases](release.md#set-up-a-preview-environment-inject-secrets-securely-and-share-environment-resources) and jobs with your permanent environment.
 
@@ -1860,9 +1928,9 @@ You may want to queue or forbid simultaneous runs to ensure that resources are n
 
 ### Set up a preview environment: Manage your preview environment template with GitOps
 
-You can create and update preview environment templates as part of a template using the [pipeline node](https://northflank.com/docs/v1/application/release/infrastructure-as-code/write-a-template#include-release-flows-and-preview-environment-templates). You can use the visual editor to configure the preview environment template for the pipeline, and refer to resources and arguments contained in the parent template.
+You can create and update preview environment templates as part of a template using the [pipeline node](infrastructure-as-code.md#template-nodes-pipeline-node). You can use the visual editor to configure the preview environment template for the pipeline, and refer to resources and arguments contained in the parent template.
 
-You can then manage the parent template [using GitOps](https://northflank.com/docs/v1/application/release/infrastructure-as-code/gitops-on-northflank), and the preview environment template will be updated whenever the parent template is run.
+You can then manage the parent template [using GitOps](infrastructure-as-code.md#gitops-on-northflank), and the preview environment template will be updated whenever the parent template is run.
 
 #### Set up a preview environment: Use GitOps to manage a preview environment template
 
@@ -1876,25 +1944,25 @@ It is not necessary, but it is recommended, to save the preview environment temp
 
 ### Set up a preview environment: Inject secrets securely and share environment resources
 
-You can provide secrets to preview environment resources by creating a [secret group](https://northflank.com/docs/v1/application/release/secure/manage-secret-groups) in the template. It will be automatically [restricted](https://northflank.com/docs/v1/application/release/secure/manage-secret-groups#restrict-secrets) by the preview environment's [tag](https://northflank.com/docs/v1/application/release/release/tag-workloads-and-resources) so that only resources in the environment inherit variables from it.
+You can provide secrets to preview environment resources by creating a [secret group](secure.md#manage-secret-groups) in the template. It will be automatically [restricted](secure.md#manage-secret-groups-restrict-secrets) by the preview environment's [tag](release.md#tag-workloads-and-resources) so that only resources in the environment inherit variables from it.
 
-You should not include any secrets, such as API keys, passwords, or other sensitive data directly in your template. To add configuration details or secret values you should include them as [arguments](https://northflank.com/docs/v1/application/release/infrastructure-as-code/make-a-template-dynamic#add-arguments) and [set them as overrides in the settings](https://northflank.com/docs/v1/application/release/infrastructure-as-code/make-a-template-dynamic#supply-secrets-with-argument-overrides). This stores them securely on Northflank, and they are only injected when the template is run.
+You should not include any secrets, such as API keys, passwords, or other sensitive data directly in your template. To add configuration details or secret values you should include them as [arguments](infrastructure-as-code.md#make-a-template-dynamic-add-arguments) and [set them as overrides in the settings](infrastructure-as-code.md#make-a-template-dynamic-supply-secrets-with-argument-overrides). This stores them securely on Northflank, and they are only injected when the template is run.
 
 ![Adding secrets to a group via arguments and functions in a preview environment template in the Northflank application](https://assets.northflank.com/documentation/v1/application/release/create-a-preview-environment/preview-arguments.png)
 
 #### Set up a preview environment: Share secrets
 
-You can share secrets from a development or staging environment with your preview environment by using [secret groups](https://northflank.com/docs/v1/application/release/secure/manage-secret-groups) that are restricted by [tag](https://northflank.com/docs/v1/application/release/release/tag-workloads-and-resources). Add the relevant tag to preview environment resources so that they can also inherit secrets from the restricted group.
+You can share secrets from a development or staging environment with your preview environment by using [secret groups](secure.md#manage-secret-groups) that are restricted by [tag](release.md#tag-workloads-and-resources). Add the relevant tag to preview environment resources so that they can also inherit secrets from the restricted group.
 
 You can create a new secret group in your preview environment and link it to an existing addon to share connection details. The new secret group will be restricted to resources tagged with the preview environment ID by default.
 
-Preview environments will also inherit from any [unrestricted](https://northflank.com/docs/v1/application/release/secure/manage-secret-groups#restrict-secrets) secret groups in your project.
+Preview environments will also inherit from any [unrestricted](secure.md#manage-secret-groups-restrict-secrets) secret groups in your project.
 
 #### Set up a preview environment: Share resources
 
 You can use existing permanent resources from your project in your preview environments, such as build services, databases, and jobs.
 
-For example, build on trigger nodes use existing build services, you can run a [job with overrides](https://northflank.com/docs/v1/application/release/run/run-an-image-once-or-on-a-schedule#override-a-job-configuration), or execute a command in a running service.
+For example, build on trigger nodes use existing build services, you can run a [job with overrides](run.md#run-an-image-once-or-on-a-schedule-override-a-job-configuration), or execute a command in a running service.
 
 You can provide the connection details for an existing database via an existing secret group, so that your preview environment can use the database in your development environment, for example. Alternatively, create a new secret group in your template and link the existing addon. The secret group will be restricted to resources tagged with the preview environment ID by default.
 
@@ -1904,13 +1972,13 @@ You can back up and create a fork of an existing database, so that the original 
 
 You can generate dynamic subdomains and subdomain paths to assign to deployments in preview environments. Subdomains and subdomain paths created in the template will be deleted when the preview environment is deleted or expires.
 
-You can include template [arguments, references, and functions](https://northflank.com/docs/v1/application/release/infrastructure-as-code/make-a-template-dynamic), such as the [preview environment name](release.md#set-up-a-preview-environment-choose-a-naming-convention), when creating your subdomain or subdomain paths.
+You can include template [arguments, references, and functions](infrastructure-as-code.md#make-a-template-dynamic), such as the [preview environment name](release.md#set-up-a-preview-environment-choose-a-naming-convention), when creating your subdomain or subdomain paths.
 
 You can create a new subdomain and paths for the new subdomain by using the reference to the subdomain node in the subdomain path node.
 
 #### Set up a preview environment: Generate a subdomain
 
-You can configure a domain to use [wildcard redirect routing and certificate generation](https://northflank.com/docs/v1/application/release/domains/wildcard-domains-and-certificates) to dynamically create subdomains in preview environment templates. This approach does not require certificates to be generated, and will not impact certificate generation rate limits.
+You can configure a domain to use [wildcard redirect routing and certificate generation](domains.md#wildcard-domains-and-certificates) to dynamically create subdomains in preview environment templates. This approach does not require certificates to be generated, and will not impact certificate generation rate limits.
 
 If you need to generate dynamic domains in multiple regions you will need to add a wildcard domain for each region, for example `us-east.previews.acme.com`.
 
@@ -1918,19 +1986,47 @@ Add a subdomain node to your template and select the wildcard domain to use. The
 
 For example, creating a subdomain and selecting `previews.acme.com` as the domain and using the reference `${args.name}` for the name will result in a new subdomain of `<preview-name>.previews.acme.com` (where the preview name is the name of the preview environment). Assigning the subdomain directly to a port will use the root path.
 
-Error fetching template node schema
+- {object} Subdomain node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofSubdomain
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the Subdomain node.
 
 #### Set up a preview environment: Generate a subdomain path
 
-You can use [path-based routing](https://northflank.com/docs/v1/application/release/domains/use-path-based-routing) to create or update a path for an existing subdomain, or select a reference to a subdomain node in the preview template to use a subdomain created by the template.
+You can use [path-based routing](domains.md#use-path-based-routing) to create or update a path for an existing subdomain, or select a reference to a subdomain node in the preview template to use a subdomain created by the template.
 
 For example, creating a subdomain and selecting `previews.acme.com` as the domain and entering `${args.API_PATH}` for the URI will result in a new path of `previews.acme.com/<API_PATH>` (provided the `API_PATH` argument is supplied to the preview environment template).
 
-Error fetching template node schema
+- {object} SubdomainPath node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofSubdomainPath
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the SubdomainPath node.
 
 #### Set up a preview environment: Assign a dynamic subdomain or subdomain path to a port
 
-You can select a subdomain or subdomain path in the port configuration options of a deployment or combined service node. After you [add a port](https://northflank.com/docs/v1/application/release/network/configure-ports) to the service, expand custom domains & security rules. Add custom domain, and select the reference to the subdomain or subdomain path node you wish to assign to the port.
+You can select a subdomain or subdomain path in the port configuration options of a deployment or combined service node. After you [add a port](network.md#configure-ports) to the service, expand custom domains & security rules. Add custom domain, and select the reference to the subdomain or subdomain path node you wish to assign to the port.
 
 Example template
 This example template shows the creation of a new subdomain (for the domain `preview.example.com`), the creation of a path for that subdomain, and assigns the subdomain path to a deployment service's port.
@@ -2014,9 +2110,9 @@ This example template shows the creation of a new subdomain (for the domain `pre
 
 ![Selecting a dynamic subdomain to assign to a port in the Northflank application](https://assets.northflank.com/documentation/v1/application/release/create-a-preview-environment/dynamic-subdomain-path.png)
 
-### Set up a preview environment: Set preview environment duration and creation times
+### Set up a preview environment: Set preview environment duration and active hours
 
-You can configure a preview environment to be torn down after a certain amount of time, and set preview environments to only be created automatically during certain hours. This allows you to limit preview environment creation and existence to your working hours to reduce spend on resources. Both of these options are configurable in a preview environment template's settings.
+You can set when a preview environment expires and when its resources pause and resume. Configure both settings in the preview environment template.
 
 #### Set up a preview environment: Preview environment duration
 
@@ -2024,11 +2120,11 @@ Set the hours and minutes for a preview environment's resources to persist befor
 
 #### Set up a preview environment: Active hours
 
-Configure the days and hours during which preview environments should be created by Git triggers. Outside of these hours you can still create preview environments manually, or using a webhook trigger, but committing to a branch or opening a pull request will not create or update a preview environment.
+Set the days and times for active hours. Northflank pauses preview resources at the configured end time and resumes them at the configured start time. Git triggers, manual runs, and webhooks can still create or update preview environments outside these hours.
 
-You can create a schedule with start and end times for each selected day, or select a start time for one day and an end time on another day to enable previews across multiple days. For example, you could create a schedule that's active from 09:00 to 18:00 each week day, or from 09:00 on Monday through to 18:00 Friday to enable previews for the whole work week.
+You can set start and end times on each selected day, or span several days. For example, start at 09:00 and end at 18:00 each weekday, or start at 09:00 Monday and end at 18:00 Friday.
 
-This feature is only available for [projects deployed to your own cloud account](https://northflank.com/docs/v1/application/release/bring-your-own-cloud/use-other-cloud-providers-with-northflank).
+This feature is only available for [projects deployed to your own cloud account](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank).
 
 ![Configuring a preview environment's lifetime and active hours in the Northflank application](https://assets.northflank.com/documentation/v1/application/release/create-a-preview-environment/preview-duration-and-active-hours.png)
 
@@ -2051,7 +2147,7 @@ Example preview environment template
     {
       "accountLogin": "northflank-platform",
       "vcsService": "github",
-      "repoUrl": "https://github.com/northflank-platform/postgres-demo",
+      "repoUrl": "https://github.com/example/project-1",
       "branchRestrictions": [],
       "prRestrictions": [
         "*"
@@ -2075,7 +2171,7 @@ Example preview environment template
     {
       "accountLogin": "northflank-platform",
       "vcsService": "github",
-      "repoUrl": "https://github.com/northflank-platform/redis-demo",
+      "repoUrl": "https://github.com/example/project-2",
       "branchRestrictions": [],
       "prRestrictions": [
         "*"
@@ -2320,31 +2416,31 @@ Example preview environment template
 
 Source: https://northflank.com/docs/v1/application/release/run-and-manage-workflows.md
 
-You can run and manage workflows from the environments view. Execute workflows manually, automatically via Git triggers, or on a cron schedule. Monitor workflow runs and roll back to previous deployments.
+You can run and manage workflows from your project's Dashboard. Execute workflows manually, automatically via Git triggers, or on a cron schedule. Monitor workflow runs and roll back to previous deployments.
 
-Select the environment that contains the workflow you want to manage from the environments view. You can run a workflow, or click the options button to view runs or edit the workflow.
+At the top of the dashboard, select the environment that contains the workflow. You can run a workflow, or click the options button to view runs or edit the workflow.
 
 ### Run and manage workflows: Run a workflow manually
 
-You can run a workflow by clicking run in the workflow header.
+You can run a workflow manually from its header.
 
-1. Navigate to **Environments** in your project
+1. Open your project's Dashboard and select the environment that contains the workflow
 
 2. Click on a workflow to open it
 
-3. Click **Run** in the header
+3. Click Run in the header
 
 4. Configure the run (optional):
 
-  - **Name**: Enter a descriptive name for this run
+  - Add run name: Enter a descriptive name for this run
 
-  - **Description**: Add details about what this release includes
+  - Add run description: Describe what this run does
 
-  - **Git triggers**: Select branch and commit for each configured Git trigger
+  - Git trigger: Select a branch and commit for each configured Git trigger
 
-  - **Arguments**: Override default argument values
+  - Argument overrides: Override default argument values
 
-5. Click **Create**
+5. Click Run
 
 ![Running a workflow in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/set-up-environments/run-workflow.png)
 
@@ -2384,19 +2480,41 @@ To add a cron trigger:
 
 4. Enter a cron expression in the **Schedule** field (times are UTC, minimum interval is 10 minutes)
 
+5. Save the trigger
+
+6. Save the workflow
+
 Each workflow can have one cron trigger.
+
+For example, `0 * * * *` runs once an hour. Runs follow the workflow's [concurrency policy](release.md#configure-workflows-configure-workflow-settings).
+
+Use the [trigger controls](release.md#configure-workflows-pause-triggers) to pause the schedule or all automatic triggers. Skipped scheduled runs are not replayed when you resume.
 
 ### Run and manage workflows: Run a workflow using a webhook
 
-You can trigger a workflow run by making a GET or POST request to a workflow's webhook endpoint.
+> [!warning] Protect the webhook URL
+>
+> Treat the URL as a credential. Anyone with the URL can request a workflow run.
 
-You can include query parameters at the end of the webhook URL to pass values directly to your workflow as arguments.
+To start a workflow with a webhook:
+
+1. Add a [Webhook trigger](release.md#configure-workflows-webhook-trigger).
+
+2. Copy its Webhook URL.
+
+3. Save the trigger.
+
+4. Save the workflow.
+
+5. Send a GET or POST request to the URL to start a workflow run.
+
+Pass arguments in the URL query string for either method. Northflank ignores arguments in a POST body.
 
 #### Run and manage workflows: Git trigger parameters
 
-You can override the values for Git triggers configured in your workflow using a webhook. For example, you may have configured a workflow to build from multiple repositories, or to build from specific directories in a single repository, and need to override the default branch and commit for each trigger.
+Webhook requests can supply Git trigger values, such as the branch and commit to build.
 
-To set the values for specific triggers, use the name of the Git trigger followed by the field name in dot notation:
+Use Trigger reference from the Git trigger form as the parameter prefix. Add a dot and the field name:
 
 | Parameter | Value |
 | --- | --- |
@@ -2405,19 +2523,25 @@ To set the values for specific triggers, use the name of the Git trigger followe
 | `<git-trigger>.pullRequestId` | The ID of the pull request |
 | `<git-trigger>.repoUrl` | The repository URL |
 
-For example, the following endpoint would run a workflow and set the branch for the Git trigger `frontend` to `feature` and the branch for the trigger `backend` to `develop`:
+This request sets `frontend` to branch `feature` and `backend` to branch `develop`:
 
 `https://webhooks.northflank.com/workflows/<TOKEN>?frontend.branch=feature&backend.branch=develop`
 
 #### Run and manage workflows: Workflow name and description
 
-You can pass in optional values to set the `name` and `description` for a workflow run, otherwise the workflow will be given a random identifier as the name and no description.
+Supply optional `name` and `description` query parameters to label the workflow run. If you omit `name`, Northflank shows the run ID.
 
 #### Run and manage workflows: Other values
 
-You can also add whatever other URL query parameters you require. For example, triggering a workflow with the following parameters: `https://webhooks.northflank.com/workflows/<TOKEN>?foo=bar` would make `${args.foo}` available in the workflow, resolving to the value `bar`.
+Other query parameters become workflow arguments. For example, `?foo=bar` makes `${args.foo}` resolve to `bar`.
 
-You can use this to pass in secrets or configuration details for your workflow, or set the branch and commit in build nodes that don't have any Git triggers configured.
+Use query parameters for non-sensitive argument values. Store secrets in the workflow's [argument overrides](release.md#configure-workflows-configure-workflow-settings) instead of the URL.
+
+#### Run and manage workflows: Pause or replace a webhook
+
+Turn off Enable trigger to pause this webhook. Save the trigger and workflow. Pausing all workflow triggers also stops webhook runs. For a paused trigger created in the editor, requests return HTTP `404` and do not start a run.
+
+To replace the URL, click Regenerate in the trigger form. Save the trigger and workflow. Update callers to use the new URL.
 
 ### Run and manage workflows: View runs
 
@@ -2449,17 +2573,19 @@ Failed: the node or workflow has failed to execute, or exceeded 3 retries
 
 ### Run and manage workflows: Re-run a workflow
 
-You can re-run a previous workflow run to execute the same workflow with the same structure and arguments.
+You can rerun a workflow with the configuration from a previous run. It uses the same arguments unless you override them.
 
-1. Navigate to **Environments** in your project
+1. Open your project's Dashboard and select the environment that contains the workflow
 
 2. Click on a workflow
 
-3. Click **View runs** in the sidebar
+3. Click View runs in the sidebar
 
-4. Click on the **Re-trigger** icon on the run you want to rerun
+4. Click the Re-trigger icon on the run you want to rerun
 
-The workflow will execute again with the same configuration and arguments as the selected run. This allows you to re-execute a previous workflow without manually configuring it again.
+5. To change argument values, open Argument overrides and enter the new values
+
+6. Click Re-trigger run
 
 ### Run and manage workflows: Next steps
 
@@ -2618,21 +2744,21 @@ Environments represent deployment targets in your release process. Create enviro
 
 Each environment contains its own set of resources and workflows, keeping your deployments separate and easy to manage.
 
-![Environments in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/set-up-environments/environments.png)
+#### Set up environments: All and Default views
+
+In the project environment selector, All shows resources from Default and named environments. It excludes preview resources. Default contains resources without a named environment.
+
+Resources created from All default to Default. To place a resource in a named environment, select it in the creation form.
 
 ### Set up environments: Create an environment
 
-1. Navigate to **Environments** in your project
+1. Open your project's Dashboard
 
-2. Click the plus icon to create a new environment
+2. Select Environment beside the plus icon
 
-An environment will be created with a default name (e.g., `New environment 1`).
+3. Enter an Environment name (e.g., `production`, `staging`, or `development`)
 
-1. Click the edit icon on the environment to rename it
-
-2. Enter your environment name (e.g., `production`, `staging`, `development`)
-
-3. Click the checkmark icon to save
+4. Click Create environment
 
 Your environment is now created. You can add workflows, services, jobs, and addons to it.
 
@@ -2661,25 +2787,25 @@ Preview blueprints can be triggered by Git events (pull requests and pushes), we
 
 ### Set up preview blueprints: Create a preview blueprint
 
-1. Navigate to **Environments** in your project
+1. Open Previews in your project sidebar.
 
-2. Click **Create preview blueprint**
+2. Click New preview blueprint
 
 3. Configure the blueprint:
 
-  - **Name**: Enter a name (e.g., `pr-previews`)
+  - Name: Enter a name (e.g., `pr-previews`)
 
-  - **Naming convention**: Select how preview resources should be named
+  - Naming convention: Select how previews are named
 
-  - **Prefix / Suffix**: Toggle whether to prepend or append pull request numbers or branch names to resource names
+  - Prefix / Suffix: For pull request IDs, branch names, or timestamps, place the preview name before or after resource names. This control is unavailable for Random words.
 
-4. Click **Add trigger**:
+4. Click Add trigger:
 
-  - **Kind**: Select **Git pull request** or **Git push**
+  - Kind: Select a trigger, such as Git pull request or Git push
 
-  - **Repository**: Select the repository to watch
+  - Repository: For a Git trigger, select the repository to watch
 
-5. Click **Continue** to open the visual editor
+5. Click Continue to open the visual editor
 
 The visual editor opens where you can define the resources that will be created in each preview environment.
 
@@ -2739,163 +2865,93 @@ Use the **Skip node execution** option with conditional functions like `fn.if()`
 
 ### Set up preview blueprints: Configure triggers
 
-Preview blueprints can have multiple triggers to create environments automatically.
+Preview blueprints can create or update environments from Git events, webhook requests, or a schedule. Add a trigger in the blueprint editor. Select its Kind. Configure the trigger. Save the trigger and blueprint.
 
-#### Set up preview blueprints: Git pull request trigger
+Workflows and preview blueprints share [trigger types and filtering controls](release.md#configure-workflows-add-triggers).
 
-Creates preview environments when pull requests are opened and updates them when new commits are pushed:
+| Trigger kind | Preview behavior |
+| --- | --- |
+| [Git pull request](release.md#configure-workflows-git-pull-request-trigger) | Creates or updates the preview for a matching pull request |
+| [Git push](release.md#configure-workflows-git-push-trigger) | Creates or updates the preview for a matching branch |
+| [Tagged release](release.md#configure-workflows-tagged-release-trigger) | Starts a preview run from a provider release event |
+| [Git check suite](release.md#configure-workflows-git-check-suite-trigger) | Starts a preview run after a supported successful check event |
+| [GitHub PR label](release.md#configure-workflows-github-pr-label-trigger) | Starts a preview run for a pull request with matching labels |
+| [Cron schedule](release.md#configure-workflows-cron-schedule-trigger) | Starts a preview run on a UTC schedule |
+| [Webhook](release.md#set-up-preview-blueprints-webhook-trigger) | Starts a preview run from a GET or POST request |
 
-1. Click the plus sign or **Add trigger**
+GitHub check-suite triggers do not wait for every check suite on the commit. GitHub tagged-release triggers require a release event, rather than a tag push alone.
 
-2. Select **Git pull request**
+#### Set up preview blueprints: Scheduled previews
 
-3. Configure:
+Each blueprint accepts one cron trigger, with a minimum interval of 10 minutes. A scheduled run does not delete and recreate an existing environment automatically. Environment naming determines whether the run creates a new environment or updates an existing one.
 
-  - **Repository**: Select your repository
+With the default random names, scheduled runs can create separate environments. Configure [automatic cleanup](release.md#manage-preview-blueprints-configure-automatic-cleanup) for previews that you no longer need.
 
-  - **Pull request rules**: Specify when to trigger
+#### Set up preview blueprints: Webhook previews
 
-4. Click **Save**
+> [!warning] Protect the webhook URL
+>
+> Treat the URL as a credential. Anyone with the URL can request a preview run.
 
-Preview environments are automatically deleted when pull requests are closed or merged.
+To start a preview with a webhook:
 
-#### Set up preview blueprints: Git push trigger
+1. Select Webhook as the trigger kind.
 
-Creates preview environments when commits are pushed to specific branches:
+2. Copy the Webhook URL.
 
-1. Click the plus sign or **Add trigger**
+3. Save the trigger.
 
-2. Select **Git push**
+4. Save the blueprint.
 
-3. Configure:
+5. Send a GET or POST request to the URL to start a preview run.
 
-  - **Repository**: Select your repository
+Pass arguments in the URL query string. To create or update a named preview, supply `name`, for example `?name=review-demo`. Requests with the same name target the same active preview within that blueprint.
 
-  - **Branch rules**: Specify branches to watch
+See [webhook parameters](release.md#run-and-manage-workflows-run-a-workflow-using-a-webhook) for arguments and Git references. Use the preview URL copied from the blueprint, rather than a workflow URL.
 
-4. Click **Save**
+#### Set up preview blueprints: Pause triggers
 
-#### Set up preview blueprints: Cron schedule trigger
-
-Recreates preview environments on a schedule to refresh test data:
-
-1. Click the plus sign or **Add trigger**
-
-2. Select **Cron schedule**
-
-3. Enter a cron expression (times are UTC, minimum interval is 10 minutes)
-
-4. Click **Save**
-
-#### Set up preview blueprints: Webhook trigger
-
-Manually trigger a preview environment by sending a webhook request to Northflank. Useful for integrations with external systems or custom CI/CD pipelines.
-
-1. Click the plus sign or **Add trigger**
-
-2. Select **Webhook**
-
-3. Copy the webhook URL provided
-
-4. Click **Save**
-
-Send a POST request to the webhook URL to trigger a new preview environment.
-
-#### Set up preview blueprints: Tagged release trigger
-
-Triggers a new preview environment whenever a new Git tag is created in your repository. Useful for testing release candidates or deploying specific versions.
-
-1. Click the plus sign or **Add trigger**
-
-2. Select **Tagged release**
-
-3. Configure:
-
-  - **Repository**: Select your repository
-
-4. Click **Save**
-
-#### Set up preview blueprints: GitHub check suite trigger
-
-Automatically triggers a preview environment only after all GitHub checks (tests, linters, security scans) pass on a pull request. Prevents deploying broken code.
-
-1. Click the plus sign or **Add trigger**
-
-2. Select **GitHub check suite**
-
-3. Configure:
-
-  - **Repository**: Select your repository
-
-  - **Branch trigger rules**: Specify which branches to watch
-
-  - **Path rules**: Optionally filter by file changes
-
-  - **Commit message ignore flags**: Optionally skip based on commit messages
-
-4. Click **Save**
-
-All status checks configured on your repository must pass before the preview runs.
-
-#### Set up preview blueprints: GitHub PR label trigger
-
-Triggers a preview environment when a pull request is labeled with a specific label. Useful for on-demand previews triggered by reviewers or automation.
-
-1. Click the plus sign or **Add trigger**
-
-2. Select **GitHub PR label**
-
-3. Configure:
-
-  - **Repository**: Select your repository
-
-  - **Label trigger rules**: Choose which labels should trigger previews
-
-  - **Branch rules**: Optionally limit to specific branches
-
-  - **Path rules**: Optionally filter by file changes
-
-  - **Commit message ignore flags**: Optionally skip based on commit messages
-
-4. Click **Save**
+To pause a trigger, turn off Enable trigger in its form. See [pause preview triggers](release.md#manage-preview-blueprints-pause-preview-triggers) for the effects on existing previews.
 
 ### Set up preview blueprints: Configure preview settings
 
-Click **Settings** in the blueprint editor to configure preview environment behavior:
+Open Settings in the preview blueprint editor to configure preview behavior.
 
 #### Set up preview blueprints: Resource naming
 
-Controls how resources created inside each preview environment are named.
+A naming convention sets the name of each new preview.
 
-**Use pull request ID**: Resources are named with the pull request number (e.g., `api-pr-123`). This is predictable and stable; the name stays the same if you push new commits to the same PR.
+> [!warning] Changing names on an existing blueprint
+>
+> If previews exist, a new naming convention can create duplicate resources when they update. Switching Prefix or Suffix also changes generated resource names. Review existing previews before you save these changes.
 
-**Use branch name**: Resources are named with the branch name (e.g., `api-feature-login`). Useful when you want the resource name to reflect what is being reviewed, but names can become long for branches with verbose naming conventions.
+Select a Naming convention: Pull request ID, Branch name, Timestamp, or Random words.
 
-**Custom naming**: Use template variables to define your own naming scheme, e.g. `api-${triggers.repo.pullRequestId}-${triggers.repo.sha}`. By default, Northflank automatically adds `${args.name}` as a prefix or suffix to ensure uniqueness, but you can remove this if needed.
+For Pull request ID, Branch name, or Timestamp, select Prefix or Suffix. This places the preview name before or after resource names. Random words does not offer this control.
 
-#### Set up preview blueprints: Resource limits
+#### Set up preview blueprints: Concurrency policy
 
-Set smaller resource plans for previews than production to manage costs. For example, you might run a 0.1 vCPU / 256 MB container for a preview API instead of the 1 vCPU / 1024 MB plan used in production.
+Select Concurrency policy to control runs that overlap. Preview blueprints use the same [concurrency choices as workflows](release.md#configure-workflows-concurrency-policy). This control does not limit the number of active previews.
 
-#### Set up preview blueprints: Cleanup policies
+#### Set up preview blueprints: Preview expiry
 
-Configure when preview environments are automatically deleted to avoid accumulating idle infrastructure.
+Enable Allow preview environments to expire to delete previews automatically after a configured lifetime. Set the lifetime with Hours and Minutes.
 
-**Delete on pull request close**: The preview environment is automatically deleted when the PR is closed without merging.
+Enable Reset duration on update to environment to restart the timer when the preview runs again. Without this control, later runs retain the existing expiry time.
 
-**Delete on pull request merge**: The preview environment is automatically deleted when the PR is merged.
+#### Set up preview blueprints: Active hours
 
-**Inactivity period**: Delete previews after a set number of days with no new commits. Useful as a safety net to catch long-running previews for PRs that have gone quiet but not been formally closed.
-
-You can enable multiple cleanup policies simultaneously. The preview is deleted when any of the conditions is met first.
+Active hours is available for projects in your own cloud account. Select days and times in UTC. Northflank pauses preview resources at the configured end time and resumes them at the configured start time. Git, manual, and webhook runs can still create or update previews outside these hours.
 
 #### Set up preview blueprints: Use branch contents
 
-Enable **Enable using branch contents** to provision the preview environment according to the GitOps file in the repository branch. This means if a PR modifies the preview blueprint definition, the preview will be provisioned according to the updated definition from that branch.
+Enable Enable using branch contents to use the blueprint file from the branch associated with a preview. This requires [GitOps](infrastructure-as-code.md#gitops-on-northflank) and the configured file path in that branch of the GitOps repository.
+
+If the preview branch differs from the configured GitOps branch, Northflank fetches the file from the preview branch. The run uses that file's root specification. The saved blueprint still controls triggers and argument overrides. If Northflank cannot read or accept the file, the run request fails.
 
 #### Set up preview blueprints: Teardown
 
-Add a teardown specification to define cleanup actions when the preview environment is deleted. For example, you can use teardown to delete OpenTofu resources on external providers. Note that Northflank resources provisioned as part of a preview will already be auto-deleted, and in most cases workflows won't create resources.
+Add a teardown specification for cleanup when a preview environment is deleted. Use it for external resources or cleanup jobs that normal preview deletion does not handle. Preview deletion runs the teardown unless you choose to skip it. See [run teardown workflows](infrastructure-as-code.md#configure-teardown-workflows-run-teardown-workflows) for execution and failure policies.
 
 ### Set up preview blueprints: Test the preview blueprint
 
@@ -2937,6 +2993,7 @@ For example, you could create tags for:
 - Other useful information (`experimental`, `using-deno`, `frontend-rebuild`) to help your team identify the nature of deployments
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/tags) to view your team's tags page.
 
 ![Resources with the same tag in the Northflank application](https://assets.northflank.com/documentation/v1/application/release/tag-workloads-and-resources/tagged-resources.png)
@@ -2956,7 +3013,9 @@ You can tag workloads from either the resource list, or in the resource itself. 
 Hover over the button to reveal the tag menu and select the tags you want to assign to the resource, then click save.
 
 > [!note]
+>
 > Adding or removing a tag will not take effect until the workload is restarted.
+
 Tagged workloads will use all the [deployment behaviours](release.md#tag-workloads-and-resources-provision-by-tag) defined in their tags, for each tag.
 
 ![The tag menu for a service in the Northflank application](https://assets.northflank.com/documentation/v1/application/release/tag-workloads-and-resources/edit-tags.png)

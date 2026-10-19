@@ -6,7 +6,7 @@ This endpoint is deprecated and will be removed in the future. Please avoid maki
 
 Requests should instead use the relevant GET endpoint.
 
-[Use /services/get-service instead](get-service.md)
+[Use /project/services/get-service instead](get-service.md)
 
 Gets information about the deployment of the given service.
 
@@ -99,7 +99,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/deployment
       "nfObjectId": "example-service",
       "nfObjectType": "service",
       "buildSource": "git",
-      "repository": "https://github.com/northflank/gatsby-with-northflank",
+      "repository": "https://github.com/example/project",
       "branch": "master",
       "buildId": "incredible-land-3266",
       "buildSHA": "latest",
@@ -178,7 +178,7 @@ Options:
     "nfObjectId": "example-service",
     "nfObjectType": "service",
     "buildSource": "git",
-    "repository": "https://github.com/northflank/gatsby-with-northflank",
+    "repository": "https://github.com/example/project",
     "branch": "master",
     "buildId": "incredible-land-3266",
     "buildSHA": "latest",
@@ -217,6 +217,8 @@ OR
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.service.deployment({
   parameters: {
@@ -252,7 +254,7 @@ await apiClient.get.service.deployment({
       "nfObjectId": "example-service",
       "nfObjectType": "service",
       "buildSource": "git",
-      "repository": "https://github.com/northflank/gatsby-with-northflank",
+      "repository": "https://github.com/example/project",
       "branch": "master",
       "buildId": "incredible-land-3266",
       "buildSHA": "latest",
@@ -293,5 +295,84 @@ OR
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.service.deployment(
+    project_id="default-project",
+    service_id="example-service",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "region": "europe-west",
+  "instances": 1,
+  "docker": {
+    "configType": "default",
+    "customCommand": "nginx -g"
+  },
+  "buildpack": {
+    "configType": "default"
+  },
+  "storage": {
+    "ephemeralStorage": {
+      "storageSize": 1024
+    }
+  },
+  "internal": {
+    "appId": "/example-user/default-project/example-service",
+    "nfObjectId": "example-service",
+    "nfObjectType": "service",
+    "buildSource": "git",
+    "repository": "https://github.com/example/project",
+    "branch": "master",
+    "buildId": "incredible-land-3266",
+    "buildSHA": "latest",
+    "deployedSHA": "262ed9817b3cad5142fbceabe0c9e371e390d616"
+  }
+}
+```
+
+```json
+{
+  "region": "europe-west",
+  "instances": 1,
+  "docker": {
+    "configType": "default",
+    "customCommand": "nginx -g"
+  },
+  "buildpack": {
+    "configType": "default"
+  },
+  "storage": {
+    "ephemeralStorage": {
+      "storageSize": 1024
+    }
+  },
+  "external": {
+    "imagePath": "nginx:latest",
+    "registryProvider": "dockerhub",
+    "privateImage": false
+  }
 }
 ```

@@ -5,10 +5,11 @@ Source: https://northflank.com/docs/v1/api/use-the-cli.md
 The [Northflank CLI client](https://npmjs.com/@northflank/cli) allows you to interact with Northflank via the command line.
 
 > [!note] Requirements
+>
 > You will need the following to get started:
-
-- [Node.js](https://nodejs.org/en) (version 12 or greater)
-- [npm](https://www.npmjs.com/)
+>
+> - [Node.js](https://nodejs.org/en) (version 12 or greater)
+> - [npm](https://www.npmjs.com/)
 
 The CLI client can be installed using either NPM or Yarn:
 
@@ -16,7 +17,7 @@ The CLI client can be installed using either NPM or Yarn:
 
 - `yarn global add @northflank/cli`
 
-Once installed, authenticate yourself using the `northflank login` command. You will need to [create an API token](https://northflank.com/docs/v1/application/secure/manage-api-tokens) in your account/team settings in the [Northflank application](https://app.northflank.com). If you are a member of a team an [API token template](../guides/secure.md#grant-api-access) must have been created by a member with permissions.
+Once installed, authenticate yourself using the `northflank login` command. You will need to [create an API token](../guides/secure.md#grant-api-access) in your account/team settings in the [Northflank application](https://app.northflank.com). If you are a member of a team an [API token template](../guides/secure.md#grant-api-access) must have been created by a member with permissions.
 
 The CLI client is fully interactive, meaning that it will ask for any parameters needed along the way. However, you always have the option to pass in any required parameters in your commands. For example, after entering the command `northflank get service` you will be prompted to enter a project ID and a service ID. You can achieve the same result in a single step by using the command `northflank get service --project <PROJECT_ID> --service <SERVICE_ID>`.
 
@@ -82,6 +83,7 @@ They help agents understand Northflank primitives such as services, jobs, add-on
 Skills can be used with agentic coding tools like Claude Code, Codex, and Cursor to create, configure, deploy, and troubleshoot applications on Northflank using the right platform concepts and commands.
 
 > [!note]
+>
 > [Click here](https://github.com/northflank/skills) to explore Northflank Skills on GitHub.
 
 ### Help

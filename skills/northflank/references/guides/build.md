@@ -32,6 +32,7 @@ Enabling CI will allow you to automatically build code when a new commit is push
 You'll need an account on a Git provider that is [linked to Northflank](getting-started.md#link-your-git-account) to get started.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/project/create/service) to create a build or combined service.
 
 ### Build code from a Git repository: Build from a repository
@@ -143,7 +144,9 @@ The following ignore flags are automatically enabled, but you can remove them or
 
 ### Build code from a Git repository: Cache layers
 
-You can enable layer caching with [Dockerfile](build.md#build-with-a-dockerfile-layer-caching) and [buildpack](build.md#build-with-buildpacks-layer-caching) builds to cache and reuse build images to speed up subsequent builds.
+Northflank provides built-in build caching for Dockerfile builds with BuildKit. Disk caching retains reusable build data between builds and can reduce build time.
+
+See [BuildKit layer caching](build.md#build-with-a-dockerfile-layer-caching) for availability, configuration, and troubleshooting.
 
 ### Build code from a Git repository: Next steps
 
@@ -160,49 +163,105 @@ Source: https://northflank.com/docs/v1/application/build/build-code-from-a-self-
 
 Teams can add their own self-hosted version control systems (VCS) to Northflank and build from repositories as with any other Git provider linked to the account.
 
-Northflank currently supports GitLab Enterprise/Community Edition.
+Northflank supports self-hosted GitLab Enterprise/Community Edition, GitHub Enterprise Server, Gitea, and Forgejo.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/integrations/vcs) to link a git service.
 
 ### Build code from a self-hosted VCS: Add a self-hosted VCS
 
-You can connect a self-hosted Git service to Northflank if your repositories are hosted on your own infrastructure.
+You can connect a Git provider hosted on your own infrastructure.
+
+> [!note] Requirements
+>
+> You will need the following to get started:
+>
+> - Permission to manage Git integrations in your Northflank team
+> - An HTTPS root URL, such as `[https://git.example.com](https://git.example.com)`
+> - Permission to create the provider's OAuth application or GitHub App
+> - Network access for Northflank to read the provider API and clone repositories
+> - Network access for the Git host to deliver webhooks to Northflank
+
+Webhooks notify Northflank when repository events occur, so configured builds and workflows can run automatically.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/integrations/vcs) to add a self-hosted VCS.
 
-1. In your team dashboard, click **Integrations**.
+1. Open your team's Integrations → Git providers page.
 
-2. Click **Git**.
+2. Select Add a self-hosted VCS.
 
-3. Click **Add a self-hosted VCS**.
+3. Enter a name for the integration.
 
-4. Enter a name for the VCS.
+4. Enter your Git host's root URL under VCS provider URL.
 
-5. Select the VCS type.
-
-6. Enter the **VCS provider URL** and **Application ID**.
-
-7. Enter the **Secret**.
-
-8. Click **Submit**.
-
-After connecting your self-hosted VCS, you can configure how team members can use it.
+Continue with your provider below. Once connected, you can [build from your repositories](build.md#build-code-from-a-git-repository) and [manage the integration](collaborate.md#manage-git-integrations-self-hosted-vcs-settings).
 
 #### Build code from a self-hosted VCS: Add a self-hosted GitLab instance
 
-To connect a self-hosted GitLab instance, first create an OAuth application in GitLab.
+1. Select GitLab Enterprise Edition or Community Edition in Northflank.
 
-Create a new OAuth application at:
+2. Create an OAuth application on your GitLab host at `/-/user_settings/applications`. Administrators can also use `/admin/applications`.
 
-- `[GIT_HOSTNAME]/profile/applications`
+3. Give the application the `api` scope.
 
-- `[GIT_HOSTNAME]/admin/applications` if you are an administrator
+4. Enable its Confidential control.
 
-Give the application the `api` scope and set the **Redirect URI** as specified on Northflank.
+5. Set its redirect URI to the exact value shown in Northflank.
 
-Save the OAuth application, then enter the **root domain** of your self-hosted GitLab instance, **Application ID**, and **Secret** in Northflank.
+6. Enter its Application ID and Secret in Northflank.
+
+7. Select Submit.
+
+8. Authorize Northflank with the GitLab account that can access your repositories.
+
+See [GitLab's OAuth application guide](https://docs.gitlab.com/integration/oauth_provider/) for more details.
+
+#### Build code from a self-hosted VCS: Add Gitea or Forgejo
+
+Gitea and Forgejo use the same connection flow. Northflank requests read and write access to repositories, including webhooks and commit statuses. The linked account needs repository owner or administrator access to manage webhooks.
+
+Before authorizing access, review the permission behavior for [Gitea](https://docs.gitea.com/development/oauth2-provider/) or [Forgejo](https://forgejo.org/docs/latest/user/authentication/oauth2-provider/).
+
+1. Select Gitea / Forgejo in Northflank.
+
+2. Create an OAuth2 application at `/user/settings/applications` on your Git host.
+
+3. If the provider offers a client-type choice, select a confidential client.
+
+4. Set its redirect URI to the exact value shown in Northflank.
+
+5. Enter its OAuth client ID and OAuth client secret in Northflank.
+
+6. Select Submit.
+
+7. Authorize Northflank with the Git account that can access your repositories.
+
+#### Build code from a self-hosted VCS: Add GitHub Enterprise Server
+
+You need permission to create and install a GitHub App for the selected user or organization. App creation and repository installation are separate steps.
+
+The app requests read and write permissions. Before approving installation, review the requested access on GitHub.
+
+1. Select GitHub Enterprise in Northflank.
+
+2. Choose User or Organisation under GitHub App location type.
+
+3. For Organisation, enter the organization name under Application namespace.
+
+4. Select Submit to start GitHub App creation.
+
+5. Complete app creation on your GitHub server.
+
+6. Return to the Git integrations page in Northflank.
+
+7. On your self-hosted integration, select Link to start app installation on GitHub.
+
+8. Choose the repositories that the app can access.
+
+9. Complete the installation.
 
 ### Build code from a self-hosted VCS: Learn more
 
@@ -237,7 +296,7 @@ Learn more about the [Dockerfile](https://docs.docker.com/engine/reference/build
 
 ### Build with a Dockerfile: Build engine
 
-Choose between BuildKit (default) or Kaniko under advanced build settings. You may want to choose another build engine if you experience any issues with reliability.
+BuildKit is the default and recommended build engine. Select it under Build engine in Advanced build settings to use [disk caching](build.md#build-with-a-dockerfile-layer-caching).
 
 ### Build with a Dockerfile: Docker ignore
 
@@ -252,37 +311,101 @@ For example to ignore the git folder and `.env` files you would add the followin
 
 ### Build with a Dockerfile: Layer caching
 
-You can create a more efficient Dockerfile that will build faster on subsequent builds by taking advantage of layer caching.
+Northflank provides built-in build caching only for Dockerfile builds with BuildKit. With disk caching enabled, BuildKit stores build data on persistent disk so later builds can reuse steps with unchanged instructions and inputs.
 
-For this example, we'll look at the build stage from Northflank's [AngularJS template Dockerfile](https://github.com/northflank-examples/angular-js-example/blob/master/Dockerfile).
+Each service or job has its own independent cache. An empty cache needs a successful build to populate it.
 
-The first time the image is built Northflank will run all the build steps in the Dockerfile and write each layer to the image registry. For each subsequent build it checks whether the files for that layer have changed. If there are no changes, the existing layers will be used to complete the build.
+#### Build with a Dockerfile: Enable build caching
 
-In this example the build step `COPY package*.json ./` is nearer the start of the Dockerfile as its files are likely to change less frequently. This means it can be cached and used for future builds where the contents of `package*.json` remain unchanged:
+Disk caching must be available for your team. Bring Your Own Cloud (BYOC) build clusters also need storage that supports build caching. If the control is unavailable with BuildKit selected, contact Northflank support.
 
-```dockerfile
-FROM node:lts-alpine as build-stage     # layer unchanged, use cache
-WORKDIR /app                            # layer unchanged, use cache
-COPY package*.json ./                   # layer unchanged, use cache
-RUN npm install                         # layer unchanged, use cache
-COPY . .                                # layer changed, run again
-RUN npm run build                       # previous layer changed, run again
+To enable disk caching:
+
+1. Open the build configuration for a service or job that builds from a Dockerfile.
+
+2. Expand Advanced build settings.
+
+3. Select BuildKit under Build engine.
+
+4. Enable Use disk cache (cache image layers on local disk).
+
+5. Select a capacity under Disk-based cache storage.
+
+6. Save the configuration.
+
+The interface shows capacity in GB. This capacity covers both cached build data and scratch space for the current build. Cache cleanup targets approximately 60% of the disk capacity. Select enough storage for both cached data and the current build. You can increase capacity later in the build configuration. Treat the cache as reusable build data, not permanent storage for application data.
+
+#### Build with a Dockerfile: Configure caching with the API or templates
+
+Use this fragment in a service or job create, PUT, or PATCH request. In a resource template node, these fields belong inside `spec`:
+
+```json
+{
+  "buildSettings": {
+    "dockerfile": {
+      "buildEngine": "buildkit",
+      "buildkit": {
+        "useCache": true,
+        "cacheStorageSize": 16384
+      }
+    }
+  }
+}
 ```
 
-If you add another dependency to `package.json`, all layers after it must be rebuilt:
+In API create requests, `useCache` defaults to `false`. When you enable it, include `cacheStorageSize`. The API specifies this capacity in MB, so the example requests 16384 MB. Include the other required fields for your request or template node.
+
+#### Build with a Dockerfile: Improve cache reuse
+
+Copy dependency files before application source files. This lets source changes reuse the dependency installation step.
+
+This Node.js build stage requires a `build` script in `package.json`. It also requires a committed `package-lock.json` that matches `package.json`:
 
 ```dockerfile
-FROM node:lts-alpine as build-stage     # layer unchanged, use cache
-WORKDIR /app                            # layer unchanged, use cache
-COPY package*.json ./                   # layer changed, run again
-RUN npm install                         # previous layer changed, run again
-COPY . .                                # previous layer changed, run again
-RUN npm run build                       # previous layer changed, run again
+# syntax=docker/dockerfile:1
+FROM node:lts-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 ```
 
-The above example covers the Dockerfile-based build engines (BuildKit and Kaniko). The buildpack build backend can also benefit from caching. If caching is enabled, the build engine will try to cache and reuse build dependencies from previous builds.
+Changes to application source can reuse the `npm ci` layer. Changes to `package.json` or `package-lock.json` rebuild the dependency layer and the steps after it.
 
-Learn more in the [Docker documentation](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#leverage-build-cache).
+Exclude `node_modules` and other unnecessary files with a [`.dockerignore` file](build.md#build-with-a-dockerfile-docker-ignore). This keeps local dependencies out of the build and reduces changes to its inputs.
+
+A cache mount is a reusable directory for dependencies. To reuse downloaded npm packages when the installation step runs again, replace `RUN npm ci` with:
+
+```dockerfile
+RUN --mount=type=cache,target=/root/.npm npm ci
+```
+
+This mount caches package downloads. It does not prevent `npm ci` from running when the layer needs rebuilding. Other package managers use different cache directories. See Docker's [cache mount guidance](https://docs.docker.com/build/cache/optimize/#use-cache-mounts).
+
+#### Build with a Dockerfile: Clear the build cache
+
+The Clear build cache action appears for BuildKit builds with disk caching enabled. It clears the service or job's cache across all build clusters. It does not delete built images or stop running builds. If any builds are active, they will finish, but their cache data is discarded when they complete.
+
+To clear the cache before a new build:
+
+1. Open the service or job's Builds page.
+
+2. Select Clear build cache.
+
+3. Wait for the Build cache cleared message.
+
+4. Start a new build to populate the cache again.
+
+#### Build with a Dockerfile: Troubleshoot build caching
+
+| Symptom | Action or explanation |
+| --- | --- |
+| The disk cache control is missing | Select BuildKit. If the control remains unavailable, contact Northflank support about access for your team and build cluster. |
+| The build has no reusable cache | An empty cache needs a successful build to populate it. Each build cluster needs its own cache for the service or job. |
+| Dependencies install after every source change | Copy dependency files before application source. Exclude unnecessary files with `.dockerignore`. |
+| A dependency command runs despite caching | If the dependency layer changes, its command runs again. A cache mount can still reuse downloaded packages. |
+| The build runs out of cache storage | Increase cache capacity in the build configuration. |
 
 ### Build with a Dockerfile: Target build stage
 
@@ -357,8 +480,8 @@ You can select from a list of popular buildpacks under advanced build settings i
 
 > [!note]
 >
-1. Heroku builder stacks are compatible with the [Cloud Native Buildpacks](https://buildpacks.io/) specification
-2. Cloud Native Buildpack stack samples are not recommended for use in production.
+> 1. Heroku builder stacks are compatible with the [Cloud Native Buildpacks](https://buildpacks.io/) specification
+> 2. Cloud Native Buildpack stack samples are not recommended for use in production.
 
 ### Build with buildpacks: Custom buildpack group
 
@@ -381,9 +504,7 @@ If a string does not include a scheme prefix (ex. `docker://`) the buildpack typ
 
 ### Build with buildpacks: Layer caching
 
-You can make buildpack builds more efficient and faster on subsequent builds by enabling caching. If enabled, the build engine will cache and reuse build dependencies from previous builds.
-
-Learn more in the [buildpack documentation](https://buildpacks.io/docs/buildpack-author-guide/create-buildpack/caching/).
+Northflank does not provide built-in caching for buildpack builds. For built-in caching, use [a Dockerfile with BuildKit disk caching](build.md#build-with-a-dockerfile-layer-caching).
 
 ### Build with buildpacks: Next steps
 
@@ -420,7 +541,7 @@ Source: https://northflank.com/docs/v1/application/build/github-enterprise-suppo
 
 GitHub Enterprise (GHE) is supported on Northflank as a self-hosted version control system. You can set up a GHE instance and link it to your Northflank team to build and deploy code from your self-hosted repositories.
 
-This feature is feature-flagged and available as part of the self-hosted VCS integration. For general self-hosted VCS setup, see [build code from a self-hosted VCS](https://northflank.com/docs/v1/application/build-code-from-a-self-hosted-vcs).
+This feature is feature-flagged and available as part of the self-hosted VCS integration. For general self-hosted VCS setup, see [build code from a self-hosted VCS](build.md#build-code-from-a-self-hosted-vcs).
 
 ### GitHub Enterprise support: Set up GitHub Enterprise
 
@@ -563,9 +684,11 @@ The table below gives examples of how a path would be set and accessed in variou
 
 Source: https://northflank.com/docs/v1/application/build/pull-images-from-Northflank.md
 
-Whenever you build a repository on Northflank the resulting image is stored in the Northflank container repository, ready to be deployed.
+Projects that use the managed registry store their build images in Northflank's container registry. This guide describes access to those images.
 
-You can log in to the Northflank container registry to pull and run images locally, or use built images as the [base image](https://docs.docker.com/engine/reference/builder/#from) in your Dockerfile. This can be useful if, for example, you are building from a monorepo and want to share a base image to reduce build times for different projects within it.
+If your project uses a [custom build registry](build.md#use-custom-build-registry), use that provider's authentication and image addresses instead.
+
+You can log in to the Northflank container registry to pull and run images locally, or use built images as the [base image](https://docs.docker.com/reference/dockerfile/#from) in your Dockerfile. This can be useful if, for example, you are building from a monorepo and want to share a base image to reduce build times for different projects within it.
 
 A reference to an image in the Northflank CR takes the format:
 
@@ -579,13 +702,13 @@ A reference to an image in the Northflank CR takes the format:
 
 ### Pull images from Northflank: Pull and run an image from Northflank
 
-You can pull Docker images that have been built on Northflank using the [Docker CLI](https://docs.docker.com/engine/reference/commandline/cli/).
+For projects that use Northflank's managed registry, you can pull build images with the [Docker CLI](https://docs.docker.com/reference/cli/docker/).
 
-Create an [API token](https://northflank.com/docs/v1/application/secure/manage-api-tokens) or copy an existing one, and log in to the Northflank registry using Docker:
+Create an [API token](secure.md#grant-api-access) or copy an existing one, and log in to the Northflank registry using Docker:
 
 `docker login -u [USERNAME] -p [API_TOKEN] https://registry.northflank.com/`
 
-You can find the relevant commands to pull and run the Docker image for a build by navigating to the builds page on a build service, combined service, or a job that builds from a git repository. Find the successful build in the list and click on it to open the logs and metrics view. In the top-right corner click the pull docker image button to view instructions and commands for that specific build.
+You can find the relevant commands to pull and run the Docker image for a build by navigating to the builds page on a build service, combined service, or a job that builds from a git repository. Find the successful build in the list and click on it to open the logs and metrics view. In the top-right corner click the Pull Docker image button to view instructions and commands for that specific build.
 
 You can then use this Docker pull command to pull your image from the Northflank registry:
 
@@ -723,81 +846,98 @@ Build services can only be referenced by projects in the same team. Access can b
 
 Source: https://northflank.com/docs/v1/application/build/use-custom-build-registry.md
 
-By default, Northflank stores all build images in Northflank's managed Docker registry. If your organization requires builds to push to your own Docker registry instead, you can use a custom build registry integration.
+A custom build registry stores your project's build images in your cloud account. Northflank supports Amazon Elastic Container Registry (ECR), Google Artifact Registry, and Azure Container Registry.
 
-This feature lets you store built images in your cloud provider's container registry (Azure, AWS, or GCP) instead of Northflank's managed registry. This is useful if you need to maintain images in your own infrastructure, comply with internal policies, or integrate with existing registry workflows.
+Select the registry when you create a project. You can use this feature without a BYOC cluster.
+
+To deploy existing images from an external registry, use [registry credentials](run.md#save-registry-credentials). Saving credentials alone does not change where Northflank stores your builds.
 
 ### Use custom build registry: Prerequisites
 
-Before setting up a custom build registry, you need:
+Before you configure a custom build registry, you need:
 
-- **A provider link**: You must have created a provider link with your cloud provider (Azure, AWS, or GCP) in your team integrations. [Learn how to set up a provider link](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank)
+- An ECR registry, Google Artifact Registry repository, or Azure Container Registry in your cloud account.
 
-- **Required permissions enabled**: Your cloud provider integration must have these features enabled:
+- A [cloud integration](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank) with Docker Registries and Docker Registry Push selected, and the corresponding cloud permissions.
 
-  - **Docker Registries**: Allows pulling images from your registry
+- Saved registry credentials with Push access (write images) enabled and access permitted for the new project.
 
-  - **Docker Registry Push**: Allows pushing built images to your registry
+You can select a build registry only when you create a project. You cannot change this selection on an existing project.
 
-  If these features are not enabled, you cannot use that provider link for custom build registries.
-
-- **New project**: Custom build registries can only be configured when creating a new project, not on existing projects. This is because the registry setting is applied at the project level during creation.
+If the registry controls are unavailable for your account, contact Northflank support about feature availability.
 
 ### Use custom build registry: How it works
 
-When you configure a custom build registry in a project:
+When your project uses a custom build registry:
 
-1. Northflank builds your code using your Dockerfile or buildpacks
+1. Northflank builds your code with your configured build method.
 
-2. Instead of pushing the built image to Northflank's managed registry, it pushes directly to your cloud provider's Docker registry
+2. Northflank pushes the resulting image to the project's selected registry.
 
-3. Your deployments pull from your custom registry instead of Northflank's
+3. Deployments that use the build pull the image from that registry.
 
-This gives you full control over where your built images are stored and who can access them through your cloud provider's access controls.
+Keep the registry and its credentials available for future builds and deployments. The project registry selection does not change the source of external images that you deploy.
 
 ### Use custom build registry: Add a custom Docker registry
 
+If you need a cloud integration, follow the [provider setup instructions](run.md#save-registry-credentials-cloud-provider-registries) first.
+
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/integrations/registry-credentials/new) to add a custom Docker registry.
 
-1. Navigate to **Integrations** in your team settings
+1. Open Integrations → Container registries in your team account.
 
-2. Click **Registries** → **Add registry**
+2. If this is your first registry, select Add registry integration. Otherwise, select Add registry.
 
-3. Enter a registry name and select your container registry provider (Azure, AWS, or GCP)
+3. Enter a name and select Elastic Container Registry, Google Artifact Registry, or Azure Container Registry.
 
-4. Select an existing provider integration or create a new one for Azure, AWS, or GCP [Learn how to set up a provider integration](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank)
+4. Select a cloud integration with registry pull and push permissions.
 
-5. Enter the provider-specific registry settings:
+5. Enter the registry URL and the additional values for your provider, as shown below.
 
-  - **GCP**: Registry URL and project ID
+6. Enable Push access (write images).
 
-  - **AWS**: Registry URL and region
+7. Select Add registry.
 
-  - **Azure**: Registry URL and resource group
+| Provider | Registry URL example | Additional field |
+| --- | --- | --- |
+| ECR | `123456789012.dkr.ecr.eu-west-1.amazonaws.com` | Region: `eu-west-1` |
+| ECR in AWS European Sovereign Cloud | `123456789012.dkr.ecr.eusc-de-east-1.amazonaws.eu` | Region: `eusc-de-east-1` |
+| Google Artifact Registry | `europe-west3-docker.pkg.dev/example-project/builds` | Project ID: `example-project` |
+| Azure Container Registry | `exampleregistry.azurecr.io` | Resource Group: `example-rg` |
 
-6. Under **Select the permissions you want to grant to this registry**, enable **Push access (write images)**
+Use your own registry values. The Google Artifact Registry URL includes both the Google project ID and the repository name, `builds` in this example.
 
-7. Click **Add registry**
+For ECR, the region must match the registry URL. A sovereign registry requires an [AWS European Sovereign Cloud integration](bring-your-own-cloud.md#amazon-web-services-on-northflank-aws-european-sovereign-cloud).
 
-The registry is now available for use in new projects.
+If the integration or registry is missing from a selector, see [registry troubleshooting](run.md#save-registry-credentials-registry-troubleshooting).
 
 ### Use custom build registry: Use in a project
 
+> [!warning] Choose the registry at project creation
+>
+> Select the registry when you create the project. You cannot change this selection on an existing project.
+
+The PaaS mode uses Northflank's managed registry. The Self-hosted mode uses the registry linked through your selected credentials.
+
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/projects/new) to create a new project.
 
-1. Create a new project
+1. Select Create project on your team dashboard.
 
-2. Under **Advanced options**, expand **Docker Registry settings**
+2. Expand Advanced options and find Docker registry settings.
 
-3. Set **Registry Mode** to **Self Hosted**
+3. Set Registry mode to Self-hosted.
 
-4. Under **Registry**, select your custom registry integration
+4. Select your saved credentials under Registry.
 
-5. Click **Create project**
+5. Complete the project configuration and select Create project.
 
-All builds in this project will now push images to your custom registry instead of Northflank's managed registry. When you deploy these images, Northflank automatically pulls from your custom registry. [Learn more about creating a project](getting-started.md#create-a-project)
+Your organization or team can disable the managed registry. In that case, you must select a supported registry with push access before you create a project. A team cannot override an organization restriction.
+
+To view an existing project's registry, open the project's Settings page. Find the Docker registry settings section. These controls are read-only.
 
 ### Use custom build registry: Next steps
 

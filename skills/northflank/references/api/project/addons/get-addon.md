@@ -17,6 +17,7 @@ Required permission: Project > Addons > General > Read
 {object}
 - `data`: {object}
   - `id`: (string) (required) Identifier for the addon.
+  - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
   - `name`: (string) (required) Addon name.
   - `appId`: (string) (required) Full identifier for the addon.
   - `stageId`: (string) ID of the environment the addon belongs to.
@@ -51,7 +52,8 @@ Required permission: Project > Addons > General > Read
           - `inProgress`: (boolean) Whether the new credentials have been applied. Old credentials stay valid until finalised.
           - `status`: (string) The current status of the secret rotation. (enum: scheduled, rotating, rotated, finalising, completed, failed, finalise-failed)
           - `reason`: (string) What triggered the rotation. Defaults to a user-triggered rotate. (enum: user, restore, fork-auto-finalise) | {object}
-        - `templateValues`: (string) (required) The template values to be passed to the templating engine. | {object}
+        - `templateValues`: (string) The template values to be passed to the templating engine. Omitted without addon readSpec permission.
+        - `templateValuesRedacted`: (boolean) Present when template values are withheld due to missing addon readSpec permission. | {object}
         - `region`: (string) The region where the bucket is provisioned.
     - `pendingActions`: [array of] {object}
         - `type`: (string) Type of the pending action
@@ -76,6 +78,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}
 {
   "data": {
     "id": "example-addon",
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
     "name": "Example Addon",
     "appId": "/example-user/default-project/example-addon",
     "stageId": "staging",
@@ -158,6 +161,7 @@ Options:
 ```json
 {
   "id": "example-addon",
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
   "name": "Example Addon",
   "appId": "/example-user/default-project/example-addon",
   "stageId": "staging",
@@ -220,6 +224,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.addon({
   parameters: {
@@ -237,6 +243,7 @@ await apiClient.get.addon({
 {
   "data": {
     "id": "example-addon",
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
     "name": "Example Addon",
     "appId": "/example-user/default-project/example-addon",
     "stageId": "staging",
@@ -296,5 +303,93 @@ await apiClient.get.addon({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.addon(
+    addon_id="example-addon",
+    project_id="default-project",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "example-addon",
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
+  "name": "Example Addon",
+  "appId": "/example-user/default-project/example-addon",
+  "stageId": "staging",
+  "description": "This is the addon description",
+  "createdAt": "2021-01-20T11:19:53.175Z",
+  "status": "running",
+  "spec": {
+    "type": "mongodb",
+    "config": {
+      "versionTag": "4.2.14",
+      "lifecycleStatus": "active",
+      "deployment": {
+        "replicas": 1,
+        "storageClass": "nvme",
+        "storageSize": 6144,
+        "planId": "nf-compute-20",
+        "region": "europe-west"
+      },
+      "networking": {
+        "tlsEnabled": true,
+        "externalAccessEnabled": true,
+        "vpcAccessible": false,
+        "ipPolicies": [
+          {
+            "address": "127.0.0.1",
+            "action": "ALLOW"
+          }
+        ]
+      },
+      "typeSpecificSettings": {
+        "postgresqlSupabaseMode": true,
+        "postgresqlEdbMode": true
+      },
+      "secretRotation": {
+        "startedAt": "2026-01-20T11:19:53.175Z",
+        "completedAt": "2026-01-20T11:24:02.881Z",
+        "status": "rotated",
+        "reason": "user"
+      }
+    },
+    "pendingActions": [
+      {
+        "type": "backup",
+        "createdAt": "2026-03-13T15:50:56.219Z"
+      }
+    ]
+  },
+  "cluster": {
+    "id": "nf-europe-west",
+    "name": "nf-europe-west",
+    "namespace": "ns-8zy2mcjh9zn2",
+    "loadBalancers": [
+      "lb.659200800000000000000000.northflank.com"
+    ]
+  },
+  "tags": []
 }
 ```

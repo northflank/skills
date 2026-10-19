@@ -73,7 +73,7 @@ script -q /dev/null northflank exec service --cmd 'ls -lah /workspace'
 script -qfc 'northflank exec service --cmd "ls -lah /workspace"' /dev/null
 ```
 
-If you are scripting against Northflank from Node.js, prefer the [JavaScript client's exec API](https://northflank.com/docs/v1/api/execute-command-js-client), which returns stdout and stderr as readable streams without needing a PTY shim.
+If you are scripting against Northflank from Node.js, prefer the [JavaScript client's exec API](execute-command.md#execute-a-command-using-the-javascript-client), which returns stdout and stderr as readable streams without needing a PTY shim.
 
 ### Execute a command using the JavaScript client
 

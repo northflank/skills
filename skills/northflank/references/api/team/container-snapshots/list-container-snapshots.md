@@ -11,7 +11,7 @@ Required permission: Account > Platform > ContainerSnapshots > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The snapshot UUID cursor returned from the previous page.
+- `cursor`: (string) The snapshot UUID cursor returned from the previous page. (format: uuid)
 - `projectId`: (string) Filter snapshots by source project ID.
 - `serviceId`: (string) Filter snapshots by source service ID.
 - `state`: (string) Filter snapshots by state. (enum: scheduled, accepted, running, succeeded, failed, cancelled)
@@ -113,6 +113,8 @@ undefined
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.list.containerSnapshots({
   options: {
@@ -135,5 +137,36 @@ await apiClient.list.containerSnapshots({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.container_snapshots(
+    page=1,
+    per_page=50,
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "containerSnapshots": []
 }
 ```

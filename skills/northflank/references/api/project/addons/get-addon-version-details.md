@@ -122,6 +122,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.addon.version({
   parameters: {
@@ -164,5 +166,57 @@ await apiClient.get.addon.version({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.addon.version(
+    addon_id="example-addon",
+    project_id="default-project",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "version": "4.2.14",
+  "upgradeTo": [
+    {
+      "version": "4.2.15",
+      "type": "minor"
+    }
+  ],
+  "lifecycleStatus": "deprecated",
+  "discontinuedBy": "01.08.2021",
+  "upgradeHistory": [
+    {
+      "upgradeId": "611d0da52cd838bbdeec4792",
+      "status": {
+        "status": "completed"
+      },
+      "createdAt": "2021-08-18 13:39:49.475Z",
+      "upgradeType": "minor",
+      "previousVersion": "4.2.14",
+      "newVersion": "4.2.15",
+      "completedAt": "2021-08-18T13:40:51.685Z"
+    }
+  ]
 }
 ```

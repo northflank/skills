@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/addons/get-backup-download-li
 
 Generates a temporary download link for downloading the given backup.
 
-Required permission: Project > Addons > General > Read
+Required permission: Project > Addons > General > Read Spec
 
 **Path parameters:**
 
@@ -69,6 +69,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.addon.backup.download({
   parameters: {
@@ -91,5 +93,37 @@ await apiClient.get.addon.backup.download({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.addon.backup.download(
+    addon_id="example-addon",
+    backup_id="example-backup",
+    project_id="default-project",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "downloadLink": "https://storage.googleapis.com/..."
 }
 ```

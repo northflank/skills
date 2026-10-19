@@ -18,8 +18,8 @@ Required permission: Account > Git > General > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
-- `vcs_link_id`: (string) If provided, uses the given VCS link to access the repository's data.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
+- `vcs_link_id`: (string) If provided, uses the given VCS link to access the repository's data. (min length: 24) (max length: 24)
 
 **Response body:**
 
@@ -127,6 +127,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.list.branches({
   parameters: {
@@ -170,5 +172,52 @@ await apiClient.list.branches({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.branches(
+    repository_name="next-js-example",
+    repository_owner="northflank-examples",
+    vcs_service="github",
+    page=1,
+    per_page=50,
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "branches": [
+    {
+      "name": "main",
+      "id": "MDM6UmVmMzA0MDU5MzM0OnJlZnMvaGVhZHMvbWFpbg=",
+      "commit": {
+        "sha": "f8aca180e989be62cba71db629d2ede05f2d10c4",
+        "author": {
+          "login": "northflank"
+        },
+        "message": "Initial commit",
+        "date": "2021-09-17T14:04:39.000Z"
+      }
+    }
+  ]
 }
 ```

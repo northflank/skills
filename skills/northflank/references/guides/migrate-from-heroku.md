@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/application/migrate-from-heroku.md
 
 Northflank supports all your applications you've been deploying to Heroku, and migrating is straightforward and easy.
 
-You can also manage your account and projects through the Northflank [API, CLI, and JavaScript client](migrate-from-heroku.md#use-the-northflank-api), helping you develop your applications locally using forwarding and command execute, and programmatically manage your entire devops workflow.
+You can also manage your account and projects through the Northflank [API, CLI, and JavaScript client](migrate-from-heroku.md#use-the-northflank-api-cli-or-javascript-client), helping you develop your applications locally using forwarding and command execute, and programmatically manage your entire devops workflow.
 
 Our [pricing](https://northflank.com/pricing) is straightforward and transparent, and you only pay for the resources you use.
 
@@ -28,9 +28,9 @@ All aspects of a combined service can be configured after creation - except the 
 
 3. Repository: select the Git repository from the drop-down list and choose the branch you want to build from
 
-4. Build options: choose [buildpack](build.md#build-code-from-a-git-repository-build-with-buildpacks) to automatically build your application. Northflank uses the Heroku 20 stack by default. You can select another buildpack stack, or add custom buildpacks, in advanced build settings.
+4. Build options: choose [buildpack](build.md#build-with-buildpacks) to automatically build your application. Northflank uses the Heroku 20 stack by default. You can select another buildpack stack, or add custom buildpacks, in advanced build settings.
 
-5. Environment variables (optional): you can set [build arguments](build.md#build-code-from-a-git-repository-specify-build-arguments) and [runtime variables](secure.md#inject-secrets-runtime-variables), or add [secret files](secure.md#upload-secret-files) in advanced. You can add your connection details for hosted databases or API keys for other services here to make them available within your application.
+5. Environment variables (optional): you can set [build arguments](build.md#inject-build-arguments) and [runtime variables](secure.md#inject-secrets-runtime-variables), or add [secret files](secure.md#upload-secret-files) in advanced. You can add your connection details for hosted databases or API keys for other services here to make them available within your application.
 
 6. Networking (optional): Northflank will add a public port for buildpacks, you can redefine this port and add more if required. You can also create a service with no public ports that means it can only be accessed by other resources within your project.
 
@@ -56,7 +56,7 @@ You can expose multiple ports on every deployment, public and private, and HTTP,
 
 Northflank uses scalable and highly performant load balancers to securely distribute external traffic to your applications.
 
-Networking settings are accessed on the ports & DNS page on deployment and combined services, and on the settings page in the network section for databases and other addons.
+For deployment and combined services, open Configure → Networking. For databases and other addons, open Network → Settings.
 
 #### Domains
 
@@ -83,7 +83,7 @@ Northflank offers [several managed databases](databases-and-persistence.md#deplo
 
 Select addon from the create new and choose a database to deploy.
 
-After deploying a database you can import your data from the [backups page](databases-and-persistence.md#backup-restore-and-import-data) by uploading a text dump or specifying the connection string of the database you wish to import from. You have several options to automatically or manually manage [runtime migrations](https://northflank.com/docs/v1/application/release/handle-runtime-migrations) on Northflank.
+After deploying a database you can import your data from the [backups page](databases-and-persistence.md#backup-restore-and-import-data) by uploading a text dump or specifying the connection string of the database you wish to import from. You have several options to automatically or manually manage [runtime migrations](release.md#run-migrations) on Northflank.
 
 You can also create [persistent volumes](databases-and-persistence.md#add-a-persistent-volume) to attach to your deployments, for any use cases not covered by our managed addons.
 
@@ -110,9 +110,9 @@ You can create and configure a new job from the create new menu.
 
 ### Use the Northflank API, CLI, or JavaScript client
 
-You can create and manage projects, builds, and deployments programmatically using [the API](https://northflank.com/docs/api/use-the-api), interact with Northflank using [the CLI](https://northflank.com/docs/api/use-the-cli), and integrate the [JavaScript client](https://northflank.com/docs/api/use-the-javascript-client) into your applications to create solutions for any use-case you can imagine.
+You can create and manage projects, builds, and deployments programmatically using [the API](../api/use-the-api.md), interact with Northflank using [the CLI](../api/use-the-cli.md), and integrate the [JavaScript client](../api/use-the-javascript-client.md) into your applications to create solutions for any use-case you can imagine.
 
-You can use the CLI to [forward resources](https://northflank.com/docs/api/forwarding) for local development, and to [execute commands](https://northflank.com/docs/api/execute-command) in your running containers.
+You can use the CLI to [forward resources](../api/forwarding.md) for local development, and to [execute commands](../api/execute-command.md) in your running containers.
 
 To get started, create an [API token](secure.md#grant-api-access-generate-an-api-token), or create an [API role](secure.md#grant-api-access) for your team to use if you don't have one available.
 
@@ -142,9 +142,9 @@ All aspects of a build service can be configured after creation - except the nam
 
 3. Repository: select the Git repository from the drop-down list and choose the branch you want to build from. You can also set [build rules](build.md#build-code-from-a-git-repository-build-specific-branches-or-pull-requests) to build specific branches or pull request branches.
 
-4. Build options: choose [buildpack](build.md#build-code-from-a-git-repository-build-with-buildpacks) to automatically build your application. Northflank uses the Heroku 20 stack by default. You can select another buildpack stack, or add custom buildpacks, in advanced build settings. You can also set the [build context](build.md#build-code-from-a-git-repository-build-a-specific-repository-directory), if it's not the root directory.
+4. Build options: choose [buildpack](build.md#build-with-buildpacks) to automatically build your application. Northflank uses the Heroku 20 stack by default. You can select another buildpack stack, or add custom buildpacks, in advanced build settings. You can also set the [build context](build.md#build-code-from-a-git-repository-build-a-specific-repository-directory), if it's not the root directory.
 
-5. Environment variables (optional): you can set [build arguments](build.md#build-code-from-a-git-repository-specify-build-arguments) or add [secret files](secure.md#upload-secret-files) in advanced
+5. Environment variables (optional): you can set [build arguments](build.md#inject-build-arguments) or add [secret files](secure.md#upload-secret-files) in advanced
 
 6. Resources: choose a plan with more CPU and memory available to your builds, if required
 
@@ -232,7 +232,7 @@ For your first pipeline stage (`development`) you will need to deploy an image f
 
 5. Exit the release flow editor by clicking the  close button in the top-right corner
 
-Note: if CI is not enabled on your build service, you can add a [build node](getting-started.md#>-note-add-a-release-flow) before the deploy build node to start a new build to deploy.
+Note: if CI is not enabled on your build service, you can add a [build node](getting-started.md#set-up-a-pipeline-add-a-release-flow) before the deploy build node to start a new build to deploy.
 
 ##### Create release flows for your staging and production stages
 

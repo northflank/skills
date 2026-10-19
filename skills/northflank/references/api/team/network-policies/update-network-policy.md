@@ -43,7 +43,7 @@ Required permission: Account > Networking > NetworkPolicies > Update
      - `name`: (string) (required) (pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$) (max length: 63)
      - `header`: (string) (required) (pattern: ^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$) (max length: 256)
      - `hosts`: [array of] (string) (max length: 253)
-     - `value`: (string) (required)
+     - `value`: (string) Omit or provide an empty value to preserve the existing secret value.
 
 ### API reference
 
@@ -160,7 +160,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.patch.networkPolicy({
@@ -172,4 +172,28 @@ await apiClient.patch.networkPolicy({
     "description": "Restrict ingress to the api service."
   }
 });
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.patch.network_policy(
+    network_policy_id="my-network-policy",
+    data={
+        "name": "restrict-api-ingress",
+        "description": "Restrict ingress to the api service.",
+    },
+)
+print(response.data)
 ```

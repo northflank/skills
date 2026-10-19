@@ -12,7 +12,7 @@ Required permission: Account > Networking > Domains > Create
 - `domain`: (string) (required) The domain name to register. (pattern: ^((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+$)
 - `redirect`: {object}
   - `mode`: (string) Domain redirect mode to be used. (enum: wildcard, default)
-  - `region`: (multiple options) (multiple options) (undefined)
+  - `region`: (multiple options) (multiple options) (undefined) Northflank PaaS region the wildcard redirect should be pointed at.
   - `cluster`: (string) BYOC cluster the wildcard redirect should be pointed at.
 - `loadBalancer`: (string) Load balancer all subdomains of this domain route through. Only applies to wildcard-redirect domains. `vpc` requires a self-hosted cluster with the private load balancer enabled. Fixed at creation. (enum: public, vpc)
 - `options`: {object}
@@ -223,7 +223,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.create.domain({
@@ -262,5 +262,54 @@ await apiClient.create.domain({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.domain(
+    data={
+        "domain": "example.com",
+        "redirect": {
+            "mode": "default",
+        },
+        "loadBalancer": "public",
+        "certificates": {
+            "mode": "default",
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "name": "example.com",
+  "status": "pending",
+  "hostname": "nfverify1608026055",
+  "token": "e596987b52855a4a773ef580ce2985d7746b37ce8b2a443d20fa27b913d8f57",
+  "redirect": {
+    "mode": "default"
+  },
+  "loadBalancer": "public",
+  "certificates": {
+    "mode": "default"
+  }
 }
 ```

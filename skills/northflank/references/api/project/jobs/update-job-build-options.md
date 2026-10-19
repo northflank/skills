@@ -6,7 +6,7 @@ This endpoint is deprecated and will be removed in the future. Please avoid maki
 
 Requests should instead use the relevant PATCH endpoint.
 
-[Use /jobs/patch-job instead](patch-job.md)
+[Use /project/jobs/patch-job instead](patch-job.md)
 
 Updates the build options for a given job.
 
@@ -29,8 +29,6 @@ Required permission: Project > Jobs > General > Update
   - `buildkit`: {object}
     - `useCache`: (boolean) Use persistent storage to cache build layers.
     - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-    - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-    - `internalCacheStorage`: (integer) DEPRECATED: This field will be removed in the near future.
 - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
 - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
 - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
@@ -520,7 +518,7 @@ Don't modify build type settings
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 Build from a Dockerfile
 
@@ -647,4 +645,110 @@ await apiClient.update.job.buildOptions({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+Build from a Dockerfile
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.job.build_options(
+    job_id="example-job",
+    project_id="default-project",
+    data={
+        "dockerfile": {
+            "buildEngine": "buildkit",
+            "dockerFilePath": "/Dockerfile",
+            "dockerWorkDir": "/",
+        },
+        "pathIgnoreRules": ["README.md"],
+        "isAllowList": False,
+        "ciIgnoreFlags": ["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"],
+        "ignoreEmptyCommits": False,
+        "dockerCredentials": ["example-docker-credential"],
+        "storage": {
+            "ephemeralStorage": {
+                "storageSize": 16384,
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Build from a Buildpack
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.job.build_options(
+    job_id="example-job",
+    project_id="default-project",
+    data={
+        "buildpack": {
+            "builder": "HEROKU_24",
+            "buildpackLocators": ["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],
+            "buildContext": "/",
+            "useCache": False,
+        },
+        "pathIgnoreRules": ["README.md"],
+        "isAllowList": False,
+        "ciIgnoreFlags": ["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"],
+        "ignoreEmptyCommits": False,
+    },
+)
+print(response.data)
+```
+
+OR
+
+Don't modify build type settings
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.job.build_options(
+    job_id="example-job",
+    project_id="default-project",
+    data={
+        "pathIgnoreRules": ["README.md"],
+        "isAllowList": False,
+        "ciIgnoreFlags": ["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"],
+        "ignoreEmptyCommits": False,
+        "dockerCredentials": ["example-docker-credential"],
+        "storage": {
+            "ephemeralStorage": {
+                "storageSize": 16384,
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

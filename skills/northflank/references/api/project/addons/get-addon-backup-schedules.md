@@ -17,7 +17,7 @@ Required permission: Project > Addons > General > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 
 **Response body:**
 
@@ -153,6 +153,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.addon.backupSchedules({
   parameters: {
@@ -207,5 +209,67 @@ await apiClient.get.addon.backupSchedules({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.addon.backup_schedules(
+    addon_id="example-addon",
+    project_id="default-project",
+    page=1,
+    per_page=50,
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "schedules": [
+    {
+      "id": "62cc20b90956ab62a58e8474",
+      "backupType": "snapshot",
+      "backupCompressionType": "gz",
+      "additionalDestinations": [
+        {
+          "destinationId": "example-backup-destination",
+          "retentionTime": 7,
+          "type": "custom"
+        }
+      ],
+      "customDestinationId": "example-backup-destination",
+      "scheduling": {
+        "interval": "weekly",
+        "minute": [
+          30
+        ],
+        "hour": [
+          18
+        ],
+        "day": [
+          4
+        ]
+      },
+      "retentionTime": 7,
+      "createdAt": "2022-07-11T13:08:09.626Z",
+      "updatedAt": "2022-07-11T13:08:09.626Z"
+    }
+  ]
 }
 ```

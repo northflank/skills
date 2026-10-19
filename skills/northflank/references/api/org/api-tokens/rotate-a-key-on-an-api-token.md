@@ -160,7 +160,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.rotate.apiTokenKey({
@@ -187,5 +187,40 @@ await apiClient.rotate.apiTokenKey({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.rotate.api_token_key(
+    token_id="my-api-token",
+    data={},
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "key": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "issuedAt": "2021-01-20T11:19:53.175Z"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIs..."
 }
 ```

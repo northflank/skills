@@ -49,6 +49,7 @@ To configure autoscaling on your own custom metrics the following data has to be
 - The metric name, metric type (Gauge or Counter) and the scaling threshold value have to be specified
 
 > [!note]
+>
 > The metrics exposed by your application have to comply with the Prometheus metric structure
 
 ![The horizontal scaling form using custom metrics in the Northflank application](https://assets.northflank.com/documentation/v1/application/scale/autoscale-deployments/custom-metric-horizontal-autoscaling.png)

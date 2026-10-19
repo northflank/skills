@@ -6,7 +6,7 @@ This endpoint is deprecated and will be removed in the future. Please avoid maki
 
 Requests should instead use the relevant PATCH endpoint.
 
-[Use /services/patch-combined-service instead](patch-combined-service.md)
+[Use /project/services/patch-combined-service instead](patch-combined-service.md)
 
 Modifies the scaling settings for the given service.
 
@@ -177,7 +177,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.scale.service({
@@ -208,4 +208,42 @@ await apiClient.scale.service({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.scale.service(
+    project_id="default-project",
+    service_id="example-service",
+    data={
+        "instances": 1,
+        "deploymentPlan": "nf-compute-20",
+        "storage": {
+            "ephemeralStorage": {
+                "storageSize": 1024,
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

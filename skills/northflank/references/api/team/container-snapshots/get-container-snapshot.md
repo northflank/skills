@@ -9,7 +9,7 @@ Required permission: Account > Platform > ContainerSnapshots > Read
 **Path parameters:**
 
 {object}
-- `snapshotId`: (string) (required) Container snapshot UUID
+- `snapshotId`: (string) (required) Container snapshot UUID (format: uuid)
 
 **Response body:**
 
@@ -85,9 +85,13 @@ undefined
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.containerSnapshot({
-  parameters: {}
+  parameters: {
+    "snapshotId": "00000000-0000-4000-8000-000000000000"
+  }
 });
 ```
 
@@ -100,5 +104,55 @@ await apiClient.get.containerSnapshot({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.container_snapshot(
+    snapshot_id="00000000-0000-4000-8000-000000000000",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "00000000-0000-4000-8000-000000000000",
+  "trigger": "manual",
+  "state": "scheduled",
+  "source": {
+    "projectId": "string",
+    "nfObject": {
+      "id": "string",
+      "type": "job"
+    }
+  },
+  "target": {
+    "podName": "string"
+  },
+  "compatibility": {
+    "runtime": "kata",
+    "architecture": "x86"
+  },
+  "inUse": false,
+  "lastTransitionTime": "1970-01-01T00:00:00.000Z",
+  "createdAt": "1970-01-01T00:00:00.000Z",
+  "updatedAt": "1970-01-01T00:00:00.000Z"
 }
 ```

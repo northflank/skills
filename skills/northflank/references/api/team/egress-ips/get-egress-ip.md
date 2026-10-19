@@ -117,6 +117,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.egressIp({
   parameters: {
@@ -150,5 +152,49 @@ await apiClient.get.egressIp({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.egress_ip(
+    egress_ip_id="my-egress-ip",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "my-egress-ip",
+  "name": "my-egress-ip",
+  "description": "This is a new egress IP.",
+  "spec": {
+    "provisioningMode": "shared",
+    "region": "europe-west",
+    "mode": "include"
+  },
+  "state": {
+    "ipAddress": "34.105.225.71",
+    "status": "active",
+    "lastTransitionTime": "1970-01-01T00:00:00.000Z"
+  },
+  "createdAt": "2021-01-20T11:19:53.175Z",
+  "updatedAt": "2021-01-20T11:19:53.175Z"
 }
 ```

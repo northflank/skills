@@ -658,7 +658,7 @@ OR
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.put.addon({
@@ -847,5 +847,174 @@ OR
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.put.addon(
+    project_id="default-project",
+    data={
+        "name": "Example Addon",
+        "description": "An addon description",
+        "projectId": "example-project",
+        "type": "postgresql",
+        "version": "latest",
+        "billing": {
+            "deploymentPlan": "nf-compute-20",
+            "storageClass": "nvme",
+            "storage": 6144,
+            "replicas": 1,
+        },
+        "source": {
+            "projectId": "existing-project",
+            "addonId": "existing-addon",
+            "backupId": "existing-backup",
+            "backupType": "snapshot",
+        },
+        "ipPolicies": [{
+            "addresses": ["127.0.0.1"],
+            "action": "DENY",
+        }],
+        "backupSchedules": [{
+            "scheduling": {
+                "interval": "weekly",
+                "minute": [30],
+                "hour": [18],
+                "day": [4],
+            },
+            "backupType": "snapshot",
+            "additionalDestinations": [{
+                "destinationId": "example-backup-destination",
+                "retentionTime": 7,
+                "type": "custom",
+            }],
+            "compressionType": "gz",
+            "retentionTime": 7,
+        }],
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "name": "Example Addon",
+  "description": "An addon description",
+  "type": "postgresql",
+  "version": "latest",
+  "billing": {
+    "deploymentPlan": "nf-compute-20",
+    "storageClass": "nvme",
+    "storage": 6144,
+    "replicas": 1
+  },
+  "source": {
+    "projectId": "existing-project",
+    "addonId": "existing-addon",
+    "backupId": "existing-backup",
+    "backupType": "snapshot"
+  },
+  "ipPolicies": [
+    {
+      "addresses": [
+        "127.0.0.1"
+      ],
+      "action": "DENY"
+    }
+  ],
+  "backupSchedules": [
+    {
+      "scheduling": {
+        "interval": "weekly",
+        "minute": [
+          30
+        ],
+        "hour": [
+          18
+        ],
+        "day": [
+          4
+        ]
+      },
+      "backupType": "snapshot",
+      "additionalDestinations": [
+        {
+          "destinationId": "example-backup-destination",
+          "retentionTime": 7,
+          "type": "custom"
+        }
+      ],
+      "compressionType": "gz",
+      "retentionTime": 7
+    }
+  ],
+  "id": "example-addon",
+  "appId": "/example-user/default-project/example-addon",
+  "status": "running",
+  "cluster": {
+    "id": "nf-europe-west",
+    "name": "nf-europe-west",
+    "namespace": "ns-8zy2mcjh9zn2",
+    "loadBalancers": [
+      "lb.659200800000000000000000.northflank.com"
+    ]
+  }
+}
+```
+
+```json
+{
+  "name": "Example Addon",
+  "description": "An addon description",
+  "type": "postgresql",
+  "templateValues": {},
+  "id": "example-addon",
+  "appId": "/example-user/default-project/example-addon",
+  "status": "running",
+  "cluster": {
+    "id": "nf-europe-west",
+    "name": "nf-europe-west",
+    "namespace": "ns-8zy2mcjh9zn2",
+    "loadBalancers": [
+      "lb.659200800000000000000000.northflank.com"
+    ]
+  }
+}
+```
+
+```json
+{
+  "name": "Example Addon",
+  "description": "An addon description",
+  "type": "postgresql",
+  "region": "eu-west-2",
+  "id": "example-addon",
+  "appId": "/example-user/default-project/example-addon",
+  "status": "running",
+  "cluster": {
+    "id": "nf-europe-west",
+    "name": "nf-europe-west",
+    "namespace": "ns-8zy2mcjh9zn2",
+    "loadBalancers": [
+      "lb.659200800000000000000000.northflank.com"
+    ]
+  }
 }
 ```

@@ -24,7 +24,7 @@ You can access Northflank's OpenAPI specification and schemas via the following 
 
 ### Authentication
 
-Access to most endpoints is restricted and authenticated via a bearer token. Users can [generate a personal API token](https://northflank.com/docs/v1/application/secure/manage-api-tokens) in their account settings in the [Northflank application](https://app.northflank.com). Team members can generate an API token in that team's settings, provided an [API role](../guides/secure.md#grant-api-access) has been created by a member with permissions.
+Access to most endpoints is restricted and authenticated via a bearer token. Users can [generate a personal API token](../guides/secure.md#grant-api-access) in their account settings in the [Northflank application](https://app.northflank.com). Team members can generate an API token in that team's settings, provided an [API role](../guides/secure.md#grant-api-access) has been created by a member with permissions.
 
 The API token must then be included in the Authorization header for the request:
 
@@ -33,6 +33,69 @@ Authorization: Bearer [YOUR AUTH TOKEN]
 ```
 
 - [Grant API access: Create API roles to grant access to the Northflank API, with granular permissions.](../guides/secure.md#grant-api-access)
+
+### Token scope and request routes
+
+A token's scope determines whether it acts within one team or across an organization. Both token types use the same `Authorization: Bearer` header.
+
+For team and project operations, choose the route that matches your token:
+
+| Token scope | Route | When to include the team ID |
+| --- | --- | --- |
+| Team | `/v1/projects/{projectId}/services` | The token already identifies its team. You can use the shorter route. |
+| Organization | `/v1/teams/{teamId}/projects/{projectId}/services` | Include the target team ID for team and project operations. |
+
+The team prefix selects the target team. It does not grant access. The team must belong to the token's organization and be permitted by its role and team restrictions. A team-scoped token can also use the prefixed route, but only for its own team.
+
+#### Organization API access
+
+An organization-scoped token can access teams in its organization and endpoints that manage the organization itself. The token's role must permit each operation. Team restrictions can limit which teams it can access.
+
+[Generate a token from an organization role](../guides/secure.md#grant-api-access-generate-tokens-from-organisation-roles). The CLI `northflank login` flow supports these tokens. A token generated for one team does not grant organization-wide access.
+
+Set `NORTHFLANK_API_TOKEN` to your organization token. Use [List teams](org/teams/list-teams.md) to find the target team ID:
+
+```bash
+curl --request GET \
+  --url https://api.northflank.com/v1/teams \
+  --header "Authorization: Bearer $NORTHFLANK_API_TOKEN"
+```
+
+Use `data.teams[].id` in the `/v1/teams/{teamId}/` prefix. Resource routes use the team's `id`, rather than its permanent `uid`.
+
+For organization-wide operations, use the route on the endpoint page without a target-team prefix. For example, `GET /v1/teams` requires an organization-scoped token. For resources within a team, use the prefixed route from the table above.
+
+SDK examples use the shorter route when both routes are available. For an organization token, add the team argument below. You do not need a different SDK client or authentication setup.
+
+#### SDK arguments
+
+Both SDKs accept team-scoped and organization-scoped tokens through the same authentication setup. For team and project calls with an organization-scoped token, supply the target team on each call. The REST clients do not add this team ID from the token.
+
+These examples assume that you initialized the client with your API token.
+
+The JavaScript client uses `parameters.teamId`:
+
+```js
+const response = await apiClient.list.services({
+  parameters: {
+    teamId: "my-team",
+    projectId: "my-project",
+  },
+});
+```
+
+The Python client uses `team_id`:
+
+```python
+response = client.list.services(
+    team_id="my-team",
+    project_id="my-project",
+)
+```
+
+Supplying the team argument selects the prefixed route. Omitting it selects the shorter route.
+
+If a team or project request returns `403` with `Organisation-scoped tokens can only be used with a {teamId} parameter.`, add the target team ID to the route or SDK call. The token must also have permission for that operation.
 
 ### Rate limits
 
@@ -141,6 +204,7 @@ console.log(json)
 ```
 
 > [!note]
+>
 > Build services are billed with `billing.buildPlan`, not `billing.deploymentPlan`. The `buildPlan` field only accepts plans with 4 or more vCPUs, and defaults to `nf-compute-400-16` if omitted. Creating a build service does not trigger an initial build — you must call the start build endpoint explicitly, as shown below.
 
 The response for a successful request includes the ID of the service, and all other configuration details for the service.
@@ -420,6 +484,7 @@ console.log(json);
 ```
 
 > [!note]
+>
 > Set `version` to a specific version string (for example `16.4`) or a latest selector (for example `16-latest`), or use `latest` for the most recent available version. A major-version-only value such as `16` may be rejected. Each addon type also enforces a minimum `storage` size that varies by type — for example, Redis requires at least 4096 MB.
 
 The response for a successful request includes the ID of the addon, and other configuration details for the addon, including the `type` and `version`.
@@ -455,6 +520,82 @@ The response for a successful request will be an object containing the backup ID
 
 You can retrieve details about a backup by sending a [GET request to the `/v1/projects/{projectId}/addons/{addonId}/backups/{backupId}` endpoint](project/addons/get-addon-backup.md), supplying the project, addon, and backup IDs. The response will include the status, and, if completed, the completion time and size. If the backup has been used to restore the addon, it will also include a `lastRestore` object containing the details.
 
+### Update resources safely
+
+Most resources can be changed with a `PATCH` request, and some also have `POST` endpoints for individual settings. **Neither merges the contents of a map or an array.** If you send `secrets.variables`, `runtimeEnvironment`, `runtimeFiles` or `ports`, Northflank replaces the whole value with what you sent. Fields you leave out of the request are not changed.
+
+This applies to the API, the CLI (`northflank patch ...`, `northflank update ...`) and the JavaScript client.
+
+#### Update a secret group
+
+The table shows what happens to a secret group that contains the variables `A`, `B` and `C`.
+
+| Request body | Result |
+| --- | --- |
+| `{ "description": "New description" }` | Only the description changes. Variables and files are untouched. |
+| `{ "secrets": { "variables": { "D": "4" } } }` | The variables become `D` only. `A`, `B` and `C` are deleted. Files are untouched. |
+| `{ "secrets": { "files": { "/b.txt": { "data": "aGk=" } } } }` | The files become `/b.txt` only. Variables are untouched. |
+| `{ "restrictions": { "tagMatchCondition": "or" } }` | Only that restriction field changes. Other restriction fields are kept. |
+| `{ "data": { "D": "4" } }` | Nothing changes, and the request still succeeds. Fields that the endpoint does not recognise are ignored. |
+
+[Patch project secret](project/secrets/patch-project-secret.md) and [Update project secret](project/secrets/update-project-secret.md) behave in the same way for these fields. [Put project secret](project/secrets/put-project-secret.md) creates or updates a secret group by the `name` in the request body, and resets omitted fields such as `description` and `restrictions` to their defaults.
+
+To add or change a single variable, read the secret group, merge your change into the existing variables, and send the complete set back.
+
+```javascript
+const base = `https://api.northflank.com/v1/projects/${projectId}/secrets/${secretId}`;
+const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+};
+
+// 1. Read the current variables
+const current = await fetch(base, { headers }).then((res) => res.json());
+const variables = current.data.secrets.variables;
+
+// 2. Merge your change and send the complete set back
+await fetch(base, {
+    method: 'PATCH',
+    headers,
+    body: JSON.stringify({
+        secrets: { variables: { ...variables, FEATURE_FLAG: 'true' } }
+    })
+});
+
+// 3. Read the secret group again and check that every key is still present
+```
+
+> [!warning] Back up before you change many secrets
+>
+> A removed variable cannot be restored from Northflank. Before you run a script that rewrites secret groups, save the current variable names and values somewhere safe. After each update, read the secret group back and compare the keys.
+
+#### Update a service
+
+[Patch deployment service](project/services/patch-deployment-service.md), [Patch combined service](project/services/patch-combined-service.md) and [Patch build service](project/services/patch-build-service.md) follow the same rule for maps and arrays.
+
+| Field in the request | Result |
+| --- | --- |
+| `runtimeEnvironment` | Replaces all runtime variables. Include every variable you want to keep. |
+| `runtimeFiles` | Replaces all runtime files. |
+| `ports` | Replaces the whole list of ports. |
+| `deployment` | Merged field by field. Sending `deployment.external.imagePath` keeps `deployment.instances`. |
+| Any other top-level field you omit | Unchanged. |
+
+The `POST` endpoints for a single setting, such as [Update service ports](project/services/update-service-ports.md), replace that setting in the same way. Use the [scale service](project/services/scale-service.md) endpoint to change the number of instances.
+
+To avoid losing variables that several services share, store them in a [secret group](../guides/secure.md#manage-secret-groups) instead of setting them on each service.
+
+#### Use the CLI
+
+The CLI sends the same requests as the API. Pass the body with `--input` or `--file`.
+
+```bash
+northflank get secret --project my-project --secret app-secrets --output json
+
+northflank patch secret --project my-project --secret app-secrets \
+  --input '{"secrets":{"variables":{"A":"1","B":"2","C":"3","FEATURE_FLAG":"true"}}}'
+```
+
 ### Use Northflank Skills with the API
 
 Northflank Skills provide AI coding agents with Northflank-specific knowledge for deploying, operating, and automating workloads on the platform.
@@ -464,6 +605,7 @@ They help agents understand Northflank primitives such as services, jobs, add-on
 Skills can be used with agentic coding tools like Claude Code, Codex, and Cursor to create, configure, deploy, and troubleshoot applications on Northflank using the right platform concepts and commands.
 
 > [!note]
+>
 > [Click here](https://github.com/northflank/skills) to explore Northflank Skills on GitHub.
 
 ### Next steps

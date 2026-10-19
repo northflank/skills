@@ -444,7 +444,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.patch.secret({
@@ -586,5 +586,141 @@ await apiClient.patch.secret({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.patch.secret(
+    project_id="default-project",
+    secret_id="example-secret",
+    data={
+        "description": "A description",
+        "type": "secret",
+        "secretType": "environment",
+        "priority": 10,
+        "restrictions": {
+            "restricted": True,
+            "nfObjects": [{
+                "id": "example-service",
+                "type": "service",
+            }],
+            "tagMatchCondition": "or",
+        },
+        "addonDependencies": [{
+            "addonId": "example-addon",
+            "keys": [{
+                "keyName": "USERNAME",
+                "aliases": ["MONGO_USERNAME"],
+            }],
+        }],
+        "externalAddonDependencies": [{
+            "addonId": "example-addon",
+            "keys": [{
+                "keyName": "USERNAME",
+                "aliases": ["MONGO_USERNAME"],
+            }],
+        }],
+        "secrets": {
+            "variables": {
+                "NODE_ENV": "production",
+                "MONGO_DB": "some_connection_string",
+            },
+            "files": {
+                "/dir/fileName": {
+                    "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                    "encoding": "utf-8",
+                },
+            },
+            "dockerSecretMounts": {
+                "example-secret-mount_1": {
+                    "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                    "encoding": "utf-8",
+                },
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "name": "Example Secret",
+  "description": "A description",
+  "type": "secret",
+  "secretType": "environment",
+  "priority": 10,
+  "restrictions": {
+    "restricted": true,
+    "nfObjects": [
+      {
+        "id": "example-service",
+        "type": "service"
+      }
+    ],
+    "tagMatchCondition": "or"
+  },
+  "addonDependencies": [
+    {
+      "addonId": "example-addon",
+      "keys": [
+        {
+          "keyName": "USERNAME",
+          "aliases": [
+            "MONGO_USERNAME"
+          ]
+        }
+      ]
+    }
+  ],
+  "externalAddonDependencies": [
+    {
+      "addonId": "example-addon",
+      "keys": [
+        {
+          "keyName": "USERNAME",
+          "aliases": [
+            "MONGO_USERNAME"
+          ]
+        }
+      ]
+    }
+  ],
+  "secrets": {
+    "variables": {
+      "NODE_ENV": "production",
+      "MONGO_DB": "some_connection_string"
+    },
+    "files": {
+      "/dir/fileName": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    },
+    "dockerSecretMounts": {
+      "example-secret-mount_1": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    }
+  },
+  "id": "example-secret-group"
 }
 ```

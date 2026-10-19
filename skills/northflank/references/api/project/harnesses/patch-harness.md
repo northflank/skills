@@ -22,6 +22,7 @@ Required permission: Project > Harnesses > General > Update
 {object}
 - `description`: (string) A description of the harness. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+- `apiAccess`: (string) Use the team-approved Northflank API identity, or disable API access. (enum: team-default, disabled)
 - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `billing`: {object}
   - `deploymentPlan`: (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -137,7 +138,7 @@ Required permission: Project > Harnesses > General > Update
      - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
    - `protocol`: (string) (required) The protocol to use for the port. (enum: HTTP, HTTP/2, TCP, UDP)
 - `source`: {object}
-  - `projectUrl`: (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+  - `projectUrl`: (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
   - `projectType`: (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
   - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
   - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -146,7 +147,7 @@ Required permission: Project > Harnesses > General > Update
   - `publicRepo`: (boolean) Whether the linked repository is public.
 - `additionalRepositories`: [array of] {object}
    - `source`: {object}
-     - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+     - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
      - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
      - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
      - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -177,8 +178,8 @@ Required permission: Project > Harnesses > General > Update
       - `storageSize`: (integer) Ephemeral storage per container in MB
   - `workspaceSize`: (integer) Size of the persistent workspace volume in MiB. Only available with persistence enabled. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims.
 - `harness`: {object}
-  - `authMode`: (string) How Codex, Claude and Cursor authenticate. Pi and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (enum: apiKey, account)
-  - `apiKey`: (multiple options) (undefined) | (undefined)
+  - `authMode`: (string) How Codex, Claude and Cursor authenticate. Pi, OMP, Devin CLI and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (enum: apiKey, account)
+  - `apiKey`: (multiple options) (undefined) API key used by the harness environment. | (undefined) API key used by the harness environment.
 
 **Response body:**
 
@@ -187,6 +188,8 @@ Required permission: Project > Harnesses > General > Update
   - `name`: (string) (required) The name of the harness. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
   - `description`: (string) A description of the harness. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
   - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `private`: (boolean) Only the creator can connect to this harness. Set at creation only.
+  - `apiAccess`: (string) Use the team-approved Northflank API identity, or disable API access. (enum: team-default, disabled)
   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `billing`: {object}
     - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -302,7 +305,7 @@ Required permission: Project > Harnesses > General > Update
        - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
      - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
   - `source`: {object}
-    - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+    - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
     - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
     - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
     - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -311,7 +314,7 @@ Required permission: Project > Harnesses > General > Update
     - `publicRepo`: (boolean) Whether the linked repository is public.
   - `additionalRepositories`: [array of] {object}
      - `source`: {object}
-       - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+       - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
        - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
        - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
        - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -353,11 +356,12 @@ Required permission: Project > Harnesses > General > Update
     - `persistentWorkspace`: (boolean) Use a persistent workspace volume. Defaults to true on creation. Prefers ReadWriteMany, falling back to ReadWriteOnce. When false, files are lost on container restart, redeployment or stop. Cannot be changed after creation.
     - `workspaceSize`: (integer) Size of the persistent workspace volume in MiB. Only available with persistence enabled. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims.
   - `harness`: {object}
-    - `type`: (string) (required) The harness environment type to run. (enum: codex, claude, pi, opencode, cursor, none)
+    - `type`: (string) (required) The harness environment type to run. (enum: codex, claude, pi, omp, devin, opencode, cursor, none)
     - `authMode`: (string) How the harness authenticates: `apiKey` (a provider key is stored) or `account` (interactive/account login, no key). (enum: apiKey, account)
     - `apiKey`: (string) Masked API key used by the harness environment. Absent for `account` harnesses.
     - `cloneDirectory`: (string) Absolute path the repo is cloned into in the harness container.
   - `id`: (string) (required) Identifier for the harness
+  - `uid`: (string) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
   - `appId`: (string) (required) Full identifier used for harness deployment
   - `cluster`: {object}
     - `id`: (string) (required) The id of the cluster associated with this project.
@@ -387,7 +391,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
-  --data '{"description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"workspaceSize":10240},"harness":{"authMode":"apiKey"}}' \
+  --data '{"description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"workspaceSize":10240},"harness":{"authMode":"apiKey"}}' \
   https://api.northflank.com/v1/projects/{projectId}/harnesses/{harnessId}
 ```
 
@@ -522,7 +526,7 @@ const payload = {
     }
   ],
   "source": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user",
     "projectBranch": "master"
@@ -530,7 +534,7 @@ const payload = {
   "additionalRepositories": [
     {
       "source": {
-        "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+        "projectUrl": "https://github.com/example/project",
         "projectType": "github",
         "accountLogin": "github-user",
         "projectBranch": "master"
@@ -589,7 +593,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/harnesses/{harnessId}"
 
-payload = {"description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"workspaceSize":10240},"harness":{"authMode":"apiKey"}}
+payload = {"description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"workspaceSize":10240},"harness":{"authMode":"apiKey"}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PATCH", url, headers = headers, json = payload)
@@ -610,7 +614,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/harnesses/{harnessId}"
 
-  var jsonStr = []byte(`{"description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"workspaceSize":10240},"harness":{"authMode":"apiKey"}}`)
+  var jsonStr = []byte(`{"description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"workspaceSize":10240},"harness":{"authMode":"apiKey"}}`)
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -764,7 +768,7 @@ func main() {
       }
     ],
     "source": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "projectBranch": "master"
@@ -772,7 +776,7 @@ func main() {
     "additionalRepositories": [
       {
         "source": {
-          "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+          "projectUrl": "https://github.com/example/project",
           "projectType": "github",
           "accountLogin": "github-user",
           "projectBranch": "master"
@@ -817,6 +821,7 @@ func main() {
       "apiKey": "sk-...abcd"
     },
     "id": "example-harness",
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
     "appId": "/example-user/default-project/example-harness",
     "cluster": {
       "id": "nf-europe-west",
@@ -990,7 +995,7 @@ Options:
     }
   ],
   "source": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user",
     "projectBranch": "master"
@@ -998,7 +1003,7 @@ Options:
   "additionalRepositories": [
     {
       "source": {
-        "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+        "projectUrl": "https://github.com/example/project",
         "projectType": "github",
         "accountLogin": "github-user",
         "projectBranch": "master"
@@ -1174,7 +1179,7 @@ Options:
     }
   ],
   "source": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user",
     "projectBranch": "master"
@@ -1182,7 +1187,7 @@ Options:
   "additionalRepositories": [
     {
       "source": {
-        "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+        "projectUrl": "https://github.com/example/project",
         "projectType": "github",
         "accountLogin": "github-user",
         "projectBranch": "master"
@@ -1227,6 +1232,7 @@ Options:
     "apiKey": "sk-...abcd"
   },
   "id": "example-harness",
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
   "appId": "/example-user/default-project/example-harness",
   "cluster": {
     "id": "nf-europe-west",
@@ -1250,7 +1256,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.patch.harness({
@@ -1258,7 +1264,6 @@ await apiClient.patch.harness({
     "projectId": "default-project",
     "harnessId": "example-harness"
   },
-  options: {},
   data: {
     "description": "A harness description",
     "billing": {
@@ -1389,7 +1394,7 @@ await apiClient.patch.harness({
       }
     ],
     "source": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "projectBranch": "master"
@@ -1397,7 +1402,7 @@ await apiClient.patch.harness({
     "additionalRepositories": [
       {
         "source": {
-          "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+          "projectUrl": "https://github.com/example/project",
           "projectType": "github",
           "accountLogin": "github-user",
           "projectBranch": "master"
@@ -1575,7 +1580,7 @@ await apiClient.patch.harness({
       }
     ],
     "source": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "projectBranch": "master"
@@ -1583,7 +1588,7 @@ await apiClient.patch.harness({
     "additionalRepositories": [
       {
         "source": {
-          "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+          "projectUrl": "https://github.com/example/project",
           "projectType": "github",
           "accountLogin": "github-user",
           "projectBranch": "master"
@@ -1628,6 +1633,7 @@ await apiClient.patch.harness({
       "apiKey": "sk-...abcd"
     },
     "id": "example-harness",
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
     "appId": "/example-user/default-project/example-harness",
     "cluster": {
       "id": "nf-europe-west",
@@ -1648,5 +1654,370 @@ await apiClient.patch.harness({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.patch.harness(
+    harness_id="example-harness",
+    project_id="default-project",
+    data={
+        "description": "A harness description",
+        "billing": {
+            "deploymentPlan": "nf-compute-20",
+        },
+        "ports": [{
+            "name": "p01",
+            "internalPort": 8080,
+            "public": True,
+            "vpcAccessible": False,
+            "security": {
+                "credentials": [{
+                    "username": "admin",
+                    "password": "password123",
+                    "type": "basic-auth",
+                }],
+                "ip": [{
+                    "addresses": ["127.0.0.1"],
+                    "action": "DENY",
+                }],
+                "policies": [{
+                    "addresses": ["127.0.0.1"],
+                    "action": "DENY",
+                }],
+                "headers": [{
+                    "regexMode": False,
+                    "name": "headerName",
+                    "value": "headerValue",
+                }],
+                "securePathConfiguration": {
+                    "rules": [{
+                        "paths": [{
+                            "routingMode": "prefix",
+                            "priority": 80,
+                            "path": "/path",
+                        }],
+                        "accessMode": "protected",
+                        "securityPolicies": {
+                            "orPolicies": {
+                                "credentials": [{
+                                    "username": "admin",
+                                    "password": "password123",
+                                    "type": "basic-auth",
+                                }],
+                                "ip": [{
+                                    "addresses": ["127.0.0.1"],
+                                    "action": "DENY",
+                                }],
+                                "policies": [{
+                                    "addresses": ["127.0.0.1"],
+                                    "action": "DENY",
+                                }],
+                                "headers": [{
+                                    "regexMode": False,
+                                    "name": "headerName",
+                                    "value": "headerValue",
+                                }],
+                            },
+                            "requiredPolicies": {
+                                "credentials": [{
+                                    "username": "admin",
+                                    "password": "password123",
+                                    "type": "basic-auth",
+                                }],
+                                "ip": [{
+                                    "addresses": ["127.0.0.1"],
+                                    "action": "DENY",
+                                }],
+                                "policies": [{
+                                    "addresses": ["127.0.0.1"],
+                                    "action": "DENY",
+                                }],
+                                "headers": [{
+                                    "regexMode": False,
+                                    "name": "headerName",
+                                    "value": "headerValue",
+                                }],
+                            },
+                        },
+                    }],
+                },
+            },
+            "domains": ["app.example.com"],
+            "protocol": "HTTP",
+        }],
+        "source": {
+            "projectUrl": "https://github.com/example/project",
+            "projectType": "github",
+            "accountLogin": "github-user",
+            "projectBranch": "master",
+        },
+        "additionalRepositories": [{
+            "source": {
+                "projectUrl": "https://github.com/example/project",
+                "projectType": "github",
+                "accountLogin": "github-user",
+                "projectBranch": "master",
+            },
+            "directory": "payments-api",
+        }],
+        "runtimeEnvironment": {
+            "VARIABLE_1": "abcdef",
+            "VARIABLE_2": "12345",
+        },
+        "runtimeFiles": {
+            "/dir/fileName": {
+                "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                "encoding": "utf-8",
+            },
+        },
+        "deployment": {
+            "internal": {
+                "id": "example-build-service",
+                "branch": "master",
+                "buildSHA": "latest",
+                "buildId": "premium-guide-6393",
+            },
+            "external": {
+                "imagePath": "nginx:latest",
+                "credentials": "example-credentials",
+            },
+            "storage": {
+                "ephemeralStorage": {
+                    "storageSize": 1024,
+                },
+            },
+            "workspaceSize": 10240,
+        },
+        "harness": {
+            "authMode": "apiKey",
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "name": "Example Harness",
+  "description": "A harness description",
+  "billing": {
+    "deploymentPlan": "nf-compute-20"
+  },
+  "ports": [
+    {
+      "name": "p01",
+      "internalPort": 8080,
+      "public": true,
+      "vpcAccessible": false,
+      "security": {
+        "credentials": [
+          {
+            "username": "admin",
+            "password": "password123",
+            "type": "basic-auth"
+          }
+        ],
+        "ip": [
+          {
+            "addresses": [
+              "127.0.0.1"
+            ],
+            "action": "DENY"
+          }
+        ],
+        "policies": [
+          {
+            "addresses": [
+              "127.0.0.1"
+            ],
+            "action": "DENY"
+          }
+        ],
+        "headers": [
+          {
+            "regexMode": false,
+            "name": "headerName",
+            "value": "headerValue"
+          }
+        ],
+        "securePathConfiguration": {
+          "rules": [
+            {
+              "paths": [
+                {
+                  "routingMode": "prefix",
+                  "priority": 80,
+                  "path": "/path"
+                }
+              ],
+              "accessMode": "protected",
+              "securityPolicies": {
+                "orPolicies": {
+                  "credentials": [
+                    {
+                      "username": "admin",
+                      "password": "password123",
+                      "type": "basic-auth"
+                    }
+                  ],
+                  "ip": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "policies": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "headers": [
+                    {
+                      "regexMode": false,
+                      "name": "headerName",
+                      "value": "headerValue"
+                    }
+                  ]
+                },
+                "requiredPolicies": {
+                  "credentials": [
+                    {
+                      "username": "admin",
+                      "password": "password123",
+                      "type": "basic-auth"
+                    }
+                  ],
+                  "ip": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "policies": [
+                    {
+                      "addresses": [
+                        "127.0.0.1"
+                      ],
+                      "action": "DENY"
+                    }
+                  ],
+                  "headers": [
+                    {
+                      "regexMode": false,
+                      "name": "headerName",
+                      "value": "headerValue"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "domains": [
+        "app.example.com"
+      ],
+      "protocol": "HTTP"
+    }
+  ],
+  "source": {
+    "projectUrl": "https://github.com/example/project",
+    "projectType": "github",
+    "accountLogin": "github-user",
+    "projectBranch": "master"
+  },
+  "additionalRepositories": [
+    {
+      "source": {
+        "projectUrl": "https://github.com/example/project",
+        "projectType": "github",
+        "accountLogin": "github-user",
+        "projectBranch": "master"
+      },
+      "directory": "payments-api"
+    }
+  ],
+  "repositoryData": {
+    "name": "my-harness-repo",
+    "projectType": "bitbucket",
+    "vcsLinkId": "stringaaaaaaaaaaaaaaaaaa"
+  },
+  "runtimeEnvironment": {
+    "VARIABLE_1": "abcdef",
+    "VARIABLE_2": "12345"
+  },
+  "runtimeFiles": {
+    "/dir/fileName": {
+      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+      "encoding": "utf-8"
+    }
+  },
+  "deployment": {
+    "internal": {
+      "id": "example-build-service",
+      "branch": "master",
+      "buildSHA": "latest",
+      "buildId": "premium-guide-6393"
+    },
+    "external": {
+      "imagePath": "nginx:latest",
+      "credentials": "example-credentials"
+    },
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 1024
+      }
+    },
+    "persistentWorkspace": true,
+    "workspaceSize": 10240
+  },
+  "harness": {
+    "type": "claude",
+    "authMode": "apiKey",
+    "apiKey": "sk-...abcd"
+  },
+  "id": "example-harness",
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
+  "appId": "/example-user/default-project/example-harness",
+  "cluster": {
+    "id": "nf-europe-west",
+    "name": "nf-europe-west",
+    "namespace": "ns-8zy2mcjh9zn2",
+    "loadBalancers": [
+      "lb.659200800000000000000000.northflank.com"
+    ]
+  },
+  "status": {
+    "deployment": {
+      "status": "COMPLETED",
+      "reason": "DEPLOYING",
+      "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+    }
+  }
 }
 ```

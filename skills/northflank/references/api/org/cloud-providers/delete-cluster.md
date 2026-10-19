@@ -2,7 +2,7 @@
 
 Source: https://northflank.com/docs/v1/api/org/cloud-providers/delete-cluster.md
 
-Delete the given cluster. Fails if the cluster has associated projects.
+Delete the given cluster. Fails if the cluster has associated projects. The first request tears down the cluster resources; once the cluster state is `deleted`, call this endpoint again to remove the cluster.
 
 Required permission: Account > Cloud > Clusters > Delete
 
@@ -64,6 +64,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.delete.cloud.cluster({
   parameters: {
@@ -83,4 +85,32 @@ await apiClient.delete.cloud.cluster({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.delete.cloud.cluster(
+    cluster_id="gcp-cluster-1",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

@@ -12,7 +12,7 @@ Required permission: Project > Services > General > Delete
 - `projectId`: (string) (required) ID of the project
 - `serviceId`: (string) (required) ID of the service
 - `volumeId`: (string) (required) ID of the per-replica volume
-- `ordinal`: (string) (required) StatefulSet replica ordinal the PVC belongs to
+- `ordinal`: (string) (required) StatefulSet replica ordinal the PVC belongs to (pattern: ^\d+$)
 
 **Response body:**
 
@@ -69,6 +69,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.delete.service.perReplicaVolume({
   parameters: {
@@ -91,4 +93,35 @@ await apiClient.delete.service.perReplicaVolume({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.delete.service.per_replica_volume(
+    ordinal="2",
+    project_id="default-project",
+    service_id="example-service",
+    volume_id="data",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

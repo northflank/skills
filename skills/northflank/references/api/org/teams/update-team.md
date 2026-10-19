@@ -21,6 +21,7 @@ Required permission: Organisation > Team > General > Update
 {object}
 - `data`: {object}
   - `id`: (string) (required) ID of the team. (pattern: ^[A-Za-z0-9-]+$)
+  - `uid`: (string) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
   - `name`: (string) (required) Display name of the team.
   - `description`: (string) Description of the team.
   - `createdAt`: (string) (required) The time the team was created. (format: date-time)
@@ -113,6 +114,7 @@ func main() {
 {
   "data": {
     "id": "my-team",
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
     "name": "My Team",
     "description": "This is my team.",
     "createdAt": "2021-01-20T11:19:53.175Z",
@@ -152,6 +154,7 @@ Options:
 ```json
 {
   "id": "my-team",
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
   "name": "My Team",
   "description": "This is my team.",
   "createdAt": "2021-01-20T11:19:53.175Z",
@@ -162,8 +165,6 @@ Options:
 ### JavaScript client reference
 
 #### Example request
-
-Request body
 
 ```javascript
 await apiClient.patch.team({
@@ -184,6 +185,7 @@ await apiClient.patch.team({
 {
   "data": {
     "id": "my-team",
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
     "name": "My Team",
     "description": "This is my team.",
     "createdAt": "2021-01-20T11:19:53.175Z",
@@ -192,5 +194,41 @@ await apiClient.patch.team({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.patch.team(
+    team_id="my-team",
+    data={
+        "description": "This is my team.",
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "my-team",
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
+  "name": "My Team",
+  "description": "This is my team.",
+  "createdAt": "2021-01-20T11:19:53.175Z",
+  "updatedAt": "2021-01-20T11:19:53.175Z"
 }
 ```

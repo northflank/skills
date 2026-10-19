@@ -32,7 +32,7 @@ Required permission: Project > Services > General > Create
 - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
 - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
 - `vcsData`: {object}
-  - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+  - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
   - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
   - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
   - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -49,9 +49,7 @@ Required permission: Project > Services > General > Create
      - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
      - `buildkit`: {object}
        - `useCache`: (boolean) Use persistent storage to cache build layers.
-       - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-       - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-       - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+       - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
    - `storage`: {object}
      - `ephemeralStorage`: {object}
        - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -106,7 +104,7 @@ Required permission: Project > Services > General > Create
   - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
   - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
   - `vcsData`: {object}
-    - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+    - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
     - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
     - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
     - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -123,9 +121,7 @@ Required permission: Project > Services > General > Create
        - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
        - `buildkit`: {object}
          - `useCache`: (boolean) Use persistent storage to cache build layers.
-         - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-         - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-         - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+         - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
      - `storage`: {object}
        - `ephemeralStorage`: {object}
          - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -186,7 +182,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"],"isAllowList":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}' \
+  --data '{"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"buildSource":"git","vcsData":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"],"isAllowList":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}' \
   https://api.northflank.com/v1/projects/{projectId}/services/build
 ```
 
@@ -200,7 +196,7 @@ const payload = {
   },
   "buildSource": "git",
   "vcsData": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user"
   },
@@ -293,7 +289,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/build"
 
-payload = {"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"],"isAllowList":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}
+payload = {"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"buildSource":"git","vcsData":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"],"isAllowList":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -314,7 +310,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/build"
 
-  var jsonStr = []byte(`{"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"buildSource":"git","vcsData":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"],"isAllowList":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}`)
+  var jsonStr = []byte(`{"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"buildSource":"git","vcsData":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"prRestrictions":["feature/*"],"branchRestrictions":["feature/*"],"crossProjectAccess":{"enabled":true,"projects":["example-project"],"isAllowList":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -348,7 +344,7 @@ func main() {
     },
     "buildSource": "git",
     "vcsData": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user"
     },
@@ -467,7 +463,7 @@ Options:
   },
   "buildSource": "git",
   "vcsData": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user"
   },
@@ -557,7 +553,7 @@ Options:
   },
   "buildSource": "git",
   "vcsData": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user"
   },
@@ -647,7 +643,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.create.service.build({
@@ -663,7 +659,7 @@ await apiClient.create.service.build({
     },
     "buildSource": "git",
     "vcsData": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user"
     },
@@ -755,7 +751,7 @@ await apiClient.create.service.build({
     },
     "buildSource": "git",
     "vcsData": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user"
     },
@@ -842,5 +838,197 @@ await apiClient.create.service.build({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.service.build(
+    project_id="default-project",
+    data={
+        "name": "Example Service",
+        "description": "A service description",
+        "billing": {
+            "deploymentPlan": "nf-compute-20",
+            "buildPlan": "nf-compute-200-8",
+        },
+        "buildSource": "git",
+        "vcsData": {
+            "projectUrl": "https://github.com/example/project",
+            "projectType": "github",
+            "accountLogin": "github-user",
+        },
+        "buildSettings": {
+            "storage": {
+                "ephemeralStorage": {
+                    "storageSize": 16384,
+                },
+            },
+            "dockerfile": {
+                "buildEngine": "buildkit",
+                "dockerFilePath": "/Dockerfile",
+                "dockerWorkDir": "/",
+                "buildkit": {
+                    "useCache": True,
+                    "cacheStorageSize": 32768,
+                },
+            },
+        },
+        "buildConfiguration": {
+            "prRestrictions": ["feature/*"],
+            "branchRestrictions": ["feature/*"],
+            "crossProjectAccess": {
+                "enabled": True,
+                "projects": ["example-project"],
+                "isAllowList": False,
+            },
+            "pathIgnoreRules": ["README.md"],
+            "isAllowList": False,
+            "ciIgnoreFlags": ["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"],
+            "ignoreEmptyCommits": False,
+            "dockerCredentials": ["example-docker-credential"],
+            "storage": {
+                "ephemeralStorage": {
+                    "storageSize": 16384,
+                },
+            },
+        },
+        "buildArguments": {
+            "ARGUMENT_1": "abcdef",
+            "ARGUMENT_2": "12345",
+        },
+        "buildFiles": {
+            "/dir/fileName": {
+                "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                "encoding": "utf-8",
+            },
+        },
+        "dockerSecretMounts": {
+            "example-secret-mount_1": {
+                "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                "encoding": "utf-8",
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "name": "Example Service",
+  "description": "A service description",
+  "billing": {
+    "deploymentPlan": "nf-compute-20",
+    "buildPlan": "nf-compute-200-8"
+  },
+  "buildSource": "git",
+  "vcsData": {
+    "projectUrl": "https://github.com/example/project",
+    "projectType": "github",
+    "accountLogin": "github-user"
+  },
+  "buildSettings": {
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 16384
+      }
+    },
+    "dockerfile": {
+      "buildEngine": "buildkit",
+      "dockerFilePath": "/Dockerfile",
+      "dockerWorkDir": "/",
+      "buildkit": {
+        "useCache": true,
+        "cacheStorageSize": 32768
+      }
+    }
+  },
+  "buildConfiguration": {
+    "prRestrictions": [
+      "feature/*"
+    ],
+    "branchRestrictions": [
+      "feature/*"
+    ],
+    "crossProjectAccess": {
+      "enabled": true,
+      "projects": [
+        "example-project"
+      ],
+      "isAllowList": false
+    },
+    "pathIgnoreRules": [
+      "README.md"
+    ],
+    "isAllowList": false,
+    "ciIgnoreFlags": [
+      "[skip ci]",
+      "[ci skip]",
+      "[no ci]",
+      "[skip nf]",
+      "[nf skip]",
+      "[northflank skip]",
+      "[skip northflank]"
+    ],
+    "ignoreEmptyCommits": false,
+    "dockerCredentials": [
+      "example-docker-credential"
+    ],
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 16384
+      }
+    }
+  },
+  "buildArguments": {
+    "ARGUMENT_1": "abcdef",
+    "ARGUMENT_2": "12345"
+  },
+  "buildFiles": {
+    "/dir/fileName": {
+      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+      "encoding": "utf-8"
+    }
+  },
+  "dockerSecretMounts": {
+    "example-secret-mount_1": {
+      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+      "encoding": "utf-8"
+    }
+  },
+  "serviceType": "build",
+  "id": "example-service",
+  "appId": "/example-user/default-project/example-service",
+  "cluster": {
+    "id": "nf-europe-west",
+    "name": "nf-europe-west",
+    "namespace": "ns-8zy2mcjh9zn2",
+    "loadBalancers": [
+      "lb.659200800000000000000000.northflank.com"
+    ]
+  },
+  "status": {
+    "build": {
+      "status": "SUCCESS",
+      "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+    }
+  }
 }
 ```

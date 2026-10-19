@@ -16,9 +16,9 @@ Required permission: Organisation > Admin > Roles > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 - `type`: (string) Filter members by how they were added, directly or implicitly via directory group membership. (enum: explicit, implicit)
-- `userIds`: (undefined) Filter members by user ID. Specify the parameter multiple times to filter by multiple user IDs.
+- `userIds`: (multiple options) [array of] (string) (pattern: ^[A-Za-z0-9-]+$) | (string) (pattern: ^[A-Za-z0-9-]+$)
 
 **Response body:**
 
@@ -134,7 +134,7 @@ await apiClient.list.orgRoleMembers({
     "per_page": 50,
     "page": 1,
     "type": "explicit",
-    "userIds": "john-doe"
+    "userIds": []
   }
 });
 ```
@@ -169,5 +169,52 @@ await apiClient.list.orgRoleMembers({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.org_role_members(
+    role_id="developer",
+    page=1,
+    per_page=50,
+    type="explicit",
+    user_ids=[],
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "members": [
+    {
+      "id": "john-doe",
+      "name": "John Doe",
+      "emails": [
+        {
+          "address": "john@example.com",
+          "verified": true
+        }
+      ],
+      "joinedAt": "2021-01-20T11:19:53.175Z",
+      "lastLoginTime": "2021-01-20T11:19:53.175Z",
+      "type": "explicit",
+      "finalized": false
+    }
+  ]
 }
 ```

@@ -16,7 +16,7 @@ Required permission: Project > ExternalAddons > General > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 - `resourceType`: (string) Filter by resource type (s3, rds)
 - `status`: (string) Filter by status (creating, active, error, deleting, deleted)
 
@@ -157,6 +157,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.list.externalAddons({
   parameters: {
@@ -203,5 +205,66 @@ await apiClient.list.externalAddons({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.external_addons(
+    project_id="default-project",
+    page=1,
+    per_page=50,
+    resource_type="s3",
+    status="active",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "data": {
+    "externalAddons": [
+      {
+        "spec": {
+          "provider": {
+            "aws": {
+              "region": "eu-west-1",
+              "integrationId": "string"
+            },
+            "google": {
+              "region": "us-central1",
+              "zone": "us-central1-c",
+              "project": "string",
+              "integrationId": "string"
+            }
+          },
+          "resourceType": "s3",
+          "config": {}
+        },
+        "name": "string"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "perPage": 1,
+      "total": 1
+    }
+  }
 }
 ```

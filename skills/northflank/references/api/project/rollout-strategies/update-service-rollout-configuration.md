@@ -389,7 +389,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.update.service.rollout.configuration({
@@ -488,5 +488,114 @@ await apiClient.update.service.rollout.configuration({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.service.rollout.configuration(
+    project_id="default-project",
+    service_id="example-service",
+    data={
+        "canaryPercentage": 20,
+        "stablePercentage": 80,
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "strategyId": "example-gradual-rollout-strategy",
+  "type": "canary",
+  "promoted": false,
+  "createdAt": "2024-01-15T10:30:00.000Z",
+  "updatedAt": "2024-01-15T11:30:00.000Z",
+  "details": {
+    "canaryStrategy": "percentage",
+    "config": {
+      "canaryPercentage": 20,
+      "stablePercentage": 80
+    }
+  },
+  "stableDeployment": {
+    "id": "6560a1b2c3d4e5f6a7b8c9d0",
+    "name": "example-service-7d9f8b6c5d",
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "active": true,
+    "releaseType": "canary",
+    "image": {
+      "imagePath": "nginx:latest",
+      "image": "nginx",
+      "tag": "latest",
+      "sha": "sha256:9c8f8d"
+    },
+    "commit": {
+      "sha": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
+      "message": "fix: handle empty payload",
+      "author": "octocat",
+      "date": "2024-01-15T10:30:00.000Z"
+    },
+    "instances": 2,
+    "reason": {
+      "id": "service-updated",
+      "user": {
+        "name": "Jane Doe",
+        "email": "jane@example.com"
+      }
+    }
+  },
+  "canaryDeployment": {
+    "id": "6560a1b2c3d4e5f6a7b8c9d0",
+    "name": "example-service-7d9f8b6c5d",
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "active": true,
+    "releaseType": "canary",
+    "image": {
+      "imagePath": "nginx:latest",
+      "image": "nginx",
+      "tag": "latest",
+      "sha": "sha256:9c8f8d"
+    },
+    "commit": {
+      "sha": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
+      "message": "fix: handle empty payload",
+      "author": "octocat",
+      "date": "2024-01-15T10:30:00.000Z"
+    },
+    "instances": 2,
+    "reason": {
+      "id": "service-updated",
+      "user": {
+        "name": "Jane Doe",
+        "email": "jane@example.com"
+      }
+    }
+  },
+  "history": [
+    {
+      "config": {
+        "canaryPercentage": 20,
+        "stablePercentage": 80
+      },
+      "updatedAt": "2024-01-15T10:45:00.000Z"
+    }
+  ]
 }
 ```

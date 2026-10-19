@@ -147,8 +147,6 @@ Options:
 
 #### Example request
 
-Request body
-
 ```javascript
 await apiClient.create.teamMemberInvite({
   parameters: {
@@ -171,4 +169,33 @@ await apiClient.create.teamMemberInvite({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.team_member_invite(
+    team_id="my-team",
+    data={
+        "email": "user@example.com",
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```
