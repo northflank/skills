@@ -53,11 +53,11 @@ GET /v1/teams/{teamId}/integrations/vcs/repos
       {
         "vcsService": "github",
         "id": "123456789",
-        "name": "gatsby-with-northflank",
-        "full_name": "northflank/gatsby-with-northflank",
-        "url": "https://github.com/northflank/gatsby-with-northflank",
+        "name": "project",
+        "full_name": "example/project",
+        "url": "https://github.com/example/project",
         "owner": {
-          "login": "northflank"
+          "login": "example"
         },
         "accountLogin": "example-user"
       }
@@ -106,11 +106,11 @@ Options:
     {
       "vcsService": "github",
       "id": "123456789",
-      "name": "gatsby-with-northflank",
-      "full_name": "northflank/gatsby-with-northflank",
-      "url": "https://github.com/northflank/gatsby-with-northflank",
+      "name": "project",
+      "full_name": "example/project",
+      "url": "https://github.com/example/project",
       "owner": {
-        "login": "northflank"
+        "login": "example"
       },
       "accountLogin": "example-user"
     }
@@ -146,11 +146,11 @@ await apiClient.list.repos({
       {
         "vcsService": "github",
         "id": "123456789",
-        "name": "gatsby-with-northflank",
-        "full_name": "northflank/gatsby-with-northflank",
-        "url": "https://github.com/northflank/gatsby-with-northflank",
+        "name": "project",
+        "full_name": "example/project",
+        "url": "https://github.com/example/project",
         "owner": {
-          "login": "northflank"
+          "login": "example"
         },
         "accountLogin": "example-user"
       }
@@ -199,11 +199,11 @@ print(response.data)
     {
       "vcsService": "github",
       "id": "123456789",
-      "name": "gatsby-with-northflank",
-      "full_name": "northflank/gatsby-with-northflank",
-      "url": "https://github.com/northflank/gatsby-with-northflank",
+      "name": "project",
+      "full_name": "example/project",
+      "url": "https://github.com/example/project",
       "owner": {
-        "login": "northflank"
+        "login": "example"
       },
       "accountLogin": "example-user"
     }

@@ -46,13 +46,13 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","projectBranch":"master","accountLogin":"github-user"}' \
+  --data '{"projectUrl":"https://github.com/example/project","projectType":"github","projectBranch":"master","accountLogin":"github-user"}' \
   https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-source
 ```
 
 ```javascript
 const payload = {
-  "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+  "projectUrl": "https://github.com/example/project",
   "projectType": "github",
   "projectBranch": "master",
   "accountLogin": "github-user"
@@ -76,7 +76,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-source"
 
-payload = {"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","projectBranch":"master","accountLogin":"github-user"}
+payload = {"projectUrl":"https://github.com/example/project","projectType":"github","projectBranch":"master","accountLogin":"github-user"}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -97,7 +97,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-source"
 
-  var jsonStr = []byte(`{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","projectBranch":"master","accountLogin":"github-user"}`)
+  var jsonStr = []byte(`{"projectUrl":"https://github.com/example/project","projectType":"github","projectBranch":"master","accountLogin":"github-user"}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -148,7 +148,7 @@ Options:
 
 ```json
 {
-  "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+  "projectUrl": "https://github.com/example/project",
   "projectType": "github",
   "projectBranch": "master",
   "accountLogin": "github-user"
@@ -176,7 +176,7 @@ await apiClient.update.service.buildSource({
     "serviceId": "example-service"
   },
   data: {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "projectBranch": "master",
     "accountLogin": "github-user"
@@ -215,7 +215,7 @@ response = client.update.service.build_source(
     project_id="default-project",
     service_id="example-service",
     data={
-        "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+        "projectUrl": "https://github.com/example/project",
         "projectType": "github",
         "projectBranch": "master",
         "accountLogin": "github-user",

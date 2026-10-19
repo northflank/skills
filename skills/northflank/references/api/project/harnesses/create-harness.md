@@ -410,7 +410,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"Example Harness","description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"persistentWorkspace":true,"workspaceSize":10240},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"branchData":{"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"name":"harness/my-task"},"repositoryData":{"name":"my-harness-repo","projectType":"bitbucket","vcsLinkId":"stringaaaaaaaaaaaaaaaaaa"},"harness":{"type":"claude","authMode":"apiKey","cloneDirectory":"/home/harness/repo"},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}' \
+  --data '{"name":"Example Harness","description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"persistentWorkspace":true,"workspaceSize":10240},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"branchData":{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"name":"harness/my-task"},"repositoryData":{"name":"my-harness-repo","projectType":"bitbucket","vcsLinkId":"stringaaaaaaaaaaaaaaaaaa"},"harness":{"type":"claude","authMode":"apiKey","cloneDirectory":"/home/harness/repo"},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}' \
   https://api.northflank.com/v1/projects/{projectId}/harnesses
 ```
 
@@ -565,7 +565,7 @@ const payload = {
     }
   ],
   "source": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user",
     "projectBranch": "master"
@@ -573,7 +573,7 @@ const payload = {
   "additionalRepositories": [
     {
       "source": {
-        "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+        "projectUrl": "https://github.com/example/project",
         "projectType": "github",
         "accountLogin": "github-user",
         "projectBranch": "master"
@@ -583,7 +583,7 @@ const payload = {
   ],
   "branchData": {
     "source": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "projectBranch": "master"
@@ -630,7 +630,7 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/harnesses"
 
-payload = {"name":"Example Harness","description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"persistentWorkspace":true,"workspaceSize":10240},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"branchData":{"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"name":"harness/my-task"},"repositoryData":{"name":"my-harness-repo","projectType":"bitbucket","vcsLinkId":"stringaaaaaaaaaaaaaaaaaa"},"harness":{"type":"claude","authMode":"apiKey","cloneDirectory":"/home/harness/repo"},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}
+payload = {"name":"Example Harness","description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"persistentWorkspace":true,"workspaceSize":10240},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"branchData":{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"name":"harness/my-task"},"repositoryData":{"name":"my-harness-repo","projectType":"bitbucket","vcsLinkId":"stringaaaaaaaaaaaaaaaaaa"},"harness":{"type":"claude","authMode":"apiKey","cloneDirectory":"/home/harness/repo"},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -651,7 +651,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/harnesses"
 
-  var jsonStr = []byte(`{"name":"Example Harness","description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"persistentWorkspace":true,"workspaceSize":10240},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"branchData":{"source":{"projectUrl":"https://github.com/northflank/gatsby-with-northflank","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"name":"harness/my-task"},"repositoryData":{"name":"my-harness-repo","projectType":"bitbucket","vcsLinkId":"stringaaaaaaaaaaaaaaaaaa"},"harness":{"type":"claude","authMode":"apiKey","cloneDirectory":"/home/harness/repo"},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}`)
+  var jsonStr = []byte(`{"name":"Example Harness","description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"persistentWorkspace":true,"workspaceSize":10240},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"branchData":{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"name":"harness/my-task"},"repositoryData":{"name":"my-harness-repo","projectType":"bitbucket","vcsLinkId":"stringaaaaaaaaaaaaaaaaaa"},"harness":{"type":"claude","authMode":"apiKey","cloneDirectory":"/home/harness/repo"},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -805,7 +805,7 @@ func main() {
       }
     ],
     "source": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "projectBranch": "master"
@@ -813,7 +813,7 @@ func main() {
     "additionalRepositories": [
       {
         "source": {
-          "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+          "projectUrl": "https://github.com/example/project",
           "projectType": "github",
           "accountLogin": "github-user",
           "projectBranch": "master"
@@ -1052,7 +1052,7 @@ Options:
     }
   ],
   "source": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user",
     "projectBranch": "master"
@@ -1060,7 +1060,7 @@ Options:
   "additionalRepositories": [
     {
       "source": {
-        "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+        "projectUrl": "https://github.com/example/project",
         "projectType": "github",
         "accountLogin": "github-user",
         "projectBranch": "master"
@@ -1070,7 +1070,7 @@ Options:
   ],
   "branchData": {
     "source": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "projectBranch": "master"
@@ -1234,7 +1234,7 @@ Options:
     }
   ],
   "source": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user",
     "projectBranch": "master"
@@ -1242,7 +1242,7 @@ Options:
   "additionalRepositories": [
     {
       "source": {
-        "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+        "projectUrl": "https://github.com/example/project",
         "projectType": "github",
         "accountLogin": "github-user",
         "projectBranch": "master"
@@ -1468,7 +1468,7 @@ await apiClient.create.harness({
       }
     ],
     "source": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "projectBranch": "master"
@@ -1476,7 +1476,7 @@ await apiClient.create.harness({
     "additionalRepositories": [
       {
         "source": {
-          "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+          "projectUrl": "https://github.com/example/project",
           "projectType": "github",
           "accountLogin": "github-user",
           "projectBranch": "master"
@@ -1486,7 +1486,7 @@ await apiClient.create.harness({
     ],
     "branchData": {
       "source": {
-        "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+        "projectUrl": "https://github.com/example/project",
         "projectType": "github",
         "accountLogin": "github-user",
         "projectBranch": "master"
@@ -1652,7 +1652,7 @@ await apiClient.create.harness({
       }
     ],
     "source": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "projectBranch": "master"
@@ -1660,7 +1660,7 @@ await apiClient.create.harness({
     "additionalRepositories": [
       {
         "source": {
-          "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+          "projectUrl": "https://github.com/example/project",
           "projectType": "github",
           "accountLogin": "github-user",
           "projectBranch": "master"
@@ -1851,14 +1851,14 @@ response = client.create.harness(
             "protocol": "HTTP",
         }],
         "source": {
-            "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+            "projectUrl": "https://github.com/example/project",
             "projectType": "github",
             "accountLogin": "github-user",
             "projectBranch": "master",
         },
         "additionalRepositories": [{
             "source": {
-                "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+                "projectUrl": "https://github.com/example/project",
                 "projectType": "github",
                 "accountLogin": "github-user",
                 "projectBranch": "master",
@@ -1867,7 +1867,7 @@ response = client.create.harness(
         }],
         "branchData": {
             "source": {
-                "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+                "projectUrl": "https://github.com/example/project",
                 "projectType": "github",
                 "accountLogin": "github-user",
                 "projectBranch": "master",
@@ -2035,7 +2035,7 @@ print(response.data)
     }
   ],
   "source": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user",
     "projectBranch": "master"
@@ -2043,7 +2043,7 @@ print(response.data)
   "additionalRepositories": [
     {
       "source": {
-        "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+        "projectUrl": "https://github.com/example/project",
         "projectType": "github",
         "accountLogin": "github-user",
         "projectBranch": "master"

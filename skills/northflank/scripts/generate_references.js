@@ -23,6 +23,8 @@ const HTTP_USER_AGENT = "northflank-reference-builder/1.0";
 const DOC_URL_PATTERN = /https:\/\/northflank\.com\/docs\/[^\s)>\]]+\.md/g;
 const HTTP_PATH_PATTERN = /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s+([/][v]1\/\S+)\s*$/gm;
 const HEADING_PATTERN = /^(#{1,6})\s+(.*)$/;
+// Add repositories only after confirming that they are publicly accessible.
+const PUBLIC_NORTHFLANK_REPOSITORIES = new Set(["skills", "deploy-to-northflank"]);
 
 const SCRIPT_DIR = __dirname;
 const SKILL_DIR = path.resolve(SCRIPT_DIR, "..");
@@ -213,7 +215,8 @@ class NorthflankReferenceBuilder {
   }
 
   normalizeMarkdown(text) {
-    const normalized = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/^\uFEFF/, "");
+    const normalized = this.filterRepositoryLinks(text)
+      .replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/^\uFEFF/, "");
     const outputLines = [];
     let insideCodeBlock = false;
 
@@ -236,6 +239,29 @@ class NorthflankReferenceBuilder {
     }
 
     return outputLines.join("\n").replace(/\n{3,}/g, "\n\n").trim() + "\n";
+  }
+
+  filterRepositoryLinks(text) {
+    const isPublic = (repository) => PUBLIC_NORTHFLANK_REPOSITORIES.has(repository.toLowerCase().replace(/\.git$/, ""));
+    const nonPublicRepositories = new Set(
+      [...text.matchAll(/https?:\/\/github\.com\/northflank\/([\w.-]+)/gi)]
+        .map((match) => match[1]).filter((repository) => !isPublic(repository)),
+    );
+    for (const repository of nonPublicRepositories) {
+      text = text.replaceAll(`"northflank/${repository}"`, '"example/project"')
+        .replaceAll(`"${repository}"`, '"project"');
+    }
+    if (nonPublicRepositories.size && text.includes('"full_name": "example/project"')) {
+      text = text.replace(/("login":\s*)"northflank"/g, '$1"example"');
+    }
+    const withoutPrivateMarkdownLinks = text.replace(
+      /\[([^\]]+)\]\(https?:\/\/github\.com\/northflank\/([\w.-]+)(?:[/?#][^\s)]*)?\)/gi,
+      (link, label, repository) => isPublic(repository) ? link : label,
+    );
+    return withoutPrivateMarkdownLinks.replace(
+      /https?:\/\/github\.com\/northflank\/([\w.-]+)(?:[/?#][^\s<>"'`\\)\]]*)?/gi,
+      (url, repository) => isPublic(repository) ? url : "https://github.com/example/project",
+    );
   }
 
   buildDocLinkMap(documents) {

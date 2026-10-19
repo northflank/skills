@@ -767,7 +767,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}
       }
     },
     "vcsData": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "dockerWorkDir": "/",
@@ -1074,7 +1074,7 @@ OR
       }
     },
     "vcsData": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "projectBranch": "master",
@@ -1445,7 +1445,7 @@ Options:
     }
   },
   "vcsData": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user",
     "dockerWorkDir": "/",
@@ -1750,7 +1750,7 @@ OR
     }
   },
   "vcsData": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user",
     "projectBranch": "master",
@@ -2118,7 +2118,7 @@ await apiClient.get.service({
       }
     },
     "vcsData": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "dockerWorkDir": "/",
@@ -2428,7 +2428,7 @@ OR
       }
     },
     "vcsData": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "projectBranch": "master",
@@ -2817,7 +2817,7 @@ print(response.data)
     }
   },
   "vcsData": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user",
     "dockerWorkDir": "/",
@@ -3113,7 +3113,7 @@ print(response.data)
     }
   },
   "vcsData": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user",
     "projectBranch": "master",

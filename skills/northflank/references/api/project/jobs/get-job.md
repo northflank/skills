@@ -134,7 +134,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}
     "jobType": "cron",
     "createdAt": "2021-01-20T11:19:53.175Z",
     "vcsData": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "selfHostedVcsId": "example-team/self-hosted-vcs",
       "projectBranch": "master",
@@ -258,7 +258,7 @@ Options:
   "jobType": "cron",
   "createdAt": "2021-01-20T11:19:53.175Z",
   "vcsData": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "selfHostedVcsId": "example-team/self-hosted-vcs",
     "projectBranch": "master",
@@ -381,7 +381,7 @@ await apiClient.get.job({
     "jobType": "cron",
     "createdAt": "2021-01-20T11:19:53.175Z",
     "vcsData": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "selfHostedVcsId": "example-team/self-hosted-vcs",
       "projectBranch": "master",
@@ -513,7 +513,7 @@ print(response.data)
   "jobType": "cron",
   "createdAt": "2021-01-20T11:19:53.175Z",
   "vcsData": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "selfHostedVcsId": "example-team/self-hosted-vcs",
     "projectBranch": "master",

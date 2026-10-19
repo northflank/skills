@@ -506,7 +506,7 @@ func main() {
         }
       },
       "vcs": {
-        "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+        "projectUrl": "https://github.com/example/project",
         "projectType": "github",
         "accountLogin": "github-user",
         "projectBranch": "master"
@@ -766,7 +766,7 @@ Options:
       }
     },
     "vcs": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "projectBranch": "master"
@@ -1018,7 +1018,7 @@ await apiClient.patch.job.cron({
         }
       },
       "vcs": {
-        "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+        "projectUrl": "https://github.com/example/project",
         "projectType": "github",
         "accountLogin": "github-user",
         "projectBranch": "master"
@@ -1269,7 +1269,7 @@ print(response.data)
       }
     },
     "vcs": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "projectBranch": "master"

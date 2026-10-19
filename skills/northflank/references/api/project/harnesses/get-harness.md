@@ -349,7 +349,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/harnesses/{harnessId}
       }
     ],
     "source": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "projectBranch": "master"
@@ -357,7 +357,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/harnesses/{harnessId}
     "additionalRepositories": [
       {
         "source": {
-          "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+          "projectUrl": "https://github.com/example/project",
           "projectType": "github",
           "accountLogin": "github-user",
           "projectBranch": "master"
@@ -573,7 +573,7 @@ Options:
     }
   ],
   "source": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user",
     "projectBranch": "master"
@@ -581,7 +581,7 @@ Options:
   "additionalRepositories": [
     {
       "source": {
-        "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+        "projectUrl": "https://github.com/example/project",
         "projectType": "github",
         "accountLogin": "github-user",
         "projectBranch": "master"
@@ -796,7 +796,7 @@ await apiClient.get.harness({
       }
     ],
     "source": {
-      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectUrl": "https://github.com/example/project",
       "projectType": "github",
       "accountLogin": "github-user",
       "projectBranch": "master"
@@ -804,7 +804,7 @@ await apiClient.get.harness({
     "additionalRepositories": [
       {
         "source": {
-          "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+          "projectUrl": "https://github.com/example/project",
           "projectType": "github",
           "accountLogin": "github-user",
           "projectBranch": "master"
@@ -1030,7 +1030,7 @@ print(response.data)
     }
   ],
   "source": {
-    "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+    "projectUrl": "https://github.com/example/project",
     "projectType": "github",
     "accountLogin": "github-user",
     "projectBranch": "master"
@@ -1038,7 +1038,7 @@ print(response.data)
   "additionalRepositories": [
     {
       "source": {
-        "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+        "projectUrl": "https://github.com/example/project",
         "projectType": "github",
         "accountLogin": "github-user",
         "projectBranch": "master"

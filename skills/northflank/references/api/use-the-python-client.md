@@ -2,7 +2,7 @@
 
 Source: https://northflank.com/docs/v1/api/use-the-python-client.md
 
-The [Northflank Python client](https://github.com/northflank/python-sdk) lets you manage Northflank resources from Python. This guide and the Python client reference examples use SDK version `2.1.0`.
+The Northflank Python client lets you manage Northflank resources from Python. This guide and the Python client reference examples use SDK version `2.1.0`.
 
 > [!note] Requirements
 >
@@ -20,7 +20,7 @@ python -m pip install northflank
 
 To use the same version as these examples, install `northflank==2.1.0`.
 
-Before upgrading from SDK 2.0.0, read the [SDK changelog](https://github.com/northflank/python-sdk/blob/v2.1.0/CHANGELOG.md). Version 2.1.0 changes some method names, billing pagination arguments, and generated types.
+Before upgrading from SDK 2.0.0, read the SDK changelog. Version 2.1.0 changes some method names, billing pagination arguments, and generated types.
 
 ### Authentication
 
@@ -64,7 +64,7 @@ Method names use underscores between words, such as `runtime_environment`. Pytho
 
 Select the Python Client tab on an endpoint reference page for its method and arguments. Each reference example initializes the client from your API token environment variable. Some methods require `data={}` even when the request body has no fields.
 
-For command execution and logs, use the dedicated helpers in the SDK. See the SDK [command execution examples](https://github.com/northflank/python-sdk#exec) and [log examples](https://github.com/northflank/python-sdk#logs).
+For command execution and logs, use the dedicated helpers in the SDK. See the SDK command execution examples and log examples.
 
 ### Responses and errors
 
