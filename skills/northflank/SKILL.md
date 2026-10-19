@@ -124,14 +124,19 @@ sudo --preserve-env=PATH,HOME bash -c 'northflank forward service --projectId <P
 - Add `--skipHostnames` if rootless forwarding is acceptable and only IP/port access is needed.
 - Use `northflank forward all --projectId <PROJECT_ID>` to open all project tunnels at once.
 
-### Create resources from JSON or YAML
+### Create or update resources from JSON or YAML
 
 ```bash
 northflank create project --help
 northflank create project --file ./project.yaml
 ```
 
-CLI resource definitions follow the same shape as the API request bodies.
+Select the target resource with CLI flags such as `--projectId` and `--serviceId`. The `--input` JSON or `--file` contents contain only the API request body. Keep those target IDs outside the body, and do not wrap it in the SDK's `parameters`, `data`, or `options` structure.
+
+```bash
+northflank patch service deployment --projectId my-project --serviceId my-api \
+  --input '{"description":"Public API"}'
+```
 
 ## JS Client Essentials
 
