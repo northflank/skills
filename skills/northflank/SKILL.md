@@ -35,7 +35,7 @@ After connection, use `get_auth_context` once if the team or access scope is unk
 1. **Inspect only what deployment needs.** For a local repository, read the remote, branch, HEAD and working-tree state once. Inspect the relevant Dockerfile or build configuration and listening port. Do not clone an already available checkout, scan the whole application, or run unrelated checks. Git deployment uses remote content: account for uncommitted or unpushed changes before claiming to deploy the local branch. Do not silently discard changes or push without user authorization.
 2. **Reuse context.** Keep known IDs and deployment choices. Use MCP inline schemas first. If an operation is not exposed directly, find it with `search_tools` and call it through `execute_tool`. Request omitted constraints with `get_tool_schema` only when needed. Execute returned `next.tool` names directly without another search. With older servers that lack catalog tools, use the exposed resource tools. Do not repeat repository inspection or catalogue calls after authorization.
 3. **Follow the tool workflow.** Use `deploy_app`, `deploy_job` or `create_database` for supported new workloads. Let their results direct Git authorization, recovery and status checks. Retain original inputs and returned resource/session IDs. Open authorization links when a browser is available; otherwise show the link and wait. Workload identities require a team member to grant missing Git access.
-4. **Report the evidence.** Follow returned phases, next steps and polling intervals. A live source revision does not prove that a specific rebuild of that commit is deployed. Check a web endpoint before claiming application health. Recover from existing resources after partial failure; do not repeat creation or execution blindly.
+4. Follow returned phases, next steps and polling intervals. A live source revision does not prove that a specific rebuild of that commit is deployed. Check a web endpoint before claiming application health. After partial failure, recover from existing resources. Do not repeat creation or execution blindly.
 
 Use `diagnose` for service, job or addon failures when the connected server exposes it. It gathers health, related infrastructure events, deployment revisions, logs, metrics and BYOC node-pool configuration. Missing permissions produce partial evidence. Treat correlations as leads, not proven causes. Use `get_deployment_status` or `get_addon` for routine polling.
 
@@ -54,7 +54,7 @@ Destructive operations include, at minimum:
 - `delete secret` — may break running workloads that depend on those keys
 - **`patch secret` / `update secret` / `put secret` / `patch service` with `runtimeEnvironment`, `runtimeFiles` or `ports`** — these replace the whole map or array you send, so sending one new key deletes every other key. Follow [Updating maps safely](#updating-maps-safely-secret-groups-and-service-env) and back up the current values first
 - `delete job` — removes the job and its run history
-- `delete template` / running a template that destroys resources, **or any `run template` against a project or environment other than the one it was written for** (see [Templates](#templates-what-they-are-and-what-a-run-does))
+- `delete template` / running a template that destroys resources, **or any `run template` against a project or environment other than the one it was written for** (see [Templates](#templates))
 - `delete domain` / `delete dns-record`
 - `delete cluster` (BYOC/BYOK) — affects every workload on that cluster
 - Any `patch` / `update` that **shrinks** persistent state (e.g. lowering replica count on an addon — Northflank rejects this anyway, but never attempt it as a workaround)
@@ -387,8 +387,6 @@ await apiClient.patch.secret({
 | `patch` / `update` with `{ data: { D: '4' } }` | Nothing changes and the call still returns success, because unknown body keys are ignored |
 | `put secret` (upsert by `name` in the body) | Like patch, but omitted `description` and `restrictions` reset to defaults |
 
-Rules for agents:
-
 1. To add or change one key, **read the group, merge into the existing map, and send the full map back** (as above). There is no per-key patch and no null-to-delete.
 2. Before any bulk secret or env rewrite, save the current key names (and values, if the user allows) so a mistake can be undone. A lost secret cannot be recovered from Northflank.
 3. After every write, read the group again and check the key set. A 200 response does not prove your change applied, since misspelled or misplaced fields are silently ignored.
@@ -514,7 +512,7 @@ data: {
 }
 ```
 
-### Templates: what they are and what a run does
+### Templates
 
 A template is Northflank's infrastructure-as-code unit: a spec of nodes (projects, services, add-ons, jobs, secret groups, pipelines, actions). **Running a template applies it to real resources.** It is not a dry run, and it is not a copy of a project.
 
@@ -524,7 +522,7 @@ A template is Northflank's infrastructure-as-code unit: a spec of nodes (project
 | Release flow | One pipeline stage | Shipping a release: backup, build, migrate, promote |
 | Preview environment (preview blueprint) | One pipeline | Ephemeral environments per branch or pull request, torn down on close |
 
-**A preview template is not a production deploy mechanism.** If a project has a single template and it is a preview blueprint, do not run it against production because it is the only one. Say so, and ask the user which template and which project or environment they mean.
+A preview template creates preview environments. Do not use it to deploy to production. If the intended template or target is unclear, ask the user to identify it.
 
 What happens on each run, per resource node (`updateMode`, default `put`):
 
@@ -533,8 +531,6 @@ What happens on each run, per resource node (`updateMode`, default `put`):
 | `put` (default) | Creates the resource if missing, or **replaces its configuration** with the spec. Omitted configurable fields can reset or clear |
 | `patch` | Updates only the supplied fields. Fails if the resource does not exist. Arrays and some objects still replace whole values (see [Updating maps safely](#updating-maps-safely-secret-groups-and-service-env)) |
 | `create` | Creates if missing, otherwise skips and leaves the existing resource untouched |
-
-Other facts that cause surprises:
 
 - A node's `name` identifies the target resource. Changing the name creates a second resource next to the old one. Removing a node does **not** delete its resource.
 - Project context comes from the node or its parent workflow, and one template can touch several projects. Read the context on every node, not just the first.
@@ -598,8 +594,6 @@ await apiClient.start.job.run({ parameters: { projectId: 'my-project', jobId: 'd
 9. **Service `status === "COMPLETED"` describes rollout completion, not process exit.** It does not prove application health. Make sure that the application responds as expected before reporting success.
 
 ## Reference Cheat Sheet
-
-Use MCP workflows when they fit the task, or the CLI/SDK equivalents for the user's chosen interface. The entries below provide starting points for each.
 
 | I want to... | Check here |
 |---|---|
