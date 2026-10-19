@@ -5,8 +5,6 @@ description: Deploy, manage, and automate infrastructure on Northflank — a dev
 
 # Northflank
 
-> **Note:** CLI examples in this file (and the other hand-maintained references) are checked against `northflank <verb> <noun> --help`, which only confirms that flags and subcommands exist — not that the command behaves as documented at runtime. Smoke-test before relying on a snippet in production.
-
 Northflank is a developer platform for building, deploying, and scaling workloads on Kubernetes — on Northflank Cloud, your own cloud (BYOC), or your own clusters (BYOK). It handles build, deploy, release, auto-scaling, and disaster recovery across AWS, GCP, Azure, CoreWeave, and on-prem. Core primitives: **projects** (Kubernetes namespaces), **services** (stateless workloads), **add-ons** (managed databases), **jobs** (cron/manual), **secret groups**, **volumes**, and **templates** (IaC/GitOps). Everything in the UI is also available via the REST API, CLI, and JS client.
 
 **Base API URL:** `https://api.northflank.com/v1/`  
@@ -380,7 +378,7 @@ await apiClient.patch.secret({
 
 #### Updating maps safely (secret groups and service env)
 
-Verified against the API with the CLI: **`patch` does not merge inside a map.** Sending `secrets.variables`, `secrets.files`, a service's `runtimeEnvironment` / `runtimeFiles`, or a `ports` array replaces that whole value. Top-level fields you omit are left alone.
+**`patch` does not merge inside a map.** Sending `secrets.variables`, `secrets.files`, a service's `runtimeEnvironment` / `runtimeFiles`, or a `ports` array replaces that whole value. Top-level fields you omit are left alone.
 
 | Request | Effect on a secret group that has `A`, `B`, `C` |
 | --- | --- |
