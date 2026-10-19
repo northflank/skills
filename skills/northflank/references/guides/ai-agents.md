@@ -1,13 +1,12 @@
 # Ai Agents
 
-Generated from 4 application pages listed in `llms.txt`.
+Generated from 3 application pages listed in `llms.txt`.
 
 ## Pages
 
 - [Agent Skills](#agent-skills)
 - [Agents on Northflank](#agents-on-northflank)
-- [Configure and manage Harnesses](#configure-and-manage-harnesses)
-- [Quickstart](#quickstart)
+- [Connect your agent with MCP](#connect-your-agent-with-mcp)
 
 ## Agent Skills
 
@@ -36,6 +35,8 @@ When you ask your AI agent to do something with Northflank, like deploy a servic
 ### Agent Skills: Install Northflank agent skills
 
 Northflank agent skills are installed into your AI code editor. The installation process depends on which editor you use.
+
+Installing a skill does not connect your Northflank account. To give the agent authenticated platform tools, [add the Northflank MCP server](ai-agents.md#connect-your-agent-with-mcp). You can use the skill with MCP or with your existing CLI setup.
 
 #### Agent Skills: Claude Code
 
@@ -107,8 +108,8 @@ The Northflank agent skills are open source and available on [GitHub](https://gi
 
 ### Agent Skills: Next steps
 
-- [Get started with Harnesses: Create your first cloud coding environment for running AI agents.](ai-agents.md#quickstart)
-- [Configure and manage Harnesses: Configure networking, environment variables, resources, and monitor your Harness.](ai-agents.md#configure-and-manage-harnesses)
+- [Get started with Cloud Harness: Create your first cloud coding environment for running AI agents.](cloud-harness.md#quickstart)
+- [Configure and manage Cloud Harnesses: Configure networking, environment variables, resources, and monitor your Cloud Harness.](cloud-harness.md#configure-and-manage-cloud-harnesses)
 
 ## Agents on Northflank
 
@@ -116,12 +117,14 @@ Source: https://northflank.com/docs/v1/application/ai-agents/agents-on-northflan
 
 Use AI coding agents on Northflank for code generation, debugging, and development assistance. Run agents in isolated cloud environments without using your local machine.
 
-### Agents on Northflank: Harnesses
+To manage Northflank from your own coding agent, [connect the hosted MCP server](ai-agents.md#connect-your-agent-with-mcp). You can also [install the Northflank skill](ai-agents.md#agent-skills) for platform guidance.
 
-Cloud environments for running your coding agents. Create a Harness, authenticate your agent, connect your repository, and access it from the dashboard or local terminal.
+### Agents on Northflank: Cloud Harness
 
-- [Get started with Harnesses: Create your first cloud coding environment for running AI agents.](ai-agents.md#quickstart)
-- [Configure and manage Harnesses: Configure networking, environment variables, resources, and monitor your Harness.](ai-agents.md#configure-and-manage-harnesses)
+Cloud environments for running your coding agents. Create a Cloud Harness, authenticate your agent, connect your repository, and access it from the dashboard or local terminal.
+
+- [Get started with Cloud Harness: Create your first cloud coding environment for running AI agents.](cloud-harness.md#quickstart)
+- [Configure and manage Cloud Harnesses: Configure networking, environment variables, resources, and monitor your Cloud Harness.](cloud-harness.md#configure-and-manage-cloud-harnesses)
 
 ### Agents on Northflank: Agent Skills
 
@@ -129,224 +132,265 @@ Give agents domain-specific knowledge about Northflank. With Skills, agents can 
 
 - [Get started with Agent skills: Give agents domain-specific knowledge about Northflank infrastructure and APIs.](ai-agents.md#agent-skills)
 
-## Configure and manage Harnesses
+## Connect your agent with MCP
 
-Source: https://northflank.com/docs/v1/application/ai-agents/harnesses/configure-and-manage-harnesses.md
+Source: https://northflank.com/docs/v1/application/ai-agents/mcp-server.md
 
-You can configure networking, environment variables, resources, and storage for your Harness. You can also pause, resume, and delete Harnesses as needed. All configuration can be updated at any time without losing your files.
+Connect your coding agent to Northflank with Model Context Protocol (MCP), a standard for calling tools from an AI client. The hosted server lets agents deploy applications and jobs, manage databases, and inspect resources.
 
-### Configure and manage Harnesses: Configure networking
+Northflank hosts the server. You do not need the Northflank CLI, a local MCP process, or a deployment in your team.
 
-You can expose applications running in your Harness by adding public or private ports. You can also attach domains to publicly exposed ports.
+#### Connect your agent with MCP: Requirements
 
-To configure a port:
+Use a team API token and a client that supports Streamable HTTP with an Authorization header. The token's role controls which resources and operations the agent can access.
 
-1. Open your Harness overview.
+The hosted endpoint is:
 
-2. Click the **Networking** icon in the right sidebar.
+```text
+https://mcp.northflank.com/mcp
+```
 
-3. Click **Add port**.
+The server accepts team API tokens and team workload identity tokens. Personal, organization, and browser session tokens are not accepted by this hosted entry point.
 
-4. Enter the port and select the protocol.
+MCP authentication currently uses a bearer token, not an OAuth sign-in flow. Clients that require OAuth and cannot send a custom Authorization header cannot use this setup.
 
-5. Enable **Publicly expose** if you want the port to be accessible from the internet.
+#### Connect your agent with MCP: Prepare your token
 
-6. Click **Save changes**.
+1. [Create a team API token](secure.md#grant-api-access-generate-an-api-token) with permissions for the resources you want the agent to manage.
 
-You can add multiple ports to a Harness.
+2. Store it as `NORTHFLANK_API_TOKEN` in the environment of the agent process, using your shell or secret manager.
 
-![Configure Harness networking](https://assets.northflank.com/documentation/v1/application/ai-agents/harnesses/configure-harness.png)
+3. Start the agent with that environment available.
 
-### Configure and manage Harnesses: Configure environment variables
+Set the variable to the token alone, without the `Bearer ` prefix. The client configuration adds that prefix.
 
-Set runtime variables and secret files that your Harness can access.
+For deployment, the role needs permission to create and read the relevant resources. A new project also needs project creation permission. Connecting a Git account needs a user-associated token with Git management permission. Public repositories do not require a Git account connection.
 
-1. Open your Harness overview.
+The configurations below reference the environment variable instead of storing the token in a project file. Do not paste the token into chat or commit it to Git. A desktop app must receive the variable in its own process environment. Setting it in an unrelated terminal does not update an already running app.
 
-2. Click the **Environment variables** icon in the right sidebar.
+#### Connect your agent with MCP: Add MCP to your client
 
-3. Click **Edit**.
+Merge the Northflank entry into your existing configuration. Preserve other servers. After saving, restart or reconnect the client so it loads the new configuration and environment.
 
-4. Add or update your variables or secret files.
+##### Connect your agent with MCP: Codex
 
-5. Click **Update & restart**.
+Add this table to `~/.codex/config.toml`:
 
-Learn more about [runtime variables](secure.md#inject-secrets-runtime-variables) and [secret files](secure.md#upload-secret-files).
+```toml
+[mcp_servers.northflank]
+url = "https://mcp.northflank.com/mcp"
+bearer_token_env_var = "NORTHFLANK_API_TOKEN"
+```
 
-![Configure Harness environment variables](https://assets.northflank.com/documentation/v1/application/ai-agents/harnesses/env-harness.png)
+This configuration sends the variable as a bearer token. MCP OAuth login is not required. See the [Codex MCP documentation](https://developers.openai.com/codex/mcp/) for configuration locations and connection controls.
 
-### Configure and manage Harnesses: Update Harness configuration
+##### Connect your agent with MCP: Claude Code
 
-You can update the configuration of an existing Harness, including its authentication, runtime image, resources, and workspace storage.
+Add this entry to `.mcp.json` in your project:
 
-To update your Harness:
+```json
+{
+  "mcpServers": {
+    "northflank": {
+      "type": "http",
+      "url": "https://mcp.northflank.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${NORTHFLANK_API_TOKEN}"
+      }
+    }
+  }
+}
+```
 
-1. Open the Harness overview.
+Approve the project MCP configuration when prompted. Use `/mcp` to inspect the connection. See the [Claude Code MCP documentation](https://code.claude.com/docs/en/mcp).
 
-2. Click the **Settings** icon in the right sidebar.
+##### Connect your agent with MCP: Cursor
 
-3. Update the configuration you want to change.
+Add this entry to `~/.cursor/mcp.json` for all projects, or `.cursor/mcp.json` for one project:
 
-4. Click **Update options**.
+```json
+{
+  "mcpServers": {
+    "northflank": {
+      "url": "https://mcp.northflank.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${env:NORTHFLANK_API_TOKEN}"
+      }
+    }
+  }
+}
+```
 
-![Update Harness configuration](https://assets.northflank.com/documentation/v1/application/ai-agents/harnesses/update-harness.png)
+Cursor uses `${env:NAME}` for environment variables. See the [Cursor MCP documentation](https://cursor.com/docs/mcp) for connection controls.
 
-### Configure and manage Harnesses: Pause and resume a Harness
+##### Connect your agent with MCP: OpenCode
 
-You can pause a Harness when you are not using it to scale it to zero. This stops running terminal sessions and processes while preserving files in the Harness workspace.
+Add this entry to your project's `opencode.json`:
 
-To pause a Harness:
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "northflank": {
+      "type": "remote",
+      "url": "https://mcp.northflank.com/mcp",
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer {env:NORTHFLANK_API_TOKEN}"
+      }
+    }
+  }
+}
+```
 
-1. Open the Harness overview.
+Keep `oauth` set to `false` for this API-token connection. See the [OpenCode MCP documentation](https://opencode.ai/docs/mcp-servers/).
 
-2. Click the **Pause harness** icon in the top-right corner.
+##### Connect your agent with MCP: Other clients
 
-3. Confirm that the Harness has been paused.
+Use Streamable HTTP with the endpoint above and this request header:
 
-To resume a Harness:
+```text
+Authorization: Bearer <YOUR_TEAM_API_TOKEN>
+```
 
-1. Open the Harness overview.
+Use the client's secret storage or environment substitution where available. Configuration syntax differs between clients.
 
-2. Click the **Resume harness** icon in the top-right corner.
+#### Connect your agent with MCP: Confirm the connection
 
-3. Wait for the Harness to start.
+Ask the agent:
 
-Your files in `/home/harness` are preserved when the Harness is paused and resumed.
+Use the Northflank MCP to show my authenticated team and access scope. Do not create or change resources.
 
-### Configure and manage Harnesses: Monitor Harness resources
+The agent can use `get_auth_context` to read the credential context. Make sure that the returned team matches your intended team.
 
-You can monitor the resource usage of your Harness from the **Observe** section.
+If no Northflank tools appear, make sure that the server is enabled and reconnect the client. The endpoint is a protocol URL, not a web page. Opening it in a browser is not a connection test.
 
-To view your Harness metrics:
+#### Connect your agent with MCP: Deploy your first application
 
-1. Open the Harness overview.
+Deployment creates billable resources. Use a new project name, and choose a region and plan that fit your requirements.
 
-2. Click the **Observe** icon in the right sidebar.
+Ask the agent:
 
-You can view metrics such as CPU and memory usage to monitor your Harness.
+Use the Northflank MCP to deploy nginx:latest into a new project named mcp-demo. Expose HTTP port 80. Show the region and plan before creating resources, then return the public URL when the app is ready.
 
-Learn more about [observability on Northflank](observe.md#observability-on-northflank).
+The agent uses `deploy_app` and follows the returned status instructions. Creation does not establish readiness. For a web application, the agent must also check the public URL before reporting success.
 
-![Monitor Harness resources](https://assets.northflank.com/documentation/v1/application/ai-agents/harnesses/monitor-harness.png)
+For a Git repository, ask:
 
-### Configure and manage Harnesses: Delete a Harness
+Use the Northflank MCP to deploy this repository's remote branch into a new project named repo-demo. Use its Dockerfile. If Northflank needs Git access, give me the authorization link and resume after I authorize it.
 
-You can permanently delete a Harness and its associated workspace.
+Git deployment uses the remote repository. Uncommitted or unpushed local changes are not included. The agent can inspect local build configuration, but the hosted MCP does not read your local files.
 
-To delete a Harness:
+Public repositories work without linking a Git account. For private repositories, the team needs a connection with access to that repository.
 
-1. Open the Harness overview.
+If Git access is missing, the deployment workflow can return a browser authorization link before creating resources. Complete the link, then ask the agent to continue. It resumes with the original inputs and the returned session ID.
 
-2. Click the **three-dot** menu in the top-right corner.
+If you connect the repository separately in Northflank, the original session can remain pending. Tell the agent that you connected it separately. Retry the original deployment without `gitConnectionSessionId` so the workflow checks repository access again. Preserve an explicitly selected `source.vcsLinkId` unless you intend to select a different connection. Do not create another authorization session while the original one is pending.
 
-3. Click **Delete harness**.
+Git authorization grants repository access. It does not replace the team API token used to authenticate the MCP connection.
 
-4. Confirm the deletion.
+#### Connect your agent with MCP: Available workflows
 
-Deletion is permanent and cannot be undone. Make sure you have backed up any files or data you want to keep before deleting the Harness.
+The MCP includes deployment workflows and detailed resource operations. Permissions apply to every operation.
 
-![Delete Harness](https://assets.northflank.com/documentation/v1/application/ai-agents/harnesses/delete-harness.png)
+Common operations appear directly in the tool list. The agent finds advanced operations with `search_tools` and calls them through `execute_tool`. It uses `get_tool_schema` only for omitted fields or constraints. Returned `next.tool` names can be executed without another search.
 
-> [!note] Questions?
-> Reach out to the Northflank team at [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com) or [book a demo](https://cal.com/team/northflank/northflank-demo?duration=30).
+| Task | Tools and behavior |
+| --- | --- |
+| Deploy an image or Git application | `deploy_app` checks Git access when needed and creates a service in an existing or new project. |
+| Create a manual or scheduled job | `deploy_job` supports image and Git sources. Manual execution uses `run_job`. |
+| Add a database | `create_database` handles common database settings and explicit environment-variable linking. |
+| Inspect deployment progress | `get_deployment_status` summarizes build, rollout, run state and active source revisions. Follow its next action for recovery or diagnostics. A source revision match does not confirm the exact build artifact. |
+| Manage existing resources | Resource operations cover projects, services, jobs, addons, secrets, volumes, harnesses, and supported BYOC operations. |
+| Investigate a failure | `diagnose` gathers service, job or addon health, infrastructure events, deployment revisions, logs and metrics. For BYOC, it also reads cluster and node-pool configuration. |
 
-### Configure and manage Harnesses: Next steps
+Diagnosis gathers evidence without changing resources. Missing permissions produce partial results. It does not prove a root cause or test application connectivity. Use `get_deployment_status` or `get_addon` for routine polling.
 
-- [Get started with Agent skills: Give agents domain-specific knowledge about Northflank infrastructure and APIs.](ai-agents.md#agent-skills)
+`list_addon_types` returns Northflank-managed addon types and custom addon types available to your team. Managed type details include versions, storage sizes and replica options. Storage classes depend on the target cluster and are not included in type discovery.
 
-## Quickstart
+For BYOC databases, set `create_database.storageClass` to a class supported by the target cluster. Its default is `nvme`, which is unavailable on some clusters. Addon type discovery does not confirm that a storage class exists on your cluster.
 
-Source: https://northflank.com/docs/v1/application/ai-agents/harnesses/quickstart.md
+`list_cluster_nodes` returns recorded BYOC nodes and their `RUNNING` or `DELETED` state. This state does not establish Kubernetes readiness or schedulability.
 
-Harnesses are cloud coding environments that let you run coding agents like Claude or Codex in isolated, secure environments on Northflank. Instead of running agents on your local machine or directly against your codebase, Harnesses provide a controlled workspace with its own resources, networking, and configuration.
+The MCP does not expose every public API operation. Ask the agent to inspect the available tools before assuming a capability exists.
 
-Run Harnesses in [Northflank's managed cloud](https://northflank.com/features/managed-cloud) or [in your own cloud infrastructure](https://northflank.com/features/bring-your-own-cloud). You can connect repositories, configure ports and environment variables, and monitor resource usage—all from the Northflank dashboard or your local terminal.
+#### Connect your agent with MCP: Use MCP with the Northflank skill
 
-### Quickstart: How Harnesses work
+The [Northflank skill](ai-agents.md#agent-skills) provides deployment guidance and platform knowledge. MCP supplies authenticated tools that execute operations.
 
-When you create a Harness:
+You can use either independently. Install the skill alongside MCP when you want both guidance and tools. Installing the skill does not configure the MCP connection or grant account access.
 
-1. Northflank provisions a cloud coding environment in your environment (managed cloud or your own infrastructure).
+#### Connect your agent with MCP: Workload identity
 
-2. You authenticate your coding agent using an API key or linked account.
+Agents running on Northflank can use a team workload identity token instead of a copied team API token. The token's permissions and project restrictions still apply.
 
-3. (Optional) You connect a Git repository for the agent to work with.
+Send the workload token in the same Authorization header. If `NORTHFLANK_API_TOKEN_FILE` is provided, use a client that can read the mounted token file again when the token rotates.
 
-4. You configure networking, environment variables, and resources.
+The static environment configurations above do not provide automatic workload token refresh. Use a client credential mechanism that reads the mounted token file before each request or refreshes it when authentication fails.
 
-5. You access the Harness from the Northflank dashboard or connect to it locally using SSH.
+Workload identities cannot authorize a personal Git account. A team member must grant the required repository access in the team's Git integrations.
 
-An active Harness runs continuously until you pause or delete it. Files in the Harness workspace are preserved when you pause and resume the Harness. You can update its configuration and monitor its resource usage at any time.
+##### Connect your agent with MCP: Prepare a workload token helper
 
-Multiple team members can work in the same Harness simultaneously. Your teammates can see what you're doing in real-time and collaborate together in the same environment.
+Codex and Claude Code can generate authentication headers with a local helper. The examples below require Node.js and access to the mounted workload token file.
 
-### Quickstart: Create your first Harness
+Save this helper as `northflank-mcp-headers.cjs` in a trusted directory. The client runs it. Do not run it in a shared terminal because its output contains the token.
 
-> [!note] Prerequisites
->
+```js
+const { readFileSync } = require('node:fs');
+const tokenFile = process.argv[2];
+if (!tokenFile) throw new Error('Supply the workload token file path.');
+const token = readFileSync(tokenFile, 'utf8').trim();
+if (!token) throw new Error('The workload token file is empty.');
+process.stdout.write(JSON.stringify({ Authorization: `Bearer ${token}` }));
+```
 
-- A [Northflank account](https://app.northflank.com/signup) on a Pay As You Go plan
+##### Connect your agent with MCP: Refresh workload tokens in Codex
 
-- A coding agent account or API key (Claude, Codex, Pi, or your own agent)
+For a local Codex HTTP connection, configure [`http_headers_helper`](https://developers.openai.com/codex/mcp/#streamable-http-servers) in `~/.codex/config.toml`. Use the helper above and replace both file paths. Use the MCP URL for the workload's Northflank environment.
 
-- A [Git integration](getting-started.md#link-your-git-account) if you want to connect a repository
+```toml
+[mcp_servers.northflank]
+url = "https://mcp.northflank.com/mcp"
+http_headers_helper = "node /absolute/path/northflank-mcp-headers.cjs /absolute/path/to/workload-token"
+```
 
-To create a Harness:
+Remove `bearer_token_env_var` and other static Authorization headers for this server. An explicit bearer token or stored OAuth credential takes precedence over the helper's Authorization header.
 
-> [!note]
-> [Click here](https://app.northflank.com/s/project/create/harness) to create a harness.
+Codex caches the helper's headers for the connection. After a same-origin POST returns HTTP `401` or `403`, it refreshes the headers once. It retries only if the helper returns changed values. The helper is not supported for connections through a remote execution environment. Do not retry uncertain mutations yourself.
 
-1. In your Northflank dashboard, [create a new project](getting-started.md#create-a-project) and click **Harnesses**
+##### Connect your agent with MCP: Refresh workload tokens in Claude Code
 
-2. Select your coding agent (Claude, Codex, OpenCode, Pi) or select **Bring Your Own Agent.**
+Claude Code supports [dynamic authentication headers](https://code.claude.com/docs/en/mcp#use-dynamic-headers-for-custom-authentication).
 
-3. Enter a name for your Harness.
+1. Save the helper from [Prepare a workload token helper](ai-agents.md#connect-your-agent-with-mcp-prepare-a-workload-token-helper).
 
-4. Select the environment where you want to run the Harness.
+2. Add an HTTP MCP configuration with `headersHelper`. Replace both file paths. Use the MCP URL for the workload's Northflank environment. Remove any static Authorization header for this server.
 
-5. Under **Authentication**, select how you want to authenticate your coding agent. You can use an API key or a linked account.
+```json
+{
+  "mcpServers": {
+    "northflank": {
+      "type": "http",
+      "url": "https://mcp.northflank.com/mcp",
+      "headersHelper": "node /absolute/path/northflank-mcp-headers.cjs /absolute/path/to/workload-token"
+    }
+  }
+}
+```
 
-6. Under **Repository**, select an existing repository and branch, create a new repository, or continue without a repository.
+1. Reconnect through `/mcp`. For project configuration, trust the directory before the helper can run.
 
-7. Optionally, under **Advanced**, configure runtime variables, the runtime image, resources, and workspace storage.
+Claude Code reads fresh headers on connection and reconnect. After a tool call receives HTTP `401` or `403`, it refreshes the headers and retries once. It does not read the file before every request. A permission denial still requires a role or scope change. Do not retry uncertain mutations yourself.
 
-8. Click **Create Harness**.
+#### Connect your agent with MCP: Troubleshooting
 
-You'll be redirected to the Harness terminal. If you didn't use an API key, you may need to sign in to your coding agent when you first open it.
+| Symptom | Action |
+| --- | --- |
+| Missing tools or a connection failure | Make sure that the client enables the server, uses Streamable HTTP, and sends requests to the URL ending in `/mcp`. |
+| `401` authentication error | Make sure that the agent receives the token variable and sends a valid team token. Replace an expired or revoked token. |
+| `403` permission error | Inspect the token role and workload restrictions. Grant the required permission or use a credential with the intended scope. |
+| An unexpected OAuth prompt | Configure the bearer header. In OpenCode, set `oauth` to `false`. The hosted server does not provide MCP OAuth login. |
+| Git authorization cannot complete | Follow the returned recovery instructions. Check the credential's team and user context before requesting a replacement link. |
 
-![Creating a Harness in the Northflank application](https://assets.northflank.com/documentation/v1/application/ai-agents/harnesses/create-harness.png)
-
-### Quickstart: Connect to your Harness locally
-
-Access your Harness from your local machine using SSH.
-
-> [!note] Prerequisites
->
-
-- The [Northflank CLI installed and authenticated](../api/use-the-cli.md).
-
-- Access to the Harness you want to connect to.
-
-To connect to your Harness:
-
-1. Open the Harness overview.
-
-2. Under **Local access**, click **Connect**.
-
-3. Copy the SSH command shown.
-
-4. Run the command in your terminal.
-
-Example: `northflank dev ssh --projectId harness --harnessId numerous-class`
-
-You can now work in your Harness environment from your local terminal.
-
-![Connect to your Harness locally](https://assets.northflank.com/documentation/v1/application/ai-agents/harnesses/connect-harness.png)
-
-> [!note] Questions?
-> Reach out to the Northflank team at [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com) or [book a demo](https://cal.com/team/northflank/northflank-demo?duration=30).
-
-### Quickstart: Next steps
-
-- [Configure and manage Harnesses: Configure networking, environment variables, resources, and monitor your Harness.](ai-agents.md#configure-and-manage-harnesses)
-- [Get started with Agent skills: Give agents domain-specific knowledge about Northflank infrastructure and APIs.](ai-agents.md#agent-skills)
+If a request fails after resource creation, retain the returned resource IDs. Inspect those resources before retrying so you do not create duplicates.

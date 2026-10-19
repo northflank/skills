@@ -18,6 +18,7 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 | **List clusters** | `GET /v1/cloud-providers/clusters`<br>`GET /v1/teams/{teamId}/cloud-providers/clusters` | [list-clusters.md](list-clusters.md) |
 | **List integrations** | `GET /v1/cloud-providers/integrations`<br>`GET /v1/teams/{teamId}/cloud-providers/integrations` | [list-integrations.md](list-integrations.md) |
 | **List provider node types** | `GET /v1/cloud-providers/node-types` | [list-provider-node-types.md](list-provider-node-types.md) |
+| **List provider permissions** | `GET /v1/cloud-providers/permissions` | [list-provider-permissions.md](list-provider-permissions.md) |
 | **List provider regions** | `GET /v1/cloud-providers/regions` | [list-provider-regions.md](list-provider-regions.md) |
 | **Patch cluster** | `PATCH /v1/cloud-providers/clusters/{clusterId}`<br>`PATCH /v1/teams/{teamId}/cloud-providers/clusters/{clusterId}` | [patch-cluster.md](patch-cluster.md) |
 | **Patch integration** | `PATCH /v1/cloud-providers/integrations/{integrationId}`<br>`PATCH /v1/teams/{teamId}/cloud-providers/integrations/{integrationId}` | [patch-integration.md](patch-integration.md) |

@@ -8,6 +8,7 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 |------|---------------|------|
 | **Abort job build** | `DELETE /v1/projects/{projectId}/jobs/{jobId}/build/{buildId}`<br>`DELETE /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/build/{buildId}` | [abort-job-build.md](abort-job-build.md) |
 | **Abort job run** | `DELETE /v1/projects/{projectId}/jobs/{jobId}/runs/{runId}`<br>`DELETE /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/runs/{runId}` | [abort-job-run.md](abort-job-run.md) |
+| **Check repository access for jobs** | `POST /v1/projects/{projectId}/jobs/repo-access`<br>`POST /v1/teams/{teamId}/projects/{projectId}/jobs/repo-access` | [check-repository-access-for-jobs.md](check-repository-access-for-jobs.md) |
 | **Create cron job** | `POST /v1/projects/{projectId}/jobs/cron`<br>`POST /v1/teams/{teamId}/projects/{projectId}/jobs/cron` | [create-cron-job.md](create-cron-job.md) |
 | **Create job** | `POST /v1/projects/{projectId}/jobs`<br>`POST /v1/teams/{teamId}/projects/{projectId}/jobs` | [create-job.md](create-job.md) |
 | **Create manual job** | `POST /v1/projects/{projectId}/jobs/manual`<br>`POST /v1/teams/{teamId}/projects/{projectId}/jobs/manual` | [create-manual-job.md](create-manual-job.md) |
@@ -22,6 +23,8 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 | **Get job build** | `GET /v1/projects/{projectId}/jobs/{jobId}/build/{buildId}`<br>`GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/build/{buildId}` | [get-job-build.md](get-job-build.md) |
 | **Get job deployment** | `GET /v1/projects/{projectId}/jobs/{jobId}/deployment`<br>`GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/deployment` | [get-job-deployment.md](get-job-deployment.md) |
 | **Get job health checks** | `GET /v1/projects/{projectId}/jobs/{jobId}/health-checks`<br>`GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/health-checks` | [get-job-health-checks.md](get-job-health-checks.md) |
+| **Get job infrastructure events** | `GET /v1/projects/{projectId}/jobs/{jobId}/health/events`<br>`GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/health/events` | [get-job-infrastructure-events.md](get-job-infrastructure-events.md) |
+| **Get job instance health** | `GET /v1/projects/{projectId}/jobs/{jobId}/health`<br>`GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/health` | [get-job-instance-health.md](get-job-instance-health.md) |
 | **Get job logs** | `GET /v1/projects/{projectId}/jobs/{jobId}/logs`<br>`GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/logs` | [get-job-logs.md](get-job-logs.md) |
 | **Get job metrics** | `GET /v1/projects/{projectId}/jobs/{jobId}/metrics`<br>`GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/metrics` | [get-job-metrics.md](get-job-metrics.md) |
 | **Get job pull requests** | `GET /v1/projects/{projectId}/jobs/{jobId}/pull-requests`<br>`GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/pull-requests` | [get-job-pull-requests.md](get-job-pull-requests.md) |

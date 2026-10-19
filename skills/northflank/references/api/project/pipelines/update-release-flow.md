@@ -23,7 +23,7 @@ Required permission: Project > Pipelines > General > Update
    - `selfHostedVcsId`: (string) If vcsService is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
    - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
    - `vcsLinkId`: (string)
-   - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+   - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
    - `branchRestrictions`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
    - `prRestrictions`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
    - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
@@ -39,7 +39,7 @@ Required permission: Project > Pipelines > General > Update
   - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
   - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
   - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
-  - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+  - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
   - `branch`: (string) (required) The name of the branch to use.
   - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
 - `$schema`: (string)
@@ -297,7 +297,7 @@ Required permission: Project > Pipelines > General > Update
            - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
-           - `repoUrl`: (multiple options) (string) URL of the Git repo to send this message to. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to send this message to. (pattern: .*\${.*}.*)
+           - `repoUrl`: (multiple options) (string) URL of the Git repo to send this message to. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to send this message to. (pattern: .*\${.*}.*)
            - `pullRequestId`: (multiple options) (string) The ID of the pull request to comment on. | (string) A string containing one or more references that resolve to the ID of the pull request to comment on. (pattern: .*\${.*}.*)
            - `message`: (multiple options) (string) The rich text message to comment. | (string) A string containing one or more references that resolve to the rich text message to comment. (pattern: .*\${.*}.*) | {object}
          - `kind`: (string) (required) The kind of message to send. (enum: SLACK)
@@ -624,7 +624,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.update.releaseFlow({
@@ -726,4 +726,102 @@ await apiClient.update.releaseFlow({
     "spec": {}
   }
 });
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.release_flow(
+    pipeline_id="example-pipeline",
+    project_id="default-project",
+    stage="development",
+    data={
+        "triggers": [{
+            "vcsService": "github",
+            "accountLogin": "github-user",
+            "repoUrl": "https://github.com/northflank-examples/remix-postgres-redis-demo",
+            "pathIgnoreRules": ["README.md"],
+            "ciIgnoreFlags": ["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"],
+        }],
+        "options": {
+            "concurrencyPolicy": "allow",
+            "paused": False,
+        },
+        "gitops": {
+            "vcsService": "github",
+            "accountLogin": "github-user",
+            "repoUrl": "https://github.com/northflank-examples/remix-postgres-redis-demo",
+            "branch": "main",
+            "filePath": "/Dockerfile",
+        },
+        "richInputs": [{
+            "kind": "BranchCommitSelector",
+            "spec": {
+                "required": False,
+                "inputs": {
+                    "source": "build-service",
+                },
+                "outputs": {
+                    "branch": "TARGET_BRANCH",
+                    "buildSha": "TARGET_COMMIT",
+                },
+                "title": "string",
+            },
+        }],
+        "teardownSpec": {
+            "spec": {
+                "kind": "Workflow",
+                "spec": {
+                    "type": "sequential",
+                    "steps": [{
+                        "kind": "JobRun",
+                        "spec": {
+                            "projectId": "example-project",
+                            "runtimeFiles": {
+                                "/dir/fileName": {
+                                    "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                                    "encoding": "utf-8",
+                                },
+                            },
+                            "billing": {
+                                "deploymentPlan": "nf-compute-20",
+                            },
+                            "deployment": {
+                                "docker": {
+                                    "configType": "default",
+                                },
+                                "storage": {
+                                    "ephemeralStorage": {
+                                        "storageSize": 1024,
+                                    },
+                                },
+                                "internal": {
+                                    "id": "example-build-service",
+                                    "branch": "master",
+                                    "buildSHA": "latest",
+                                    "buildId": "premium-guide-6393",
+                                },
+                            },
+                            "jobId": "example-job",
+                        },
+                    }],
+                },
+            },
+        },
+        "apiVersion": "string",
+        "spec": {},
+    },
+)
+print(response.data)
 ```

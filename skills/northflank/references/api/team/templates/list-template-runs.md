@@ -16,7 +16,7 @@ Required permission: Account > Templates > General > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 - `status`: (string) Filter by template status. (enum: pending, running, success, failure, aborted, aborting, queued, unknown, skipped, waiting, retrying, async_wait, approval_wait)
 - `concluded`: (boolean) Filter by whether the template is concluded.
 
@@ -140,6 +140,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.list.templateRuns({
   parameters: {
@@ -187,5 +189,56 @@ await apiClient.list.templateRuns({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.template_runs(
+    template_id="example-template",
+    page=1,
+    per_page=50,
+    status="success",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "templateRuns": [
+    {
+      "name": "Example Template",
+      "description": "This is a sample template.",
+      "apiVersion": "v1.2",
+      "options": {
+        "autorun": false,
+        "concurrencyPolicy": "allow"
+      },
+      "id": "3dd592f6-ce63-45ee-acf8-13dc5ec5235c",
+      "templateId": "example-template",
+      "status": "success",
+      "startedAt": "2021-01-01 12:01:00.000Z",
+      "concluded": true,
+      "concludedAt": "2021-01-01 12:10:00.000Z",
+      "createdAt": "2021-01-01 12:00:00.000Z",
+      "updatedAt": "2021-01-01 12:00:00.000Z"
+    }
+  ]
 }
 ```

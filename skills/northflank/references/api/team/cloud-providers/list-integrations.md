@@ -11,7 +11,7 @@ Required permission: Account > Cloud > Integrations > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 
 **Response body:**
 
@@ -20,14 +20,19 @@ Required permission: Account > Cloud > Integrations > Read
   - `integrations`: [array of] {object}
      - `name`: (string) (required) The name of the cloud provider integration. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
      - `description`: (string) The description of the integration. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-     - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, byok)
+     - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, aws-eusc, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, byok)
      - `features`: [array of] (string) The type of provider integration. (enum: byoc, byoc-static-egress, byoc-custom-launch-templates, byoc-custom-vpc, byoc-logs, cloudfront, route53, registry-pull, registry-push, opentofu, workload-identity, workload-identity-managed)
      - `restrictions`: {object}
        - `enabled`: (boolean) (required) Enable or disable BYOC restrictions for this entity
        - `teams`: [array of] {object}
            - `teamId`: (string) (required) The ID of the team that has access to this BYOC cluster
+     - `byok`: {object}
+       - `connectionMode`: (string) Whether Kubernetes API access is direct or through a Northflank connector. (enum: direct, connector)
+       - `requireVerification`: (multiple options) (boolean)
      - `aws`: {object}
        - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
+       - `permissionVersions`: {object}
+         - `byoc`: (integer) Selected BYOC policy version. (enum: 1, 2, 3)
        - `permissionCheckLevel`: (string) (enum: enabled, disabled, ignore-implicit-deny-by-organization)
      - `gcp`: {object}
        - `projectId`: (string) (required) GCP Project ID
@@ -148,6 +153,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.list.cloud.integrations({
   options: {
@@ -193,5 +200,61 @@ await apiClient.list.cloud.integrations({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.cloud.integrations(
+    page=1,
+    per_page=50,
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "integrations": [
+    {
+      "name": "Example Integration",
+      "description": "This is a new cloud provider integration.",
+      "provider": "gcp",
+      "features": [
+        "byoc"
+      ],
+      "aws": {
+        "authenticationMode": "accessKey"
+      },
+      "gcp": {
+        "authenticationMode": "accessKey",
+        "projectId": "string"
+      },
+      "cloudflare": {
+        "credentialType": "apiToken"
+      },
+      "id": "example-integration",
+      "createdAt": "2021-01-20T11:19:53.175Z",
+      "registryCredentialRefresh": {
+        "status": "healthy",
+        "affectedCredentialCount": 0
+      }
+    }
+  ]
 }
 ```

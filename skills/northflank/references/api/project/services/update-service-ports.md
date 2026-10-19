@@ -6,7 +6,7 @@ This endpoint is deprecated and will be removed in the future. Please avoid maki
 
 Requests should instead use the relevant PATCH endpoint.
 
-[Use /services/patch-combined-service instead](patch-combined-service.md)
+[Use /project/services/patch-combined-service instead](patch-combined-service.md)
 
 Updates the list of ports for the given service.
 
@@ -512,7 +512,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.update.service.ports({
@@ -661,4 +661,116 @@ await apiClient.update.service.ports({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.service.ports(
+    project_id="default-project",
+    service_id="example-service",
+    data={
+        "ports": [{
+            "id": "p01",
+            "protocol": "HTTP",
+            "name": "p01",
+            "internalPort": 12345,
+            "public": True,
+            "vpcAccessible": False,
+            "domains": ["app.example.com"],
+            "security": {
+                "credentials": [{
+                    "username": "admin",
+                    "password": "password123",
+                    "type": "basic-auth",
+                }],
+                "ip": [{
+                    "addresses": ["127.0.0.1"],
+                    "action": "DENY",
+                }],
+                "policies": [{
+                    "addresses": ["127.0.0.1"],
+                    "action": "DENY",
+                }],
+                "headers": [{
+                    "regexMode": False,
+                    "name": "headerName",
+                    "value": "headerValue",
+                }],
+                "securePathConfiguration": {
+                    "rules": [{
+                        "paths": [{
+                            "routingMode": "prefix",
+                            "priority": 80,
+                            "path": "/path",
+                        }],
+                        "accessMode": "protected",
+                        "securityPolicies": {
+                            "orPolicies": {
+                                "credentials": [{
+                                    "username": "admin",
+                                    "password": "password123",
+                                    "type": "basic-auth",
+                                }],
+                                "ip": [{
+                                    "addresses": ["127.0.0.1"],
+                                    "action": "DENY",
+                                }],
+                                "policies": [{
+                                    "addresses": ["127.0.0.1"],
+                                    "action": "DENY",
+                                }],
+                                "headers": [{
+                                    "regexMode": False,
+                                    "name": "headerName",
+                                    "value": "headerValue",
+                                }],
+                            },
+                            "requiredPolicies": {
+                                "credentials": [{
+                                    "username": "admin",
+                                    "password": "password123",
+                                    "type": "basic-auth",
+                                }],
+                                "ip": [{
+                                    "addresses": ["127.0.0.1"],
+                                    "action": "DENY",
+                                }],
+                                "policies": [{
+                                    "addresses": ["127.0.0.1"],
+                                    "action": "DENY",
+                                }],
+                                "headers": [{
+                                    "regexMode": False,
+                                    "name": "headerName",
+                                    "value": "headerValue",
+                                }],
+                            },
+                        },
+                    }],
+                },
+            },
+        }],
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

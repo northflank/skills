@@ -6,7 +6,7 @@ This endpoint is deprecated and will be removed in the future. Please avoid maki
 
 Requests should instead use the relevant GET endpoint.
 
-[Use /services/get-service instead](get-service.md)
+[Use /project/services/get-service instead](get-service.md)
 
 Lists the ports for the given service.
 
@@ -198,6 +198,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.service.ports({
   parameters: {
@@ -264,5 +266,81 @@ await apiClient.get.service.ports({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.service.ports(
+    project_id="default-project",
+    service_id="example-service",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "ports": [
+    {
+      "id": "eonyui",
+      "name": "p01",
+      "internalPort": 8080,
+      "protocol": "HTTP",
+      "public": true,
+      "vpcAccessible": false,
+      "dns": "p01--example-service--default-service--user-abc1.salvo.code.run",
+      "vpcDns": "p01--example-service--default-service--user-abc1--vpc.salvo.code.run",
+      "domains": [
+        {
+          "name": "app.example.com",
+          "certificate": {
+            "inProgress": false,
+            "expiryDate": "2022-04-26T09:25:02.000Z",
+            "refreshDate": "2022-03-27T09:25:02.000Z"
+          }
+        }
+      ],
+      "security": {
+        "credentials": [
+          {
+            "username": "admin",
+            "password": "password123",
+            "type": "basic-auth"
+          }
+        ],
+        "policies": [
+          {
+            "addresses": [
+              "127.0.0.1"
+            ],
+            "action": "DENY"
+          }
+        ],
+        "sso": {
+          "organizationId": "org_uniquestringidentifier",
+          "directoryGroupIds": [
+            "directory_group_uniquestringidentifier"
+          ]
+        }
+      },
+      "disableNfDomain": false
+    }
+  ]
 }
 ```

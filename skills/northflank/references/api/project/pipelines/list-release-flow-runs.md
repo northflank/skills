@@ -18,7 +18,7 @@ Required permission: Project > Pipelines > General > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 - `status`: (string) Filter by template status. (enum: pending, running, success, failure, aborted, aborting, queued, unknown, skipped, waiting, retrying, async_wait, approval_wait)
 - `concluded`: (boolean) Filter by whether the template is concluded.
 
@@ -129,6 +129,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.list.releaseFlowRuns({
   parameters: {
@@ -172,5 +174,52 @@ await apiClient.list.releaseFlowRuns({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.release_flow_runs(
+    pipeline_id="example-pipeline",
+    project_id="default-project",
+    stage="development",
+    page=1,
+    per_page=50,
+    status="success",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "runs": [
+    {
+      "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
+      "name": "Example run",
+      "description": "This is an example description",
+      "status": "success",
+      "startedAt": "2021-01-01 12:01:00.000Z",
+      "concluded": true,
+      "concludedAt": "2021-01-01 12:10:00.000Z",
+      "createdAt": "2021-01-01 12:00:00.000Z",
+      "updatedAt": "2021-01-01 12:00:00.000Z"
+    }
+  ]
 }
 ```

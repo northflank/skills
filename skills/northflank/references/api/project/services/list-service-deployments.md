@@ -17,7 +17,7 @@ Required permission: Project > Services > General > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 - `releaseType`: (string) Only return deployments whose current gradual rollout release type matches. Release type tracks the current role rather than how the deployment was created, so promoting a canary moves it out of the `canary` results and into `stable`. Deployments of services that do not use a gradual rollout strategy have no release type and are excluded when this is set. (enum: stable, canary)
 
 **Response body:**
@@ -165,6 +165,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.list.service.deployments({
   parameters: {
@@ -222,5 +224,67 @@ await apiClient.list.service.deployments({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.service.deployments(
+    project_id="default-project",
+    service_id="example-service",
+    page=1,
+    per_page=50,
+    release_type="canary",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "deployments": [
+    {
+      "id": "6560a1b2c3d4e5f6a7b8c9d0",
+      "name": "example-service-7d9f8b6c5d",
+      "createdAt": "2024-01-15T10:30:00.000Z",
+      "active": true,
+      "releaseType": "canary",
+      "image": {
+        "imagePath": "nginx:latest",
+        "image": "nginx",
+        "tag": "latest",
+        "sha": "sha256:9c8f8d"
+      },
+      "commit": {
+        "sha": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
+        "message": "fix: handle empty payload",
+        "author": "octocat",
+        "date": "2024-01-15T10:30:00.000Z"
+      },
+      "instances": 2,
+      "reason": {
+        "id": "service-updated",
+        "user": {
+          "name": "Jane Doe",
+          "email": "jane@example.com"
+        }
+      }
+    }
+  ]
 }
 ```

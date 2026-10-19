@@ -29,7 +29,7 @@ Required permission: Project > Services > General > Update
      - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references. (min length: 1) | {object}
  - `sha`: (string) Commit sha to build. If not provided, builds the most recent relevant commit. (min length: 40) (max length: 40)
  - `branch`: (string) Branch to build from. If `sha` is not provided, the latest commit of this branch will be built. Only supported by build services. Build services require either `branch` or `pullRequestId` field, but cannot be provided with both.
- - `pullRequestId`: (multiple options) (string) (pattern: ^[0-9]+$) | (integer)
+ - `pullRequestId`: (multiple options) (string) ID of a pull request to build from. If `sha` is not provided, the latest commit of this pull request will be built. Only supported by build services. Build services require either `branch` or `pullRequestId` field, but cannot be provided with both. (pattern: ^[0-9]+$) | (integer) ID of a pull request to build from. If `sha` is not provided, the latest commit of this pull request will be built. Only supported by build services. Build services require either `branch` or `pullRequestId` field, but cannot be provided with both.
  - `overrides`: {object}
    - `buildArguments`: {object}
    - `buildFiles`: {object}
@@ -241,7 +241,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.start.service.build({
@@ -294,5 +294,66 @@ await apiClient.start.service.build({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.start.service.build(
+    project_id="default-project",
+    service_id="example-service",
+    data={
+        "bundleUrl": "https://example.com/archive.tar",
+        "overrides": {
+            "buildArguments": {
+                "ARGUMENT_1": "abcdef",
+                "ARGUMENT_2": "12345",
+            },
+            "buildFiles": {
+                "/dir/fileName": {
+                    "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                    "encoding": "utf-8",
+                },
+            },
+            "dockerSecretMounts": {
+                "example-secret-mount_1": {
+                    "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                    "encoding": "utf-8",
+                },
+            },
+            "docker": {
+                "dockerFilePath": "/Dockerfile",
+                "dockerWorkDir": "/",
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "joyous-view-6290",
+  "branch": "main",
+  "sha": "12c15e7ee25fd78f567ebf87f9178b8ad70025b3",
+  "createdAt": "2021-07-28T15:55:38.296Z",
+  "status": "PENDING",
+  "concluded": false
 }
 ```

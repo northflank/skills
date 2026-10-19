@@ -56,7 +56,7 @@ Required permission: Project > Jobs > General > Create
      - `labels`: {object}
      - `annotations`: {object}
    - `vcs`: {object}
-     - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+     - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
      - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
      - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
      - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -147,9 +147,7 @@ Required permission: Project > Jobs > General > Create
      - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
      - `buildkit`: {object}
        - `useCache`: (boolean) Use persistent storage to cache build layers.
-       - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-       - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-       - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+       - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
    - `storage`: {object}
      - `ephemeralStorage`: {object}
        - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -229,9 +227,7 @@ Required permission: Project > Jobs > General > Create
        - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
        - `buildkit`: {object}
          - `useCache`: (boolean) Use persistent storage to cache build layers.
-         - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-         - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-         - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+         - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
      - `storage`: {object}
        - `ephemeralStorage`: {object}
          - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -294,7 +290,7 @@ Required permission: Project > Jobs > General > Create
       - `labels`: {object}
       - `annotations`: {object}
     - `vcs`: {object}
-      - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+      - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
       - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
       - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
       - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -932,7 +928,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.create.job({
@@ -1197,5 +1193,271 @@ await apiClient.create.job({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.job(
+    project_id="default-project",
+    data={
+        "name": "Example Job",
+        "description": "A job description",
+        "billing": {
+            "buildPlan": "nf-compute-200-8",
+            "deploymentPlan": "nf-compute-20",
+        },
+        "deployment": {
+            "docker": {
+                "configType": "default",
+            },
+            "storage": {
+                "ephemeralStorage": {
+                    "storageSize": 1024,
+                },
+            },
+            "vcs": {
+                "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+                "projectType": "github",
+                "accountLogin": "github-user",
+                "projectBranch": "master",
+            },
+        },
+        "buildConfiguration": {
+            "pathIgnoreRules": ["README.md"],
+            "isAllowList": False,
+            "ciIgnoreFlags": ["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"],
+            "ignoreEmptyCommits": False,
+            "dockerCredentials": ["example-docker-credential"],
+            "storage": {
+                "ephemeralStorage": {
+                    "storageSize": 16384,
+                },
+            },
+        },
+        "buildSettings": {
+            "storage": {
+                "ephemeralStorage": {
+                    "storageSize": 16384,
+                },
+            },
+            "dockerfile": {
+                "buildEngine": "buildkit",
+                "dockerFilePath": "/Dockerfile",
+                "dockerWorkDir": "/",
+                "buildkit": {
+                    "useCache": True,
+                    "cacheStorageSize": 32768,
+                },
+            },
+        },
+        "runtimeEnvironment": {
+            "variable1": "abcdef",
+            "variable2": "12345",
+        },
+        "runtimeFiles": {
+            "/dir/fileName": {
+                "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                "encoding": "utf-8",
+            },
+        },
+        "buildArguments": {
+            "variable1": "abcdef",
+            "variable2": "12345",
+        },
+        "buildFiles": {
+            "/dir/fileName": {
+                "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                "encoding": "utf-8",
+            },
+        },
+        "dockerSecretMounts": {
+            "example-secret-mount_1": {
+                "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                "encoding": "utf-8",
+            },
+        },
+        "healthChecks": [{
+            "protocol": "HTTP",
+            "type": "readinessProbe",
+            "path": "/health-check",
+            "port": 8080,
+            "initialDelaySeconds": 10,
+            "periodSeconds": 60,
+            "timeoutSeconds": 1,
+            "failureThreshold": 3,
+            "successThreshold": 1,
+        }],
+        "settings": {
+            "backoffLimit": 0,
+            "runOnSourceChange": "never",
+            "activeDeadlineSeconds": 600,
+            "cron": {
+                "schedule": "30 8 * * *",
+                "suspended": False,
+                "concurrencyPolicy": "forbid",
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "name": "Example Job",
+  "description": "A job description",
+  "billing": {
+    "buildPlan": "nf-compute-200-8",
+    "deploymentPlan": "nf-compute-20"
+  },
+  "buildConfiguration": {
+    "pathIgnoreRules": [
+      "README.md"
+    ],
+    "isAllowList": false,
+    "ciIgnoreFlags": [
+      "[skip ci]",
+      "[ci skip]",
+      "[no ci]",
+      "[skip nf]",
+      "[nf skip]",
+      "[northflank skip]",
+      "[skip northflank]"
+    ],
+    "ignoreEmptyCommits": false,
+    "dockerCredentials": [
+      "example-docker-credential"
+    ],
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 16384
+      }
+    }
+  },
+  "buildSettings": {
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 16384
+      }
+    },
+    "dockerfile": {
+      "buildEngine": "buildkit",
+      "dockerFilePath": "/Dockerfile",
+      "dockerWorkDir": "/",
+      "buildkit": {
+        "useCache": true,
+        "cacheStorageSize": 32768
+      }
+    }
+  },
+  "runtimeEnvironment": {
+    "variable1": "abcdef",
+    "variable2": "12345"
+  },
+  "runtimeFiles": {
+    "/dir/fileName": {
+      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+      "encoding": "utf-8"
+    }
+  },
+  "buildArguments": {
+    "variable1": "abcdef",
+    "variable2": "12345"
+  },
+  "buildFiles": {
+    "/dir/fileName": {
+      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+      "encoding": "utf-8"
+    }
+  },
+  "dockerSecretMounts": {
+    "example-secret-mount_1": {
+      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+      "encoding": "utf-8"
+    }
+  },
+  "healthChecks": [
+    {
+      "protocol": "HTTP",
+      "type": "readinessProbe",
+      "path": "/health-check",
+      "port": 8080,
+      "initialDelaySeconds": 10,
+      "periodSeconds": 60,
+      "timeoutSeconds": 1,
+      "failureThreshold": 3,
+      "successThreshold": 1
+    }
+  ],
+  "settings": {
+    "backoffLimit": 0,
+    "runOnSourceChange": "never",
+    "activeDeadlineSeconds": 600,
+    "cron": {
+      "schedule": "30 8 * * *",
+      "suspended": false,
+      "concurrencyPolicy": "forbid"
+    }
+  },
+  "jobType": "cron",
+  "id": "example-job",
+  "appId": "/example-user/default-project/example-job",
+  "deployment": {
+    "docker": {
+      "configType": "default"
+    },
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 1024
+      }
+    },
+    "vcs": {
+      "projectUrl": "https://github.com/northflank/gatsby-with-northflank",
+      "projectType": "github",
+      "accountLogin": "github-user",
+      "projectBranch": "master"
+    },
+    "external": {
+      "imagePath": "nginx:latest",
+      "credentials": "example-credentials"
+    },
+    "internal": {
+      "id": "example-build-service",
+      "branch": "master",
+      "buildSHA": "latest",
+      "buildId": "premium-guide-6393"
+    }
+  },
+  "status": {
+    "build": {
+      "status": "SUCCESS",
+      "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+    }
+  },
+  "cluster": {
+    "id": "nf-europe-west",
+    "name": "nf-europe-west",
+    "namespace": "ns-8zy2mcjh9zn2",
+    "loadBalancers": [
+      "lb.659200800000000000000000.northflank.com"
+    ]
+  }
 }
 ```

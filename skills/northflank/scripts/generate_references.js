@@ -780,7 +780,7 @@ class NorthflankReferenceBuilder {
       plansData = JSON.parse(plansText).data?.plans || [];
     } catch (error) {
       console.error(`Skipping plans reference — failed to fetch ${plansUrl}: ${error.message}`);
-      return;
+      return false;
     }
 
     try {
@@ -788,12 +788,13 @@ class NorthflankReferenceBuilder {
       regionsData = JSON.parse(regionsText).data?.regions || [];
     } catch (error) {
       console.error(`Skipping plans reference — failed to fetch ${regionsUrl}: ${error.message}`);
-      return;
+      return false;
     }
 
     const markdown = this.formatPlansMarkdown(plansData, regionsData);
     await this.writeFile(path.join(REFERENCES_DIR, "plans.md"), markdown);
     console.log(`Wrote plans reference: ${plansData.length} compute plans, ${regionsData.length} regions`);
+    return true;
   }
 
   formatPlansMarkdown(plans, regions) {
@@ -818,12 +819,19 @@ class NorthflankReferenceBuilder {
             name: gpu.name,
             manufacturer: gpu.manufacturer,
             memoryMiB: gpu.memoryInfo?.sizeInMiB,
-            counts: gpu.countOptions || [],
+            counts: [],
+            regionsByCount: new Map(),
             priceCents: gpu.pricing?.onDemand,
             regions: [],
           });
         }
-        gpuMap.get(gpu.id).regions.push(region.id);
+        const model = gpuMap.get(gpu.id);
+        model.regions.push(region.id);
+        (gpu.countOptions || []).forEach((count) => {
+          if (!model.regionsByCount.has(count)) model.regionsByCount.set(count, []);
+          model.regionsByCount.get(count).push(region.id);
+        });
+        model.counts = [...model.regionsByCount.keys()].sort((a, b) => a - b);
       }
     }
 
@@ -840,7 +848,7 @@ class NorthflankReferenceBuilder {
     for (const gpu of [...gpuModels].sort((a, b) => a.id.localeCompare(b.id))) {
       for (const count of gpu.counts) {
         const vram = gpu.memoryMiB ? `${Math.round(gpu.memoryMiB / 1024)} GB` : "?";
-        enumeratedSlugs.push(`- \`nf-gpu-${gpu.id}-${count}g\` — ${count}× ${gpu.manufacturer} ${gpu.name} (${vram})`);
+        enumeratedSlugs.push(`- \`nf-gpu-${gpu.id.replaceAll('_', '-')}-${count}g\` — ${count}× ${gpu.manufacturer} ${gpu.name} (${vram}) — regions: ${gpu.regionsByCount.get(count).sort().join(", ")}`);
       }
     }
 
@@ -849,7 +857,7 @@ class NorthflankReferenceBuilder {
     );
 
     const regionRows = sortedRegions.map((region) => {
-      const gpus = (region.gpuDevices || []).map((g) => g.name).join(", ") || "—";
+      const gpus = (region.gpuDevices || []).map((g) => `${g.name} [${(g.countOptions || []).join(", ")}]`).join("; ") || "—";
       const provider = region.provider ? `\`${region.provider.id}/${region.provider.region}\`` : "—";
       return `| \`${region.id}\` | ${region.name} | ${region.regionName} | ${provider} | ${gpus} |`;
     });
@@ -857,7 +865,7 @@ class NorthflankReferenceBuilder {
     const lines = [
       "# Northflank Plans & Regions",
       "",
-      `Generated from \`GET ${NF_API_BASE}/plans\` and \`GET ${NF_API_BASE}/regions\`. Both endpoints are public (no auth) — **query them directly if a SKU below looks stale or is missing**. Maintainers can refresh this file with \`node scripts/generate_references.js --force\`.`,
+      `Generated from \`GET ${NF_API_BASE}/plans\` and \`GET ${NF_API_BASE}/regions\`. Both endpoints are public (no auth) — **query them directly if a SKU below looks stale or is missing**. Maintainers can refresh this file with \`node scripts/generate_references.js --plans-only --force\`.`,
       "",
       "## Compute plans",
       "",
@@ -869,7 +877,7 @@ class NorthflankReferenceBuilder {
       "",
       "## GPU plans",
       "",
-      "GPU services use a paired plan slug: `nf-gpu-<gpuType>-<count>g`. Set `deployment.gpu` (or `billing.gpu`) with matching `gpuType` and `gpuCount`.",
+      "GPU services use a paired plan slug: `nf-gpu-<gpuType>-<count>g`, replacing underscores with hyphens in the plan ID. Keep the original GPU type in `deployment.gpu.configuration.gpuType`. Set `deployment.gpu.enabled: true` and put matching `gpuType` and `gpuCount` under `deployment.gpu.configuration`.",
       "",
       "### GPU models (managed cloud)",
       "",
@@ -887,7 +895,7 @@ class NorthflankReferenceBuilder {
       "",
       "Northflank's managed cloud runs on Google Cloud. GPU availability varies — only regions with GPU devices are selectable for GPU-enabled projects.",
       "",
-      "| ID | Name | Group | GCP region | GPU models |",
+      "| ID | Name | Group | GCP region | GPU models [counts per instance] |",
       "|---|---|---|---|---|",
       ...regionRows,
       "",
@@ -988,6 +996,11 @@ function parseArgs(argv) {
       process.exit(0);
     }
 
+    if (arg === "--plans-only") {
+      options.plansOnly = true;
+      continue;
+    }
+
     if (arg === "--force") {
       options.force = true;
       continue;
@@ -1018,7 +1031,7 @@ function parseArgs(argv) {
 }
 
 function printHelp() {
-  console.log(`usage: generate_references.js [--llms-url URL] [--cache-dir PATH] [--force]
+  console.log(`usage: generate_references.js [--llms-url URL] [--cache-dir PATH] [--force] [--plans-only]
 
 Generate Northflank references from llms.txt
 
@@ -1026,7 +1039,8 @@ options:
   -h, --help           show this help message and exit
   --llms-url URL       Override llms.txt URL
   --cache-dir PATH     Cache directory for fetched docs
-  --force              Refetch llms.txt and markdown pages`);
+  --force              Refetch remote sources
+  --plans-only         Generate only compute plans, GPU plans, and regions`);
 }
 
 async function main() {
@@ -1045,6 +1059,11 @@ async function main() {
     cacheDir: options.cacheDir,
     forceRefresh: options.force,
   });
+
+  if (options.plansOnly) {
+    process.exitCode = (await builder.buildPlansReference()) === false ? 1 : 0;
+    return;
+  }
 
   process.exitCode = await builder.run();
 }

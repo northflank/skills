@@ -14,7 +14,7 @@ Required permission: Account > Git > General > Read
 - `projectBranch`: (string) Optional branch to check.
 - `vcsLinkId`: (string) If provided, only checks access via this specific linked account. (min length: 24) (max length: 24)
 - `accountLogin`: (string) If provided, only checks access via the linked account with this login.
-- `selfHostedVcsId`: (string) If `projectType` is `self-hosted`, the ID of the self-hosted VCS provider.
+- `selfHostedVcsId`: (multiple options) (multiple options) (undefined)
 
 **Response body:**
 
@@ -133,3 +133,13 @@ Looks like you aren‘t able to do that through the CLI yet.
 ### JavaScript client reference
 
 Looks like you aren‘t able to do that through the JavaScript client yet.
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+Python SDK 2.1.0 has no generated method for this endpoint. Use the API example for this request.

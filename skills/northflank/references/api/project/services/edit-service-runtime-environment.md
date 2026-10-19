@@ -6,7 +6,7 @@ This endpoint is deprecated and will be removed in the future. Please avoid maki
 
 Requests should instead use the relevant PATCH endpoint.
 
-[Use /services/patch-combined-service instead](patch-combined-service.md)
+[Use /project/services/patch-combined-service instead](patch-combined-service.md)
 
 Sets the runtime environment for the given service.
 
@@ -184,7 +184,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.update.service.runtimeEnvironment({
@@ -220,5 +220,49 @@ await apiClient.update.service.runtimeEnvironment({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.service.runtime_environment(
+    project_id="default-project",
+    service_id="example-service",
+    data={
+        "runtimeEnvironment": {
+            "VARIABLE_1": "abcdef",
+            "VARIABLE_2": "12345",
+        },
+        "runtimeFiles": {
+            "/dir/fileName": {
+                "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                "encoding": "utf-8",
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "success": true,
+  "restartSuccessful": true
 }
 ```

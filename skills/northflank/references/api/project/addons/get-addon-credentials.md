@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/project/addons/get-addon-credentials.
 
 Returns the credentials for connecting to the given addon.
 
-Required permission: Project > Addons > General > Read
+Required permission: Project > Addons > General > Read Spec
 
 **Path parameters:**
 
@@ -75,6 +75,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.addon.credentials({
   parameters: {
@@ -100,5 +102,40 @@ await apiClient.get.addon.credentials({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.addon.credentials(
+    addon_id="example-addon",
+    project_id="default-project",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "secrets": {
+    "username": "1720747439245d49",
+    "password": "f1ba286ee2465e80b0fd4af31276f3e33a"
+  },
+  "envs": {}
 }
 ```

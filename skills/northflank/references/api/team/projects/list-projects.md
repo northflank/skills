@@ -11,7 +11,7 @@ Required permission: Project > Projects > Manage > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 
 **Response body:**
 
@@ -19,6 +19,8 @@ Required permission: Project > Projects > Manage > Read
 - `data`: {object}
   - `projects`: [array of] {object}
      - `id`: (string) (required) Identifier for the project.
+     - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
+     - `lifecycleStatus`: (string) (required) Status of resource on the platform (enum: pending_initialization, creating, created, creation_failed, upgrading, upgrade_failed, migration_pending, migrating, migration_failed, deleting, deletion_failed, deleted, cluster_deleted, initializing, tearing_down, teardown_failed)
      - `name`: (string) (required) The name of the project.
      - `description`: (string) A short description of the project.
 - `pagination`: {object}
@@ -42,6 +44,8 @@ GET /v1/teams/{teamId}/projects
     "projects": [
       {
         "id": "default-project",
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
+        "lifecycleStatus": "creating",
         "name": "Default Project",
         "description": "The project description"
       }
@@ -81,6 +85,8 @@ Options:
   "projects": [
     {
       "id": "default-project",
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
+      "lifecycleStatus": "creating",
       "name": "Default Project",
       "description": "The project description"
     }
@@ -91,6 +97,8 @@ Options:
 ### JavaScript client reference
 
 #### Example request
+
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.list.projects({
@@ -111,6 +119,8 @@ await apiClient.list.projects({
     "projects": [
       {
         "id": "default-project",
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
+        "lifecycleStatus": "creating",
         "name": "Default Project",
         "description": "The project description"
       }
@@ -123,5 +133,44 @@ await apiClient.list.projects({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.projects(
+    page=1,
+    per_page=50,
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "projects": [
+    {
+      "id": "default-project",
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
+      "lifecycleStatus": "creating",
+      "name": "Default Project",
+      "description": "The project description"
+    }
+  ]
 }
 ```

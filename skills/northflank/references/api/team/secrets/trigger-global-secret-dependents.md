@@ -14,7 +14,7 @@ Required permission: Account > Templates > General > Run
 **Query parameters:**
 
 {object}
-- `idempotencyKey`: (string) Deduplicates dependent template runs when the same request is retried.
+- `idempotencyKey`: (string) Deduplicates dependent template runs when the same request is retried. (max length: 128)
 
 **Response body:**
 
@@ -47,7 +47,7 @@ undefined
 
 ### CLI reference
 
-$ northflank trigger-dependents global-secret
+$ northflank trigger global-secret dependents
 
 Options:
 
@@ -73,12 +73,13 @@ undefined
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
-await apiClient.triggerDependents.globalSecret({
+await apiClient.trigger.globalSecret.dependents({
   parameters: {
     "secretId": "example-secret"
-  },
-  options: {}
+  }
 });
 ```
 
@@ -91,5 +92,41 @@ await apiClient.triggerDependents.globalSecret({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.trigger.global_secret.dependents(
+    secret_id="example-secret",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "batchId": "string",
+  "accepted": 0,
+  "succeeded": 0,
+  "failed": 0,
+  "skipped": 0,
+  "deduplicated": 0,
+  "items": []
 }
 ```

@@ -37,7 +37,7 @@ IP policies allow you to either block IP addresses from accessing a port, or to 
 
 - Allow only the IP address for a required external service
 
-You can set IP policies for a specific port from the security rules section of the ports & DNS page of combined and deployment services.
+For deployment and combined services, open Configure → Networking. Set IP policies in the port’s security rules.
 
 ![Configuring IP policies for a port for a deployment service in the Northflank application](https://assets.northflank.com/documentation/v1/application/network/set-ip-policies/ip-policy.png)
 
@@ -53,7 +53,7 @@ You can apply rules to one or multiple ports, and apply different policies to di
 
 Basic authentication is a simple method to prevent unwanted access to a website or endpoint. If you have added basic authentication to a port users will need to enter a valid username and password in the browser prompt to access your service, or send an [authorization header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization) with their HTTP requests.
 
-You can add basic access authentication to a specific port from the security rules section of the ports & DNS page of deployment and combined services.
+For deployment and combined services, open Configure → Networking. Add basic authentication in the port’s security rules.
 
 You can add multiple username and password combinations to the same port.
 
@@ -64,11 +64,12 @@ You can add multiple username and password combinations to the same port.
 You can require users to authenticate via your SSO provider before they can access your Northflank service.
 
 > [!note] Requirements
+>
 > You will need the following to get started:
-
-- A team that's part of an [organisation](collaborate.md#create-and-manage-an-organisation)
-- [Single sign-on](collaborate.md#create-and-manage-an-organisation-configure-single-sign-on-sso) configured for your organisation
-- [Directory sync](collaborate.md#create-and-manage-an-organisation-sync-your-directory) enabled
+>
+> - A team that's part of an [organisation](collaborate.md#create-and-manage-an-organisation)
+> - [Single sign-on](collaborate.md#create-and-manage-an-organisation-configure-single-sign-on-sso) configured for your organisation
+> - [Directory sync](collaborate.md#create-and-manage-an-organisation-sync-your-directory) enabled
 
 You can require SSO authentication for a port on a service by expanding the custom domains & security rules option.
 
@@ -93,21 +94,21 @@ Source: https://northflank.com/docs/v1/application/network/configure-egress-ips.
 
 > [!note] Using BYOC or managed cloud?
 >
-
-- **Using Northflank's managed cloud?** You're in the right place.
-
-- **Using BYOC clusters?** See [Configure static egress IPs for BYOC](bring-your-own-cloud.md#configure-static-egress-ips).
+> - **Using Northflank's managed cloud?** You're in the right place.
+>
+> - **Using BYOC clusters?** See [Configure static egress IPs for BYOC](bring-your-own-cloud.md#configure-static-egress-ips).
 
 Egress IPs provide a dedicated, static public IP address for outbound traffic from selected workloads. By default, outbound requests from your services use shared, unpredictable IP addresses. With an egress IP, outbound traffic routes through a single, fixed IP address that you can share with third parties for firewall allowlisting.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/egress-ips) to view your egress IPs.
 
 ### Configure egress IPs: Create an egress IP
 
-1. Navigate to [**Cloud** → **Egress IPs**](https://app.northflank.com/s/account/cloud/egress-ips) from your team menu
+1. Navigate to [Networking → Egress IPs](https://app.northflank.com/s/account/cloud/egress-ips) from your team menu.
 
-2. Click **Create egress IP**
+2. Click Create egress IP (Create new egress IP if none exist).
 
 #### Configure egress IPs: Basic information
 
@@ -147,7 +148,7 @@ Configure which workloads route traffic through the egress IP:
 
 #### Configure egress IPs: Create
 
-Click **Create egress IP** to provision the infrastructure. Provisioning typically takes a few minutes.
+Click Create egress IP to provision the infrastructure. Provisioning typically takes a few minutes.
 
 ### Configure egress IPs: Update egress IP rules
 
@@ -281,15 +282,18 @@ Source: https://northflank.com/docs/v1/application/network/configure-load-balanc
 Load balancers provide a stable public IP address for routing external TCP or UDP traffic to your services and addons. They operate at Layer 4, distributing connections across one or more backends. Managed at the team level, a single load balancer can route traffic to workloads across multiple projects.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/cloud/load-balancers) to view your load balancers.
+
+Open Networking → Load balancers in your team. These resources are separate from [cluster public and VPC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress). Layer 4 routes TCP or UDP connections. The `vpcAccessible` field on an ordinary service port enables HTTP or HTTP/2 ingress through the cluster's private load balancer.
 
 ### Configure load balancers: Create a load balancer
 
 To create a load balancer:
 
-1. Navigate to **Cloud** → **Load balancers** from your team menu
+1. Open Networking → Load balancers in your team.
 
-2. Click **Create load balancer**
+2. Click Create load balancer (Create new load balancer if none exist).
 
 #### Configure load balancers: Basic information
 
@@ -497,7 +501,9 @@ Understanding the default behavior:
 
 To create a network policy:
 
-1. Navigate to [**Cloud** → **Network policies**](https://app.northflank.com/s/team/cloud/network-policies/new)
+1. Navigate to [Networking → Network policies](https://app.northflank.com/s/team/cloud/network-policies).
+
+2. Select Create network policy.
 
 #### Configure network policies: Basic information
 
@@ -561,13 +567,13 @@ Click **Create network policy** to create and apply the policy.
 
 To change an existing network policy:
 
-1. Navigate to [**Cloud** → **Network policies**](https://app.northflank.com/s/team/cloud/network-policies)
+1. Navigate to [Networking → Network policies](https://app.northflank.com/s/team/cloud/network-policies).
 
 2. Select the network policy
 
-3. Update the **Rules** and **Restrictions** details
+3. Update the Rules and Restrictions details
 
-4. Click **Update network policy** to save changes
+4. Click Update network policy to save changes
 
 ### Configure network policies: Best practices
 
@@ -610,13 +616,13 @@ To change an existing network policy:
 
 Source: https://northflank.com/docs/v1/application/network/configure-ports.md
 
-You can expose as many ports per deployment, public and private, as you require, and link each public port with a [subdomain](domains.md#link-a-domain-to-a-port).
+You can configure internal, public, and VPC-accessible ports for a deployment. You can link public or VPC-accessible ports to a [subdomain](domains.md#link-a-domain-to-a-port).
 
 You can add ports required by your application manually, or Northflank can automatically detect ports exposed by your Dockerfile.
 
-Ports can be added while creating your deployment, or afterwards from the ports & DNS page on deployment and combined services. Updating ports on your deployments will not require a restart.
+You can add ports during service creation or from Configure → Networking on deployment and combined services. Port changes do not require a restart.
 
-| Protocol | Uses | Can be made public? |
+| Protocol | Uses | Public or VPC ingress? |
 | --- | --- | --- |
 | HTTP(S)/1.1 | Common web servers, websockets | Yes |
 | HTTP(S)/2 | Modern web servers, [gRPC](https://grpc.io/), websockets | Yes |
@@ -629,10 +635,11 @@ You can use any port from 1 to 65535 (ports for web servers are often 80, 443, 3
 
 ### Configure ports: Public ports
 
-Public ports allow your application to receive and send traffic from clients on the internet. Only HTTP and HTTP/2 ports can be publicly exposed.
+Public ports allow your application to receive requests from clients on the internet. Only HTTP and HTTP/2 ports can be publicly exposed.
 
 > [!note]
-> HTTP and HTTP/2 public ports work out of the box and need no additional cluster configuration. TCP and UDP ports cannot be made public directly — to reach a TCP or UDP service from the internet, route traffic to it through a [load balancer](https://northflank.com/docs/v1/application/configure-load-balancers), which provides a stable public IP at Layer 4.
+>
+> On BYOC, public ports need public ingress enabled and ready on the cluster. See [Public and VPC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress) for availability and configuration. TCP and UDP service ports require a separate [Layer 4 load balancer](network.md#configure-load-balancers) for internet access.
 
 Public ports are automatically assigned a Northflank domain name, secured with an automatically-generated TLS certificate. They take the format:
 
@@ -649,9 +656,45 @@ For example:
 | 80 | 80, HTTP, publicly exposed | 80, 443 |
 | 3000 | 3000, HTTP, publicly exposed | 80, 443 |
 
+### Configure ports: VPC ports and dual exposure
+
+VPC ingress is incoming traffic through a private load balancer. It requires an eligible BYOC cluster with private ingress installed and client connectivity to the VPC. See [Public and VPC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress) for availability and cluster configuration.
+
+Open Configure → Networking in the service menu. Choose the port's Accessibility. Save the port changes. The service API represents these choices with two independent fields:
+
+| Accessibility | `public` | `vpcAccessible` | Ingress path |
+| --- | --- | --- | --- |
+| Private | `false` | `false` | Internal only |
+| Public | `true` | `false` | Public load balancer |
+| VPC | `false` | `true` | Private load balancer |
+| Public and VPC | `true` | `true` | Both load balancers |
+
+Both fields default to `false` in service creation requests. Automatic port detection can choose different exposure defaults. The Private choice means project-internal access. The VPC choice uses the cluster's private ingress.
+
+Ordinary service ports support only HTTP and HTTP/2 on either ingress path, including WebSockets and gRPC over those protocols. Setting `vpcAccessible` does not expose arbitrary TCP or UDP service ports.
+
+Layer 4 load balancers route TCP or UDP connections. [Dedicated load balancers](network.md#configure-load-balancers) are separate resources under Networking → Load balancers. They do not use the service-port exposure choices above.
+
+#### Configure ports: Public and VPC hostnames
+
+A port exposed on both paths has separate public and VPC hostnames. The VPC hostname adds `--vpc` before the first dot. For example:
+
+```text
+Public: p01--example-service--default-service--user-abc1.salvo.code.run
+VPC:    p01--example-service--default-service--user-abc1--vpc.salvo.code.run
+```
+
+Use the generated endpoints from Networking. Service API responses expose them as `dns` and `vpcDns`. The exact hostname format depends on the cluster's domain configuration.
+
+Public and VPC exposure do not replace [project-internal service addresses](network.md#configure-ports-private-ports). A custom subdomain uses one ingress target, even when its port uses both. See [domain ingress targets](domains.md#link-a-domain-to-a-port-choose-public-or-vpc-routing).
+
+> [!warning] Before removing port exposure
+>
+> Move or unlink domains that require the path before removing a port's exposure. Keep each attached domain on a port that supports its ingress target. Disabling cluster ingress does not move those routes onto the remaining path.
+
 ### Configure ports: Private ports
 
-You can create a private port for any protocol supported on Northflank.
+You can create a project-internal port for any protocol supported on Northflank. Set both `public` and `vpcAccessible` to `false` for internal-only access. This differs from [VPC ingress](network.md#configure-ports-vpc-ports-and-dual-exposure).
 
 Applications in your project will be able to access the private ports simply by referring to the service name and port in the following format:
 
@@ -665,7 +708,7 @@ If required, internal traffic between your containers can be encrypted with mTLS
 
 ### Configure ports: Detect ports
 
-When you create a new deployment Northflank will scan the image manifest and attempt to identify and add the ports exposed by the image. You can also detect ports from the ports & DNS page on a service. You should always verify that the ports are correct for your deployment.
+When you create a deployment, Northflank scans the image manifest to detect and add exposed ports. You can also use Detect ports under Configure → Networking in the service menu. Make sure that the detected ports match your deployment.
 
 You can expose ports in your Dockerfile in the following ways:
 
@@ -745,7 +788,7 @@ New policies start disabled. Enabled policies in the same team must have unique 
 
 To create and enable a team security policy:
 
-1. Open the team and select Cloud → Security policies.
+1. Open the team and select Configuration → Security policies.
 
 2. Select Create security policy.
 
@@ -776,6 +819,7 @@ New policies start disabled. Enabled policies in the same organization must have
 The Team inheritance mode determines whether a team policy can replace the winning organization policy. Enforced prevents replacement, while Default allows a matching team policy to replace it.
 
 > [!warning] A default can replace an enforced policy
+>
 > Before enabling an organization default, review its effect on enforced policies. A higher-priority organization default can replace a lower-priority enforced policy. This can let a team policy replace those access rules. Northflank requires acknowledgment of any displayed inheritance warning before activation or an enabled policy update.
 
 To create and enable an organization security policy:
@@ -859,6 +903,7 @@ Requests through public endpoints normally use security controls, even when they
 Requests through [project-internal addresses](network.md#configure-ports-private-ports) bypass IP and request-header controls. Basic Auth can still apply.
 
 > [!warning] Require SSO for internal requests
+>
 > To require SSO for project-internal requests, place SSO in Required. Then enable Validate internal traffic. By default, a policy that includes SSO bypasses all controls for these requests, including Basic Auth. See [use an SSO provider](network.md#create-path-based-security-policies-use-sso-provider).
 
 Services can also apply internal-traffic exceptions to requests through their Northflank HTTPS hostnames. This covers requests from the same project or projects with ingress permission. Team and organization policies preserve this service configuration. See [allow internal traffic to skip security policies](network.md#create-path-based-security-policies-allow-internal-traffic-to-skip-security-policies).
@@ -1131,11 +1176,12 @@ This can be used to restrict access to requests based on a manually-set key/valu
 You can require users to authenticate via your SSO provider before they can access your Northflank service.
 
 > [!note] Requirements
+>
 > You will need the following to get started:
-
-- A team that's part of an [organisation](collaborate.md#create-and-manage-an-organisation)
-- [Single sign-on](collaborate.md#create-and-manage-an-organisation-configure-single-sign-on-sso) configured for your organisation
-- [Directory sync](collaborate.md#create-and-manage-an-organisation-sync-your-directory) enabled
+>
+> - A team that's part of an [organisation](collaborate.md#create-and-manage-an-organisation)
+> - [Single sign-on](collaborate.md#create-and-manage-an-organisation-configure-single-sign-on-sso) configured for your organisation
+> - [Directory sync](collaborate.md#create-and-manage-an-organisation-sync-your-directory) enabled
 
 Select your organisation's ID and choose the directory groups you want to grant access to.
 
@@ -1432,9 +1478,9 @@ For example, with 2 instances: request 1 is routed to instance 1, request 2 is r
 
 Source: https://northflank.com/docs/v1/application/network/networking-on-northflank.md
 
-Northflank allows flexible and secure private and public networking for services, jobs, databases and other addons. HTTP, HTTP/2, Websockets, gRPC, TCP and UDP are all supported networking protocols.
+Northflank supports internal networking, public ingress, and VPC ingress. Ingress is incoming traffic to your workloads. Ordinary service ports support HTTP and HTTP/2 on public and VPC ingress, including WebSockets and gRPC over those protocols. Internal ports also support TCP and UDP.
 
-Networking settings are accessed on the ports & DNS page on deployment and combined services, and on the settings page in the network section for databases and other addons.
+For deployment and combined services, open Configure → Networking in the service menu. For databases and other addons, open Network → Settings in the addon menu.
 
 ### Networking on Northflank: Public networking
 
@@ -1443,6 +1489,10 @@ HTTP, HTTP/2, Websockets and gRPC can be exposed publicly via a load-balancer se
 You can choose to [publicly expose databases](databases-and-persistence.md#access-a-database-expose-a-database-publicly) and other addons via a load-balanced TCP endpoint. Northflank will enforce and generate TLS certificates which will be automatically configured in the database and connection details.
 
 Northflank will expose your HTTP ports publicly on ports 80 and 443 and route traffic to your configured ports. HTTP (port 80) traffic is automatically redirected to HTTPS (port 443).
+
+On BYOC, public exposure requires the cluster's public ingress to be enabled and ready. Eligible clusters also support [VPC ports and dual exposure](network.md#configure-ports-vpc-ports-and-dual-exposure). VPC ingress needs a private load balancer and client connectivity to the VPC. See [Public and VPC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress) for availability.
+
+Supported databases and addons can use [VPC exposure](databases-and-persistence.md#access-a-database-expose-a-database-to-the-vpc) instead of public exposure. Addons cannot use both ingress paths simultaneously.
 
 - [Expose ports in your application: Expose ports in your application to make it available for networking.](network.md#expose-your-application)
 - [Add public ports: Configure ports to expose your services on the internet.](network.md#configure-ports-public-ports)
@@ -1461,7 +1511,7 @@ You can configure security policies for individual ports, or apply path-based ac
 
 ### Networking on Northflank: Private networking
 
-Ports serving all protocols can be configured for private networking. Services, jobs and databases with private ports will only be accessible by other resources inside the same project.
+Ports serving all supported protocols can use project-internal networking. Internal addresses allow access from resources in the same project by default. This differs from VPC ingress, which exposes selected workloads through a private load balancer.
 
 Deployments and databases can be forwarded for secure, local access, without the need to publicly expose them to the internet.
 
@@ -1526,13 +1576,14 @@ Add at least one tag for the `auth keys` scope, and click generate client. Copy 
 
 #### Use Tailscale: Add your OAuth client to Northflank
 
-Open your [project settings](https://app.northflank.com/s/project/settings) and enable Tailscale.
+Open [Settings → General](https://app.northflank.com/s/project/settings) in your project and enable Tailscale.
 
 Copy the client ID and secret to the corresponding fields. Next, enter the Tailscale tags that are assigned to the `auth keys` scope of your OAuth client. They should be added in full, in the format `tag:name`.
 
 You can now configure Tailscale for your project, detailed below, or click update to add Tailscale to your project.
 
 > [!note] Identify your Northflank resources on Tailscale
+>
 > When you deploy new resources, or redeploy existing resources in your project after enabling Tailscale, they will appear in your Tailscale machines list. To identify a Northflank resource in Tailscale, open the resource in Northflank and navigate to the containers page for a service, or the job runs page for a job. The first two parts of the container name or the job run name, separated by a dash, will be the name of the machine listed in Tailscale. For example `proxy-54fcd583a7-adf5c` would appear as `proxy-54fcd583a7`.
 
 ### Use Tailscale: Restrict Tailscale access

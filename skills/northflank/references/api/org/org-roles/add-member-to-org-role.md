@@ -146,8 +146,6 @@ Options:
 
 #### Example request
 
-Request body
-
 ```javascript
 await apiClient.create.orgRoleMember({
   parameters: {
@@ -170,4 +168,33 @@ await apiClient.create.orgRoleMember({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.org_role_member(
+    role_id="developer",
+    data={
+        "userId": "john-doe",
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

@@ -157,7 +157,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.assign.subdomain.service({
@@ -184,4 +184,38 @@ await apiClient.assign.subdomain.service({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.assign.subdomain.service(
+    domain="example.com",
+    subdomain="app",
+    data={
+        "serviceId": "example-service",
+        "projectId": "default-project",
+        "portName": "p01",
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

@@ -188,7 +188,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.add.domain.subdomain({
@@ -217,5 +217,42 @@ await apiClient.add.domain.subdomain({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.add.domain.subdomain(
+    domain="example.com",
+    data={
+        "subdomain": "site",
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "recordType": "CNAME",
+  "name": "site",
+  "fullName": "site.example.com",
+  "content": "site.example.com.user-1234.dns.northflank.app",
+  "verified": false
 }
 ```

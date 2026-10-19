@@ -9,17 +9,20 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 | **Add registry** | `POST /v1/integrations/registries`<br>`POST /v1/teams/{teamId}/integrations/registries` | [add-registry.md](add-registry.md) |
 | **Add SSH identity** | `POST /v1/integrations/ssh-identities`<br>`POST /v1/teams/{teamId}/integrations/ssh-identities` | [add-ssh-identity.md](add-ssh-identity.md) |
 | **Check repository access** | `POST /v1/integrations/vcs/repo-access`<br>`POST /v1/teams/{teamId}/integrations/vcs/repo-access` | [check-repository-access.md](check-repository-access.md) |
+| **Create audit log sink** | `POST /v1/integrations/audit-log-sinks`<br>`POST /v1/teams/{teamId}/integrations/audit-log-sinks` | [create-audit-log-sink.md](create-audit-log-sink.md) |
 | **Create log sink** | `POST /v1/integrations/log-sinks`<br>`POST /v1/teams/{teamId}/integrations/log-sinks` | [create-log-sink.md](create-log-sink.md) |
 | **Create notification integration** | `POST /v1/integrations/notifications`<br>`POST /v1/teams/{teamId}/integrations/notifications` | [create-notification-integration.md](create-notification-integration.md) |
 | **Create or update SSH identity** | `PUT /v1/integrations/ssh-identities/{identityId}`<br>`PUT /v1/teams/{teamId}/integrations/ssh-identities/{identityId}` | [create-or-update-ssh-identity.md](create-or-update-ssh-identity.md) |
 | **Create VCS link session** | `POST /v1/integrations/vcs/link-sessions`<br>`POST /v1/teams/{teamId}/integrations/vcs/link-sessions` | [create-vcs-link-session.md](create-vcs-link-session.md) |
 | **Create workload identity** | `POST /v1/workload-identities`<br>`POST /v1/teams/{teamId}/workload-identities` | [create-workload-identity.md](create-workload-identity.md) |
+| **Delete audit log sink** | `DELETE /v1/integrations/audit-log-sinks/{sinkId}`<br>`DELETE /v1/teams/{teamId}/integrations/audit-log-sinks/{sinkId}` | [delete-audit-log-sink.md](delete-audit-log-sink.md) |
 | **Delete log sink** | `DELETE /v1/integrations/log-sinks/{logSinkId}`<br>`DELETE /v1/teams/{teamId}/integrations/log-sinks/{logSinkId}` | [delete-log-sink.md](delete-log-sink.md) |
 | **Delete notification integration** | `DELETE /v1/integrations/notifications/{notificationId}`<br>`DELETE /v1/teams/{teamId}/integrations/notifications/{notificationId}` | [delete-notification-integration.md](delete-notification-integration.md) |
 | **Delete registry** | `DELETE /v1/integrations/registries/{credentialId}`<br>`DELETE /v1/teams/{teamId}/integrations/registries/{credentialId}` | [delete-registry.md](delete-registry.md) |
 | **Delete SSH identity** | `DELETE /v1/integrations/ssh-identities/{identityId}`<br>`DELETE /v1/teams/{teamId}/integrations/ssh-identities/{identityId}` | [delete-ssh-identity.md](delete-ssh-identity.md) |
 | **Delete workload identity** | `DELETE /v1/workload-identities/{workloadIdentityId}`<br>`DELETE /v1/teams/{teamId}/workload-identities/{workloadIdentityId}` | [delete-workload-identity.md](delete-workload-identity.md) |
 | **Generate VCS token** | `POST /v1/integrations/vcs/custom/{customVCSId}/token/{vcsLinkId}`<br>`POST /v1/teams/{teamId}/integrations/vcs/custom/{customVCSId}/token/{vcsLinkId}` | [generate-vcs-token.md](generate-vcs-token.md) |
+| **Get audit log sink details** | `GET /v1/integrations/audit-log-sinks/{sinkId}`<br>`GET /v1/teams/{teamId}/integrations/audit-log-sinks/{sinkId}` | [get-audit-log-sink-details.md](get-audit-log-sink-details.md) |
 | **Get log sink details** | `GET /v1/integrations/log-sinks/{logSinkId}`<br>`GET /v1/teams/{teamId}/integrations/log-sinks/{logSinkId}` | [get-log-sink-details.md](get-log-sink-details.md) |
 | **Get notification integration** | `GET /v1/integrations/notifications/{notificationId}`<br>`GET /v1/teams/{teamId}/integrations/notifications/{notificationId}` | [get-notification-integration.md](get-notification-integration.md) |
 | **Get registry** | `GET /v1/integrations/registries/{credentialId}`<br>`GET /v1/teams/{teamId}/integrations/registries/{credentialId}` | [get-registry.md](get-registry.md) |
@@ -29,6 +32,7 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 | **Get workload identity** | `GET /v1/workload-identities/{workloadIdentityId}`<br>`GET /v1/teams/{teamId}/workload-identities/{workloadIdentityId}` | [get-workload-identity.md](get-workload-identity.md) |
 | **Install workload identity provider** | `POST /v1/cloud-providers/integrations/{integrationId}/workload-identity-provider/install`<br>`POST /v1/teams/{teamId}/cloud-providers/integrations/{integrationId}/workload-identity-provider/install` | [install-workload-identity-provider.md](install-workload-identity-provider.md) |
 | **Install workload identity** | `POST /v1/workload-identities/{workloadIdentityId}/install`<br>`POST /v1/teams/{teamId}/workload-identities/{workloadIdentityId}/install` | [install-workload-identity.md](install-workload-identity.md) |
+| **List audit log sinks** | `GET /v1/integrations/audit-log-sinks`<br>`GET /v1/teams/{teamId}/integrations/audit-log-sinks` | [list-audit-log-sinks.md](list-audit-log-sinks.md) |
 | **List branches** | `GET /v1/integrations/vcs/repos/{vcsService}/{repositoryOwner}/{repositoryName}/branches`<br>`GET /v1/teams/{teamId}/integrations/vcs/repos/{vcsService}/{repositoryOwner}/{repositoryName}/branches` | [list-branches.md](list-branches.md) |
 | **List log sinks** | `GET /v1/integrations/log-sinks`<br>`GET /v1/teams/{teamId}/integrations/log-sinks` | [list-log-sinks.md](list-log-sinks.md) |
 | **List notification integrations** | `GET /v1/integrations/notifications`<br>`GET /v1/teams/{teamId}/integrations/notifications` | [list-notification-integrations.md](list-notification-integrations.md) |
@@ -37,7 +41,11 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 | **List SSH identities** | `GET /v1/integrations/ssh-identities`<br>`GET /v1/teams/{teamId}/integrations/ssh-identities` | [list-ssh-identities.md](list-ssh-identities.md) |
 | **List VCS providers** | `GET /v1/integrations/vcs`<br>`GET /v1/teams/{teamId}/integrations/vcs` | [list-vcs-providers.md](list-vcs-providers.md) |
 | **List workload identities** | `GET /v1/workload-identities`<br>`GET /v1/teams/{teamId}/workload-identities` | [list-workload-identities.md](list-workload-identities.md) |
+| **Patch audit log sink** | `PATCH /v1/integrations/audit-log-sinks/{sinkId}`<br>`PATCH /v1/teams/{teamId}/integrations/audit-log-sinks/{sinkId}` | [patch-audit-log-sink.md](patch-audit-log-sink.md) |
+| **Pause audit log sink** | `POST /v1/integrations/audit-log-sinks/{sinkId}/pause`<br>`POST /v1/teams/{teamId}/integrations/audit-log-sinks/{sinkId}/pause` | [pause-audit-log-sink.md](pause-audit-log-sink.md) |
 | **Pause log sink** | `POST /v1/integrations/log-sinks/{logSinkId}/pause`<br>`POST /v1/teams/{teamId}/integrations/log-sinks/{logSinkId}/pause` | [pause-log-sink.md](pause-log-sink.md) |
+| **Put audit log sink** | `PUT /v1/integrations/audit-log-sinks/{sinkId}`<br>`PUT /v1/teams/{teamId}/integrations/audit-log-sinks/{sinkId}` | [put-audit-log-sink.md](put-audit-log-sink.md) |
+| **Resume audit log sink** | `POST /v1/integrations/audit-log-sinks/{sinkId}/resume`<br>`POST /v1/teams/{teamId}/integrations/audit-log-sinks/{sinkId}/resume` | [resume-audit-log-sink.md](resume-audit-log-sink.md) |
 | **Resume log sink** | `POST /v1/integrations/log-sinks/{logSinkId}/resume`<br>`POST /v1/teams/{teamId}/integrations/log-sinks/{logSinkId}/resume` | [resume-log-sink.md](resume-log-sink.md) |
 | **Update log sink** | `POST /v1/integrations/log-sinks/{logSinkId}/settings`<br>`POST /v1/teams/{teamId}/integrations/log-sinks/{logSinkId}/settings` | [update-log-sink.md](update-log-sink.md) |
 | **Update notification integration** | `POST /v1/integrations/notifications/{notificationId}`<br>`POST /v1/teams/{teamId}/integrations/notifications/{notificationId}` | [update-notification-integration.md](update-notification-integration.md) |

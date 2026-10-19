@@ -6,6 +6,7 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 
 | Page | API Reference | File |
 |------|---------------|------|
+| **Get credit balance** | `GET /v1/billing/credit-balance`<br>`GET /v1/teams/{teamId}/billing/credit-balance` | [get-credit-balance.md](get-credit-balance.md) |
 | **Get invoice** | `GET /v1/billing/invoices/{invoiceId}`<br>`GET /v1/teams/{teamId}/billing/invoices/{invoiceId}` | [get-invoice.md](get-invoice.md) |
 | **Get usage** | `GET /v1/billing/usage/{timestamp}`<br>`GET /v1/teams/{teamId}/billing/usage/{timestamp}` | [get-usage.md](get-usage.md) |
 | **List invoices** | `GET /v1/billing/invoices`<br>`GET /v1/teams/{teamId}/billing/invoices` | [list-invoices.md](list-invoices.md) |

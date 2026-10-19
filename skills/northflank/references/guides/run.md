@@ -37,6 +37,7 @@ Running job containers can be accessed by navigating to the job runs page and se
 ![Accessing a container shell in the Northflank application](https://assets.northflank.com/documentation/v1/application/run/access-running-containers-locally/shell-access-container.png)
 
 > [!note] Copy & paste
+>
 > You can copy and paste in the browser shell with control-shift-c and control-shift-v. This may not work in Firefox, where you may need to use the right-click menu to copy and paste. Command-c and command-v works across all browsers on macOS.
 
 ### Access running containers locally: Forward containers for local access
@@ -58,7 +59,7 @@ You can now connect to your deployment locally on the available ports.
 
 ### Access running containers locally: Execute commands in an action node
 
-You can execute commands in a service in a [template](infrastructure-as-code.md#template-nodes-action-nodes) or [release flow](https://northflank.com/docs/v1/application/release/configure-a-release-flow#run-action) by using an action node.
+You can execute commands in a service in a [template](infrastructure-as-code.md#template-nodes-action-nodes) or [release flow](release.md#configure-a-release-flow-release-flow-nodes) by using an action node.
 
 Commands supplied in an action node will not be executed with a shell by default. This means commands executed without a shell will not be able to use any shell features, and will directly pass all strings after the specified executable as parameters without any evaluation.
 
@@ -112,25 +113,25 @@ ssh-add ~/.ssh/id_northflank
 
 #### Access services with SSH: Create the identity in Northflank
 
-1. Navigate to [**Team** → **Integrations** → **SSH Identities**](https://app.northflank.com/s/account/integrations/ssh-identities)
+1. Open [Configuration → SSH identities](https://app.northflank.com/s/account/integrations/ssh-identities) in your team.
 
-2. Click **Create SSH Identity**
+2. Click Create SSH identity (Create new SSH identity if none exist).
 
-3. **Name**: Enter a name
+3. Name: Enter a name
 
-4. **Description**: (Optional)
+4. Description: (Optional)
 
-5. **SSH Public Keys**: Add keys
+5. SSH public keys: Add keys
 
-6. **(Advanced options)** Configure restrictions:
+6. Open Advanced options to configure restrictions:
 
-  - **Projects**: Restrict to specific projects, or leave disabled for all projects
+  - Projects: Restrict to specific projects, or leave disabled for all projects
 
-  - **Tags**: Restrict by tags. Toggle "Match all tags" for AND logic (service needs all tags) or leave off for OR logic (service needs one tag)
+  - Tags: Restrict by tags. Toggle "Match all tags" for AND logic (service needs all tags) or leave off for OR logic (service needs one tag)
 
-  - **Both enabled**: Service must match project AND tag requirements
+  - Both enabled: Service must match project AND tag requirements
 
-7. Click **Create SSH identity**
+7. Click Create SSH identity
 
 ### Access services with SSH: Enable SSH on a service
 
@@ -232,6 +233,7 @@ sftp -P 51887 root@127.0.0.1
 You can connect VSCode or Cursor to your service using the SSH proxy.
 
 > [!note]
+>
 > Mount a directory that is persisted (backed by a volume). Otherwise, you risk losing changes when the container restarts. See [Add a persistent volume](databases-and-persistence.md#add-a-persistent-volume).
 
 #### Access services with SSH: Cursor
@@ -305,7 +307,7 @@ Change the source to an image built on Northflank from a Git repository. Select 
 
 #### Change deployment source: External image
 
-Change the source to use an image from an external container registry. Enter the image path and your [registry credentials](run.md#run-an-image-from-a-container-registry-registry-credentials), if using a private image.
+Change the source to use an image from an external container registry. Enter the image path and your [registry credentials](run.md#run-an-image-from-a-container-registry-verify-image), if using a private image.
 
 ### Change deployment source: Next steps
 
@@ -347,6 +349,8 @@ Northflank currently supports the following regions:
 Contact [support@northflank.com](mailto:support@northflank.com) to register your interest for regions not listed above.
 
 You can also [integrate with other cloud providers](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank) to deploy your own clusters, which will allow you to create projects hosted on your chosen cloud provider, in the regions they support.
+
+For GPUs, see the [GPU region list](billing.md#compute-plans-and-quota-gpu-regions). Make sure that the region supports the required GPU type and count before you create the project.
 
 ### Deploy to a region: Network resources across multiple regions
 
@@ -432,7 +436,7 @@ Your deployments will specify either a command (`CMD`), an entrypoint (`ENTRYPOI
 
 Overriding the command or entrypoint in an individual service or job allows you to run a built image without updating the Dockerfile or re-building it, or affecting any other deployments of the image. This allows you to run different services or jobs from the same repository, for example if you have a repository containing microservices or need to [run a migration](release.md#run-migrations).
 
-Entrypoint and command overrides can be combined when required, for example if you want to [run shell commands or use variables](run.md#override-command-or-entrypoint-use-variables-in-a-command).
+Entrypoint and command overrides can be combined when required, for example if you want to [run shell commands or use variables](run.md#override-command-or-entrypoint-execute-shell-commands).
 
 You can configure the Docker runtime mode when creating a deployment (combined service, deployment service, or job) to override the default command and/or entrypoint at runtime. You can set the Docker runtime mode for existing services and jobs from the CMD override page.
 
@@ -547,6 +551,7 @@ Deployment services can be added to a pipeline to create complex workflows.
 Alternatively you can build and run from one repository branch in a single combined service.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/project/create/service) to create a deployment or combined service.
 
 ### Run an image continuously: Run an image built on Northflank
@@ -565,7 +570,7 @@ Navigate to an existing deployment service and select configure deployment from 
 
 #### Run an image continuously: Deploy builds using a pipeline and release flow
 
-You can also [create a pipeline](https://northflank.com/docs/v1/application/release/create-a-pipeline-and-release-flow) with a [release flow](https://northflank.com/docs/v1/application/release/create-a-pipeline-and-release-flow#create-a-release-flow) to deploy builds when the release flow is run. You can configure the release flow to deploy either specific images, such as promoting a build deployed in a previous stage of the pipeline, or the latest image from a build service or container registry.
+You can also [create a pipeline](release.md#create-a-pipeline-and-release-flow) with a [release flow](release.md#create-a-pipeline-and-release-flow-create-a-release-flow) to deploy builds when the release flow is run. You can configure the release flow to deploy either specific images, such as promoting a build deployed in a previous stage of the pipeline, or the latest image from a build service or container registry.
 
 ### Run an image continuously: Build and run an image in one service
 
@@ -575,7 +580,7 @@ You can select a branch from a linked repository to build from, but cannot speci
 
 You can enable CD for your combined service to automatically deploy the latest build from your linked repository. Alternatively you can select commits to manually build and deploy from the builds page.
 
-You can choose whether to build using a [Dockerfile or a buildpack](build.md#build-code-from-a-git-repository-choose-a-build-type).
+You can choose whether to build using a [Dockerfile](build.md#build-with-a-dockerfile) or a [buildpack](build.md#build-with-buildpacks).
 
 Read the [getting started guide](getting-started.md#build-and-deploy-your-code) for more detail on combined services.
 
@@ -599,7 +604,9 @@ You can run images from container registries in three different ways on Northfla
 - As a manually-run job
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/project/create/service) to create a deployment service.
+
 You can create a new continuously-running deployment service, a scheduled cron job or a manual job with an external image as the source.
 You will need to enter the full image path and, if the image is private, select the [appropriate registry credentials](run.md#run-an-image-from-a-container-registry-verify-image).
 
@@ -651,6 +658,7 @@ You can create a job from the following sources:
 From the job overview you can run manual jobs, or pause and resume scheduled jobs.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/project/create/job) to create a job.
 
 ### Run an image once or on a schedule: Configure CI/CD for a job
@@ -723,7 +731,7 @@ For example, if you set a Retry Limit of 6 and a Time Limit of 480, the job will
 
 You can preview and override a job's configuration when manually triggering a job run. This allows you to quickly change a job's configuration for the current run only. The configuration override section also includes a button to copy a shareable URL. You can send this URL to colleagues with access to the job, and it will open the job run modal with the configuration overrides you have set.
 
-You can also configure job run overrides in a [job run node in a release flow](https://northflank.com/docs/v1/application/release/configure-a-release-flow#run-job).
+You can also configure job run overrides in a [job run node in a release flow](infrastructure-as-code.md#template-nodes-run-job).
 
 You can override the following settings:
 
@@ -743,7 +751,7 @@ You can add new environment variables for the run, or override values by providi
 
 #### Run an image once or on a schedule: Advanced options
 
-You can configure the entrypoint, set a custom command, or select a process to run for [Docker or buildpack runtime modes](../run/override-command-entrypoint.
+You can configure the entrypoint, set a custom command, or select a process to run for [Docker or buildpack runtime modes](run.md#override-command-or-entrypoint).
 
 #### Run an image once or on a schedule: Resources
 
@@ -810,6 +818,7 @@ You can execute a command in a running container either via the [shell in the No
 The shell invoked for a container will be the default shell for the user, and the user will be the default for the image. You can switch user, or open another shell, before executing your commands. Some shell scripts may only work with specific shells, for example a script may work when executed with `bash` but not `sh`.
 
 > [!note]
+>
 > You will not be able to switch from a non-root user to root. You will have to modify the Dockerfile to use root, or switch to a different user with the necessary permissions.
 
 ### Run as a different user: Change file ownership and permissions
@@ -827,6 +836,7 @@ CMD ["/bin/bash", "-c", "/scripts/setup.sh"]
 Git only tracks whether a file is executable or not. If the source file is not created or modified to be executable, then this permission will persist into the build image. You will not be able to execute a file until it is made executable (`chmod +x`).
 
 > [!note]
+>
 > You can change the user for subsequent commands in your Dockerfile with `USER`, however Docker will always copy files as the root user. Ownership must be changed after the files are copied.
 
 Learn more about the [USER](https://docs.docker.com/reference/dockerfile/#user), [COPY](https://docs.docker.com/reference/dockerfile/#copy), and [ADD](https://docs.docker.com/reference/dockerfile/#copy) commands.
@@ -903,48 +913,88 @@ You can also run one-off or scheduled jobs to execute a task whenever you requir
 
 Source: https://northflank.com/docs/v1/application/run/save-registry-credentials.md
 
-You can save external registry credentials in your account and use them to authorise when selecting external Docker images for deployment in services or jobs. You can view and add credentials by navigating to the registries section under integrations in your account settings.
+Save registry credentials to pull private images into services and jobs. Open Integrations → Container registries in your team to add or manage credentials.
 
-You can enable the restriction of credentials on your account to specific projects, toggle restrictions on and select the projects you want to access the credentials in.
+For ECR, Google Artifact Registry, and Azure Container Registry, select a cloud integration to authenticate. For other registries, enter a username and password or access token.
 
-You can enter your credentials by selecting the registry and entering your username and password, or username and personal access token/API key depending on the registry.
+You can restrict credentials to selected projects. Under Advanced options, enable Restrict usage to specific projects. Select the projects that can use the credentials.
+
+Supported credentials with push access can also provide a [custom build registry](build.md#use-custom-build-registry) for a new project. Saving credentials does not select the project's build destination.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/integrations/registry-credentials) to add registry credentials.
-
-![Saving registry credentials in the Northflank application](https://assets.northflank.com/documentation/v1/application/run/save-registry-credentials/save-container-registry-credentials.png)
 
 ### Save registry credentials: Container registries
 
 #### Save registry credentials: DockerHub (registry.hub.docker.com)
 
-To authenticate to DockerHub simply enter your DockerHub username and password. Alternatively you can create an [access token](https://docs.docker.com/docker-hub/access-tokens/) to use in place of your password. You can do this from on the security page in your Docker account settings, the token should include `read` access permission.
+Enter your Docker Hub username and password, or use a [personal access token](https://docs.docker.com/security/access-tokens/personal-access-tokens/) with read access. If your account uses two-factor authentication, use a token.
 
-#### Save registry credentials: Google Container Registry (gcr.io)
+#### Save registry credentials: Cloud provider registries
 
-To authenticate to a Google Container Registry select your Google registry location from the drop-down list on Northflank. On Google Cloud Platform create or use a current service account with the `Storage Object Viewer` role and [create a new key](https://cloud.google.com/container-registry/docs/advanced-authentication#json-key). Download the JSON keyfile and import it to Northflank.
+Use a cloud integration to connect ECR, Google Artifact Registry, or Azure Container Registry. Select Docker Registries in the integration and grant the corresponding cloud permissions.
+
+| Registry | Cloud integration setup |
+| --- | --- |
+| Elastic Container Registry | [AWS cross-account role](bring-your-own-cloud.md#amazon-web-services-on-northflank-add-your-account-with-a-cross-account-role) or [IAM user](bring-your-own-cloud.md#amazon-web-services-on-northflank-add-your-account-with-an-iam-user) |
+| Google Artifact Registry | [GCP cross-project service account](bring-your-own-cloud.md#google-cloud-platform-on-northflank-add-your-account-with-a-cross-project-service-account) or [service key](bring-your-own-cloud.md#google-cloud-platform-on-northflank-add-your-account-with-a-service-key) |
+| Azure Container Registry | [Azure application](bring-your-own-cloud.md#microsoft-azure-on-northflank-add-your-azure-account) |
+
+In the registry form, select your provider and integration. Enter the registry URL and its region, Google project ID, or Azure resource group.
+
+To use these credentials for project builds, also select Docker Registry Push in the integration. Grant the required cloud permissions, then enable Push access (write images) in the registry form.
+
+See [add a custom Docker registry](build.md#use-custom-build-registry-add-a-custom-docker-registry) for URL examples and project setup.
 
 #### Save registry credentials: GitHub Container Registry (ghcr.io)
 
-To [authenticate to GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) you can create a [personal access token](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) on your GitHub account. You can create a personal access token with the required `read: packages` permission in developer settings, on your GitHub settings page.
+Enter your GitHub username and a personal access token (classic) with the `read:packages` permission. Create the token under Developer settings in your GitHub account. See [GitHub's registry authentication guide](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) for package access requirements.
 
 #### Save registry credentials: GitLab (registry.gitlab.com)
 
-To authenticate to GitLab enter your username and [personal access token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). Personal access tokens, with the permission `read registry`, can be created in your GitLab preferences on the access tokens page. If you are using a self-hosted GitLab instance, make sure you use your own domain for verification and image paths (for example `registry.yourdomain.com`).
+Enter your GitLab username and a [personal access token](https://docs.gitlab.com/user/profile/personal_access_tokens/) with the `read_registry` permission. See [GitLab's registry authentication guide](https://docs.gitlab.com/user/packages/container_registry/authenticate_with_container_registry/) for details.
+
+For a self-hosted GitLab instance, use its registry domain for both saved credentials and image paths.
+
+#### Save registry credentials: Custom registries
+
+For another registry, select Custom container registry and enter its URL, username, and password or token. Use this option for a self-hosted GitLab registry with its own domain.
+
+#### Save registry credentials: Registry troubleshooting
+
+| Problem | Action |
+| --- | --- |
+| Cloud integration is missing | Make sure that the integration supports your registry provider and includes Docker Registries. For a shared integration, your team must have access. |
+| Push access is unavailable | Add Docker Registry Push to the cloud integration and grant its required permissions. |
+| Registry is missing during project creation | Use a supported registry with push access. New projects cannot select credentials restricted to existing projects. Review restrictions with your administrator before changing access. |
+| Automatic credential refresh suspended | Open the saved registry credentials and read the error. Fix the integration credentials or permissions, then select Retry credential refresh. |
 
 ### Save registry credentials: Authenticate with JSON
 
-You can alternatively authenticate to a container registry by providing your Docker config.json, which consists of your username and password/token encoded in base 64, separated by a colon.
+The registry form accepts a username and password or token. It does not accept a complete Docker `config.json` file.
+
+If you already use Docker credentials, enter the original username and password or token in the registry form. Do not enter the Base64-encoded `auth` value as the password.
+
+For API requests, send credentials as JSON to `POST /v1/integrations/registries`. For example:
 
 ```json
 {
-  "auths": {
-    "[registry authentication url]": {
-      "auth": "[Your auth key (username:password in base 64)]"
+  "name": "example-registry",
+  "provider": "custom",
+  "registryUrl": "https://registry.example.com",
+  "credentials": {
+    "username": "example-user",
+    "password": "your-password-or-token",
+    "scope": {
+      "pull": true,
+      "push": false
     }
   }
 }
 ```
+
+Replace the example values with your registry credentials. For cloud registries, follow the [cloud integration instructions](run.md#save-registry-credentials-cloud-provider-registries).
 
 ### Save registry credentials: Next steps
 

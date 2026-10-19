@@ -66,6 +66,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.delete.addon.backupSchedule({
   parameters: {
@@ -87,4 +89,34 @@ await apiClient.delete.addon.backupSchedule({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.delete.addon.backup_schedule(
+    addon_id="example-addon",
+    project_id="default-project",
+    schedule_id="62d5729ab8593e3e33b65105",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

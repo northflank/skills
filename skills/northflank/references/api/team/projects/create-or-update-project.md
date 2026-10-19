@@ -136,6 +136,7 @@ OR
         - `enabled`: (boolean) (required) Whether or not to restrict the settings to resources with specific tags
         - `tags`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
         - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
+  - `lifecycleStatus`: (string) (required) Status of resource on the platform (enum: pending_initialization, creating, created, creation_failed, upgrading, upgrade_failed, migration_pending, migrating, migration_failed, deleting, deletion_failed, deleted, cluster_deleted, initializing, tearing_down, teardown_failed)
   - `createdAt`: (string) time of creation (format: date-time)
   - `updatedAt`: (string) time of update (format: date-time)
 
@@ -373,6 +374,7 @@ func main() {
         }
       }
     },
+    "lifecycleStatus": "creating",
     "createdAt": "2000-01-01T12:00:00.000Z",
     "updatedAt": "2000-01-01T12:00:00.000Z"
   }
@@ -488,6 +490,7 @@ Create a project in a BYOC cluster
       }
     }
   },
+  "lifecycleStatus": "creating",
   "createdAt": "2000-01-01T12:00:00.000Z",
   "updatedAt": "2000-01-01T12:00:00.000Z"
 }
@@ -497,7 +500,7 @@ Create a project in a BYOC cluster
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 Create a project in a Northflank region
 
@@ -597,11 +600,138 @@ await apiClient.put.project({
         }
       }
     },
+    "lifecycleStatus": "creating",
     "createdAt": "2000-01-01T12:00:00.000Z",
     "updatedAt": "2000-01-01T12:00:00.000Z"
   },
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+Create a project in a Northflank region
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.put.project(
+    data={
+        "name": "New Project",
+        "description": "This is a new project.",
+        "color": "#EF233C",
+        "region": "europe-west",
+        "networking": {
+            "tailscale": {
+                "restrictions": {
+                    "tagMatchCondition": "or",
+                    "enabled": False,
+                },
+                "tailscaleOptions": {
+                    "tailnetServicesRestrictions": {
+                        "tagMatchCondition": "or",
+                        "enabled": False,
+                    },
+                },
+            },
+            "hostAliases": {
+                "restrictions": {
+                    "tagMatchCondition": "or",
+                    "enabled": False,
+                },
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Create a project in a BYOC cluster
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.put.project(
+    data={
+        "name": "New Project",
+        "description": "This is a new project.",
+        "color": "#EF233C",
+        "clusterId": "gcp-cluster-1",
+        "networking": {
+            "tailscale": {
+                "restrictions": {
+                    "tagMatchCondition": "or",
+                    "enabled": False,
+                },
+                "tailscaleOptions": {
+                    "tailnetServicesRestrictions": {
+                        "tagMatchCondition": "or",
+                        "enabled": False,
+                    },
+                },
+            },
+            "hostAliases": {
+                "restrictions": {
+                    "tagMatchCondition": "or",
+                    "enabled": False,
+                },
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "example-project",
+  "name": "New Project",
+  "description": "This is a new project.",
+  "color": "#EF233C",
+  "region": "europe-west",
+  "clusterId": "gcp-cluster-1",
+  "networking": {
+    "tailscale": {
+      "restrictions": {
+        "tagMatchCondition": "or",
+        "enabled": false
+      },
+      "tailscaleOptions": {
+        "tailnetServicesRestrictions": {
+          "tagMatchCondition": "or",
+          "enabled": false
+        }
+      }
+    },
+    "hostAliases": {
+      "restrictions": {
+        "tagMatchCondition": "or",
+        "enabled": false
+      }
+    }
+  },
+  "lifecycleStatus": "creating",
+  "createdAt": "2000-01-01T12:00:00.000Z",
+  "updatedAt": "2000-01-01T12:00:00.000Z"
 }
 ```

@@ -96,6 +96,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.list.vcs({});
 ```
@@ -125,5 +127,47 @@ await apiClient.list.vcs({});
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.vcs()
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "vcsAccountLinks": [
+    {
+      "vcsService": "self-hosted",
+      "email": "email@example.com",
+      "login": "vcs-user",
+      "vcsLinkId": "63ebb6ce2ccc6c7affdbf253",
+      "alias": "my-github",
+      "name": "Self-hosted VCS",
+      "vcsUrl": "https://git.example.com",
+      "vcsType": "gitlab-ee",
+      "internalId": "example-team/self-hosted-vcs",
+      "entityName": "Example Team",
+      "originTargetSlug": "example-team"
+    }
+  ]
 }
 ```

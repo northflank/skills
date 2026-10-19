@@ -116,6 +116,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.domain({
   parameters: {
@@ -152,5 +154,51 @@ await apiClient.get.domain({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.domain(
+    domain="example.com",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "name": "example.com",
+  "status": "pending",
+  "hostname": "nfverify1608026055",
+  "token": "e596987b52855a4a773ef580ce2985d7746b37ce8b2a443d20fa27b913d8f57",
+  "redirect": {
+    "mode": "default"
+  },
+  "loadBalancer": "public",
+  "certificates": {
+    "mode": "default"
+  },
+  "subdomains": [
+    {
+      "name": "app",
+      "fullName": "app.example.com"
+    }
+  ]
 }
 ```

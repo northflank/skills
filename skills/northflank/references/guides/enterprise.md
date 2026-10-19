@@ -81,6 +81,7 @@ In this configuration:
 - Updates to the control plane are delivered as versioned artefacts and applied on your schedule
 
 > [!note] Note
+>
 > Forward-deployed control plane is available to Enterprise customers at specific spend thresholds or by arrangement, given the operational complexity involved in provisioning and supporting it. [Contact our team](https://cal.com/team/northflank/northflank-enterprise) to discuss whether this is right for your deployment.
 
 ### Northflank support

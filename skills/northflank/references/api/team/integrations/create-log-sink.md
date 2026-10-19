@@ -2109,7 +2109,7 @@ Create a log sink using Sentry
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 Create a log sink using Loki
 
@@ -2590,5 +2590,542 @@ await apiClient.create.logSink({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+Create a log sink using Loki
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.log_sink(
+    data={
+        "name": "example-log-sink",
+        "description": "This is an example log sink.",
+        "restricted": True,
+        "projects": ["default-project"],
+        "restrictions": {
+            "tags": {
+                "enabled": False,
+                "matchCondition": "or",
+            },
+        },
+        "options": {
+            "useCustomLabels": True,
+            "forwardCdnLogs": True,
+            "forwardIngressLogs": True,
+            "forwardMeshLogs": True,
+        },
+        "sinkType": "loki",
+        "sinkData": {
+            "endpoint": "https://logs.example.com",
+            "encoding": {
+                "codec": "json",
+            },
+            "auth": {
+                "strategy": "basic",
+                "user": "admin",
+                "password": "password1234",
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Create a log sink using Datadog
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.log_sink(
+    data={
+        "name": "example-log-sink",
+        "description": "This is an example log sink.",
+        "restricted": True,
+        "projects": ["default-project"],
+        "restrictions": {
+            "tags": {
+                "enabled": False,
+                "matchCondition": "or",
+            },
+        },
+        "options": {
+            "useCustomLabels": True,
+            "forwardCdnLogs": True,
+            "forwardIngressLogs": True,
+            "forwardMeshLogs": True,
+        },
+        "sinkType": "datadog_logs",
+        "sinkData": {
+            "default_api_key": "abcdef12345678900000000000000000",
+            "region": "eu",
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Create a log sink using Papertrail
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.log_sink(
+    data={
+        "name": "example-log-sink",
+        "description": "This is an example log sink.",
+        "restricted": True,
+        "projects": ["default-project"],
+        "restrictions": {
+            "tags": {
+                "enabled": False,
+                "matchCondition": "or",
+            },
+        },
+        "options": {
+            "useCustomLabels": True,
+            "forwardCdnLogs": True,
+            "forwardIngressLogs": True,
+            "forwardMeshLogs": True,
+        },
+        "sinkType": "papertrail",
+        "sinkData": {
+            "authenticationStrategy": "port",
+            "host": "logs1.papertrailapp.com:",
+            "port": 8000,
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Create a log sink using AWS S3
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.log_sink(
+    data={
+        "name": "example-log-sink",
+        "description": "This is an example log sink.",
+        "restricted": True,
+        "projects": ["default-project"],
+        "restrictions": {
+            "tags": {
+                "enabled": False,
+                "matchCondition": "or",
+            },
+        },
+        "options": {
+            "useCustomLabels": True,
+            "forwardCdnLogs": True,
+            "forwardIngressLogs": True,
+            "forwardMeshLogs": True,
+        },
+        "sinkType": "aws_s3",
+        "sinkData": {
+            "endpoint": "my.bucket.com",
+            "region": "eu-west-2",
+            "auth": {
+                "accessKeyId": "PMSACIHNUIASDBWQDS",
+                "secretAccessKey": "HA1PLMNOEAEYUHAJQMSDUJQS",
+            },
+            "bucket": "northflank-logs",
+            "compression": "gzip",
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Create a log sink using HTTP
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.log_sink(
+    data={
+        "name": "example-log-sink",
+        "description": "This is an example log sink.",
+        "restricted": True,
+        "projects": ["default-project"],
+        "restrictions": {
+            "tags": {
+                "enabled": False,
+                "matchCondition": "or",
+            },
+        },
+        "options": {
+            "useCustomLabels": True,
+            "forwardCdnLogs": True,
+            "forwardIngressLogs": True,
+            "forwardMeshLogs": True,
+        },
+        "sinkType": "http",
+        "sinkData": {
+            "uri": "my.log-collector.com",
+            "encoding": {
+                "codec": "json",
+            },
+            "batch": {
+                "maxEvents": "10",
+                "maxBytes": "1e+7",
+            },
+            "auth": {
+                "strategy": "none",
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Create a log sink using LogDNA
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.log_sink(
+    data={
+        "name": "example-log-sink",
+        "description": "This is an example log sink.",
+        "restricted": True,
+        "projects": ["default-project"],
+        "restrictions": {
+            "tags": {
+                "enabled": False,
+                "matchCondition": "or",
+            },
+        },
+        "options": {
+            "useCustomLabels": True,
+            "forwardCdnLogs": True,
+            "forwardIngressLogs": True,
+            "forwardMeshLogs": True,
+        },
+        "sinkType": "logdna",
+        "sinkData": {
+            "api_key": "b1dd3feb585asd1a3e9edpo9kmn5e590hg9",
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Create a log sink using Better Stack
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.log_sink(
+    data={
+        "name": "example-log-sink",
+        "description": "This is an example log sink.",
+        "restricted": True,
+        "projects": ["default-project"],
+        "restrictions": {
+            "tags": {
+                "enabled": False,
+                "matchCondition": "or",
+            },
+        },
+        "options": {
+            "useCustomLabels": True,
+            "forwardCdnLogs": True,
+            "forwardIngressLogs": True,
+            "forwardMeshLogs": True,
+        },
+        "sinkType": "betterStack",
+        "sinkData": {
+            "token": "vhnqrLygVQ5GnSQUTZamKvAq",
+            "uri": "abc123.eu-nbg-2.betterstackdata.com",
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Create a log sink using Honeycomb
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.log_sink(
+    data={
+        "name": "example-log-sink",
+        "description": "This is an example log sink.",
+        "restricted": True,
+        "projects": ["default-project"],
+        "restrictions": {
+            "tags": {
+                "enabled": False,
+                "matchCondition": "or",
+            },
+        },
+        "options": {
+            "useCustomLabels": True,
+            "forwardCdnLogs": True,
+            "forwardIngressLogs": True,
+            "forwardMeshLogs": True,
+        },
+        "sinkType": "honeycomb",
+        "sinkData": {
+            "api_key": "b1dd3feb585asd1a3e9",
+            "dataset": "staging-logs",
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Create a log sink using Logz.io
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.log_sink(
+    data={
+        "name": "example-log-sink",
+        "description": "This is an example log sink.",
+        "restricted": True,
+        "projects": ["default-project"],
+        "restrictions": {
+            "tags": {
+                "enabled": False,
+                "matchCondition": "or",
+            },
+        },
+        "options": {
+            "useCustomLabels": True,
+            "forwardCdnLogs": True,
+            "forwardIngressLogs": True,
+            "forwardMeshLogs": True,
+        },
+        "sinkType": "logzio",
+        "sinkData": {
+            "region": "eu",
+            "token": "sNFijNFgNFoNFrMsNFbNFObNFcgNFqoa",
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Create a log sink using Solar Winds
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.log_sink(
+    data={
+        "name": "example-log-sink",
+        "description": "This is an example log sink.",
+        "restricted": True,
+        "projects": ["default-project"],
+        "restrictions": {
+            "tags": {
+                "enabled": False,
+                "matchCondition": "or",
+            },
+        },
+        "options": {
+            "useCustomLabels": True,
+            "forwardCdnLogs": True,
+            "forwardIngressLogs": True,
+            "forwardMeshLogs": True,
+        },
+        "sinkType": "solarWinds",
+        "sinkData": {
+            "api_key": "Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc",
+            "encoding": {
+                "codec": "json",
+            },
+            "endpointType": "unitary",
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Create a log sink using Axiom
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.log_sink(
+    data={
+        "name": "example-log-sink",
+        "description": "This is an example log sink.",
+        "restricted": True,
+        "projects": ["default-project"],
+        "restrictions": {
+            "tags": {
+                "enabled": False,
+                "matchCondition": "or",
+            },
+        },
+        "options": {
+            "useCustomLabels": True,
+            "forwardCdnLogs": True,
+            "forwardIngressLogs": True,
+            "forwardMeshLogs": True,
+        },
+        "sinkType": "axiom",
+        "sinkData": {
+            "dataset": "staging",
+            "token": "b1dd3feb585asd1a3e9edpo9kmn5e590hg9",
+            "tokenType": "api",
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Create a log sink using New Relic
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.log_sink(
+    data={
+        "name": "example-log-sink",
+        "description": "This is an example log sink.",
+        "restricted": True,
+        "projects": ["default-project"],
+        "restrictions": {
+            "tags": {
+                "enabled": False,
+                "matchCondition": "or",
+            },
+        },
+        "options": {
+            "useCustomLabels": True,
+            "forwardCdnLogs": True,
+            "forwardIngressLogs": True,
+            "forwardMeshLogs": True,
+        },
+        "sinkType": "newRelic",
+        "sinkData": {
+            "accountId": "b1dd3feb585asd1a3e9",
+            "licenseKey": "b1dd3feb585asd1a3e9",
+            "region": "eu",
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Create a log sink using Sentry
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.log_sink(
+    data={
+        "name": "example-log-sink",
+        "description": "This is an example log sink.",
+        "restricted": True,
+        "projects": ["default-project"],
+        "restrictions": {
+            "tags": {
+                "enabled": False,
+                "matchCondition": "or",
+            },
+        },
+        "options": {
+            "useCustomLabels": True,
+            "forwardCdnLogs": True,
+            "forwardIngressLogs": True,
+            "forwardMeshLogs": True,
+        },
+        "sinkType": "sentry",
+        "sinkData": {
+            "endpoint": "https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs",
+            "publicKey": "5cac0d8cb9414d5c80eb8467f55d5352",
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "example-log-sink"
 }
 ```

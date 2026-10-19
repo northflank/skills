@@ -6,7 +6,7 @@ This endpoint is deprecated and will be removed in the future. Please avoid maki
 
 Requests should instead use the relevant GET endpoint.
 
-[Use /jobs/get-job instead](get-job.md)
+[Use /project/jobs/get-job instead](get-job.md)
 
 Lists the health checks for the given job.
 
@@ -107,6 +107,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.job.healthChecks({
   parameters: {
@@ -140,5 +142,48 @@ await apiClient.get.job.healthChecks({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.job.health_checks(
+    job_id="example-job",
+    project_id="default-project",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "healthChecks": [
+    {
+      "protocol": "HTTP",
+      "type": "readinessProbe",
+      "path": "/health-check",
+      "httpPort": 3000,
+      "initialDelaySeconds": 10,
+      "periodSeconds": 60,
+      "timeoutSeconds": 1,
+      "failureThreshold": 3,
+      "successThreshold": 1
+    }
+  ]
 }
 ```

@@ -89,3 +89,37 @@ await apiClient.get.orgDirectoryGroups({});
   "error": "..."
 }
 ```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.org_directory_groups()
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "directoryGroups": [
+    {
+      "id": "directory_group_1234567890ABCDEFGHIJKLMNOP",
+      "name": "string",
+      "idpId": "string",
+      "createdAt": "1970-01-01T00:00:00.000Z",
+      "updatedAt": "1970-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```

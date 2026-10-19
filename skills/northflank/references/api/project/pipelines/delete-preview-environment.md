@@ -159,7 +159,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.delete.pipelineTemplatePreview({
@@ -168,7 +168,6 @@ await apiClient.delete.pipelineTemplatePreview({
     "pipelineId": "example-pipeline",
     "previewId": "different-ray"
   },
-  options: {},
   data: {}
 });
 ```
@@ -184,4 +183,35 @@ await apiClient.delete.pipelineTemplatePreview({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.delete.pipeline_template_preview(
+    pipeline_id="example-pipeline",
+    preview_id="different-ray",
+    project_id="default-project",
+    data={},
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

@@ -149,6 +149,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.secret({
   parameters: {
@@ -203,5 +205,68 @@ await apiClient.get.secret({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.secret(
+    project_id="default-project",
+    secret_id="example-secret",
+    show="all",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "example-secret-group",
+  "name": "Example secret group",
+  "description": "This is the secret group description",
+  "type": "secret",
+  "secretType": "environment",
+  "projectId": "default-project",
+  "priority": 10,
+  "restrictions": {
+    "restricted": true,
+    "nfObjects": [
+      {
+        "id": "example-service",
+        "type": "service"
+      }
+    ],
+    "tagMatchCondition": "or"
+  },
+  "createdAt": "2021-01-01 12:00:00.000Z",
+  "updatedAt": "2021-01-01 12:00:00.000Z",
+  "secrets": {
+    "variables": {
+      "a_key": "a_secret",
+      "b_key": "b_secret"
+    },
+    "files": {
+      "/dir/fileName": {
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      }
+    }
+  },
+  "tags": []
 }
 ```

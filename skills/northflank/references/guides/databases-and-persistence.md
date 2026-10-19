@@ -38,7 +38,7 @@ Generated from 29 application pages listed in `llms.txt`.
 
 Source: https://northflank.com/docs/v1/application/databases-and-persistence/access-a-database.md
 
-As well as using a database within your project, you can access it locally for development, and expose it publicly to make it available online.
+You can access a database within your project or through local forwarding. Supported addons also offer public access or [VPC access](databases-and-persistence.md#access-a-database-expose-a-database-to-the-vpc) on eligible BYOC clusters.
 
 By default, a database will be given an internal address and only be accessible from services and jobs within the same project. You will still be able to access it locally using [port forwarding](../api/forwarding.md) through the Northflank CLI.
 
@@ -46,19 +46,84 @@ By default, a database will be given an internal address and only be accessible 
 
 ### Access a database: Deploy a database with TLS
 
-You can choose to deploy with TLS on a database's network settings page. If enabled, the database will use TLS for all internal connections.
+If you enable TLS, the database uses it for all internal connections.
 
 Some databases, such as MySQL, cannot enable or disable TLS after creation and will use the configuration they were created with.
+
+To enable TLS on a running database that supports changing it:
+
+1. Open Network → Settings in the addon menu.
+
+2. Enable Deploy with TLS.
+
+3. Click Update & restart.
 
 Your deployments may require further configuration to connect to your database if TLS is enabled, the TLS status will be reflected in the connection detail secret `TLS_ENABLED` as a boolean.
 
 ### Access a database: Expose a database publicly
 
-Databases can be publicly exposed by selecting publicly accessible on their network settings page. The database must be deployed with TLS enabled to expose it publicly.
-
-Exposing a database will make it available online via a network load-balancer and a TCP endpoint secured with TLS, and new public connection strings will be available in connection details.
+Public exposure requires a supported, running database with TLS and a public ingress load balancer installed and ready on the cluster. An addon can use public or [VPC exposure](databases-and-persistence.md#access-a-database-expose-a-database-to-the-vpc), but not both.
 
 Some databases, such as MySQL, cannot enable or disable TLS after creation and will use the configuration they were created with.
+
+An [organisation policy](collaborate.md#create-and-manage-an-organisation-restrict-public-infrastructure) can prevent public addon access. Existing public addons keep access. If you disable public access, the policy prevents you from re-enabling it.
+
+To enable public access:
+
+1. Open Network → Settings in the addon menu.
+
+2. If TLS is disabled, enable Deploy with TLS.
+
+3. Select Public under Accessibility.
+
+4. If you also change TLS, click Update & restart. Otherwise, click Update.
+
+The database accepts public connections through a TCP endpoint secured with TLS. The updated connection strings appear under Network → Connection details.
+
+### Access a database: Expose a database to the VPC
+
+Eligible BYOC clusters can expose supported databases and addons through a private ingress load balancer. Clients need network connectivity to the VPC. See [Public and VPC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress) for availability and cluster requirements.
+
+For either public or VPC ingress:
+
+> [!note] Requirements
+>
+> You will need the following to get started:
+>
+> - An addon type that supports TLS and external access
+> - A running addon when changing its network configuration
+> - TLS enabled with `tlsEnabled: true`
+> - The corresponding public or private ingress load balancer installed and ready on the cluster
+
+Saving the cluster's ingress configuration does not mean that the load balancer is ready. TLS changes after addon creation also depend on addon-type support.
+
+> [!warning] Before changing addon exposure
+>
+> Plan client access before switching between public and VPC exposure. The change interrupts access through the previous path. Addons cannot use both ingress paths at once.
+
+Addons have three exposure choices:
+
+| Accessibility | `externalAccessEnabled` | `vpcAccessible` | Access |
+| --- | --- | --- | --- |
+| Private | `false` | `false` | Internal only |
+| Public | `true` | `false` | Public ingress |
+| VPC | `false` | `true` | Private ingress |
+
+The fields `externalAccessEnabled` and `vpcAccessible` cannot both be `true`. Addons do not support the service-port Public and VPC choice. Internal project access remains available when you enable public or VPC exposure.
+
+To enable VPC access after the ingress is ready:
+
+1. Open Network → Settings in the addon menu.
+
+2. If TLS is disabled, enable Deploy with TLS.
+
+3. Select VPC under Accessibility.
+
+4. If you also change TLS, click Update & restart. Otherwise, click Update.
+
+5. Open Network → Connection details to use the updated endpoints and connection strings.
+
+Clients with VPC connectivity can connect without public exposure. Clients without that connectivity can use [local forwarding](databases-and-persistence.md#access-a-database-access-a-database-locally).
 
 ### Access a database: Access a database locally
 
@@ -78,13 +143,16 @@ You can view and copy the command to connect to a specific database on its overv
 You can now connect to your database locally using the relevant connection strings or secrets from the connection details page.
 
 > [!note]
+>
 > You may need to provide the URI in quotation marks if you are connecting via a shell command using an addon's URI connection string.
 
 ### Access a database: Set IP policy rules
 
-You can set IP policies from the security rules section on a database's network settings page.
+Open Network → Settings in the addon menu. In Security rules, click Edit security rules to set IP policies.
 
-An IP policy restricts external ingress traffic to specific addresses specified in the policy. For example, a policy of `192.168.1.48` will only allow traffic originating from the IP address `192.168.1.48` and a policy of `192.168.1.0/24` will only allow traffic originating from IP addresses matching the subnet mask. If you have not set any IP policies all external ingress traffic will be allowed to attempt to connect to the database, if it is publicly exposed.
+An IP policy restricts incoming traffic by source address. An allow rule for `192.168.1.48` permits that address. An allow rule for `192.168.1.0/24` permits addresses in that range.
+
+Without IP policies, Northflank does not restrict connection attempts by source IP on public or VPC ingress. VPC clients also need network connectivity to the VPC.
 
 ### Access a database: Access TLS certificates in containers
 
@@ -542,7 +610,7 @@ You can click on the entry in the list to view the backup logs, restore history,
 
 | Button | Action |
 | --- | --- |
-|  | Download the backup as a gzip (`.gz`) or ZStandard (`.zst`) archive file. Only available for native (dump) backups. |
+|  | Download the backup as a gzip (`.gz`) or ZStandard (`.zst`) archive file. Only available for native (dump) backups. Requires Addons → General → Read Spec permission for the database. |
 |  | Restore from this backup. The restore will be immediately scheduled and executed as soon as possible. |
 |  | Override the retention policy of the schedule and keep the backup forever. Only available for backups created by a schedule |
 |  | Delete the backup from Northflank. |
@@ -766,7 +834,9 @@ Databases can be accessed and used by services within the same project.
 
 The way you connect to your database will depend on the implementation in your application or service. Your deployment should be configured to receive connection details from [runtime variables](secure.md#inject-secrets-runtime-variables).
 
-Open the connection details page in your database to view the relevant connection strings and secrets, which you can use to connect to the database from your deployments. You can either add these manually to a specific deployment or secret group, or link the variables to a secret group.
+To retrieve connection strings and secrets, your [role](secure.md#use-role-based-access-control) needs Addons → General → Read Spec permission for the database.
+
+Open the connection details page in your database to view the relevant connection strings and secrets. You can add these manually to a deployment or secret group, or link the variables to a secret group.
 
 You should not use the administration connection string or administrator account to connect from your deployments, unless deploying a secured administration interface.
 
@@ -775,7 +845,9 @@ You should not use the administration connection string or administrator account
 You can link a database to a secret group so that the desired secrets are inherited as variables within that secret group. These secrets can then be used in any services and jobs that inherit from that secret group.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/project/create/secret) to create a secret group.
+
 You can select the suggested variables to automatically include the most useful and commonly used connection details, or manually select which variables to include.
 
 Variables names are generated using the database name and connection detail, e.g. `NF_MY-DATABASE_HOST`. If your application is expecting certain variable names you can give aliases to the variables, for example adding `DB_HOST` and `ENV_DB_HOST` as aliases to `NF_MY-DATABASE_HOST` means that the variable can be accessed by all three of the aliases in the environment.
@@ -796,7 +868,7 @@ Linked variables can be added or edited from the linked addons page of a secret 
 
 ### Connect database secrets to workloads: Access a database in a build
 
-If you need to connect to an addon during the build process you will need to ensure that your secret group can be [inherited by build services](secure.md#manage-secret-groups-secret-group-type). As builds run on separate, dedicated infrastructure from your project, your addon must be publicly exposed, and the service or job you are using to build must inherit [external connection details](databases-and-persistence.md#access-a-database-expose-a-database-publicly).
+For addon access during builds, allow your secret group to be [inherited by build services](secure.md#manage-secret-groups-secret-group-type). The build infrastructure must be able to reach the addon endpoint. Public exposure supports internet access. [VPC exposure](databases-and-persistence.md#access-a-database-expose-a-database-to-the-vpc) requires connectivity from the build infrastructure to the VPC. Select connection details for the reachable endpoint.
 
 ### Connect database secrets to workloads: Next steps
 
@@ -812,9 +884,11 @@ Source: https://northflank.com/docs/v1/application/databases-and-persistence/cre
 You can create custom addon types for your team to deploy, using Helm charts. These custom types allow you to deploy databases and other applications which Northflank does not currently offer as a managed service, or custom configurations of addons that Northflank does offer.
 
 > [!note]
+>
 > Custom addons can only be deployed into [clusters in your own cloud account](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank), and not in the Northflank managed cloud.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/addon-types) to view your custom addon types.
 
 ### Create a custom addon type: Create a custom addon type
@@ -1161,6 +1235,7 @@ After creating your addon it may take a few minutes to provision resources and s
 Your database will be accessible by workloads within the same project using the provided [connection details](databases-and-persistence.md#connect-database-secrets-to-workloads).
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/project/create/addon) to deploy an addon.
 
 ![Creating a MongoDB addon in the Northflank application](https://assets.northflank.com/documentation/v1/application/databases-and-persistence/deploy-a-database/create-addon.png)
@@ -1169,8 +1244,8 @@ Your database will be accessible by workloads within the same project using the 
 
 | Addon | Versions | Description | Backups | TLS |
 | --- | --- | --- | --- | --- |
-| [MongoDB](https://www.mongodb.com/docs/manual/) | 8.0.26, 8.0.20, 8.0.17, 7.0.37, 7.0.31, 7.0.28, 7.0.21, 6.0.27, 6.0.24, 5.0.31, 4.4.15, 4.2.21 | MongoDB® is a document-oriented database program that uses JSON-like documents with schema. | Native or disk | Yes |
-| [Redis](https://redis.io/) | 8.8.0, 8.6.4, 8.6.1, 8.4.4, 8.4.2, 8.4.0, 7.2.14, 7.2.13, 7.2.12, 7.2.4, 6.2.21 | Redis® implements a distributed, in-memory key-value database with optional durability. | Disk | Yes |
+| [MongoDB](https://www.mongodb.com/docs/manual/) | 8.0.32, 8.0.26, 7.0.43, 7.0.37, 6.0.27, 5.0.31, 4.4.15, 4.2.21 | MongoDB® is a document-oriented database program that uses JSON-like documents with schema. | Native or disk | Yes |
+| [Redis](https://redis.io/) | 8.10.1, 8.8.2, 8.8.0, 8.6.4, 8.6.1, 8.4.4, 7.2.16, 7.2.14, 7.2.13, 6.2.21 | Redis® implements a distributed, in-memory key-value database with optional durability. | Disk | Yes |
 | [MySQL](https://www.mysql.com/) | 9.7.2, 9.6.0, 8.4.11, 8.4.9, 8.0.46 | MySQL is a fast, reliable, scalable, and easy to use open-source relational database system. | Native or disk | Yes (cannot be changed after creation) |
 | [PostgreSQL](https://www.postgresql.org/) | 18, 17, 16, 15, 14, 13, 12 | PostgreSQL is a free and open-source relational database management system. High availability with Patroni | Native or disk | Yes |
 | [MinIO](https://min.io/) | 2025.10.15 | MinIO® is a High Performance Object Storage with an Amazon S3 cloud storage service compatible API. | Disk | Yes |
@@ -1201,6 +1276,7 @@ This guide explains how to quickly and easily deploy and use [MinIO®*](https://
 | 2025.10.15 | MinIO® is a High Performance Object Storage with an Amazon S3 cloud storage service compatible API. | Disk | Yes |
 
 > [!note]
+>
 > On some UNIX systems, the MinIO client `mc` may also be aliased to `mcli`.
 
 ### Deploy MinIO® on Northflank: Deploy MinIO
@@ -1331,7 +1407,7 @@ This guide explains how to quickly and easily deploy and use [MongoDB®](https:/
 
 | Available versions | Description | Backups | TLS |
 | --- | --- | --- | --- |
-| 8.0.26, 8.0.20, 8.0.17, 7.0.37, 7.0.31, 7.0.28, 7.0.21, 6.0.27, 6.0.24, 5.0.31, 4.4.15, 4.2.21 | MongoDB® is a document-oriented database program that uses JSON-like documents with schema. | Native or disk | Yes |
+| 8.0.32, 8.0.26, 7.0.43, 7.0.37, 6.0.27, 5.0.31, 4.4.15, 4.2.21 | MongoDB® is a document-oriented database program that uses JSON-like documents with schema. | Native or disk | Yes |
 
 ### Deploy MongoDB® on Northflank: Deploy MongoDB
 
@@ -1883,7 +1959,9 @@ To forward RabbitMQ for local access using the [Northflank CLI](../api/use-the-c
 
 #### Deploy RabbitMQ on Northflank: External access
 
-To access your RabbitMQ deployment externally, ensure deploy with TLS and publicly accessible are enabled on the settings page under networking. The connection strings, endpoints, and ports will be updated with the new configuration if TLS was previously disabled (otherwise they will remain the same, but publicly exposed).
+For external access, open Network → Settings in the addon menu. Enable Deploy with TLS. Select Public or, on eligible BYOC clusters, VPC under Accessibility. If you also change TLS, click Update & restart. Otherwise, click Update.
+
+VPC clients need connectivity to the VPC. Use the updated endpoints under Network → Connection details. See [database access](databases-and-persistence.md#access-a-database-expose-a-database-to-the-vpc) for requirements.
 
 #### Deploy RabbitMQ on Northflank: Administration
 
@@ -1915,7 +1993,7 @@ This guide explains how to quickly and easily deploy and use [Redis®*](https://
 
 | Available versions | Description | Backups | TLS |
 | --- | --- | --- | --- |
-| 8.8.0, 8.6.4, 8.6.1, 8.4.4, 8.4.2, 8.4.0, 7.2.14, 7.2.13, 7.2.12, 7.2.4, 6.2.21 | Redis® implements a distributed, in-memory key-value database with optional durability. | Disk | Yes |
+| 8.10.1, 8.8.2, 8.8.0, 8.6.4, 8.6.1, 8.4.4, 7.2.16, 7.2.14, 7.2.13, 6.2.21 | Redis® implements a distributed, in-memory key-value database with optional durability. | Disk | Yes |
 
 ### Deploy Redis® on Northflank: Deploy Redis
 
@@ -2155,12 +2233,17 @@ Source: https://northflank.com/docs/v1/application/databases-and-persistence/glo
 
 Global backups are team-level backup resources that can be accessed and restored across any project in your team. Unlike project-scoped backups which are tied to a specific addon, global backups provide flexibility for cross-project restoration, disaster recovery, and data migration scenarios.
 
+> [!note] Enterprise availability
+>
+> Global backups are available to enterprise accounts. Contact [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com) or [schedule a meeting](https://cal.com/team/northflank/northflank-enterprise) to enable access for your team.
+
 To view or manage global backups, navigate to the `Backups` page from your team menu.
 
 The global backups page displays all backups created in your team, including both native snapshots and database dumps, regardless of which project they originated from.
 
 > [!note]
-> [Click here](http://app.northflank.com/s/account/backups) to view your global backups.
+>
+> [Click here](https://app.northflank.com/s/account/backups) to view your global backups.
 
 ### Global backup: Global backup types
 
@@ -2440,7 +2523,7 @@ You can also deploy Northflank clusters in your own cloud provider account, and 
 
 ### Integrate MongoDB Atlas with Northflank: Next steps
 
-- [How-to guides: Find out how to do anything on Northflank, from building from Git to deploying on your custom domain.](overview.md)
+- [Use cases: Follow a complete task across services, databases, releases, and cloud resources.](use-cases.md#choose-a-use-case)
 - [Run production workloads: Learn how to set up your DevOps workflow and confidently manage your production workloads on Northflank.](production-workloads.md#get-production-ready-on-northflank)
 
 ## Migrate your MinIO® deployment to Northflank
@@ -2473,10 +2556,10 @@ First [create a Northflank MinIO addon](https://app.northflank.com/s/project/cre
 
 > [!note] Prerequisites for site replication
 >
-- The Northflank MinIO addon you want to import to must be empty of all buckets and objects
-- If you are using an external identity provider with your existing MinIO deployment, configure the Northflank MinIO deployment with this before continuing
-- The source MinIO site and the Northflank MinIO addon must be [publicly accessible](databases-and-persistence.md#deploy-minio®-on-northflank-access-minio) during the migration
-- [Check the MinIO documentation](https://min.io/docs/minio/linux/operations/install-deploy-manage/multi-site-replication.html#prerequisites) for multi-site replication before beginning.
+> - The Northflank MinIO addon you want to import to must be empty of all buckets and objects
+> - If you are using an external identity provider with your existing MinIO deployment, configure the Northflank MinIO deployment with this before continuing
+> - The source MinIO site and the Northflank MinIO addon must be [publicly accessible](databases-and-persistence.md#deploy-minio®-on-northflank-access-minio) during the migration
+> - [Check the MinIO documentation](https://min.io/docs/minio/linux/operations/install-deploy-manage/multi-site-replication.html#prerequisites) for multi-site replication before beginning.
 
 #### Migrate your MinIO® deployment to Northflank: Replicate your site using the MinIO console
 
@@ -2532,6 +2615,7 @@ If you are importing from another S3-compatible storage service you can use the 
 Mirror will create a one-way sync between your source storage and your Northflank MinIO addon. This means you can transfer existing buckets and objects as well as keep up-to-date with any new uploads while migrating your applications and infrastructure to use the Northflank addon.
 
 > [!note] Versioning and metadata
+>
 > Mirror will not copy any metadata or previous versions of your objects, this data will be lost. If versioning is enabled on a bucket in your Northflank MinIO storage, objects will be versioned from the point that they were transferred to the new bucket.
 
 The mirror command will only copy file paths and objects, you will need to manually create any users, groups, and other MinIO configuration options. You can do this before, or after, transferring your data.
@@ -2640,6 +2724,7 @@ You can import your existing MongoDB® database to Northflank by creating and up
 Imports will be more reliable if the database you are importing to is the same, or a newer, version of MongoDB as the source database you are exporting from.
 
 > [!warning]
+>
 > Both methods of importing a database will erase all existing user databases in the Northflank addon, if there are any.
 
 You should first [create a Northflank MongoDB addon](https://app.northflank.com/s/project/create/addon) to import to, and [connect to it](databases-and-persistence.md#deploy-mongodb®-on-northflank-connect-to-mongodb) with your preferred administration tool. If you require your Northflank deployment to remain private you can [forward it](../api/forwarding.md) to your local machine and use the non-external endpoints and commands to connect.
@@ -2691,6 +2776,7 @@ You can click on a restore listed in a backup to view the logs of the restoratio
 You can now double-check that the import has run as you expected it to by accessing the addon via the mongo shell or a GUI tool.
 
 > [!note]
+>
 > Northflank will copy your collections to the default Northflank-generated database when importing from a dump. You can find the name of the default database in your Northflank addon's connection details as `DATABASE`.
 
 ### Migrate your MongoDB® database to Northflank: Import from connection string
@@ -2729,6 +2815,7 @@ Imports will be more reliable if the database you are importing to is the same, 
 If you have more than one database to import from the same MySQL instance you should use the connection string method, which will import all the databases the given user has access to.
 
 > [!warning]
+>
 > Both methods of importing a database will erase all existing user databases in the Northflank addon, if there are any.
 
 You should first [create a Northflank MySQL addon](https://app.northflank.com/s/project/create/addon) to import to, and [connect to it](databases-and-persistence.md#deploy-mysql-on-northflank-connect-to-mysql) with your preferred administration tool. If you require your Northflank deployment to remain private you can [forward it](../api/forwarding.md) to your local machine and use the non-external endpoints and commands to connect.
@@ -2782,6 +2869,7 @@ You can click on a restore listed in a backup to view the logs of the restoratio
 You can now double-check that the import has run as you expected it to by accessing the addon using your preferred administration tool.
 
 > [!note]
+>
 > Northflank will import to the default database if your dump doesn't include an explicit `USE` statement. You can find the name of the default database in your Northflank addon's connection details as `DATABASE`.
 
 ### Migrate your MySQL database to Northflank: Import from connection string
@@ -2820,6 +2908,7 @@ Imports will be more reliable if the database you are importing to is the same, 
 If you have more than one database to import from the same PostgreSQL service you should use the connection string method, which will import all the databases the given user has access to.
 
 > [!warning]
+>
 > Both methods of importing a database will erase all existing user databases in the Northflank addon, if there are any.
 
 You should first [create a Northflank PostgreSQL addon](https://app.northflank.com/s/project/create/addon) to import to, and [connect to it](databases-and-persistence.md#deploy-postgresql-on-northflank-connect-to-postgresql) with your preferred administration tool. If you require your Northflank deployment to remain private you can [forward it](../api/forwarding.md) to your local machine and use the non-external endpoints and commands to connect.
@@ -2883,6 +2972,7 @@ You can click on a restore listed in a backup to view the logs of the restoratio
 You can now double-check that the import has run as you expected it to by accessing the addon using your preferred administration tool.
 
 > [!note]
+>
 > Northflank will import to the default database if your dump doesn't include an explicit `\connect` statement. You can find the name of the default database in your Northflank addon's connection details as `DATABASE`.
 
 ### Migrate your PostgreSQL database to Northflank: Import from connection string
@@ -2980,6 +3070,7 @@ You can import your existing Redis®* data to Northflank either as a snapshot of
 You should first [create a Northflank Redis addon](https://app.northflank.com/s/project/create/addon) to import to.
 
 > [!note]
+>
 > There is currently an issue with RIOT which means URI handling is not working. Please specify the host, port, and password (and username if required) separately when running commands.
 
 ### Migrate your Redis® deployment to Northflank: Import a snapshot using RIOT
@@ -3024,7 +3115,7 @@ This method will allow you to seamlessly migrate a Redis instance, as new keys c
 
 Before using live replication you will need to enable keyspace notifications in each Redis instance. You can do this by logging into each instance using redis-cli and entering the command `CONFIG SET notify-keyspace-events KA`.
 
-You can use the same commands as to [import a snapshot](databases-and-persistence.md#migrate-your-redis®-deployment-to-northflank-import-a-snapshot-using-riot-redis), adding the required mode flag at the end of the command:
+You can use the same commands as to [import a snapshot](databases-and-persistence.md#migrate-your-redis®-deployment-to-northflank-import-a-snapshot-using-riot), adding the required mode flag at the end of the command:
 
 #### Migrate your Redis® deployment to Northflank: Live only `--mode liveonly`
 

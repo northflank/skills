@@ -9,16 +9,16 @@ Generated from 7 application pages listed in `llms.txt`.
 - [Create a project](#create-a-project)
 - [Introduction to Northflank](#introduction-to-northflank)
 - [Link your Git account](#link-your-git-account)
-- [> [!note]](#>-note)
+- [Set up a pipeline](#set-up-a-pipeline)
 - [Set up environments](#set-up-environments)
 
 ## Add and verify a domain
 
 Source: https://northflank.com/docs/v1/application/getting-started/add-a-and-verify-domain.md
 
-You can add your own domains and subdomains to Northflank to use with your deployed service's public ports.
+You can link your domains and subdomains to public or VPC-accessible service ports.
 
-Domains and subdomains are verified on your Northflank account, so once added you can reassign them to any public port for any deployment on your account.
+Each subdomain uses one [public or VPC ingress target](domains.md#link-a-domain-to-a-port-choose-public-or-vpc-routing). Any port that you assign must support that target.
 
 If you use OVH, Cloudflare, NS1, or Namecheap, check our [specific guides for these domain registrars](domains.md#domains-on-northflank-dns-providers).
 
@@ -72,17 +72,21 @@ You can add any subdomain provided you have the ability to edit the DNS records.
 
 ### Add and verify a domain: Link a domain to a port
 
-1. Open the ports & DNS page on the service that contains the port you want to link and click edit domains, or click link domains next to the port
+The service port must be public or VPC-accessible. To link a subdomain:
 
-2. Find the domain or subdomain you wish to associate with the service in the list
+1. Open Configure → Networking in the service menu.
 
-3. Select the port from drop-down list next to the subdomain you want to link
+2. Expand Custom domains & security rules for the port.
 
-4. Click save changes
+3. Click Choose a domain.
+
+4. Select the subdomain or path to link to the port.
+
+5. Save the port changes.
 
 ![Linking a domain to a port on a combined service in the Northflank application](https://assets.northflank.com/documentation/v1/application/domains/link-a-domain-to-a-port/custom-domain.png)
 
-Northflank will automatically generate TLS certificates for your domain or subdomain and your domain should redirect to your specified port soon after saving. You can also manage the ports that your domains are linked to via your account's domains page in your account dashboard.
+The subdomain needs valid DNS, a certificate, and a port that supports its [ingress target](domains.md#link-a-domain-to-a-port-choose-public-or-vpc-routing). VPC routing requires the [VPC certificate workflow](domains.md#certificate-generation-certificates-for-vpc-ingress) or a supported imported or wildcard certificate. You can also manage linked ports from your account's domains page.
 
 ### Add and verify a domain: Learn more about domains on Northflank
 
@@ -103,7 +107,7 @@ Combined services are a self-contained continuous integration and continuous del
 
 It's as easy as choosing a branch from a Git repository to automatically build and deploy from.
 
-Combined services cannot be added to a pipeline as they act as a self-contained pipeline. If you want to create a more complex workflow, the [set up a pipeline](getting-started.md#>-note) walkthrough will take you through all the steps.
+Combined services cannot be added to a pipeline as they act as a self-contained pipeline. If you want to create a more complex workflow, the [set up a pipeline](getting-started.md#set-up-a-pipeline) walkthrough will take you through all the steps.
 
 ### Build and deploy your code: Create a combined service
 
@@ -189,23 +193,25 @@ This walkthrough will take you through two commons tasks to configure a deployme
 
 #### Build and deploy your code: Add a public port
 
+On BYOC, public ports require public ingress enabled and ready on the cluster. Eligible clusters also offer [VPC ports and dual exposure](network.md#configure-ports-vpc-ports-and-dual-exposure). See [Public and VPC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress) for availability and configuration.
+
 Northflank can automatically detect and configure ports exposed in your Dockerfile, however you may sometimes need to manually add or edit ports.
 
 Your Dockerfile should expose the port(s) configured in your application/service. For example if you have an Express.js application configured to listen for requests on port 3000, your Dockerfile should include `EXPOSE 3000`.
 
-1. Go to the ports & DNS page in your service
+1. Open Configure → Networking in the service menu.
 
-2. Click add port
+2. Click Add port.
 
-3. Enter the port to expose (between 1 and 65,535)
+3. Enter the port to expose (between 1 and 65,535).
 
-4. Choose HTTP as the protocol (public ports only support HTTP/S)
+4. Choose HTTP under Protocol (public ports support HTTP and HTTP/2).
 
-5. Select publicly expose this port to the internet
+5. Select Public under Accessibility.
 
-6. Enter a name for the port (this will form part of the unique DNS generated by Northflank)
+6. Enter a Name for the port, which forms part of its generated hostname.
 
-7. Save changes to start using the newly configured port
+7. Save the port changes.
 
 ![The ports and DNS configuration page for a service in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/build-and-deploy-your-code/combined-service-port.png)
 
@@ -241,7 +247,7 @@ Now you have built and run your first service on Northflank, made it available o
 
 Next you can learn about the other features and options available on your services, or learn how to create and manage development pipelines to enjoy a seamless devops experience.
 
-- [Set up a pipeline: Manage your workflow and release your code in an intuitive pipeline.](getting-started.md#>-note)
+- [Set up a pipeline: Manage your workflow and release your code in an intuitive pipeline.](getting-started.md#set-up-a-pipeline)
 - [Add and verify domain: Add your domain name to your Northflank account and link it to a public port.](getting-started.md#add-and-verify-a-domain)
 - [Configure health checks: Monitor the uptime and success of your deployed services and builds to ensure your code runs correctly and is always available.](observe.md#configure-health-checks)
 - [View logs: View detailed, real-time logs from builds, deployments, and more.](observe.md#view-logs)
@@ -267,6 +273,7 @@ You can select the Developer Sandbox to try the Northflank platform for free. Yo
 Alternatively, you can start with the pay as you go plan to start using Northflank without restrictions straight away.
 
 [See our pricing page for a detailed description of account plans.](https://northflank.com/pricing)
+See [resource plans and quotas](billing.md#compute-plans-and-quota) for compute plan IDs, GPU plans, and supported GPU counts by region.
 
 ### Create a project: Create a project
 
@@ -274,20 +281,24 @@ Projects are specific to geographic regions, which determine where resources wil
 
 To create a new project:
 
-1. [Click here](https://app.northflank.com/s/account/projects/new), or select project from the create new drop-down menu in the top right corner of the screen
+1. Open the [project creation form](https://app.northflank.com/s/account/projects/new), or select Create project on your team dashboard.
 
 2. Enter a project name (optional: choose a colour to help identify different projects)
 
-3. Choose your [project region](getting-started.md#create-a-project-project-provider), this will determine where your project is hosted
+3. Choose your [project region](getting-started.md#create-a-project-project-region), this will determine where your project is hosted
 
-4. Create your new project
+4. If available, review Docker registry settings under Advanced options.
+
+5. To store builds in your own registry, follow [custom build registry setup](build.md#use-custom-build-registry-use-in-a-project).
+
+6. Select Create project.
 
 ![Creating a new project in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/create-a-project/create-project.png)
 
 > [!note]
 >
-- The region cannot be changed after your project has been created
-- A project cannot be transferred to other teams
+> - The region cannot be changed after your project has been created
+> - A project cannot be transferred to other teams
 
 Once your project has been created, you can start building and running your code, managing workflows in pipelines, and more.
 
@@ -325,9 +336,11 @@ Contact [support@northflank.com](mailto:support@northflank.com) to register your
 
 You can also [integrate with other cloud providers](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank) to deploy your own clusters, which will allow you to create projects hosted on your chosen cloud provider, in the regions they support.
 
+For GPUs, see the [GPU region list](billing.md#compute-plans-and-quota-gpu-regions). Make sure that the region supports the required GPU type and count before you create the project.
+
 ### Create a project: Delete a project
 
-You can delete a project from the project   menu in the header of your project, or from the  project settings page.
+You can delete a project from the project   menu in the header of your project, or from the Settings → Danger zone page.
 
 Deleting a project will trigger the deletion of all resources contained within it, including builds, deployments, jobs, addons, as well as configurations such as secret groups and release flows. The process is irreversible, so please ensure you have backed up any databases and configuration files you want to keep.
 
@@ -336,7 +349,7 @@ You will still be billed for all resources consumed up to the project's deletion
 ### Create a project: Next steps
 
 - [Build and deploy your code: Quickly and easily build and run code from a Git repository using a Dockerfile or buildpack.](getting-started.md#build-and-deploy-your-code)
-- [Set up a pipeline: Manage your workflow and release your code in an intuitive pipeline.](getting-started.md#>-note)
+- [Set up a pipeline: Manage your workflow and release your code in an intuitive pipeline.](getting-started.md#set-up-a-pipeline)
 - [Add and verify domain: Add your domain name to your Northflank account and link it to a public port.](getting-started.md#add-and-verify-a-domain)
 
 ## Introduction to Northflank
@@ -372,7 +385,9 @@ Northflank allows you to:
 You can create an account and set up a personal team on Northflank for [free](billing.md#pricing-on-northflank-deploy-for-free), with limited resources. You can later upgrade this team or create a new one to fully utilise the Northflank platform.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/signup) to create an account.
+
 You can invite users to a team to [collaborate on Northflank](collaborate.md#create-and-manage-a-team), at no extra cost.
 
 If you would like to manage more users across multiple teams you can [create an organisation](collaborate.md#create-and-manage-an-organisation) to unlock enterprise features.
@@ -390,6 +405,7 @@ They help agents understand Northflank primitives such as services, jobs, add-on
 Skills can be used with agentic coding tools like Claude Code, Codex, and Cursor to create, configure, deploy, and troubleshoot applications on Northflank using the right platform concepts and commands.
 
 > [!note]
+>
 > [Click here](https://github.com/northflank/skills) to explore Northflank Skills on GitHub.
 
 ### Introduction to Northflank: Getting started
@@ -400,22 +416,23 @@ The getting started section contains walkthrough guides to get you up-and-runnin
 - [Create a project: Create a project to contain your services, persistent data, secrets, and more.](getting-started.md#create-a-project)
 - [Create a team and invite members: Create a team and invite members to collaborate on projects.](collaborate.md#create-and-manage-a-team)
 - [Build and deploy your code: Quickly and easily build and run code from a Git repository using a Dockerfile or buildpack.](getting-started.md#build-and-deploy-your-code)
-- [Set up a pipeline: Manage your workflow and release your code in an intuitive pipeline.](getting-started.md#>-note)
+- [Set up a pipeline: Manage your workflow and release your code in an intuitive pipeline.](getting-started.md#set-up-a-pipeline)
 - [Add and verify domain: Add your domain name to your Northflank account and link it to a public port.](getting-started.md#add-and-verify-a-domain)
 
 ## Link your Git account
 
 Source: https://northflank.com/docs/v1/application/getting-started/link-your-git-account.md
 
-Northflank integrates with Git version control systems (VCS) such as GitHub, GitLab, Bitbucket and Azure DevOps in order to build and deploy code from your repositories.
+Northflank integrates with GitHub, GitLab, Bitbucket, Azure DevOps, and Cursor Origin to build and deploy code from your repositories.
 
 You will be prompted to link a Git account when you create a team, or if your team no longer has access to any Git provider.
 
-You can also link self-hosted instances of GitLab and GitHub Enterprise, as well as multiple accounts for GitHub, GitLab, Bitbucket and Azure DevOps.
+You can also connect [self-hosted GitLab, GitHub Enterprise Server, Gitea, and Forgejo](collaborate.md#manage-git-integrations-add-a-self-hosted-vcs). You can link multiple Git accounts to your team.
 
 You can manage Git integrations from your team dashboard.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/integrations/vcs) to link a Git account.
 
 ![The Git integration page in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/link-your-git-account/git-integration-page.png)
@@ -564,15 +581,67 @@ Repository access is scoped to the permissions granted in your PAT. Your PAT mus
 
 To remove your team's access to your Azure DevOps account, select the account and click unlink.
 
+### Link your Git account: Link Cursor Origin
+
+Install the Northflank app for a Cursor namespace, the account or team that owns your repositories.
+
+You need permission to manage Git integrations in Northflank and approve the app for the selected Cursor namespace.
+
+Create your Origin repositories in Cursor before connecting them to Northflank.
+
+1. Open your team's Integrations → Git providers page.
+
+2. Select Link Cursor Origin.
+
+3. Select the Cursor namespace during installation.
+
+4. Choose access to all repositories or selected repositories.
+
+5. Approve the requested permissions for repository contents, pull requests, and checks.
+
+6. Return to the Git integrations page in Northflank.
+
+7. On the Cursor Origin card, select View all.
+
+8. Select your linked Cursor namespace to view Connected repositories.
+
+Northflank loads the repository list in the background. Once your repository appears, you can select it for [builds](build.md#build-code-from-a-git-repository) or [GitOps](infrastructure-as-code.md#gitops-on-northflank). Northflank cannot merge pull requests for mirrored Origin repositories.
+
+This integration does not support personal access tokens or signing in to Northflank.
+
+#### Link your Git account: Manage Cursor Origin access
+
+In the linked namespace's configuration, the Granted scopes list shows the permissions that Northflank can use. Ready means that the installation grants all required permissions.
+
+To change repository access, select Update installation. Choose the same Cursor namespace. If the page shows Action required, use this flow to approve the missing permissions.
+
+If a repository is missing, make sure that the installation grants access to it. Then refresh Connected repositories. Refreshing does not grant access.
+
+#### Link your Git account: Remove Cursor Origin
+
+> [!warning]
+>
+> Before unlinking, make sure that affected services and jobs have another valid repository connection. They cannot build without one.
+
+Unlinking removes the connection from the current Northflank account. If other Northflank accounts share the installation, it remains installed in Cursor. Removing its final Northflank link also removes the Northflank app installation from Cursor.
+
+1. In the linked installation, select the Unlink control for your Cursor namespace.
+
+2. Review the affected accounts in the confirmation.
+
+3. Select Unlink installation.
+
 ### Link your Git account: Set team namespaces
 
 You can restrict which repositories team members can access when connecting Git accounts to Northflank.
 
-For GitHub, you can manage repository access when installing the Northflank GitHub app. You can choose which GitHub account or organisation to install the app on and which repositories the app can access.
+For GitHub and GitHub Enterprise Server, choose repository access when installing the GitHub App on a user or organization account.
 
-For GitLab and Bitbucket, you can restrict access to specific namespaces from the account settings in Northflank.
+For GitLab, self-hosted GitLab, and Bitbucket, you can restrict access to specific namespaces from the linked account's configuration in Northflank.
 
-For self-hosted VCS, you can restrict access to specific owners from the self-hosted VCS settings.
+For Gitea and Forgejo, repository access follows the linked Git account's permissions. Northflank does not offer a namespace restriction control for these providers.
+
+For [Cursor Origin](getting-started.md#link-your-git-account-manage-cursor-origin-access), choose all repositories or selected repositories during installation. Use Update installation to change access for the same Cursor namespace.
 
 ### Link your Git account: Next steps
 
@@ -581,10 +650,12 @@ For self-hosted VCS, you can restrict access to specific owners from the self-ho
 - [Add a self-hosted VCS: Add your own self-hosted Git provider and build from its repositories.](collaborate.md#manage-git-integrations-add-a-self-hosted-vcs)
 - [Save registry credentials: Save your credentials for a container registry to access private images.](run.md#save-registry-credentials)
 
-## > [!note]
+## Set up a pipeline
 
 Source: https://northflank.com/docs/v1/application/getting-started/set-up-a-pipeline.md
 
+> [!note]
+>
 > Northflank recommends using [Environments](getting-started.md#set-up-environments) for CI/CD. Pipelines are still supported but may be deprecated in future.
 
 Pipelines on Northflank allow you to create and manage complex continuous integration and continuous delivery (CI/CD) workflows.
@@ -595,7 +666,7 @@ Pipelines and release flows allow you to manage building and deploying your code
 
 This guide will take you through creating a pipeline, a build service, and a deployment service, and then populating a pipeline stage and configuring a simple release flow to deploy code built on Northflank.
 
-### > [!note]: Create a pipeline
+### Set up a pipeline: Create a pipeline
 
 To create a pipeline:
 
@@ -605,7 +676,7 @@ To create a pipeline:
 
 3. Click create pipeline
 
-### > [!note]: Create a build service
+### Set up a pipeline: Create a build service
 
 You can configure most aspects of a build service after it is created - except the name.
 
@@ -627,7 +698,7 @@ You can configure most aspects of a build service after it is created - except t
 
 9. Click create service
 
-### > [!note]: Create deployment services
+### Set up a pipeline: Create deployment services
 
 You can configure most aspects of a deployment service after it is created - except the name.
 
@@ -649,7 +720,7 @@ You can configure most aspects of a deployment service after it is created - exc
 
 9. Click create service
 
-### > [!note]: Add resources to your pipeline
+### Set up a pipeline: Add resources to your pipeline
 
 1. Select the pipeline you want to use from the project pipelines page
 
@@ -663,7 +734,7 @@ You can add multiple deployment services, jobs, and addons to a pipeline stage.
 
 Removing a deployment service from a pipeline will not unlink its build service or external image, nor pause the deployment service. You can edit or disable the deployment service itself from its own dashboard.
 
-### > [!note]: Add a release flow
+### Set up a pipeline: Add a release flow
 
 Now you can create a release flow for the development stage of your pipeline, which you have populated with your deployment service.
 
@@ -685,7 +756,7 @@ Now you can create a release flow for the development stage of your pipeline, wh
 
 ![Editing a node in a release flow in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/set-up-a-pipeline/release-flow-edit-node.png)
 
-### > [!note]: Run a release flow
+### Set up a pipeline: Run a release flow
 
 After you have configured a release flow for your pipeline stage, you can now run it and Northflank will execute the workflow as you have specified it.
 
@@ -699,7 +770,7 @@ After you have configured a release flow for your pipeline stage, you can now ru
 
 ![A release flow run in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/set-up-a-pipeline/release-flow-run-success.png)
 
-### > [!note]: Promote a deployed image
+### Set up a pipeline: Promote a deployed image
 
 You can configure a release flow to promote images deployed in the preceding stage to the stage that contains the release flow. You can promote any image deployed to a deployment service or job, whether they are built on Northflank or deployed from an external container registry.
 
@@ -719,7 +790,7 @@ To deploy images from a previous stage:
 
 ![A release flow node to promote a deployment in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/set-up-a-pipeline/release-flow-promote-deployment.png)
 
-### > [!note]: Learn more about using pipelines and release flows on Northflank
+### Set up a pipeline: Learn more about using pipelines and release flows on Northflank
 
 - [Set up a pipeline and release flow: Manage your deployments and release your updates in an intuitive pipeline with release flows.](release.md#create-a-pipeline-and-release-flow)
 - [Configure a release flow: Learn how to use the visual editor or code to configure a release flow.](release.md#configure-a-release-flow)
@@ -739,8 +810,6 @@ Environments on Northflank allow you to automate your release process and previe
 By creating workflows, you can automate building and deploying your code, backing up databases, running migrations, and promoting deployments from development through to production. By creating preview blueprints, you can automatically provision complete environments when you push commits or open pull requests.
 
 This guide will walk you through creating a build service, setting up preview environments for pull requests, and creating workflows to automate deployments across development stages.
-
-![Environments in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/set-up-environments/environments.png)
 
 ### Set up environments: Create a build service
 
@@ -774,25 +843,25 @@ Before you can deploy code, you need a build service to compile your source code
 
 Preview blueprints automatically create isolated test environments when you open pull requests. Each preview environment gets its own services, databases, and unique URLs, allowing you to test changes before merging to your main branch.
 
-1. Navigate to [**Environments**](https://app.northflank.com/s/project/environments) in your project
+1. Open Previews in your project sidebar.
 
-2. Click **Create preview blueprint**
+2. Click New preview blueprint
 
 3. Configure the blueprint:
 
-  - **Name**: e.g. `pr-previews`
+  - Name: e.g. `pr-previews`
 
-  - **Naming convention**: Select **Pull request ID**
+  - Naming convention: Select Pull request ID
 
-  - Enable **Suffix** to append the pull request number to resource names
+  - Enable Suffix to append the pull request number to resource names
 
-4. Click **Add trigger**
+4. Click Add trigger
 
-  - **Kind**: Select **Git pull request** or any option of your choice
+  - Kind: Select Git pull request or any option of your choice
 
-  - **Repository**: Select the same repository used for the build service
+  - Repository: Select the same repository used for the build service
 
-5. Click **Continue** to open the visual editor
+5. Click Continue to open the visual editor
 
 ![Creating a preview blueprint in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/set-up-environments/create-preview-blueprint.png)
 
@@ -838,17 +907,17 @@ After the workflow completes:
 
 Environments organize your workflows by deployment stage. Each environment represents a stage in your release process, such as development, staging, or production, and contains the workflows that deploy to that stage.
 
-1. Navigate to [**Environments**](https://app.northflank.com/s/project/environments) in your project
+1. Open your project's Dashboard
 
-2. Click **Add environment**
+2. Select Environment beside the plus icon
 
-3. Enter a name (e.g., `development`, `staging`, or `production`)
+3. Enter an Environment name (e.g., `development`, `staging`, or `production`)
 
-4. Click **Create**
+4. Click Create environment
 
-The new environment appears as a column in the environments board view. You can create multiple environments to match your deployment stages.
+The dashboard opens the new environment. You can create multiple environments to match your deployment stages.
 
-![Adding environments in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/set-up-environments/add-environments.png)
+Use the project environment selector to switch views. See [All and Default views](release.md#set-up-environments-all-and-default-views).
 
 ### Set up environments: Create a workflow
 
@@ -856,19 +925,21 @@ Workflows are automated release processes that execute when triggered manually o
 
 Create a workflow in an environment to automate deployments to that stage. For example, a production workflow might build from your main branch and deploy to production services, while a development workflow deploys feature branches to development services.
 
-1. In the environment column, click **(+ Workflow)**
+1. Open your project's Dashboard. Select an environment at the top of the dashboard.
 
-2. Enter a name (e.g., `Deploy to prod`)
+2. Select Create... → Workflow
 
-3. Click **Add trigger** (optional):
+3. Enter a name (e.g., `Deploy to prod`)
 
-  - **Kind**: Select **Git push**
+4. Click Add trigger (optional):
 
-  - **Repository**: Select your repository
+  - Kind: Select Git push
 
-  - **Branch rules**: Enter the branch name (e.g., `main` or `develop`) or `*` to trigger on every push to a branch
+  - Repository: Select your repository
 
-4. Click **Continue** to open the visual editor
+  - Branch rules: Enter the branch name (e.g., `main` or `develop`) or `*` to trigger on every push to a branch
+
+5. Click Continue to open the visual editor
 
 ![Creating a workflow in the Northflank application](https://assets.northflank.com/documentation/v1/application/getting-started/set-up-environments/create-workflow.png)
 
@@ -902,23 +973,15 @@ Additional nodes can be added to the workflow, including databases, jobs, and vo
 
 ### Set up environments: Run the workflow
 
-After you have configured the workflow, you can manually test run it and Northflank will execute the workflow as you have specified it.
+After you configure the workflow, you can run it manually.
 
-1. Click **Run** in the header
+1. Click Run in the header.
 
-2. Add a release name (optional):
+2. To name the run, click Add run name. Enter a descriptive name.
 
-  - Click **Add release name**
+3. To describe the run, click Add run description. Enter a description.
 
-  - Enter a descriptive name for this release
-
-3. Add a release description (optional):
-
-  - Click **Add release description**
-
-  - Enter details about what this release includes
-
-4. Click **Create**
+4. Click Run.
 
 The workflow will execute and you can monitor its progress. If you configured Git triggers, the workflow will also run automatically when commits are pushed to the configured branch.
 

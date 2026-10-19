@@ -6,7 +6,7 @@ This endpoint is deprecated and will be removed in the future. Please avoid maki
 
 Requests should instead use the relevant GET endpoint.
 
-[Use /services/get-service instead](get-service.md)
+[Use /project/services/get-service instead](get-service.md)
 
 Get details about the build arguments accessible by the given service. Also requires the permission 'Project > Secrets > General > Read'
 
@@ -157,6 +157,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.service.buildArgumentDetails({
   parameters: {
@@ -210,5 +212,72 @@ await apiClient.get.service.buildArgumentDetails({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.service.build_argument_details(
+    project_id="default-project",
+    service_id="example-service",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "buildArguments": {
+    "MY_VARIABLE_NAME": {
+      "value": "abcdef123456",
+      "inheritedFrom": "example-secret",
+      "addonId": "example-addon",
+      "priority": 10,
+      "overriding": [
+        {
+          "value": "ffffffffffff",
+          "inheritedFrom": "secret-2",
+          "addonId": "addon-2",
+          "priority": 0
+        }
+      ]
+    }
+  },
+  "buildFiles": {
+    "/dir/fileName": {
+      "value": {
+        "/dir/fileName": {
+          "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+          "encoding": "utf-8"
+        },
+        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+        "encoding": "utf-8"
+      },
+      "inheritedFrom": "example-secret",
+      "priority": 10,
+      "overriding": [
+        {
+          "value": "ffffffffffff",
+          "inheritedFrom": "secret-2",
+          "priority": 0
+        }
+      ]
+    }
+  }
 }
 ```

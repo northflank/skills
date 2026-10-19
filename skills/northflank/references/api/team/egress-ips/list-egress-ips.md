@@ -11,7 +11,7 @@ Required permission: Account > Networking > EgressIps > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 
 **Response body:**
 
@@ -128,6 +128,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.list.egressIps({
   options: {
@@ -166,5 +168,49 @@ await apiClient.list.egressIps({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.egress_ips(
+    page=1,
+    per_page=50,
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "egressIps": [
+    {
+      "name": "my-egress-ip",
+      "description": "This is a new egress IP.",
+      "spec": {
+        "provisioningMode": "shared",
+        "region": "europe-west",
+        "mode": "include"
+      },
+      "id": "my-egress-ip",
+      "createdAt": "2021-01-20T11:19:53.175Z",
+      "updatedAt": "2021-01-20T11:19:53.175Z"
+    }
+  ]
 }
 ```

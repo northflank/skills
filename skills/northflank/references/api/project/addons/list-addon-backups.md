@@ -17,7 +17,7 @@ Required permission: Project > Addons > General > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 
 **Response body:**
 
@@ -154,6 +154,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.addon.backups({
   parameters: {
@@ -208,5 +210,63 @@ await apiClient.get.addon.backups({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.addon.backups(
+    addon_id="example-addon",
+    project_id="default-project",
+    page=1,
+    per_page=50,
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "backups": [
+    {
+      "id": "example-backup",
+      "name": "Example Backup",
+      "uid": "88283b31-06f3-4857-b75f-f807bd7a52af",
+      "status": "completed",
+      "createdAt": "2021-01-20T11:19:53.175Z",
+      "completedAt": "2021-01-20T11:19:54.494Z",
+      "config": {
+        "source": {
+          "type": "snapshot"
+        },
+        "size": "1234",
+        "compressionType": "gz",
+        "additionalDestinations": [
+          {
+            "destinationId": "example-backup-destination",
+            "retentionTime": 7,
+            "type": "custom"
+          }
+        ],
+        "addonVersion": "4.4.8"
+      },
+      "customDestinationId": "example-backup-destination"
+    }
+  ]
 }
 ```

@@ -41,7 +41,7 @@ Required permission: Account > Networking > Subdomains > Update
       - `name`: (string) (required) (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
       - `type`: (string) (required) (enum: init, recv, hash, hit, miss, pass, fetch, error, deliver, log, none)
       - `dynamic`: (string) (required) (enum: 0, 1)
-      - `priority`: (multiple options) (number) (format: float)
+      - `priority`: (multiple options) (number) Execution priority for the VCL snippet. (format: float)
       - `content`: (string) (required)
    - `cacheSettings`: [array of] {object}
       - `id`: (string)
@@ -185,7 +185,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.enable.subdomain.cdn({
@@ -210,4 +210,36 @@ await apiClient.enable.subdomain.cdn({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.enable.subdomain.cdn(
+    domain="example.com",
+    subdomain="app",
+    data={
+        "provider": "northflank",
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

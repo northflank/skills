@@ -9,7 +9,7 @@ Lists supported cloud provider regions
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 - `provider`: (string) If provided, only returns items belonging to this cloud provider.
 
 **Response body:**
@@ -128,5 +128,46 @@ await apiClient.list.cloud.regions({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.cloud.regions(
+    page=1,
+    per_page=50,
+    provider="gcp",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "providers": [
+    {
+      "id": "europe-west1",
+      "name": "europe-west1",
+      "availabilityZones": [
+        {
+          "id": "europe-west1-b",
+          "name": "europe-west1-b"
+        }
+      ]
+    }
+  ]
 }
 ```

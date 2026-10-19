@@ -107,3 +107,39 @@ await apiClient.list.plans({});
   "error": "..."
 }
 ```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.plans()
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "plans": [
+    {
+      "id": "nf-compute-20",
+      "name": "nf-compute-20",
+      "currency": "usd",
+      "amountPerMonth": 4.4,
+      "amountPerHour": 0.0061,
+      "cpuResource": 0.2,
+      "ramResource": 512
+    }
+  ]
+}
+```

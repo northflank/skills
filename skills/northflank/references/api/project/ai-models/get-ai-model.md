@@ -156,6 +156,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.llmModelDeployment({
   parameters: {
@@ -189,5 +191,59 @@ await apiClient.get.llmModelDeployment({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.llm_model_deployment(
+    llm_model_deployment_id="deepseek-v3-deployment",
+    project_id="default-project",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "name": "deepseek-v3-deployment",
+  "description": "A deployment for DeepSeek V3 model",
+  "spec": {
+    "configuration": {
+      "nodeConfiguration": {
+        "storage": {
+          "storageClass": "nvme",
+          "storageSize": 6144
+        }
+      }
+    },
+    "type": "custom"
+  },
+  "projectId": "default-project",
+  "id": "string",
+  "entityId": "string",
+  "entityType": "user",
+  "creatorId": "string",
+  "dns": {
+    "base": "string",
+    "zone": "string"
+  },
+  "ports": [],
+  "status": "pending"
 }
 ```

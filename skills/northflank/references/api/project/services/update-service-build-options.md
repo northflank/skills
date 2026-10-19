@@ -6,7 +6,7 @@ This endpoint is deprecated and will be removed in the future. Please avoid maki
 
 Requests should instead use the relevant PATCH endpoint.
 
-[Use /services/patch-combined-service instead](patch-combined-service.md)
+[Use /project/services/patch-combined-service instead](patch-combined-service.md)
 
 Updates the build options for a given service.
 
@@ -29,8 +29,6 @@ Required permission: Project > Services > General > Update
   - `buildkit`: {object}
     - `useCache`: (boolean) Use persistent storage to cache build layers.
     - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-    - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-    - `internalCacheStorage`: (integer) DEPRECATED: This field will be removed in the near future.
 - `prRestrictions`: [array of] (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
 - `branchRestrictions`: [array of] (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
 - `crossProjectAccess`: {object}
@@ -584,7 +582,7 @@ Don't modify build type settings
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 Build from a Dockerfile
 
@@ -737,4 +735,124 @@ await apiClient.update.service.buildOptions({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+Build from a Dockerfile
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.service.build_options(
+    project_id="default-project",
+    service_id="example-service",
+    data={
+        "dockerfile": {
+            "buildEngine": "buildkit",
+            "dockerFilePath": "/Dockerfile",
+            "dockerWorkDir": "/",
+        },
+        "prRestrictions": ["feature/*"],
+        "branchRestrictions": ["feature/*"],
+        "crossProjectAccess": {
+            "enabled": True,
+            "projects": ["example-project"],
+            "isAllowList": False,
+        },
+        "pathIgnoreRules": ["README.md"],
+        "isAllowList": False,
+        "ciIgnoreFlags": ["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"],
+        "ignoreEmptyCommits": False,
+        "dockerCredentials": ["example-docker-credential"],
+        "storage": {
+            "ephemeralStorage": {
+                "storageSize": 16384,
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Build from a Buildpack
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.service.build_options(
+    project_id="default-project",
+    service_id="example-service",
+    data={
+        "buildpack": {
+            "builder": "HEROKU_24",
+            "buildpackLocators": ["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],
+            "buildContext": "/",
+            "useCache": False,
+        },
+        "pathIgnoreRules": ["README.md"],
+        "isAllowList": False,
+        "ciIgnoreFlags": ["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"],
+        "ignoreEmptyCommits": False,
+    },
+)
+print(response.data)
+```
+
+OR
+
+Don't modify build type settings
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.service.build_options(
+    project_id="default-project",
+    service_id="example-service",
+    data={
+        "prRestrictions": ["feature/*"],
+        "branchRestrictions": ["feature/*"],
+        "crossProjectAccess": {
+            "enabled": True,
+            "projects": ["example-project"],
+            "isAllowList": False,
+        },
+        "pathIgnoreRules": ["README.md"],
+        "isAllowList": False,
+        "ciIgnoreFlags": ["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"],
+        "ignoreEmptyCommits": False,
+        "dockerCredentials": ["example-docker-credential"],
+        "storage": {
+            "ephemeralStorage": {
+                "storageSize": 16384,
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

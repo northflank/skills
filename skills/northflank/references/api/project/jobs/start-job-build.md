@@ -321,7 +321,7 @@ Start a build with overrides for the current settings
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 Start a build with the current settings
 
@@ -392,5 +392,88 @@ await apiClient.start.job.build({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+Start a build with the current settings
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.start.job.build(
+    job_id="example-job",
+    project_id="default-project",
+    data={
+        "sha": "262ed9817b3cad5142fbceabe0c9e371e390d616",
+    },
+)
+print(response.data)
+```
+
+OR
+
+Start a build with overrides for the current settings
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.start.job.build(
+    job_id="example-job",
+    project_id="default-project",
+    data={
+        "sha": "262ed9817b3cad5142fbceabe0c9e371e390d616",
+        "overrides": {
+            "buildArguments": {
+                "ARGUMENT_1": "abcdef",
+                "ARGUMENT_2": "12345",
+            },
+            "buildFiles": {
+                "/dir/fileName": {
+                    "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                    "encoding": "utf-8",
+                },
+            },
+            "dockerSecretMounts": {
+                "example-secret-mount_1": {
+                    "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                    "encoding": "utf-8",
+                },
+            },
+            "docker": {
+                "dockerFilePath": "/Dockerfile",
+                "dockerWorkDir": "/",
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "joyous-view-6290",
+  "branch": "main",
+  "sha": "12c15e7ee25fd78f567ebf87f9178b8ad70025b3",
+  "createdAt": "2021-07-28T15:55:38.296Z",
+  "status": "PENDING",
+  "concluded": false
 }
 ```

@@ -6,7 +6,7 @@ This endpoint is deprecated and will be removed in the future. Please avoid maki
 
 Requests should instead use the relevant PATCH endpoint.
 
-[Use /jobs/patch-job instead](patch-job.md)
+[Use /project/jobs/patch-job instead](patch-job.md)
 
 Updates the deployment settings of the given job.
 
@@ -381,7 +381,7 @@ Don't modify the deployment.
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 An external deployment
 
@@ -443,4 +443,86 @@ await apiClient.update.job.deployment({
     }
   }
 });
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+An external deployment
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.job.deployment(
+    job_id="example-job",
+    project_id="default-project",
+    data={
+        "external": {
+            "imagePath": "nginx:latest",
+            "credentials": "example-credentials",
+        },
+        "docker": {
+            "configType": "default",
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+An internal deployment
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.job.deployment(
+    job_id="example-job",
+    project_id="default-project",
+    data={
+        "internal": {
+            "id": "example-build-service",
+            "branch": "master",
+            "buildSHA": "latest",
+            "buildId": "premium-guide-6393",
+        },
+        "docker": {
+            "configType": "default",
+        },
+    },
+)
+print(response.data)
+```
+
+OR
+
+Don't modify the deployment.
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.update.job.deployment(
+    job_id="example-job",
+    project_id="default-project",
+    data={
+        "docker": {
+            "configType": "default",
+        },
+    },
+)
+print(response.data)
 ```

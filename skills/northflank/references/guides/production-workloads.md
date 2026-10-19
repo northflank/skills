@@ -240,7 +240,9 @@ You may be required to provide the IP address for your Northflank services to yo
 
 ### Persistent storage in production: Add a persistent volume
 
-If no Northflank addons or external services are suitable for your needs you can create persistent volumes to attach to your service. Persistent volumes are not a recommended solution as they limit your service to 1 instance, meaning you cannot configure your application for zero downtime.
+If Northflank addons or external services do not meet your needs, you can attach persistent volumes to your service.
+
+[Single Read/Write volumes](databases-and-persistence.md#add-a-persistent-volume-volume-access-modes) limit a service to one instance and interrupt access during redeployment. Multi Read/Write volumes support multiple instances, but shared storage alone does not guarantee zero downtime. See [deployment strategies and readiness probes](production-workloads.md#release-for-production-deploy-with-zero-downtime).
 
 #### Persistent storage in production: Learn more
 
@@ -458,11 +460,15 @@ When you make changes to your database schema you may need to update your applic
 
 ### Release for production: Deploy with zero downtime
 
-You can deploy your release with zero downtime by configuring health checks to ensure that your code is ready before traffic is served to it. Northflank handles deployments differently depending on how many instances your service has.
+With the default rolling strategy, Northflank starts replacement instances before stopping the old ones. Configure a readiness probe so that each replacement is ready to serve requests before it receives traffic.
 
-For single instance deployments, a new container will be started and the old one terminated when the new container is ready. For multiple instances, containers are replaced in a rolling redeployment.
+> [!warning] Recreate causes downtime
+>
+> The Recreate strategy stops existing instances before starting replacements. Your service is unavailable until the replacements are ready.
 
-In both cases, configure a readiness probe to ensure your application is initialised and ready to serve requests before traffic is routed to it.
+During service creation, open Resources → Advanced resource options to configure Pod rollout strategy. Other strategies can allow instances to stop before replacements are ready. Health checks alone do not guarantee zero downtime.
+
+[Single Read/Write volumes](databases-and-persistence.md#add-a-persistent-volume-volume-access-modes) limit a service to one instance and require stopping it before its replacement starts.
 
 - [Configure health checks: Monitor the uptime and success of your deployed services and builds to ensure your code runs correctly and is always available.](observe.md#configure-health-checks)
 

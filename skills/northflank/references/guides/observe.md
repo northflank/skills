@@ -25,7 +25,7 @@ Audit logs provide a record of events on your Northflank teams and organisation.
 
 The audit log contains a live feed of all events, according to the [scope](observe.md#audit-logs-log-scopes) of the log, which can also be [filtered](observe.md#audit-logs-filter-log).
 
-Each log contains the [type of event](observe.md#audit-logs-event-types), the user that triggered it, the [event source](observe.md#audit-logs-event-sources), a timestamp, and any parent events. Differences are shown in individual event logs.
+Each log contains the [type of event](observe.md#audit-logs-event-types), the user that triggered it, the [event source](observe.md#audit-logs-event-triggers-and-origins), a timestamp, and any parent events. Differences are shown in individual event logs.
 
 You can click a log to view it in more detail, or select the event, user, or source to filter by that value.
 
@@ -118,6 +118,34 @@ You can filter audit logs by the following criteria:
 
 The project filter is only available on organisation and team audit logs, while resource type, and resource ID filters are only available on organisation, team, and project audit logs.
 
+### Audit logs: Forward audit logs
+
+Audit log sinks forward team or organization audit events to an AWS S3 bucket or S3-compatible storage. They are separate from [log sinks](observe.md#configure-log-sinks), which forward container and network logs.
+
+Your team or organization must have audit log sinks enabled. You need permission to view and create them. New sinks do not export earlier audit events.
+
+> [!note]
+>
+> [Click here](https://app.northflank.com/s/teamOrOrg/observe/audit-log-sinks) to open audit log sinks for your team or organization.
+
+1. Create a bucket and credentials that can write objects to it. For S3-compatible storage, use an HTTPS endpoint.
+
+2. Use the link above to open Audit log sinks for your team or organization.
+
+3. Select Create audit log sink or Add an audit log sink.
+
+4. Enter a name, endpoint, region, bucket, access key ID, and access key secret. You can also set a path prefix and compression method.
+
+5. If you need resource configuration details, select Include full event spec (before / after state). This option is off by default.
+
+6. Select Add audit log sink. Northflank checks write access to the bucket before saving the sink.
+
+> [!warning] Pausing can leave gaps
+>
+> If a sink stays paused across midnight UTC, it does not export missed events from previous UTC days when you resume it.
+
+Exports run asynchronously. Each file contains newline-delimited JSON, with gzip compression by default. Check the sink status on the Audit log sinks page. Repeated delivery failures pause the sink. Correct the destination settings before you resume it.
+
 ### Audit logs: Next steps
 
 - [View logs: View detailed, real-time logs from builds, deployments, and more.](observe.md#view-logs)
@@ -186,13 +214,14 @@ Use the dropdown menu to select the port to test (for HTTP and TCP), or enter it
 Click save changes to create or update the health checks, or add health check to add another.
 
 > [!note] Advanced configuration
+>
 > You can also configure the following options by expanding the advanced menu in a health check:
-
-- Initial delay: set the time (in seconds) to wait from container initialization before making the first check
-- Interval: set the time (in seconds) to wait between checks
-- Timeout: set the time (in seconds) to wait for a response from the container
-- Max failures: specify the maximum number of attempts to check the container before failing.
-- Success threshold: set the number of successful checks required for a readiness probe to pass
+>
+> - Initial delay: set the time (in seconds) to wait from container initialization before making the first check
+> - Interval: set the time (in seconds) to wait between checks
+> - Timeout: set the time (in seconds) to wait for a response from the container
+> - Max failures: specify the maximum number of attempts to check the container before failing.
+> - Success threshold: set the number of successful checks required for a readiness probe to pass
 
 ### Configure health checks: Set up a probe endpoint
 
@@ -288,7 +317,10 @@ Log sinks allow you to forward logs from containers in specific projects, or you
 
 You can also integrate with your own logging solutions by sending logs to a custom HTTP endpoint or an Amazon S3 bucket.
 
+To forward audit events instead, see [audit log sinks](observe.md#audit-logs-forward-audit-logs).
+
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/integrations/log-sinks) to view your account logs sinks page.
 
 ![Creating a HTTP log sink integration in the Northflank application](https://assets.northflank.com/documentation/v1/application/observe/configure-log-sinks/configure-http-sink.png)
@@ -411,7 +443,9 @@ You can generate these custom keys in your application and query them in your lo
 Log sinks can be created on your user or team account in your account settings.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/integrations/log-sinks) to view your account's log sinks page.
+
 To add a new log sink, select the type of log sink you want and follow the specific instructions below for each type.
 
 You can pause and resume your log sinks as required after they have been created, update the authentication details, and change the projects they target.
@@ -576,8 +610,8 @@ You can send your logs to a self-hosted instance of Loki, or to a Loki instance 
 
 > [!note]
 >
-- You must be a Honeycomb team owner to create and manage API keys
-- Your API key must have `send events` and `create datasets` permissions
+> - You must be a Honeycomb team owner to create and manage API keys
+> - Your API key must have `send events` and `create datasets` permissions
 
 ### Configure log sinks: Create a Logz.io log sink
 
@@ -662,10 +696,10 @@ Logs sent to S3 buckets are automatically segmented into directories to help ide
 
 > [!note]
 >
-- Northflank will create a folder to store logs each day, with the format `date=YYYY-MM-DD`
-- Each log file will be named with a Unix timestamp in seconds, followed by a UUID: `[timestamp]-[UUID].[file-extension]`
-- Logs will have the file extension `.log` if uncompressed, or `.log.gzip` for compressed logs
-- Logs will be sent in batches no greater than 32.7KB, or every second while logs are being generated
+> - Northflank will create a folder to store logs each day, with the format `date=YYYY-MM-DD`
+> - Each log file will be named with a Unix timestamp in seconds, followed by a UUID: `[timestamp]-[UUID].[file-extension]`
+> - Logs will have the file extension `.log` if uncompressed, or `.log.gzip` for compressed logs
+> - Logs will be sent in batches no greater than 32.7KB, or every second while logs are being generated
 
 ### Configure log sinks: Create a HTTP log sink
 
@@ -727,6 +761,7 @@ You can create integrations with external services like Slack and Discord to rec
 You can also configure notifications to be sent to a webhook URL to create your own integrations and workflows.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/integrations/notifications) to view your account notifications page.
 
 #### Configure notification integrations: Organisation notifications
@@ -806,6 +841,7 @@ Use Teams Workflows to send Northflank notifications to a Microsoft Teams channe
 The workflow must post incoming Adaptive Cards, the formatted messages that Northflank sends. See Microsoft's [workflow setup guide](https://support.microsoft.com/en-us/workflows/send-messages-in-teams-using-incoming-webhooks) for the Teams steps.
 
 > [!note]
+>
 > Keep the workflow URL secret. Anyone with this URL can send requests to the workflow.
 
 1. In Teams, open Workflows and select the Send webhook alerts to a channel template.
@@ -832,7 +868,7 @@ You cannot create new Teams (Legacy) integrations or change an existing integrat
 
 ### Configure notification integrations: Webhook notifications
 
-You can create a webhook notification integration to send events to a HTTP endpoint for processing. This can be a powerful tool for automating workflows involving Northflank, especially when combined with the [Northflank API](https://northflank.com/docs/v1/api).
+You can create a webhook notification integration to send events to a HTTP endpoint for processing. This can be a powerful tool for automating workflows involving Northflank, especially when combined with the [Northflank API](../api/introduction.md).
 
 You can create or update a webhook integration from the notifications page in your account/team settings.
 
@@ -841,10 +877,11 @@ Select the webhook integration type and enter your webhook URL, and your secret 
 You can select the types of event you want to receive notifications about and choose to only receive notifications about events in specific projects, if required.
 
 > [!note]
+>
 > You could use a webhook notification integration to alert your app:
-
-- That a job has failed, so your app can create a ticket in your bug tracking software
-- That a backup has succeeded, so your app can download the backup via the Northflank API and store it in an off-site backup system
+>
+> - That a job has failed, so your app can create a ticket in your bug tracking software
+> - That a backup has succeeded, so your app can download the backup via the Northflank API and store it in an off-site backup system
 
 #### Configure notification integrations: Webhook secrets
 
@@ -1131,11 +1168,11 @@ You can find a list of [builds](build.md#build-code-from-a-git-repository-build-
 
 Each listed build includes information including the branch, commit hash, and duration of the build, as well as buttons to start a new build, abort a build in progress, or deploy a specific build (in a combined service or job).
 
-When a build is successful it is pushed to the [Northflank container registry](build.md#pull-images-from-northflank), ready to be deployed. The new build will be automatically deployed to any linked services with [CD configured](release.md#manage-cicd).
+Successful builds are pushed to the project's registry, ready to deploy. This is either the [Northflank registry](build.md#pull-images-from-northflank) or your [custom build registry](build.md#use-custom-build-registry). The new build will be automatically deployed to any linked services with [CD configured](release.md#manage-cicd).
 
 You can click through on each build to view live detailed [logs](observe.md#view-logs) and [metrics](observe.md#view-metrics).
 
-You can also [build the image again](build.md#build-code-from-a-git-repository) and pull the image from the [Northflank container registry](build.md#pull-images-from-northflank) from the individual build view.
+You can also [build the image again](build.md#build-code-from-a-git-repository) from the individual build view. For managed registry images, this view includes [local pull instructions](build.md#pull-images-from-northflank).
 
 ![Viewing a list of builds on a build service in the Northflank application](https://assets.northflank.com/documentation/v1/application/observe/see-builds/build-list.png)
 
@@ -1168,6 +1205,7 @@ You can use infrastructure alerts to let you and your team know when there is an
 Alert settings are configured on an account-wide basis, and can then be used in [notification integrations](observe.md#configure-notification-integrations) to send alerts to webhooks or other platforms.
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/integrations/alerts) to view your account's infrastructure alerts configuration page.
 
 ![Configuring infrastructure alerts in the Northflank application](https://assets.northflank.com/documentation/v1/application/observe/set-infrastructure-alerts/infrastructure-alerts-page.png)

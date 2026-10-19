@@ -82,13 +82,14 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.create.customVcs.token({
   parameters: {
     "customVCSId": "cdb3d41f-0dd8-49ad-92d5-7544c98c490b",
     "vcsLinkId": "63ebb6ce2ccc6c7affdbf253"
-  },
-  options: {}
+  }
 });
 ```
 
@@ -107,5 +108,39 @@ await apiClient.create.customVcs.token({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.create.custom_vcs.token(
+    custom_vcsid="cdb3d41f-0dd8-49ad-92d5-7544c98c490b",
+    vcs_link_id="63ebb6ce2ccc6c7affdbf253",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "vcsService": "github",
+  "installationId": 1234567,
+  "installationToken": "ghs_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "token": "ghu_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 }
 ```

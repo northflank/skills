@@ -119,3 +119,13 @@ Looks like you aren‘t able to do that through the CLI yet.
 ### JavaScript client reference
 
 Looks like you aren‘t able to do that through the JavaScript client yet.
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+Python SDK 2.1.0 has no generated method for this endpoint. Use the API example for this request.

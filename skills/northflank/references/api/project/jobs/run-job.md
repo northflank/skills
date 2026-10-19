@@ -270,7 +270,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.start.job.run({
@@ -325,5 +325,68 @@ await apiClient.start.job.run({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.start.job.run(
+    job_id="example-job",
+    project_id="default-project",
+    data={
+        "runtimeEnvironment": {
+            "VARIABLE_1": "abcdef",
+            "VARIABLE_2": "12345",
+        },
+        "runtimeFiles": {
+            "/dir/fileName": {
+                "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+                "encoding": "utf-8",
+            },
+        },
+        "billing": {
+            "deploymentPlan": "nf-compute-20",
+        },
+        "deployment": {
+            "docker": {
+                "configType": "default",
+            },
+            "storage": {
+                "ephemeralStorage": {
+                    "storageSize": 1024,
+                },
+            },
+            "internal": {
+                "id": "example-build-service",
+                "branch": "master",
+                "buildSHA": "latest",
+                "buildId": "premium-guide-6393",
+            },
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "d34582a4-35bd-4c71-8e7c-e36999b88723",
+  "runName": "example-job-5fcf67bc56e1913e21d49504"
 }
 ```

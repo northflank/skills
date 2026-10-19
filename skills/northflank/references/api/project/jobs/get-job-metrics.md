@@ -15,14 +15,14 @@ Required permission: Project > Jobs > Deployment > View Observability
 **Query parameters:**
 
 {object}
-- `runId`: (string) Limits metrics to a specific job run id.
-- `containerName`: (string) Limits metrics to a specific container.
+- `runId`: (string) Limits metrics to a specific job run id. (min length: 36) (max length: 36)
+- `containerName`: (string) Limits metrics to a specific container. (min length: 3) (max length: 64)
 - `queryType`: (string) Selects metrics for specified timestamp. (enum: range, single)
 - `metricTypes`: (string) Type of metric. Multiple metric types can be selected by specifying the query parameter repeatedly. (enum: cpu, memory, networkIngress, networkEgress, tcpConnectionsOpen, diskUsage, requests, http4xxResponses, http5xxResponses, bandwidth, bandwidthVolume)
-- `startTime`: (string) Fetch metrics generated after this timestamp. Only valid for queryType: `range`.
-- `endTime`: (string) Fetch metrics generated before this timestamp. Only valid for queryType: `range`.
+- `startTime`: (string) Fetch metrics generated after this timestamp. Only valid for queryType: `range`. (format: date-time)
+- `endTime`: (string) Fetch metrics generated before this timestamp. Only valid for queryType: `range`. (format: date-time)
 - `duration`: (integer) Range duration in seconds. If set, only one of `startTime` or `endTime` can be set.
-- `time`: (string) Fetch metrics at this timestamp. If not provided will use current time. Only valid for queryType: `single`.
+- `time`: (string) Fetch metrics at this timestamp. If not provided will use current time. Only valid for queryType: `single`. (format: date-time)
 
 **Response body:**
 
@@ -663,6 +663,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.job.metrics({
   parameters: {
@@ -670,6 +672,9 @@ await apiClient.get.job.metrics({
     "jobId": "example-job"
   },
   options: {
+    "runId": "93ec9390-b9bd-47f0-9bd1-b5983c42a6f2",
+    "containerName": "my-container-67d6d748c5-kgvwh",
+    "queryType": "range",
     "startTime": "2023-02-16T14:00:00.000Z",
     "endTime": "2023-02-16T15:00:00.000Z",
     "duration": 600,
@@ -909,5 +914,273 @@ await apiClient.get.job.metrics({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.job.metrics(
+    job_id="example-job",
+    project_id="default-project",
+    container_name="my-container-67d6d748c5-kgvwh",
+    duration=600,
+    end_time="2023-02-16T15:00:00.000Z",
+    query_type="range",
+    run_id="93ec9390-b9bd-47f0-9bd1-b5983c42a6f2",
+    start_time="2023-02-16T14:00:00.000Z",
+    time="2023-02-16T14:00:00.000Z",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "cpu": {
+    "metricInfo": {
+      "metricUnit": "pct",
+      "metricResolution": 10,
+      "metricId": "cpu"
+    },
+    "values": [
+      {
+        "metadata": {
+          "containerId": "nginx-669cc865b7-5458n",
+          "volumeId": "data-volume-1"
+        },
+        "data": [
+          {
+            "value": 0.5,
+            "ts": "2023-03-21T15:01:17.310Z"
+          }
+        ]
+      }
+    ]
+  },
+  "memory": {
+    "metricInfo": {
+      "metricUnit": "pct",
+      "metricResolution": 10,
+      "metricId": "cpu"
+    },
+    "values": [
+      {
+        "metadata": {
+          "containerId": "nginx-669cc865b7-5458n",
+          "volumeId": "data-volume-1"
+        },
+        "data": [
+          {
+            "value": 0.5,
+            "ts": "2023-03-21T15:01:17.310Z"
+          }
+        ]
+      }
+    ]
+  },
+  "networkIngress": {
+    "metricInfo": {
+      "metricUnit": "pct",
+      "metricResolution": 10,
+      "metricId": "cpu"
+    },
+    "values": [
+      {
+        "metadata": {
+          "containerId": "nginx-669cc865b7-5458n",
+          "volumeId": "data-volume-1"
+        },
+        "data": [
+          {
+            "value": 0.5,
+            "ts": "2023-03-21T15:01:17.310Z"
+          }
+        ]
+      }
+    ]
+  },
+  "networkEgress": {
+    "metricInfo": {
+      "metricUnit": "pct",
+      "metricResolution": 10,
+      "metricId": "cpu"
+    },
+    "values": [
+      {
+        "metadata": {
+          "containerId": "nginx-669cc865b7-5458n",
+          "volumeId": "data-volume-1"
+        },
+        "data": [
+          {
+            "value": 0.5,
+            "ts": "2023-03-21T15:01:17.310Z"
+          }
+        ]
+      }
+    ]
+  },
+  "tcpConnectionsOpen": {
+    "metricInfo": {
+      "metricUnit": "pct",
+      "metricResolution": 10,
+      "metricId": "cpu"
+    },
+    "values": [
+      {
+        "metadata": {
+          "containerId": "nginx-669cc865b7-5458n",
+          "volumeId": "data-volume-1"
+        },
+        "data": [
+          {
+            "value": 0.5,
+            "ts": "2023-03-21T15:01:17.310Z"
+          }
+        ]
+      }
+    ]
+  },
+  "diskUsage": {
+    "metricInfo": {
+      "metricUnit": "pct",
+      "metricResolution": 10,
+      "metricId": "cpu"
+    },
+    "values": [
+      {
+        "metadata": {
+          "containerId": "nginx-669cc865b7-5458n",
+          "volumeId": "data-volume-1"
+        },
+        "data": [
+          {
+            "value": 0.5,
+            "ts": "2023-03-21T15:01:17.310Z"
+          }
+        ]
+      }
+    ]
+  },
+  "requests": {
+    "metricInfo": {
+      "metricUnit": "pct",
+      "metricResolution": 10,
+      "metricId": "cpu"
+    },
+    "values": [
+      {
+        "metadata": {
+          "containerId": "nginx-669cc865b7-5458n",
+          "volumeId": "data-volume-1"
+        },
+        "data": [
+          {
+            "value": 0.5,
+            "ts": "2023-03-21T15:01:17.310Z"
+          }
+        ]
+      }
+    ]
+  },
+  "http4xxResponses": {
+    "metricInfo": {
+      "metricUnit": "pct",
+      "metricResolution": 10,
+      "metricId": "cpu"
+    },
+    "values": [
+      {
+        "metadata": {
+          "containerId": "nginx-669cc865b7-5458n",
+          "volumeId": "data-volume-1"
+        },
+        "data": [
+          {
+            "value": 0.5,
+            "ts": "2023-03-21T15:01:17.310Z"
+          }
+        ]
+      }
+    ]
+  },
+  "http5xxResponses": {
+    "metricInfo": {
+      "metricUnit": "pct",
+      "metricResolution": 10,
+      "metricId": "cpu"
+    },
+    "values": [
+      {
+        "metadata": {
+          "containerId": "nginx-669cc865b7-5458n",
+          "volumeId": "data-volume-1"
+        },
+        "data": [
+          {
+            "value": 0.5,
+            "ts": "2023-03-21T15:01:17.310Z"
+          }
+        ]
+      }
+    ]
+  },
+  "bandwidth": {
+    "metricInfo": {
+      "metricUnit": "pct",
+      "metricResolution": 10,
+      "metricId": "cpu"
+    },
+    "values": [
+      {
+        "metadata": {
+          "containerId": "nginx-669cc865b7-5458n",
+          "volumeId": "data-volume-1"
+        },
+        "data": [
+          {
+            "value": 0.5,
+            "ts": "2023-03-21T15:01:17.310Z"
+          }
+        ]
+      }
+    ]
+  },
+  "bandwidthVolume": {
+    "metricInfo": {
+      "metricUnit": "pct",
+      "metricResolution": 10,
+      "metricId": "cpu"
+    },
+    "values": [
+      {
+        "metadata": {
+          "containerId": "nginx-669cc865b7-5458n",
+          "volumeId": "data-volume-1"
+        },
+        "data": [
+          {
+            "value": 0.5,
+            "ts": "2023-03-21T15:01:17.310Z"
+          }
+        ]
+      }
+    ]
+  }
 }
 ```

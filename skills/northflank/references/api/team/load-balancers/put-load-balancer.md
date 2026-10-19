@@ -13,6 +13,7 @@ Required permission: Account > Networking > LoadBalancers > Create
 - `description`: (string) The description of the load balancer. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `spec`: {object}
   - `type`: (string) (required) Protocol type for the load balancer (enum: tcp, udp)
+  - `visibility`: (string) Network visibility of the load balancer; defaults to public on creation (enum: public, private)
   - `target`: {object}
     - `type`: (string) (required) Target type for the load balancer (enum: region, cluster)
     - `targetId`: (multiple options) (string) Target region name (pattern: ^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$) | (string) Target cluster internal ID (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
@@ -21,6 +22,7 @@ Required permission: Account > Networking > LoadBalancers > Create
      - `port`: (string) (required) Port number or range (single port, multiple comma-separated, or range with dash)
      - `customSettings`: {object}
        - `bridgeTlsMode`: (boolean)
+       - `proxyProtocol`: (string) PROXY protocol version sent to backends for this port; omit to disable (enum: v2)
        - `subdomainId`: (string) Full name of the load balancer subdomain linked to this port (TLS bridge mode)
      - `backends`: [array of] {object}
          - `id`: (string) (required) Backend reference in format {projectId}/{nfObjectId} (pattern: ^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$)
@@ -37,6 +39,7 @@ Required permission: Account > Networking > LoadBalancers > Create
   - `description`: (string) The description of the load balancer. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
   - `spec`: {object}
     - `type`: (string) (required) Protocol type for the load balancer (enum: tcp, udp)
+    - `visibility`: (string) Network visibility of the load balancer; defaults to public on creation (enum: public, private)
     - `target`: {object}
       - `type`: (string) (required) Target type for the load balancer (enum: region, cluster)
       - `targetId`: (multiple options) (string) Target region name (pattern: ^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$) | (string) Target cluster internal ID (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
@@ -45,6 +48,7 @@ Required permission: Account > Networking > LoadBalancers > Create
         - `port`: (string) (required) Port number or range (single port, multiple comma-separated, or range with dash)
         - `customSettings`: {object}
           - `bridgeTlsMode`: (boolean)
+          - `proxyProtocol`: (string) PROXY protocol version sent to backends for this port; omit to disable (enum: v2)
           - `subdomainId`: (string) Full name of the load balancer subdomain linked to this port (TLS bridge mode)
         - `backends`: [array of] {object}
             - `id`: (string) (required) Backend reference in format {projectId}/{nfObjectId} (pattern: ^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$)
@@ -52,8 +56,8 @@ Required permission: Account > Networking > LoadBalancers > Create
             - `port`: (integer) (required) Backend port number
             - `weight`: (integer) Traffic weight for this backend
   - `state`: {object}
-    - `endpoints`: [array of] (string)
-    - `status`: (string) (required) Current status of the load balancer (enum: pending, provisioning, provisioned, error, deleting, deleted)
+    - `endpoints`: [array of] (multiple options) (string)
+    - `status`: (string) (required) Current status of the load balancer (enum: staging, loading, created, error, deleting, deleted)
     - `lastTransitionTime`: (string) (required) Time of the last status transition (format: date-time)
   - `createdAt`: (string) (required) The time the load balancer was created. (format: date-time)
   - `updatedAt`: (string) (required) The time the load balancer was last updated. (format: date-time)
@@ -72,7 +76,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
-  --data '{"name":"my-load-balancer","description":"This is a new load balancer.","spec":{"type":"tcp","target":{"type":"region","targetId":"europe-west"},"ports":[{"id":"port-80","port":"80","customSettings":{"subdomainId":"api.example.com"},"backends":[{"id":"my-project/my-service","type":"service","port":3000,"weight":1}]}]}}' \
+  --data '{"name":"my-load-balancer","description":"This is a new load balancer.","spec":{"type":"tcp","visibility":"public","target":{"type":"region","targetId":"europe-west"},"ports":[{"id":"port-80","port":"80","customSettings":{"subdomainId":"api.example.com"},"backends":[{"id":"my-project/my-service","type":"service","port":3000,"weight":1}]}]}}' \
   https://api.northflank.com/v1/load-balancers
 ```
 
@@ -82,6 +86,7 @@ const payload = {
   "description": "This is a new load balancer.",
   "spec": {
     "type": "tcp",
+    "visibility": "public",
     "target": {
       "type": "region",
       "targetId": "europe-west"
@@ -124,7 +129,7 @@ import requests
 
 url = "https://api.northflank.com/v1/load-balancers"
 
-payload = {"name":"my-load-balancer","description":"This is a new load balancer.","spec":{"type":"tcp","target":{"type":"region","targetId":"europe-west"},"ports":[{"id":"port-80","port":"80","customSettings":{"subdomainId":"api.example.com"},"backends":[{"id":"my-project/my-service","type":"service","port":3000,"weight":1}]}]}}
+payload = {"name":"my-load-balancer","description":"This is a new load balancer.","spec":{"type":"tcp","visibility":"public","target":{"type":"region","targetId":"europe-west"},"ports":[{"id":"port-80","port":"80","customSettings":{"subdomainId":"api.example.com"},"backends":[{"id":"my-project/my-service","type":"service","port":3000,"weight":1}]}]}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("PUT", url, headers = headers, json = payload)
@@ -145,7 +150,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/load-balancers"
 
-  var jsonStr = []byte(`{"name":"my-load-balancer","description":"This is a new load balancer.","spec":{"type":"tcp","target":{"type":"region","targetId":"europe-west"},"ports":[{"id":"port-80","port":"80","customSettings":{"subdomainId":"api.example.com"},"backends":[{"id":"my-project/my-service","type":"service","port":3000,"weight":1}]}]}}`)
+  var jsonStr = []byte(`{"name":"my-load-balancer","description":"This is a new load balancer.","spec":{"type":"tcp","visibility":"public","target":{"type":"region","targetId":"europe-west"},"ports":[{"id":"port-80","port":"80","customSettings":{"subdomainId":"api.example.com"},"backends":[{"id":"my-project/my-service","type":"service","port":3000,"weight":1}]}]}}`)
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -176,6 +181,7 @@ func main() {
     "description": "This is a new load balancer.",
     "spec": {
       "type": "tcp",
+      "visibility": "public",
       "target": {
         "type": "region",
         "targetId": "europe-west"
@@ -199,7 +205,7 @@ func main() {
       ]
     },
     "state": {
-      "status": "provisioned"
+      "status": "created"
     },
     "createdAt": "2021-01-20T11:19:53.175Z",
     "updatedAt": "2021-01-20T11:19:53.175Z"
@@ -229,6 +235,7 @@ Options:
   "description": "This is a new load balancer.",
   "spec": {
     "type": "tcp",
+    "visibility": "public",
     "target": {
       "type": "region",
       "targetId": "europe-west"
@@ -265,6 +272,7 @@ Options:
   "description": "This is a new load balancer.",
   "spec": {
     "type": "tcp",
+    "visibility": "public",
     "target": {
       "type": "region",
       "targetId": "europe-west"
@@ -288,7 +296,7 @@ Options:
     ]
   },
   "state": {
-    "status": "provisioned"
+    "status": "created"
   },
   "createdAt": "2021-01-20T11:19:53.175Z",
   "updatedAt": "2021-01-20T11:19:53.175Z"
@@ -299,7 +307,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.put.loadBalancer({
@@ -308,6 +316,7 @@ await apiClient.put.loadBalancer({
     "description": "This is a new load balancer.",
     "spec": {
       "type": "tcp",
+      "visibility": "public",
       "target": {
         "type": "region",
         "targetId": "europe-west"
@@ -346,6 +355,7 @@ await apiClient.put.loadBalancer({
     "description": "This is a new load balancer.",
     "spec": {
       "type": "tcp",
+      "visibility": "public",
       "target": {
         "type": "region",
         "targetId": "europe-west"
@@ -369,7 +379,7 @@ await apiClient.put.loadBalancer({
       ]
     },
     "state": {
-      "status": "provisioned"
+      "status": "created"
     },
     "createdAt": "2021-01-20T11:19:53.175Z",
     "updatedAt": "2021-01-20T11:19:53.175Z"
@@ -377,5 +387,96 @@ await apiClient.put.loadBalancer({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.put.load_balancer(
+    data={
+        "name": "my-load-balancer",
+        "description": "This is a new load balancer.",
+        "spec": {
+            "type": "tcp",
+            "visibility": "public",
+            "target": {
+                "type": "region",
+                "targetId": "europe-west",
+            },
+            "ports": [{
+                "id": "port-80",
+                "port": "80",
+                "customSettings": {
+                    "subdomainId": "api.example.com",
+                },
+                "backends": [{
+                    "id": "my-project/my-service",
+                    "type": "service",
+                    "port": 3000,
+                    "weight": 1,
+                }],
+            }],
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "my-load-balancer",
+  "name": "my-load-balancer",
+  "description": "This is a new load balancer.",
+  "spec": {
+    "type": "tcp",
+    "visibility": "public",
+    "target": {
+      "type": "region",
+      "targetId": "europe-west"
+    },
+    "ports": [
+      {
+        "id": "port-80",
+        "port": "80",
+        "customSettings": {
+          "subdomainId": "api.example.com"
+        },
+        "backends": [
+          {
+            "id": "my-project/my-service",
+            "type": "service",
+            "port": 3000,
+            "weight": 1
+          }
+        ]
+      }
+    ]
+  },
+  "state": {
+    "endpoints": [
+      "203.0.113.1",
+      "internal-example.elb.amazonaws.com"
+    ],
+    "status": "created",
+    "lastTransitionTime": "1970-01-01T00:00:00.000Z"
+  },
+  "createdAt": "2021-01-20T11:19:53.175Z",
+  "updatedAt": "2021-01-20T11:19:53.175Z"
 }
 ```

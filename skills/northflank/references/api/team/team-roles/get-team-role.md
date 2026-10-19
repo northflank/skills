@@ -110,3 +110,40 @@ await apiClient.get.teamRole({
   "error": "..."
 }
 ```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.team_role(
+    role_id="developer",
+    team_id="my-team",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "developer",
+  "name": "Developer",
+  "description": "Role for developers.",
+  "createdAt": "2021-01-20T11:19:53.175Z",
+  "updatedAt": "2021-01-20T11:19:53.175Z",
+  "permissions": {
+    "teamScope": [],
+    "projectScope": []
+  }
+}
+```

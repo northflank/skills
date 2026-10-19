@@ -17,6 +17,7 @@ Required permission: Project > Volumes > General > Read
 {object}
 - `data`: {object}
   - `id`: (string) (required) Identifier for the volume
+  - `uid`: (string) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
   - `name`: (string) (required) Volume name
   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `spec`: {object}
@@ -51,6 +52,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/volumes/{volumeId}
 {
   "data": {
     "id": "example-volume",
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
     "name": "Example Volume",
     "spec": {
       "storageClassName": "nvme",
@@ -109,6 +111,7 @@ Options:
 ```json
 {
   "id": "example-volume",
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
   "name": "Example Volume",
   "spec": {
     "storageClassName": "nvme",
@@ -147,6 +150,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.volume({
   parameters: {
@@ -164,6 +169,7 @@ await apiClient.get.volume({
 {
   "data": {
     "id": "example-volume",
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
     "name": "Example Volume",
     "spec": {
       "storageClassName": "nvme",
@@ -199,5 +205,70 @@ await apiClient.get.volume({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.volume(
+    project_id="default-project",
+    volume_id="example-volume",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "example-volume",
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
+  "name": "Example Volume",
+  "spec": {
+    "storageClassName": "nvme",
+    "storageSize": 6144,
+    "accessMode": "ReadWriteOnce"
+  },
+  "attachedObjects": [
+    {
+      "id": "example-service",
+      "type": "service"
+    }
+  ],
+  "backupSchedules": [
+    {
+      "scheduling": {
+        "interval": "weekly",
+        "minute": [
+          30
+        ],
+        "hour": [
+          18
+        ],
+        "day": [
+          4
+        ]
+      },
+      "retentionTime": 7
+    }
+  ],
+  "status": "BOUND",
+  "createdAt": "2021-01-01 12:00:00.000Z",
+  "updatedAt": "2021-01-01 12:00:00.000Z",
+  "tags": []
 }
 ```

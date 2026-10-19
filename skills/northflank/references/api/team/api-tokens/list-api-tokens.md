@@ -11,7 +11,7 @@ Required permission: Account > Admin > ApiTokens > Read
 {object}
 - `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
 - `page`: (integer) The page number to access.
-- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 - `all`: (boolean) When true, include inactive tokens (revoked or expired). By default only active tokens are returned.
 
 **Response body:**
@@ -133,6 +133,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.list.apiTokens({
   options: {
@@ -178,5 +180,56 @@ await apiClient.list.apiTokens({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.api_tokens(
+    all=False,
+    page=1,
+    per_page=50,
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "tokens": [
+    {
+      "id": "my-api-token",
+      "name": "My API Token",
+      "description": "CI/CD pipeline token",
+      "role": {
+        "name": "Developer",
+        "roleId": "developer",
+        "roleType": "team",
+        "entityType": "team"
+      },
+      "creatorEmail": "user@example.com",
+      "createdAt": "2024-01-15T10:30:00.000Z",
+      "expiresAt": "2024-07-15T10:30:00.000Z",
+      "revoked": false,
+      "revokedAt": "2024-06-15T10:30:00.000Z",
+      "lastUsedAt": "2024-06-01T10:30:00.000Z",
+      "active": true
+    }
+  ]
 }
 ```

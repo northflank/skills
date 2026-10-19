@@ -14,7 +14,7 @@ Required permission: Account > Platform > Tags > Update
 **Request body:**
 
 {object}
-- `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, and job workloads after their next deployment. Required for usage in egress IP selectors.
+- `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, job, and addon workloads after their next deployment. Required for usage in egress IP selectors and network policies.
 - `useSpotNodes`: (boolean) Schedule workloads to spot nodes
 - `useOnDemandNodes`: (boolean) Also allow workloads to schedule to on demand nodes. Only relevant if you want workloads to schedule across both spot and on demand nodes
 - `nodeAffinities`: [array of] {object}
@@ -217,13 +217,10 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.put.tag({
-  parameters: {
-    "resourceTagId": "example-tag"
-  },
   data: {
     "useAsInfrastructureLabel": false,
     "useSpotNodes": false,
@@ -264,3 +261,13 @@ await apiClient.put.tag({
   "error": "..."
 }
 ```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+Python SDK 2.1.0 requires an argument that this endpoint does not define. Use the API example for this request.

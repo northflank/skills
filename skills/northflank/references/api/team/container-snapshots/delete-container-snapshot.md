@@ -9,7 +9,7 @@ Required permission: Account > Platform > ContainerSnapshots > Delete
 **Path parameters:**
 
 {object}
-- `snapshotId`: (string) (required) Container snapshot UUID
+- `snapshotId`: (string) (required) Container snapshot UUID (format: uuid)
 
 ### API reference
 
@@ -45,8 +45,32 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.delete.containerSnapshot({
-  parameters: {}
+  parameters: {
+    "snapshotId": "00000000-0000-4000-8000-000000000000"
+  }
 });
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.delete.container_snapshot(
+    snapshot_id="00000000-0000-4000-8000-000000000000",
+)
+print(response.data)
 ```

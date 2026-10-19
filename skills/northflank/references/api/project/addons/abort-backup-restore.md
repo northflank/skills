@@ -16,8 +16,8 @@ Required permission: Project > Addons > General > Update
 **Query parameters:**
 
 {object}
-- `sourceProjectId`: (string) Specify the source projectId when referring to a global backup.
-- `sourceAddonId`: (string) Specify the source addonId when referring to a global backup.
+- `sourceProjectId`: (string) Specify the source projectId when referring to a global backup. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
+- `sourceAddonId`: (string) Specify the source addonId when referring to a global backup. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
 
 **Request body:**
 
@@ -164,7 +164,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.abort.addon.restore({
@@ -173,7 +173,6 @@ await apiClient.abort.addon.restore({
     "addonId": "example-addon",
     "backupId": "example-backup"
   },
-  options: {},
   data: {
     "restoreId": "66845073ce75649ad18635f0"
   }
@@ -191,4 +190,37 @@ await apiClient.abort.addon.restore({
   "request": "...",
   "error": "..."
 }
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.abort.addon.restore(
+    addon_id="example-addon",
+    backup_id="example-backup",
+    project_id="default-project",
+    data={
+        "restoreId": "66845073ce75649ad18635f0",
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{}
 ```

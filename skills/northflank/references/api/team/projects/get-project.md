@@ -2,7 +2,7 @@
 
 Source: https://northflank.com/docs/v1/api/team/projects/get-project.md
 
-Get information about the given project
+Get information about the given project.
 
 Required permission: Project > Projects > Manage > Read
 
@@ -15,7 +15,9 @@ Required permission: Project > Projects > Manage > Read
 
 {object}
 - `data`: {object}
+  - `lifecycleStatus`: (string) (required) Status of resource on the platform (enum: pending_initialization, creating, created, creation_failed, upgrading, upgrade_failed, migration_pending, migrating, migration_failed, deleting, deletion_failed, deleted, cluster_deleted, initializing, tearing_down, teardown_failed)
   - `id`: (string) (required) Identifier for the project.
+  - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
   - `name`: (string) (required) The name of the project.
   - `description`: (string) A short description of the project.
   - `deployment`: {object}
@@ -23,6 +25,7 @@ Required permission: Project > Projects > Manage > Read
   - `createdAt`: (string) (required) The time the project was created. (format: date-time)
   - `services`: [array of] {object}
      - `id`: (string) (required) Identifier for the service.
+     - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
      - `appId`: (string) (required) Full identifier used for service deployment
      - `stageId`: (string) ID of the environment the resource belongs to.
      - `name`: (string) (required) The name of the service.
@@ -35,6 +38,7 @@ Required permission: Project > Projects > Manage > Read
       - `provider`: (string) (enum: acr, ecr, gar, dockerhub, dhi, github, gitlab, custom, legacy)
   - `jobs`: [array of] {object}
      - `id`: (string) (required) Identifier for the job.
+     - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
      - `appId`: (string) (required) Full identifier used for deployment
      - `stageId`: (string) ID of the environment the resource belongs to.
      - `name`: (string) (required) The name of the job.
@@ -42,6 +46,7 @@ Required permission: Project > Projects > Manage > Read
      - `jobType`: (string) (required) Type of the job (manual or cron) (enum: manual, cron)
   - `addons`: [array of] {object}
      - `id`: (string) (required) Identifier for the addon.
+     - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
      - `appId`: (string) (required) Full identifier used for deployment
      - `stageId`: (string) ID of the environment the resource belongs to.
      - `name`: (string) (required) The name of the addon.
@@ -62,12 +67,14 @@ GET /v1/teams/{teamId}/projects/{projectId}
 
 #### Example Response
 
-200 OK: Details about the given project.
+200 OK: Project details.
 
 ```json
 {
   "data": {
+    "lifecycleStatus": "creating",
     "id": "default-project",
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
     "name": "Default Project",
     "description": "The project description",
     "deployment": {
@@ -77,6 +84,7 @@ GET /v1/teams/{teamId}/projects/{projectId}
     "services": [
       {
         "id": "example-service",
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
         "appId": "/example-user/default-project/example-service",
         "stageId": "staging",
         "name": "Example Service",
@@ -90,6 +98,7 @@ GET /v1/teams/{teamId}/projects/{projectId}
     "jobs": [
       {
         "id": "example-job",
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
         "appId": "/example-user/default-project/example-job",
         "stageId": "staging",
         "name": "Example Job",
@@ -100,6 +109,7 @@ GET /v1/teams/{teamId}/projects/{projectId}
     "addons": [
       {
         "id": "example-addon",
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
         "appId": "/example-user/default-project/example-addon",
         "stageId": "staging",
         "name": "Example Addon",
@@ -137,11 +147,13 @@ Options:
 
 #### Example Response
 
- Details about the given project.
+ Project details.
 
 ```json
 {
+  "lifecycleStatus": "creating",
   "id": "default-project",
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
   "name": "Default Project",
   "description": "The project description",
   "deployment": {
@@ -151,6 +163,7 @@ Options:
   "services": [
     {
       "id": "example-service",
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
       "appId": "/example-user/default-project/example-service",
       "stageId": "staging",
       "name": "Example Service",
@@ -164,6 +177,7 @@ Options:
   "jobs": [
     {
       "id": "example-job",
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
       "appId": "/example-user/default-project/example-job",
       "stageId": "staging",
       "name": "Example Job",
@@ -174,6 +188,7 @@ Options:
   "addons": [
     {
       "id": "example-addon",
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
       "appId": "/example-user/default-project/example-addon",
       "stageId": "staging",
       "name": "Example Addon",
@@ -198,6 +213,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.project({
   parameters: {
@@ -208,12 +225,14 @@ await apiClient.get.project({
 
 #### Example Response
 
- Details about the given project.
+ Project details.
 
 ```json
 {
   "data": {
+    "lifecycleStatus": "creating",
     "id": "default-project",
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
     "name": "Default Project",
     "description": "The project description",
     "deployment": {
@@ -223,6 +242,7 @@ await apiClient.get.project({
     "services": [
       {
         "id": "example-service",
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
         "appId": "/example-user/default-project/example-service",
         "stageId": "staging",
         "name": "Example Service",
@@ -236,6 +256,7 @@ await apiClient.get.project({
     "jobs": [
       {
         "id": "example-job",
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
         "appId": "/example-user/default-project/example-job",
         "stageId": "staging",
         "name": "Example Job",
@@ -246,6 +267,7 @@ await apiClient.get.project({
     "addons": [
       {
         "id": "example-addon",
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
         "appId": "/example-user/default-project/example-addon",
         "stageId": "staging",
         "name": "Example Addon",
@@ -267,5 +289,89 @@ await apiClient.get.project({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.project(
+    project_id="default-project",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "lifecycleStatus": "creating",
+  "id": "default-project",
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
+  "name": "Default Project",
+  "description": "The project description",
+  "deployment": {
+    "region": "europe-west"
+  },
+  "createdAt": "2021-01-20T11:19:53.175Z",
+  "services": [
+    {
+      "id": "example-service",
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
+      "appId": "/example-user/default-project/example-service",
+      "stageId": "staging",
+      "name": "Example Service",
+      "description": "This is the service description",
+      "serviceType": "combined"
+    }
+  ],
+  "customRegistry": {
+    "enabled": false
+  },
+  "jobs": [
+    {
+      "id": "example-job",
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
+      "appId": "/example-user/default-project/example-job",
+      "stageId": "staging",
+      "name": "Example Job",
+      "description": "This is the job description",
+      "jobType": "cron"
+    }
+  ],
+  "addons": [
+    {
+      "id": "example-addon",
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
+      "appId": "/example-user/default-project/example-addon",
+      "stageId": "staging",
+      "name": "Example Addon",
+      "description": "This is the addon description",
+      "spec": {
+        "type": "mongodb"
+      }
+    }
+  ],
+  "cluster": {
+    "id": "nf-europe-west",
+    "name": "nf-europe-west",
+    "namespace": "ns-8zy2mcjh9zn2",
+    "loadBalancers": [
+      "lb.659200800000000000000000.northflank.com"
+    ]
+  }
 }
 ```

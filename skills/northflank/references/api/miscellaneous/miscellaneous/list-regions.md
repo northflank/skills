@@ -142,3 +142,54 @@ await apiClient.list.regions({});
   "error": "..."
 }
 ```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.list.regions()
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "regions": [
+    {
+      "id": "europe-west",
+      "name": "Europe - West",
+      "regionName": "EMEA",
+      "gpuDevices": [
+        {
+          "id": "h100-80",
+          "name": "H100",
+          "manufacturer": "NVIDIA",
+          "memoryInfo": {
+            "sizeInMiB": 81920
+          },
+          "countOptions": [
+            1,
+            2,
+            4,
+            8
+          ],
+          "pricing": {
+            "onDemand": 274
+          }
+        }
+      ]
+    }
+  ]
+}
+```

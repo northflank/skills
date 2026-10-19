@@ -55,7 +55,7 @@ Required permission: Account > Templates > General > Read
      - `selfHostedVcsId`: (string) If vcsService is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
      - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
      - `vcsLinkId`: (string)
-     - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+     - `repoUrl`: (string) (required) URL of the Git repo that will trigger the template. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
      - `branchRestrictions`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
      - `prRestrictions`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
      - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
@@ -70,7 +70,7 @@ Required permission: Account > Templates > General > Read
     - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
     - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
     - `vcsLinkId`: (string) Legacy key. Please used accountLogin instead.
-    - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+    - `repoUrl`: (string) (required) URL of the Git repo to sync the file with. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
     - `branch`: (string) (required) The name of the branch to use.
     - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
   - `$schema`: (string)
@@ -159,7 +159,7 @@ Required permission: Account > Templates > General > Read
                    - `name`: (string) (required) (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
                    - `type`: (string) (required) (enum: init, recv, hash, hit, miss, pass, fetch, error, deliver, log, none)
                    - `dynamic`: (string) (required) (enum: 0, 1)
-                   - `priority`: (multiple options) (number) (format: float) | (number) (format: float)
+                   - `priority`: (multiple options) (number) Execution priority for the VCL snippet. (format: float) | (number) Execution priority for the VCL snippet. (format: float)
                    - `content`: (string) (required)
                - `cacheSettings`: [array of] {object}
                    - `id`: (string)
@@ -212,7 +212,7 @@ Required permission: Account > Templates > General > Read
                  - `name`: (string) (required) (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
                  - `type`: (string) (required) (enum: init, recv, hash, hit, miss, pass, fetch, error, deliver, log, none)
                  - `dynamic`: (string) (required) (enum: 0, 1)
-                 - `priority`: (multiple options) (number) (format: float) | (number) (format: float)
+                 - `priority`: (multiple options) (number) Execution priority for the VCL snippet. (format: float) | (number) Execution priority for the VCL snippet. (format: float)
                  - `content`: (string) (required)
              - `cacheSettings`: [array of] {object}
                  - `id`: (string)
@@ -398,7 +398,7 @@ Required permission: Account > Templates > General > Read
        - `endTime`: (integer) The timestamp of the final attempt.
        - `diff`: {object}
        - `data`: {object}
-         - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, and job workloads after their next deployment. Required for usage in egress IP selectors.
+         - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, job, and addon workloads after their next deployment. Required for usage in egress IP selectors and network policies.
          - `useSpotNodes`: (boolean) Schedule workloads to spot nodes
          - `useOnDemandNodes`: (boolean) Also allow workloads to schedule to on demand nodes. Only relevant if you want workloads to schedule across both spot and on demand nodes
          - `nodeAffinities`: [array of] {object}
@@ -427,7 +427,7 @@ Required permission: Account > Templates > General > Read
          - `id`: (string) (required) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
          - `createdAt`: (string) time of creation (format: date-time)
      - `spec`: {object}
-       - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, and job workloads after their next deployment. Required for usage in egress IP selectors.
+       - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, job, and addon workloads after their next deployment. Required for usage in egress IP selectors and network policies.
        - `useSpotNodes`: (boolean) Schedule workloads to spot nodes
        - `useOnDemandNodes`: (boolean) Also allow workloads to schedule to on demand nodes. Only relevant if you want workloads to schedule across both spot and on demand nodes
        - `nodeAffinities`: [array of] {object}
@@ -477,7 +477,7 @@ Required permission: Account > Templates > General > Read
        - `endTime`: (integer) The timestamp of the final attempt.
        - `diff`: {object}
        - `data`: {object}
-         - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, and job workloads after their next deployment. Required for usage in egress IP selectors.
+         - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, job, and addon workloads after their next deployment. Required for usage in egress IP selectors and network policies.
          - `useSpotNodes`: (boolean) Schedule workloads to spot nodes
          - `useOnDemandNodes`: (boolean) Also allow workloads to schedule to on demand nodes. Only relevant if you want workloads to schedule across both spot and on demand nodes
          - `nodeAffinities`: [array of] {object}
@@ -506,7 +506,7 @@ Required permission: Account > Templates > General > Read
          - `id`: (string) (required) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
          - `createdAt`: (string) time of creation (format: date-time)
      - `spec`: {object}
-       - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, and job workloads after their next deployment. Required for usage in egress IP selectors.
+       - `useAsInfrastructureLabel`: (boolean) Expose this tag as an infrastructure label on service, harness, job, and addon workloads after their next deployment. Required for usage in egress IP selectors and network policies.
        - `useSpotNodes`: (boolean) Schedule workloads to spot nodes
        - `useOnDemandNodes`: (boolean) Also allow workloads to schedule to on demand nodes. Only relevant if you want workloads to schedule across both spot and on demand nodes
        - `nodeAffinities`: [array of] {object}
@@ -710,7 +710,7 @@ Required permission: Account > Templates > General > Read
          - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
          - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
          - `vcsData`: {object}
-           - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+           - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
            - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
            - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
            - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -727,9 +727,7 @@ Required permission: Account > Templates > General > Read
                - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
                - `buildkit`: {object}
                  - `useCache`: (boolean) Use persistent storage to cache build layers.
-                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-                 - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-                 - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
              - `storage`: {object}
                - `ephemeralStorage`: {object}
                  - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -791,7 +789,7 @@ Required permission: Account > Templates > General > Read
        - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
        - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
        - `vcsData`: {object}
-         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
          - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -809,8 +807,6 @@ Required permission: Account > Templates > General > Read
            - `buildkit`: {object}
              - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
              - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
-             - `useInternalCache`: (multiple options) (boolean) DEPRECATED: This field will be removed in the near future. | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
-             - `internalCacheStorage`: (multiple options) (number) DEPRECATED: This field will be removed in the near future. (format: float) | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
          - `buildpack`: {object}
            - `builder`: (multiple options) (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL) | (string) A string containing one or more references that resolve to buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (pattern: .*\${.*}.*)
            - `buildpackLocators`: [array of] (multiple options) (string) Url or registry identifier of custom Buildpack. | (string) A string containing one or more references that resolve to url or registry identifier of custom Buildpack. (pattern: .*\${.*}.*)
@@ -882,7 +878,7 @@ Required permission: Account > Templates > General > Read
          - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
          - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
          - `vcsData`: {object}
-           - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+           - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
            - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
            - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
            - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -899,9 +895,7 @@ Required permission: Account > Templates > General > Read
                - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
                - `buildkit`: {object}
                  - `useCache`: (boolean) Use persistent storage to cache build layers.
-                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-                 - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-                 - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
              - `storage`: {object}
                - `ephemeralStorage`: {object}
                  - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -967,7 +961,7 @@ Required permission: Account > Templates > General > Read
        - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
        - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
        - `vcsData`: {object}
-         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
          - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -984,9 +978,7 @@ Required permission: Account > Templates > General > Read
              - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
              - `buildkit`: {object}
                - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
-               - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
-               - `useInternalCache`: (multiple options) (boolean) DEPRECATED: This field will be removed in the near future. | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
-               - `internalCacheStorage`: (multiple options) (number) DEPRECATED: This field will be removed in the near future. (format: float) | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*) | {object}
+               - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*) | {object}
            - `storage`: {object}
              - `ephemeralStorage`: {object}
                - `storageSize`: (multiple options) (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288) | (string) A string containing one or more references that resolve to ephemeral storage per build in MB (pattern: .*\${.*}.*)
@@ -1167,7 +1159,7 @@ Required permission: Account > Templates > General > Read
          - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
          - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
          - `vcsData`: {object}
-           - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+           - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
            - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
            - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
            - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -1188,9 +1180,7 @@ Required permission: Account > Templates > General > Read
                - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
                - `buildkit`: {object}
                  - `useCache`: (boolean) Use persistent storage to cache build layers.
-                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-                 - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-                 - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
              - `storage`: {object}
                - `ephemeralStorage`: {object}
                  - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -1281,7 +1271,7 @@ Required permission: Account > Templates > General > Read
                - `storageSize`: (integer) Ephemeral storage per container in MB
              - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
            - `strategy`: {object}
-             - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom)
+             - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate)
              - `settings`: {object}
                - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
                - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
@@ -1295,7 +1285,7 @@ Required permission: Account > Templates > General > Read
                - `gpuCount`: (integer) The number of GPUs to allocate.
                - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
            - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-           - `gradualRolloutStrategyId`: (multiple options) (undefined)
+           - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
            - `ssh`: {object}
              - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
            - `metadata`: {object}
@@ -1360,7 +1350,7 @@ Required permission: Account > Templates > General > Read
              - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
            - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
          - `strategy`: {object}
-           - `type`: (multiple options) (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom) | (string) A string containing one or more references that resolve to configures the instance roll out strategy of your service. Currently only available via feature flag. (pattern: .*\${.*}.*)
+           - `type`: (multiple options) (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate) | (string) A string containing one or more references that resolve to configures the instance roll out strategy of your service. Currently only available via feature flag. (pattern: .*\${.*}.*)
            - `settings`: {object}
              - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
              - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
@@ -1497,7 +1487,7 @@ Required permission: Account > Templates > General > Read
        - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
        - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
        - `vcsData`: {object}
-         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
          - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -1519,8 +1509,6 @@ Required permission: Account > Templates > General > Read
            - `buildkit`: {object}
              - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
              - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
-             - `useInternalCache`: (multiple options) (boolean) DEPRECATED: This field will be removed in the near future. | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
-             - `internalCacheStorage`: (multiple options) (number) DEPRECATED: This field will be removed in the near future. (format: float) | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
          - `buildpack`: {object}
            - `builder`: (multiple options) (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL) | (string) A string containing one or more references that resolve to buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (pattern: .*\${.*}.*)
            - `buildpackLocators`: [array of] (multiple options) (string) Url or registry identifier of custom Buildpack. | (string) A string containing one or more references that resolve to url or registry identifier of custom Buildpack. (pattern: .*\${.*}.*)
@@ -1735,7 +1723,7 @@ Required permission: Account > Templates > General > Read
          - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
          - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
          - `vcsData`: {object}
-           - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+           - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
            - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
            - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
            - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -1756,9 +1744,7 @@ Required permission: Account > Templates > General > Read
                - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
                - `buildkit`: {object}
                  - `useCache`: (boolean) Use persistent storage to cache build layers.
-                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-                 - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-                 - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
              - `storage`: {object}
                - `ephemeralStorage`: {object}
                  - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -1849,7 +1835,7 @@ Required permission: Account > Templates > General > Read
                - `storageSize`: (integer) Ephemeral storage per container in MB
              - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
            - `strategy`: {object}
-             - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom)
+             - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate)
              - `settings`: {object}
                - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
                - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
@@ -1863,7 +1849,7 @@ Required permission: Account > Templates > General > Read
                - `gpuCount`: (integer) The number of GPUs to allocate.
                - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
            - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-           - `gradualRolloutStrategyId`: (multiple options) (undefined)
+           - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
            - `ssh`: {object}
              - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
            - `metadata`: {object}
@@ -1935,7 +1921,7 @@ Required permission: Account > Templates > General > Read
              - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
            - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
          - `strategy`: {object}
-           - `type`: (multiple options) (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom) | (string) A string containing one or more references that resolve to configures the instance roll out strategy of your service. Currently only available via feature flag. (pattern: .*\${.*}.*)
+           - `type`: (multiple options) (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate) | (string) A string containing one or more references that resolve to configures the instance roll out strategy of your service. Currently only available via feature flag. (pattern: .*\${.*}.*)
            - `settings`: {object}
              - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
              - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
@@ -2072,7 +2058,7 @@ Required permission: Account > Templates > General > Read
        - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
        - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
        - `vcsData`: {object}
-         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
          - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -2093,9 +2079,7 @@ Required permission: Account > Templates > General > Read
              - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
              - `buildkit`: {object}
                - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
-               - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
-               - `useInternalCache`: (multiple options) (boolean) DEPRECATED: This field will be removed in the near future. | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
-               - `internalCacheStorage`: (multiple options) (number) DEPRECATED: This field will be removed in the near future. (format: float) | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*) | {object}
+               - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*) | {object}
            - `storage`: {object}
              - `ephemeralStorage`: {object}
                - `storageSize`: (multiple options) (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288) | (string) A string containing one or more references that resolve to ephemeral storage per build in MB (pattern: .*\${.*}.*)
@@ -2376,7 +2360,7 @@ Required permission: Account > Templates > General > Read
                - `storageSize`: (integer) Ephemeral storage per container in MB
              - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
            - `strategy`: {object}
-             - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom)
+             - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate)
              - `settings`: {object}
                - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
                - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
@@ -2390,7 +2374,7 @@ Required permission: Account > Templates > General > Read
                - `gpuCount`: (integer) The number of GPUs to allocate.
                - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
            - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-           - `gradualRolloutStrategyId`: (multiple options) (undefined)
+           - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
            - `ssh`: {object}
              - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
            - `metadata`: {object}
@@ -2466,7 +2450,7 @@ Required permission: Account > Templates > General > Read
              - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
            - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
          - `strategy`: {object}
-           - `type`: (multiple options) (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom) | (string) A string containing one or more references that resolve to configures the instance roll out strategy of your service. Currently only available via feature flag. (pattern: .*\${.*}.*)
+           - `type`: (multiple options) (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate) | (string) A string containing one or more references that resolve to configures the instance roll out strategy of your service. Currently only available via feature flag. (pattern: .*\${.*}.*)
            - `settings`: {object}
              - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
              - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
@@ -2866,7 +2850,7 @@ Required permission: Account > Templates > General > Read
                - `storageSize`: (integer) Ephemeral storage per container in MB
              - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
            - `strategy`: {object}
-             - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom)
+             - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate)
              - `settings`: {object}
                - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
                - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
@@ -2880,7 +2864,7 @@ Required permission: Account > Templates > General > Read
                - `gpuCount`: (integer) The number of GPUs to allocate.
                - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
            - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
-           - `gradualRolloutStrategyId`: (multiple options) (undefined)
+           - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
            - `ssh`: {object}
              - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
            - `metadata`: {object}
@@ -2963,7 +2947,7 @@ Required permission: Account > Templates > General > Read
              - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
            - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
          - `strategy`: {object}
-           - `type`: (multiple options) (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: recreate, rollout-steady, rollout-balanced, rollout-fast, custom) | (string) A string containing one or more references that resolve to configures the instance roll out strategy of your service. Currently only available via feature flag. (pattern: .*\${.*}.*)
+           - `type`: (multiple options) (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate) | (string) A string containing one or more references that resolve to configures the instance roll out strategy of your service. Currently only available via feature flag. (pattern: .*\${.*}.*)
            - `settings`: {object}
              - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
              - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
@@ -3007,7 +2991,7 @@ Required permission: Account > Templates > General > Read
          - `external`: {object}
            - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
            - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
-         - `releaseFlowControlled`: (boolean) When enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually.
+         - `releaseFlowControlled`: (multiple options) (boolean) When enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. | (string) A string containing one or more references that resolve to when enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. (pattern: .*\${.*}.*)
        - `ports`: [array of] {object}
            - `name`: (multiple options) (string) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8) | (string) A string containing one or more references that resolve to the name used to identify the port. (pattern: .*\${.*}.*)
            - `internalPort`: (multiple options) (integer) The port number. | (string) A string containing one or more references that resolve to the port number. (pattern: .*\${.*}.*)
@@ -3185,6 +3169,8 @@ Required permission: Account > Templates > General > Read
          - `name`: (string) (required) The name of the harness. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
          - `description`: (string) A description of the harness. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
          - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+         - `private`: (boolean) Only the creator can connect to this harness. Set at creation only.
+         - `apiAccess`: (string) Use the team-approved Northflank API identity, or disable API access. (enum: team-default, disabled)
          - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
          - `billing`: {object}
            - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -3300,7 +3286,7 @@ Required permission: Account > Templates > General > Read
                - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
              - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
          - `source`: {object}
-           - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+           - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
            - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
            - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
            - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -3309,7 +3295,7 @@ Required permission: Account > Templates > General > Read
            - `publicRepo`: (boolean) Whether the linked repository is public.
          - `additionalRepositories`: [array of] {object}
              - `source`: {object}
-               - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+               - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
                - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
                - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
                - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -3351,11 +3337,12 @@ Required permission: Account > Templates > General > Read
            - `persistentWorkspace`: (boolean) Use a persistent workspace volume. Defaults to true on creation. Prefers ReadWriteMany, falling back to ReadWriteOnce. When false, files are lost on container restart, redeployment or stop. Cannot be changed after creation.
            - `workspaceSize`: (integer) Size of the persistent workspace volume in MiB. Only available with persistence enabled. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims.
          - `harness`: {object}
-           - `type`: (string) (required) The harness environment type to run. (enum: codex, claude, pi, opencode, cursor, none)
+           - `type`: (string) (required) The harness environment type to run. (enum: codex, claude, pi, omp, devin, opencode, cursor, none)
            - `authMode`: (string) How the harness authenticates: `apiKey` (a provider key is stored) or `account` (interactive/account login, no key). (enum: apiKey, account)
            - `apiKey`: (string) Masked API key used by the harness environment. Absent for `account` harnesses.
            - `cloneDirectory`: (string) Absolute path the repo is cloned into in the harness container.
          - `id`: (string) (required) Identifier for the harness
+         - `uid`: (string) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
          - `appId`: (string) (required) Full identifier used for harness deployment
          - `cluster`: {object}
            - `id`: (string) (required) The id of the cluster associated with this project.
@@ -3373,6 +3360,7 @@ Required permission: Account > Templates > General > Read
      - `spec`: {object}
        - `description`: (multiple options) (string) A description of the harness. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the harness. (pattern: .*\${.*}.*)
        - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
+       - `apiAccess`: (string) Use the team-approved Northflank API identity, or disable API access. (enum: team-default, disabled)
        - `tags`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
        - `billing`: {object}
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
@@ -3508,7 +3496,7 @@ Required permission: Account > Templates > General > Read
              - `enableTlsPassthrough`: (multiple options) (boolean) Whether this port should use pass through mode for TLS | (string) A string containing one or more references that resolve to whether this port should use pass through mode for TLS (pattern: .*\${.*}.*)
            - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
        - `source`: {object}
-         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
          - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -3517,7 +3505,7 @@ Required permission: Account > Templates > General > Read
          - `publicRepo`: (multiple options) (boolean) Whether the linked repository is public. | (string) A string containing one or more references that resolve to whether the linked repository is public. (pattern: .*\${.*}.*)
        - `additionalRepositories`: [array of] {object}
            - `source`: {object}
-             - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+             - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
              - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
              - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
              - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -3526,7 +3514,7 @@ Required permission: Account > Templates > General > Read
              - `publicRepo`: (multiple options) (boolean) Whether the linked repository is public. | (string) A string containing one or more references that resolve to whether the linked repository is public. (pattern: .*\${.*}.*)
            - `directory`: (multiple options) (string) Folder to clone the repository into, relative to /home/harness. (pattern: ^(?!\.{1,2}$)[A-Za-z0-9._-]+$) (max length: 237) | (string) A string containing one or more references that resolve to folder to clone the repository into, relative to /home/harness. (pattern: .*\${.*}.*)
        - `harness`: {object}
-         - `authMode`: (multiple options) (string) How Codex, Claude and Cursor authenticate. Pi and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (enum: apiKey, account) | (string) A string containing one or more references that resolve to how Codex, Claude and Cursor authenticate. Pi and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (pattern: .*\${.*}.*)
+         - `authMode`: (multiple options) (string) How Codex, Claude and Cursor authenticate. Pi, OMP, Devin CLI and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (enum: apiKey, account) | (string) A string containing one or more references that resolve to how Codex, Claude and Cursor authenticate. Pi, OMP, Devin CLI and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (pattern: .*\${.*}.*)
          - `apiKey`: (multiple options) (string) API key used by the harness environment. | (string) A string containing one or more references that resolve to aPI key used by the harness environment. (pattern: .*\${.*}.*)
        - `runtimeEnvironment`: (multiple options) {object} | (string) (pattern: .*\${.*}.*)
        - `runtimeFiles`: {object}
@@ -3558,6 +3546,8 @@ Required permission: Account > Templates > General > Read
          - `name`: (string) (required) The name of the harness. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
          - `description`: (string) A description of the harness. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
          - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+         - `private`: (boolean) Only the creator can connect to this harness. Set at creation only.
+         - `apiAccess`: (string) Use the team-approved Northflank API identity, or disable API access. (enum: team-default, disabled)
          - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
          - `billing`: {object}
            - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -3673,7 +3663,7 @@ Required permission: Account > Templates > General > Read
                - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
              - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
          - `source`: {object}
-           - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+           - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
            - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
            - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
            - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -3682,7 +3672,7 @@ Required permission: Account > Templates > General > Read
            - `publicRepo`: (boolean) Whether the linked repository is public.
          - `additionalRepositories`: [array of] {object}
              - `source`: {object}
-               - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+               - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
                - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
                - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
                - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -3724,11 +3714,12 @@ Required permission: Account > Templates > General > Read
            - `persistentWorkspace`: (boolean) Use a persistent workspace volume. Defaults to true on creation. Prefers ReadWriteMany, falling back to ReadWriteOnce. When false, files are lost on container restart, redeployment or stop. Cannot be changed after creation.
            - `workspaceSize`: (integer) Size of the persistent workspace volume in MiB. Only available with persistence enabled. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims.
          - `harness`: {object}
-           - `type`: (string) (required) The harness environment type to run. (enum: codex, claude, pi, opencode, cursor, none)
+           - `type`: (string) (required) The harness environment type to run. (enum: codex, claude, pi, omp, devin, opencode, cursor, none)
            - `authMode`: (string) How the harness authenticates: `apiKey` (a provider key is stored) or `account` (interactive/account login, no key). (enum: apiKey, account)
            - `apiKey`: (string) Masked API key used by the harness environment. Absent for `account` harnesses.
            - `cloneDirectory`: (string) Absolute path the repo is cloned into in the harness container.
          - `id`: (string) (required) Identifier for the harness
+         - `uid`: (string) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
          - `appId`: (string) (required) Full identifier used for harness deployment
          - `cluster`: {object}
            - `id`: (string) (required) The id of the cluster associated with this project.
@@ -3748,6 +3739,8 @@ Required permission: Account > Templates > General > Read
        - `description`: (multiple options) (string) A description of the harness. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the harness. (pattern: .*\${.*}.*)
        - `projectId`: (multiple options) (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of parent project (pattern: .*\${.*}.*)
        - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
+       - `private`: (boolean) Only the creator can connect to this harness. Set at creation only.
+       - `apiAccess`: (string) Use the team-approved Northflank API identity, or disable API access. (enum: team-default, disabled)
        - `tags`: [array of] (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
        - `billing`: {object}
          - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
@@ -3884,7 +3877,7 @@ Required permission: Account > Templates > General > Read
              - `enableTlsPassthrough`: (multiple options) (boolean) Whether this port should use pass through mode for TLS | (string) A string containing one or more references that resolve to whether this port should use pass through mode for TLS (pattern: .*\${.*}.*)
            - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
        - `source`: {object}
-         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+         - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
          - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
          - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
          - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -3893,7 +3886,7 @@ Required permission: Account > Templates > General > Read
          - `publicRepo`: (multiple options) (boolean) Whether the linked repository is public. | (string) A string containing one or more references that resolve to whether the linked repository is public. (pattern: .*\${.*}.*)
        - `additionalRepositories`: [array of] {object}
            - `source`: {object}
-             - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+             - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
              - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
              - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
              - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -3902,8 +3895,8 @@ Required permission: Account > Templates > General > Read
              - `publicRepo`: (multiple options) (boolean) Whether the linked repository is public. | (string) A string containing one or more references that resolve to whether the linked repository is public. (pattern: .*\${.*}.*)
            - `directory`: (multiple options) (string) Folder to clone the repository into, relative to /home/harness. (pattern: ^(?!\.{1,2}$)[A-Za-z0-9._-]+$) (max length: 237) | (string) A string containing one or more references that resolve to folder to clone the repository into, relative to /home/harness. (pattern: .*\${.*}.*)
        - `harness`: {object}
-         - `type`: (multiple options) (string) The harness environment type to run. (enum: codex, claude, pi, opencode, cursor, none) | (string) A string containing one or more references that resolve to the harness environment type to run. (pattern: .*\${.*}.*)
-         - `authMode`: (multiple options) (string) How Codex, Claude and Cursor authenticate. Pi and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (enum: apiKey, account) | (string) A string containing one or more references that resolve to how Codex, Claude and Cursor authenticate. Pi and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (pattern: .*\${.*}.*)
+         - `type`: (multiple options) (string) The harness environment type to run. (enum: codex, claude, pi, omp, devin, opencode, cursor, none) | (string) A string containing one or more references that resolve to the harness environment type to run. (pattern: .*\${.*}.*)
+         - `authMode`: (multiple options) (string) How Codex, Claude and Cursor authenticate. Pi, OMP, Devin CLI and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (enum: apiKey, account) | (string) A string containing one or more references that resolve to how Codex, Claude and Cursor authenticate. Pi, OMP, Devin CLI and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (pattern: .*\${.*}.*)
          - `apiKey`: (multiple options) (string) API key used by the harness environment. | (string) A string containing one or more references that resolve to aPI key used by the harness environment. (pattern: .*\${.*}.*)
          - `cloneDirectory`: (multiple options) (string) Absolute path the repo is cloned into in the harness container. Must be /home/harness or a directory inside it. This workspace is persisted only when deployment.persistentWorkspace is enabled. Defaults to /home/harness. Can only be set when creating the harness. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to absolute path the repo is cloned into in the harness container. Must be /home/harness or a directory inside it. This workspace is persisted only when deployment.persistentWorkspace is enabled. Defaults to /home/harness. Can only be set when creating the harness. (pattern: .*\${.*}.*)
        - `runtimeEnvironment`: (multiple options) {object} | (string) (pattern: .*\${.*}.*)
@@ -4262,9 +4255,7 @@ Required permission: Account > Templates > General > Read
                - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
                - `buildkit`: {object}
                  - `useCache`: (boolean) Use persistent storage to cache build layers.
-                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-                 - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-                 - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
              - `storage`: {object}
                - `ephemeralStorage`: {object}
                  - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -4325,7 +4316,7 @@ Required permission: Account > Templates > General > Read
              - `labels`: {object}
              - `annotations`: {object}
            - `vcs`: {object}
-             - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+             - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
              - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
              - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
              - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -4389,7 +4380,7 @@ Required permission: Account > Templates > General > Read
            - `labels`: {object}
            - `annotations`: {object}
          - `vcs`: {object}
-           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
            - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -4431,8 +4422,6 @@ Required permission: Account > Templates > General > Read
            - `buildkit`: {object}
              - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
              - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
-             - `useInternalCache`: (multiple options) (boolean) DEPRECATED: This field will be removed in the near future. | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
-             - `internalCacheStorage`: (multiple options) (number) DEPRECATED: This field will be removed in the near future. (format: float) | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
          - `buildpack`: {object}
            - `builder`: (multiple options) (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL) | (string) A string containing one or more references that resolve to buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (pattern: .*\${.*}.*)
            - `buildpackLocators`: [array of] (multiple options) (string) Url or registry identifier of custom Buildpack. | (string) A string containing one or more references that resolve to url or registry identifier of custom Buildpack. (pattern: .*\${.*}.*)
@@ -4527,9 +4516,7 @@ Required permission: Account > Templates > General > Read
                - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
                - `buildkit`: {object}
                  - `useCache`: (boolean) Use persistent storage to cache build layers.
-                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-                 - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-                 - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
              - `storage`: {object}
                - `ephemeralStorage`: {object}
                  - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -4590,7 +4577,7 @@ Required permission: Account > Templates > General > Read
              - `labels`: {object}
              - `annotations`: {object}
            - `vcs`: {object}
-             - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+             - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
              - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
              - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
              - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -4660,7 +4647,7 @@ Required permission: Account > Templates > General > Read
            - `labels`: {object}
            - `annotations`: {object}
          - `vcs`: {object}
-           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
            - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -4674,7 +4661,7 @@ Required permission: Account > Templates > General > Read
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
-         - `releaseFlowControlled`: (boolean) When enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually.
+         - `releaseFlowControlled`: (multiple options) (boolean) When enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. | (string) A string containing one or more references that resolve to when enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. (pattern: .*\${.*}.*)
        - `disabledCI`: (multiple options) (boolean) Whether CI should be disabled. Only relevant for jobs deploying directly from version control. | (string) A string containing one or more references that resolve to whether CI should be disabled. Only relevant for jobs deploying directly from version control. (pattern: .*\${.*}.*)
        - `buildConfiguration`: {object}
          - `pathIgnoreRules`: [array of] (multiple options) (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260) | (string) A string containing one or more references that resolve to a path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (pattern: .*\${.*}.*)
@@ -4702,9 +4689,7 @@ Required permission: Account > Templates > General > Read
              - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
              - `buildkit`: {object}
                - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
-               - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
-               - `useInternalCache`: (multiple options) (boolean) DEPRECATED: This field will be removed in the near future. | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
-               - `internalCacheStorage`: (multiple options) (number) DEPRECATED: This field will be removed in the near future. (format: float) | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*) | {object}
+               - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*) | {object}
            - `storage`: {object}
              - `ephemeralStorage`: {object}
                - `storageSize`: (multiple options) (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288) | (string) A string containing one or more references that resolve to ephemeral storage per build in MB (pattern: .*\${.*}.*)
@@ -4801,9 +4786,7 @@ Required permission: Account > Templates > General > Read
                - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
                - `buildkit`: {object}
                  - `useCache`: (boolean) Use persistent storage to cache build layers.
-                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-                 - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-                 - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
              - `storage`: {object}
                - `ephemeralStorage`: {object}
                  - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -4861,7 +4844,7 @@ Required permission: Account > Templates > General > Read
              - `labels`: {object}
              - `annotations`: {object}
            - `vcs`: {object}
-             - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+             - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
              - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
              - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
              - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -4925,7 +4908,7 @@ Required permission: Account > Templates > General > Read
            - `labels`: {object}
            - `annotations`: {object}
          - `vcs`: {object}
-           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
            - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -4967,8 +4950,6 @@ Required permission: Account > Templates > General > Read
            - `buildkit`: {object}
              - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
              - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
-             - `useInternalCache`: (multiple options) (boolean) DEPRECATED: This field will be removed in the near future. | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
-             - `internalCacheStorage`: (multiple options) (number) DEPRECATED: This field will be removed in the near future. (format: float) | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
          - `buildpack`: {object}
            - `builder`: (multiple options) (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL) | (string) A string containing one or more references that resolve to buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (pattern: .*\${.*}.*)
            - `buildpackLocators`: [array of] (multiple options) (string) Url or registry identifier of custom Buildpack. | (string) A string containing one or more references that resolve to url or registry identifier of custom Buildpack. (pattern: .*\${.*}.*)
@@ -5060,9 +5041,7 @@ Required permission: Account > Templates > General > Read
                - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
                - `buildkit`: {object}
                  - `useCache`: (boolean) Use persistent storage to cache build layers.
-                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-                 - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-                 - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
              - `storage`: {object}
                - `ephemeralStorage`: {object}
                  - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -5120,7 +5099,7 @@ Required permission: Account > Templates > General > Read
              - `labels`: {object}
              - `annotations`: {object}
            - `vcs`: {object}
-             - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+             - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
              - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
              - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
              - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -5190,7 +5169,7 @@ Required permission: Account > Templates > General > Read
            - `labels`: {object}
            - `annotations`: {object}
          - `vcs`: {object}
-           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
            - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -5204,7 +5183,7 @@ Required permission: Account > Templates > General > Read
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
-         - `releaseFlowControlled`: (boolean) When enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually.
+         - `releaseFlowControlled`: (multiple options) (boolean) When enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. | (string) A string containing one or more references that resolve to when enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. (pattern: .*\${.*}.*)
        - `disabledCI`: (multiple options) (boolean) Whether CI should be disabled. Only relevant for jobs deploying directly from version control. | (string) A string containing one or more references that resolve to whether CI should be disabled. Only relevant for jobs deploying directly from version control. (pattern: .*\${.*}.*)
        - `buildConfiguration`: {object}
          - `pathIgnoreRules`: [array of] (multiple options) (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260) | (string) A string containing one or more references that resolve to a path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (pattern: .*\${.*}.*)
@@ -5232,9 +5211,7 @@ Required permission: Account > Templates > General > Read
              - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
              - `buildkit`: {object}
                - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
-               - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
-               - `useInternalCache`: (multiple options) (boolean) DEPRECATED: This field will be removed in the near future. | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
-               - `internalCacheStorage`: (multiple options) (number) DEPRECATED: This field will be removed in the near future. (format: float) | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*) | {object}
+               - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*) | {object}
            - `storage`: {object}
              - `ephemeralStorage`: {object}
                - `storageSize`: (multiple options) (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288) | (string) A string containing one or more references that resolve to ephemeral storage per build in MB (pattern: .*\${.*}.*)
@@ -5328,9 +5305,7 @@ Required permission: Account > Templates > General > Read
                - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
                - `buildkit`: {object}
                  - `useCache`: (boolean) Use persistent storage to cache build layers.
-                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-                 - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-                 - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
              - `storage`: {object}
                - `ephemeralStorage`: {object}
                  - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -5393,7 +5368,7 @@ Required permission: Account > Templates > General > Read
              - `labels`: {object}
              - `annotations`: {object}
            - `vcs`: {object}
-             - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+             - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
              - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
              - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
              - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -5457,7 +5432,7 @@ Required permission: Account > Templates > General > Read
            - `labels`: {object}
            - `annotations`: {object}
          - `vcs`: {object}
-           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
            - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -5499,8 +5474,6 @@ Required permission: Account > Templates > General > Read
            - `buildkit`: {object}
              - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
              - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
-             - `useInternalCache`: (multiple options) (boolean) DEPRECATED: This field will be removed in the near future. | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
-             - `internalCacheStorage`: (multiple options) (number) DEPRECATED: This field will be removed in the near future. (format: float) | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
          - `buildpack`: {object}
            - `builder`: (multiple options) (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL) | (string) A string containing one or more references that resolve to buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (pattern: .*\${.*}.*)
            - `buildpackLocators`: [array of] (multiple options) (string) Url or registry identifier of custom Buildpack. | (string) A string containing one or more references that resolve to url or registry identifier of custom Buildpack. (pattern: .*\${.*}.*)
@@ -5597,9 +5570,7 @@ Required permission: Account > Templates > General > Read
                - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
                - `buildkit`: {object}
                  - `useCache`: (boolean) Use persistent storage to cache build layers.
-                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-                 - `useInternalCache`: (boolean) DEPRECATED: This field will be removed in the near future.
-                 - `internalCacheStorage`: (number) DEPRECATED: This field will be removed in the near future. (format: float) | {object}
+                 - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
              - `storage`: {object}
                - `ephemeralStorage`: {object}
                  - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
@@ -5662,7 +5633,7 @@ Required permission: Account > Templates > General > Read
              - `labels`: {object}
              - `annotations`: {object}
            - `vcs`: {object}
-             - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$)
+             - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
              - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
              - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
              - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
@@ -5732,7 +5703,7 @@ Required permission: Account > Templates > General > Read
            - `labels`: {object}
            - `annotations`: {object}
          - `vcs`: {object}
-           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
+           - `projectUrl`: (multiple options) (string) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to build. (pattern: .*\${.*}.*)
            - `projectType`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (multiple options) (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$) | (string) A string containing one or more references that resolve to if projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: .*\${.*}.*)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
@@ -5746,7 +5717,7 @@ Required permission: Account > Templates > General > Read
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
-         - `releaseFlowControlled`: (boolean) When enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually.
+         - `releaseFlowControlled`: (multiple options) (boolean) When enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. | (string) A string containing one or more references that resolve to when enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. (pattern: .*\${.*}.*)
        - `disabledCI`: (multiple options) (boolean) Whether CI should be disabled. Only relevant for jobs deploying directly from version control. | (string) A string containing one or more references that resolve to whether CI should be disabled. Only relevant for jobs deploying directly from version control. (pattern: .*\${.*}.*)
        - `buildConfiguration`: {object}
          - `pathIgnoreRules`: [array of] (multiple options) (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260) | (string) A string containing one or more references that resolve to a path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (pattern: .*\${.*}.*)
@@ -5774,9 +5745,7 @@ Required permission: Account > Templates > General > Read
              - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
              - `buildkit`: {object}
                - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
-               - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
-               - `useInternalCache`: (multiple options) (boolean) DEPRECATED: This field will be removed in the near future. | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*)
-               - `internalCacheStorage`: (multiple options) (number) DEPRECATED: This field will be removed in the near future. (format: float) | (string) A string containing one or more references that resolve to dEPRECATED: This field will be removed in the near future. (pattern: .*\${.*}.*) | {object}
+               - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*) | {object}
            - `storage`: {object}
              - `ephemeralStorage`: {object}
                - `storageSize`: (multiple options) (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288) | (string) A string containing one or more references that resolve to ephemeral storage per build in MB (pattern: .*\${.*}.*)
@@ -7045,7 +7014,7 @@ Required permission: Account > Templates > General > Read
            - `vcsService`: (multiple options) (string) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin) | (string) A string containing one or more references that resolve to the VCS provider to use. (pattern: .*\${.*}.*)
            - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
            - `accountLogin`: (multiple options) (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. | (string) A string containing one or more references that resolve to by default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name. (pattern: .*\${.*}.*)
-           - `repoUrl`: (multiple options) (string) URL of the Git repo to send this message to. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/([a-zA-Z0-9\-._]{2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to send this message to. (pattern: .*\${.*}.*)
+           - `repoUrl`: (multiple options) (string) URL of the Git repo to send this message to. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$) | (string) A string containing one or more references that resolve to uRL of the Git repo to send this message to. (pattern: .*\${.*}.*)
            - `pullRequestId`: (multiple options) (string) The ID of the pull request to comment on. | (string) A string containing one or more references that resolve to the ID of the pull request to comment on. (pattern: .*\${.*}.*)
            - `message`: (multiple options) (string) The rich text message to comment. | (string) A string containing one or more references that resolve to the rich text message to comment. (pattern: .*\${.*}.*) | {object}
          - `kind`: (string) (required) The kind of message to send. (enum: SLACK)
@@ -7335,6 +7304,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.previewTemplateRun({
   parameters: {
@@ -7403,5 +7374,126 @@ await apiClient.get.previewTemplateRun({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.preview_template_run(
+    pipeline_id="example-pipeline",
+    project_id="default-project",
+    template_run_id="16cf800b-ab28-421a-8ff9-a935b5ee89ad",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "apiVersion": "v1.2",
+  "options": {
+    "concurrencyPolicy": "allow"
+  },
+  "triggers": [
+    {
+      "vcsService": "github",
+      "accountLogin": "github-user",
+      "repoUrl": "https://github.com/northflank-examples/remix-postgres-redis-demo",
+      "pathIgnoreRules": [
+        "README.md"
+      ],
+      "ciIgnoreFlags": [
+        "[skip ci]",
+        "[ci skip]",
+        "[no ci]",
+        "[skip nf]",
+        "[nf skip]",
+        "[northflank skip]",
+        "[skip northflank]"
+      ]
+    }
+  ],
+  "gitops": {
+    "vcsService": "github",
+    "accountLogin": "github-user",
+    "repoUrl": "https://github.com/northflank-examples/remix-postgres-redis-demo",
+    "branch": "main",
+    "filePath": "/Dockerfile"
+  },
+  "spec": {
+    "settings": {
+      "maxAttempts": 3,
+      "backoff": {
+        "type": "fixed",
+        "delay": 60
+      }
+    },
+    "kind": "Workflow",
+    "response": {
+      "status": "success",
+      "retries": {
+        "attempts": 1,
+        "maxAttempts": 3,
+        "timestamp": 1657296265
+      },
+      "startTime": 1657296265,
+      "endTime": 1657296265
+    },
+    "spec": {
+      "type": "sequential",
+      "steps": [
+        {
+          "settings": {
+            "maxAttempts": 3,
+            "backoff": {
+              "type": "fixed",
+              "delay": 60
+            }
+          },
+          "kind": "Subdomain",
+          "response": {
+            "status": "success",
+            "retries": {
+              "attempts": 1,
+              "maxAttempts": 3,
+              "timestamp": 1657296265
+            },
+            "startTime": 1657296265,
+            "endTime": 1657296265,
+            "data": {
+              "domain": "example.com",
+              "name": "site",
+              "loadBalancer": "public",
+              "certificateValidationMethod": "dcv"
+            }
+          },
+          "spec": {
+            "domain": "example.com",
+            "name": "site",
+            "loadBalancer": "public",
+            "certificateValidationMethod": "dcv"
+          }
+        }
+      ]
+    }
+  },
+  "id": "3dd592f6-ce63-45ee-acf8-13dc5ec5235c",
+  "templateId": "example-template",
+  "status": "pending"
 }
 ```

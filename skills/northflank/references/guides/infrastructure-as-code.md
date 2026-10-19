@@ -182,10 +182,12 @@ You can create and configure Northflank templates to manage your team integratio
 
 You can create a new template from the templates page in your team dashboard, or from the templates page in a project. You can then define the template using the visual or code editor, or copy the resources [from an existing project](infrastructure-as-code.md#create-a-template-create-from-an-existing-project-or-resource).
 
-For the specifics of creating and configuring [release flow](https://northflank.com/docs/v1/application/release/configure-a-release-flow) and [preview environment](https://northflank.com/docs/v1/application/release/set-up-a-preview-environment) templates, see the relevant pages in the [release section](https://northflank.com/docs/v1/application/release/continuous-integration-and-delivery-on-northflank).
+For the specifics of creating and configuring [release flow](release.md#configure-a-release-flow) and [preview environment](release.md#set-up-a-preview-environment) templates, see the relevant pages in the [release section](release.md#cicd-on-northflank).
 
 > [!note]
+>
 > [Click here](https://app.northflank.com/s/account/templates) to create a new template.
+
 To add an existing template from a Git repository to your team, create a new template and [enable GitOps](infrastructure-as-code.md#create-a-template-enable-gitops-for-your-template).
 
 You can configure a template's settings on the template edit page, to [run a template automatically when it's updated](infrastructure-as-code.md#create-a-template-run-your-template-automatically), [set the concurrency policy](infrastructure-as-code.md#create-a-template-configure-template-run-concurrency), and [add secrets](infrastructure-as-code.md#create-a-template-provide-secrets-securely-to-a-template).
@@ -242,7 +244,7 @@ You can create from your existing resources and projects in the Northflank appli
 
 #### Create a template: Create a template from a project
 
-Click the  project template button in the project header to get the template for an entire project. You can switch between viewing the template code and the visual representation of the project, and view the specification for an individual resource by clicking on a node in the visual editor.
+Select Template in the project sidebar to view the template for the whole project. You can switch between viewing the template code and the visual representation of the project, and view the specification for an individual resource by clicking on a node in the visual editor.
 
 Click new template from spec to create a new template from the specification. Northflank will generate a template for your project based on your project's existing resources and their current configurations, and will group resources in workflows and order them in a logical way.
 
@@ -275,6 +277,7 @@ You can enable run a template automatically so that any changes made to the temp
 This is convenient if you want to manage your resources via templates, as triggering a run automatically will mean your resources will be updated to reflect the template specifications on change.
 
 > [!warning]
+>
 > As your modified template will run as soon as it's updated, make sure your changes are as intended before saving or pushing to the repository, especially if the template affects your production environment. Any other templates linked via GitOps will also run automatically, if this option is enabled for those templates.
 
 ### Create a template: Enable GitOps for your template
@@ -387,35 +390,27 @@ before reading this section.
 
 ### Manage external infrastructure: Add provider integration to Northflank
 
-Northflank OpenTofu nodes will require credentials to access upstream
-providers. These are described in detail in [use other cloud
-providers](../bring-your-own-cloud/use-other-cloud-providers-with-northflank).
+OpenTofu nodes use a cloud integration to access your provider account. Select the OpenTofu feature when you create or edit that integration.
 
-> [!note]
-> Northflank OpenTofu nodes currently do not support cross account roles. Make
-sure to setup a provider integration with direct credentials.
+For AWS, use a [cross-account role](bring-your-own-cloud.md#amazon-web-services-on-northflank-add-your-account-with-a-cross-account-role) or [access key](bring-your-own-cloud.md#amazon-web-services-on-northflank-add-your-account-with-an-iam-user). For GCP, use a [cross-project service account](bring-your-own-cloud.md#google-cloud-platform-on-northflank-add-your-account-with-a-cross-project-service-account) or [service account key](bring-your-own-cloud.md#google-cloud-platform-on-northflank-add-your-account-with-a-service-key).
 
-1. Navigate to your Northflank account settings and open the clusters page
+1. Open Integrations → Cloud providers. In an organization, use Cloud → Provider links.
 
-2. [Create a new cloud provider integration](https://app.northflank.com/s/account/cloud/clusters/integrations/new/aws)
+2. Open the form for a new provider link, or open an existing link.
 
-3. Select Amazon Web Services as the provider and choose the OpenTofu feature
+3. Under Basic information, select OpenTofu in Desired features.
 
-4. Open your [AWS IAM console](https://console.aws.amazon.com/iam/home),
-  open the users page and create a new user without console access.
-  Skip the remaining steps and save the user.
+4. Complete the provider's authentication setup.
 
-5. In the new user click add permissions and the required
-  permissions for the resources you want to create. In our case we can allow
-  all actions to S3 resources.
+5. Grant permissions for the resources that your OpenTofu configuration manages.
 
-6. Open security credentials in your new user and click create
-  access key. Select the `third-party service` use case and click
-  next. Enter a description that will help you recognise your key
-  (e.g. `Northflank OpenTofu`) and create access key.
+6. For a new integration, select Create provider link. For an existing integration, select Update.
 
-7. Enter the `access key` and `secret key` for the user you created into the
-  Northflank integration form and create the integration.
+7. Select the integration in your OpenTofu node.
+
+For the S3 example, grant access to create, read, update, and delete the bucket and manage its configured properties. Selecting OpenTofu alone does not grant access to those AWS resources.
+
+See [cloud integrations](bring-your-own-cloud.md#use-other-cloud-providers-with-northflank) for provider setup and feature availability.
 
 ### Manage external infrastructure: Add an OpenTofu node to a template
 
@@ -472,12 +467,14 @@ our bucket:
 ```
 
 > [!important]
+>
 > OpenTofu modules use the same syntax for template strings as Northflank
-templates `{"${}"}`. They will be interpreted as Northflank template
-strings, to use OpenTofu template strings you need to escape them with a
-backslash.
-For example `${aws_s3_bucket.my_bucket.id}`
-will need to be written as `\${aws_s3_bucket.my_bucket.id}`.
+> templates `{"${}"}`. They will be interpreted as Northflank template
+> strings, to use OpenTofu template strings you need to escape them with a
+> backslash.
+>
+> For example `${aws_s3_bucket.my_bucket.id}`
+> will need to be written as `\${aws_s3_bucket.my_bucket.id}`.
 
 ### Manage external infrastructure: Use outputs
 
@@ -493,9 +490,10 @@ ${aws_s3_bucket.my_bucket.bucket_domain_name}
 ```
 
 > [!important]
+>
 > The form editor will auto escape these strings, however the code editor will
-not. Make sure to escape any OpenTofu template string in the output section the
-same as the resource section when using the code editor.
+> not. Make sure to escape any OpenTofu template string in the output section the
+> same as the resource section when using the code editor.
 
 Any outputs declared in this way will be available on the OpenTofu node after
 it has run. They can be accessed using Northflank template strings under the
@@ -505,9 +503,10 @@ template with the template string
 ${refs.example.outputs.generated_url.value}.
 
 > [!note]
+>
 > Outputs are not known until after the resources have been applied. Make sure
-Wait for completion is selected if you are planning on using the
-outputs.
+> Wait for completion is selected if you are planning on using the
+> outputs.
 
 Create a new secret group node and add a new variable with any name and
 ${refs.example.outputs.generated_url.value} as the value. Once
@@ -528,8 +527,9 @@ Once the template has fully completed, you can view the secret group we created
 to confirm that the outputs have saved as expected.
 
 > [!note]
+>
 > Northflank currently has no way to delete resources once created. If you no
-longer need these resources then it is up to you to clean them up.
+> longer need these resources then it is up to you to clean them up.
 
 Northflank can handle running multiple OpenTofu jobs simultaneously, however
 only the latest run will contain accurate information. Northflank will skip
@@ -544,7 +544,7 @@ GitOps on Northflank allows you to manage infrastructure, run releases, update d
 
 Bidirectional sync means that any changes to your template in your repository are automatically reflected on Northflank, and any changes you make in Northflank are committed to your repository on save, enforcing a single source of truth.
 
-You can use GitOps with Northflank templates, release flows, and preview environments. You can [include release flows and preview environment templates](infrastructure-as-code.md#write-a-template-include-release-flows-and-preview-environment-templates) in a single template, or enable GitOps on each of your templates separately.
+You can use GitOps with Northflank templates, release flows, and preview environments. You can [include release flows and preview environment templates](infrastructure-as-code.md#template-nodes-pipeline-node) in a single template, or enable GitOps on each of your templates separately.
 
 If run automatically when updated is also enabled you can run releases, scale up deployments, run backups, and manage almost anything else on Northflank simply by pushing a commit to a Git repository.
 
@@ -565,6 +565,7 @@ You can create a template in the Northflank application and save it to a reposit
 Click fetch and continue editing your template. When you save your template Northflank will create the file in your repository and link it with the template on Northflank.
 
 > [!warning]
+>
 > When you enable GitOps and fetch a template, if a template already exists at the specified path it will overwrite any template content on Northflank.
 
 #### GitOps on Northflank: Use an existing template
@@ -587,13 +588,14 @@ You can enable run automatically when the template is updated so that any change
 
 #### GitOps on Northflank: Run a release flow on change
 
-You can run a release flow when changes are pushed to your repository, by configuring [Git triggers](https://northflank.com/docs/v1/application/release/create-a-pipeline-and-release-flow#release-flow-settings).
+You can run a release flow when changes are pushed to your repository, by configuring [Git triggers](release.md#create-a-pipeline-and-release-flow-automatically-run-a-release-flow).
 
 You can configure Git triggers to run a release only on commits to specific branches or pull requests with branch and pull request rules. You can also only run a release flow when either specific files or directories are changed, or ignore certain files or directories so releases are not triggered by, for example, documentation files.
 
 You can also add commit message ignore flags, so that releases will not be triggered when commits with certain strings are pushed to your repository.
 
 > [!note]
+>
 > If you have configured your template or release flow to run on change, your modified template or release flow will run as soon as it's updated. Make sure your changes are as intended before saving or pushing to the repository, especially if the template affects your production environment.
 
 ### GitOps on Northflank: Create multiple Northflank templates from one source
@@ -603,6 +605,7 @@ You can use a single template file in a Git repository as the source for multipl
 You can then create multiple Northflank templates from the template file. Create a new template in Northflank, [enable GitOps](infrastructure-as-code.md#gitops-on-northflank-enable-gitops) and enter the repository, branch, and path of your template. Give the template a distinct name and provide the necessary configuration values and secrets using argument overrides, which can be [added in the template's settings](infrastructure-as-code.md#make-a-template-dynamic-supply-secrets-with-argument-overrides). You can then repeat this process, adding different argument overrides for each template. Argument overrides are stored securely on Northflank, and not saved to your Git repository.
 
 > [!note]
+>
 > If you have run automatically when the template is updated enabled while GitOps is enabled, all templates linked to the template file in the same Git repository and branch will run when the template is updated on Northflank or via Git.
 
 The example below shows a template that creates a new project with a combined service. Most of the configuration fields are given as arguments, some of which are set as defaults in the arguments object, which can be overridden. Other arguments have no defaults, and must be provided as overrides for a successful template run.
@@ -741,7 +744,7 @@ In order to use GitOps securely with release flows and templates you should avoi
 
 You can save secrets for a template as [argument overrides](infrastructure-as-code.md#create-a-template-provide-secrets-securely-to-a-template) in the template settings, or pass them in [using the API, CLI, or client](../api/team/templates/run-template.md) when triggering a template run.
 
-These arguments will be securely stored on the Northflank platform so you can save any sensitive information, or information you do not want to include in the template, as argument overrides. They can then be [used in your template](infrastructure-as-code.md#write-a-template-create-from-an-existing-project-or-resource) by referring to them using the format `${args.argumentName}`, replacing `argumentName` with the key saved in argument overrides.
+These arguments will be securely stored on the Northflank platform so you can save any sensitive information, or information you do not want to include in the template, as argument overrides. They can then be [used in your template](infrastructure-as-code.md#make-a-template-dynamic-add-arguments) by referring to them using the format `${args.argumentName}`, replacing `argumentName` with the key saved in argument overrides.
 
 ### GitOps on Northflank: Remove a GitOps integration
 
@@ -750,6 +753,7 @@ You can remove the integration with your infrastructure file by disabling GitOps
 This will leave the file in your repository, but changes pushed to the file in your repository will no longer update the relevant release flow or template on Northflank. Similarly, changes made on Northflank will not be pushed to the file in your repository.
 
 > [!warning]
+>
 > It is not recommended that you delete the file from the repository before disabling GitOps, as your file will become inaccessible on Northflank.
 
 ### GitOps on Northflank: Next steps
@@ -776,6 +780,8 @@ There are three types of templates in Northflank, each scoped to a different par
 - Release flow templates are defined within a pipeline stage and automate the steps needed to ship a release. A release flow can back up a database, trigger a build, run a migration job, promote an image from staging to production, and more, all in a defined sequence. Each stage in a pipeline can have its own release flow template.
 
 - Preview environment templates are also defined within a pipeline. They specify the resources and secrets that should be created whenever a pull request is opened or a new commit is pushed to a branch. The environment is ephemeral and is torn down automatically when the PR is closed or merged
+
+Running a template applies it to real resources. It does not create a copy of a project. Use each type for its own purpose: a preview environment template defines ephemeral environments and is not a way to deploy to production, and a release flow acts on the pipeline stage that contains it. If a project has only one template, check what that template creates and which project each of its nodes targets before you run it against anything else. [Before you run a template](infrastructure-as-code.md#run-a-template-before-you-run-a-template) lists what to check.
 
 ![An example of a successfully run template in the Northflank application](https://assets.northflank.com/documentation/v1/application/infrastructure-as-code/infrastructure-as-code-on-northflank/template-success.png)
 
@@ -1265,6 +1271,26 @@ Open the template you want to use and click  run to start a template run.
 
 You can add or edit [argument overrides](infrastructure-as-code.md#create-a-template-provide-secrets-securely-to-a-template) to change values and secrets for the template run. You can also provide arguments for a template run [using the API](../api/team/templates/run-template.md). This allows you to use one template and provide different configuration and secret values on each run simply by passing the required arguments.
 
+#### Run a template: Before you run a template
+
+A template run creates or changes real resources, so check what it will do before you start it, especially for production projects.
+
+- Confirm the template type. [Preview environment templates](infrastructure-as-code.md#infrastructure-as-code-on-northflank-types-of-template) are for ephemeral environments and are not a way to deploy to production.
+
+- Check the [project context](infrastructure-as-code.md#create-a-template-set-project-context) on every node, and on the workflows that contain them. One template can create and update resources in several projects.
+
+- Check the [update mode](infrastructure-as-code.md#template-nodes-resource-update-modes) of each resource node. With `put`, which is the default, a node whose `name` matches an existing resource replaces that resource's configuration, and omitted fields can reset or clear. Use `patch` to change only the fields you supply, or `create` to leave existing resources untouched.
+
+- Compare the node names with the resources that already exist in the target project. A changed name creates a second resource, and removing a node from a template does not delete its resource.
+
+- Use [arguments](infrastructure-as-code.md#create-a-template-provide-secrets-securely-to-a-template) to pass the target project, region or environment, rather than editing the template to point somewhere else.
+
+- Remember that Northflank checks that references, arguments and functions resolve before it runs the nodes, but it does not preview which resources the run will replace.
+
+> [!warning]
+>
+> If [automatic runs](infrastructure-as-code.md#run-a-template-run-a-template-automatically) or GitOps are enabled, saving or pushing a change to the template runs it immediately.
+
 ### Run a template: View run status and history
 
 When you run a template it will be scheduled to run, and enter the `pending` state.
@@ -1317,6 +1343,7 @@ You can enable run a template automatically so that any changes made to the temp
 This is convenient if you want to manage your resources via templates, as triggering a run automatically will mean your resources will be updated to reflect the template specifications on change.
 
 > [!warning]
+>
 > As your modified template will run as soon as it's updated, make sure your changes are as intended before saving or pushing to the repository, especially if the template affects your production environment. Any other templates linked via GitOps will also run automatically, if this option is enabled for those templates.
 
 ### Run a template: Update a template
@@ -1327,7 +1354,7 @@ An update that changes a field that the resource does not allow you to change fa
 
 Removing a resource node from the template does not delete the resource. The node's `name` identifies its target resource and does not rename an existing resource. With `put` or `create`, a new name can create another resource alongside the existing one.
 
-If you have enabled [run a template automatically](infrastructure-as-code.md#run-a-template-run-your-template-automatically) the template will be run immediately with any changes when you save the updated template. If you have also [enabled GitOps](infrastructure-as-code.md#create-a-template-enable-gitops-for-your-template) the template will be run as soon as your changes are committed.
+If you have enabled [run a template automatically](infrastructure-as-code.md#run-a-template-run-a-template-automatically) the template will be run immediately with any changes when you save the updated template. If you have also [enabled GitOps](infrastructure-as-code.md#create-a-template-enable-gitops-for-your-template) the template will be run as soon as your changes are committed.
 
 ### Run a template: Next steps
 
@@ -1348,13 +1375,15 @@ You can also share templates by making them available in a [git repository](infr
 
 You can click the link for a Northflank template to add it to your account. If you belong to one or more teams, you must select the account to add the template to.
 
-You will then be directed to the new template form, automatically populated with the contents of the shared template. You can [modify the template configuration](infrastructure-as-code.md#create-a-template) before saving, for example to change the project or to [enable GitOps](infrastructure-as-code.md#gitops-on-northflank) to save the template to a repository. You can also add any required [argument overrides](infrastructure-as-code.md#write-a-template-create-from-an-existing-project-or-resource) for the template. Check the documentation or guide from the source of the template for instructions on configuration and usage of the deployed application(s).
+You will then be directed to the new template form, automatically populated with the contents of the shared template. You can [modify the template configuration](infrastructure-as-code.md#create-a-template) before saving, for example to change the project or to [enable GitOps](infrastructure-as-code.md#gitops-on-northflank) to save the template to a repository. You can also add any required [argument overrides](infrastructure-as-code.md#make-a-template-dynamic-supply-secrets-with-argument-overrides) for the template. Check the documentation or guide from the source of the template for instructions on configuration and usage of the deployed application(s).
 
 After you have created the template you will be able to run it.
 
 > [!warning]
+>
 > Northflank cannot guarantee that templates written by third parties will work correctly. You should always check the contents of a template before running it.
-For example, if the template deploys a Docker image, is it the expected image from the right account?
+>
+> For example, if the template deploys a Docker image, is it the expected image from the right account?
 
 ### Share a template: Next steps
 
@@ -1367,21 +1396,21 @@ For example, if the template deploys a Docker image, is it the expected image fr
 
 Source: https://northflank.com/docs/v1/application/infrastructure-as-code/template-nodes.md
 
-The sections below contain information on the types of node that you can include in your template, how they are used, and their schema.
+These sections describe the nodes available in templates and the fields that each node accepts. Node availability depends on your account and template type. Release flows and preview blueprints support different subsets of nodes.
 
 The nodes are divided into the following categories:
 
-- Flow control  contains nodes that are to be run in sequence or parallel
+- Flow control  sets the order in which nodes run.
 
-- Team resources  specifies team-level resources, such as projects and cloud integrations
+- Team resources  manage projects, cloud integrations, and other account resources.
 
-- Project resources  specifies a service, job, addon, or other resource to be created or updated
+- Project resources  manage services, jobs, addons, and other resources within a project.
 
-- Actions  specifies an action to run on a resources, such as starting a build, running a job, or executing a command
+- Actions  start operations such as builds, job runs, or commands.
 
-- Messages  sends a notification to Slack, a webhook, or a pull request
+- Messages  send notifications to Slack, webhooks, or pull requests.
 
-- Conditions  hold the template run while until the status of a resource or action is returned
+- Conditions  wait for a resource state, an operation result, or approval.
 
 #### Template nodes: Resource update modes
 
@@ -1395,18 +1424,20 @@ Supported resource nodes offer an Update mode control, including project, servic
 
 A skipped `create` node does not return the existing resource's outputs. If later nodes need that resource, use its known identifiers or template arguments instead of the skipped node's output reference.
 
-In a resource node, `name` identifies the resource to create or update. Changing it targets a different resource rather than renaming the existing resource. For `patch`, keep the existing resource's `name`.
+For nodes with `updateMode`, `name` identifies the resource to create or update. Changing it targets a different resource rather than renaming the existing resource. For `patch`, keep the existing resource's `name`.
 
 > [!note] Requirements
+>
 > You will need the following to get started:
-
-- For project resources, the correct [project context](infrastructure-as-code.md#create-a-template-set-project-context) on the node or inherited from a workflow
-- For `patch`, any additional fields required for the resource's PATCH operation, even if their values do not change
-- For `put` and `create`, the full specification required to create the resource
+>
+> - For project resources, the correct [project context](infrastructure-as-code.md#create-a-template-set-project-context) on the node or inherited from a workflow
+> - For `patch`, any additional fields required for the resource's PATCH operation, even if their values do not change
+> - For `put` and `create`, the full specification required to create the resource
 
 Required PATCH fields also apply to API PATCH requests. Beyond these required fields, supply only the fields that you want to change. PATCH preserves fields outside the supplied values. Only fields that the resource allows you to update can change.
 
 > [!warning] Before saving an update
+>
 > Review the fields that the node will replace before saving. Supplied arrays and some object fields replace the whole value. With `put`, omitted configurable fields can reset or clear. If [automatic runs](infrastructure-as-code.md#run-a-template-run-a-template-automatically) are enabled, saving changes runs the template immediately.
 
 In the node's code view, set `updateMode` beside `kind` and `spec`. Use the lowercase values shown above. If you omit `updateMode`, Northflank uses `put`.
@@ -1446,7 +1477,7 @@ To set the mode in the visual editor:
 
 Flow control nodes contain resource and action nodes, and determine in what order they are executed. You can click the switch button  in the workflow node to change to a parallel or sequential flow.
 
-Sequential workflows will execute nodes from first to last, and will wait until a node has succeeded before executing the next. Parallel workflows will execute all the nodes contained within in them at the same time.
+Sequential workflows run nodes in order and wait until each node succeeds or skips before starting the next. Parallel workflows run their nodes concurrently.
 
 Workflows can be nested. For example, you can run two sequential workflows simultaneously within a parallel workflow, within another sequential workflow.
 
@@ -1454,7 +1485,7 @@ If a node contained in a workflow fails, the entire workflow will be marked as f
 
 #### Template nodes: Project context
 
-You can specify the [project context](infrastructure-as-code.md#write-a-template-set-project-context) for a workflow which will be inherited by all the nodes contained within the workflow. This context can be overridden by setting the context directly on nodes or other workflows nested within this workflow.
+Nodes inherit their workflow's [project context](infrastructure-as-code.md#create-a-template-set-project-context). To use a different project, set the context directly on a node or nested workflow.
 
 - {object} Workflow node
 
@@ -1472,22 +1503,77 @@ OR
 - spec
   {object} requiredThe specification for the workflow node.
 
+#### Template nodes: Loop workflow
+
+The Loop workflow (Experimental) node repeats a sequence of steps for each object in `spec.iterations`. It is available where the editor offers it. Set a unique `ref` for the loop. Add the repeated nodes to `spec.steps`.
+
+Inside the loop, use its reference to read the current object's fields. For a loop with `ref: "regions"`, `${refs.regions.region}` reads the current object's `region` value. Iterations can run concurrently, while steps within each iteration run in sequence.
+
+- {object} LoopWorkflow node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofLoopWorkflow
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the loop workflow node.
+
 ### Template nodes: Team resource nodes
 
-Team nodes create and update resources and integrations on the team level. They do not require a project context to run.
+Team resource nodes manage resources and integrations within your account. They do not require a project context to run.
+
+The editor shows nodes available to your account and template type. Add the resource node in the visual editor. Open its form to configure it. Nodes that offer Update mode support the [resource update modes](infrastructure-as-code.md#template-nodes-resource-update-modes).
 
 | Kind | Description |
 | --- | --- |
 | Project | Create or update a project |
 | BYOC integration | Create or update a cloud provider integration |
 | BYOC cluster | Create or update a cluster and node pools |
+| BYOC registry | Create or update a registry for build images |
+| Domain | Add a domain to your account |
+| Subdomain | Create or update a subdomain |
 | Subdomain path | Create a path for routing on a subdomain |
-| Tag | Create a new tag in the team for tagging resources |
-| Custom plan | Create a custom resource plan in the team |
+| SSH identity | Configure SSH access to workloads |
+| Workload identity | Configure workload access to cloud resources |
+| Load balancer | Route TCP or UDP traffic to workloads |
+| Egress IP | Configure a fixed IP address for outgoing traffic |
+| Network policy | Control incoming and outgoing workload traffic |
+| OpenTofu | Manage resources outside Northflank |
+| Tag | Create or update a tag for resources |
+| Custom plan | Create or update a custom resource plan |
 | Secret inheritance | Merge multiple global secrets with priority ordering |
 | Rollout strategy | Create or update a [canary rollout strategy](release.md#set-up-canary-rollouts) |
 
 #### Template nodes: Project
+
+Full specification (put or create)
+
+- {object} Project node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofProject
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  (multiple options: oneOf) required
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
 
 - {object} Project patch node
 
@@ -1509,6 +1595,28 @@ OR
 
 #### Template nodes: BYOC integration
 
+Full specification (put or create)
+
+- {object} BYOCIntegration node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofBYOCIntegration
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the BYOCIntegration node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
+
 - {object} BYOCIntegration patch node
 
 - ref
@@ -1529,6 +1637,28 @@ OR
 
 #### Template nodes: BYOC cluster
 
+Full specification (put or create)
+
+- {object} BYOCCluster node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofBYOCCluster
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the BYOCCluster node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
+
 - {object} BYOCCluster patch node
 
 - ref
@@ -1546,6 +1676,96 @@ OR
   {object} requiredThe specification for the BYOCCluster node.
 - updateMode
   string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
+
+#### Template nodes: BYOC registry
+
+Use this node in a template to configure a [custom build registry](build.md#use-custom-build-registry). Select a supported cloud provider, integration, and region in the node form. This node is unavailable in release flows and preview environment templates.
+
+Full specification (put or create)
+
+- {object} BYOCRegistry node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofBYOCRegistry
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the BYOCRegistry node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
+
+- {object} BYOCRegistry patch node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofBYOCRegistry
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the BYOCRegistry node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
+
+#### Template nodes: Domain
+
+The Domain node adds a domain to your Northflank account in templates and preview environment templates. It does not register or purchase a domain. Supply the domain name in `spec.domain`.
+
+Add the [DNS records requested by Northflank](domains.md#add-a-domain-to-your-account) at your DNS provider. Creating the node does not complete ownership verification. Use the [domain verification action](infrastructure-as-code.md#template-nodes-verify-a-domain) after the records are available.
+
+Repeated runs reuse domains that this template or preview environment created. They do not update the domain's configuration. The node fails if the domain already exists outside that template or environment. This node does not offer Update mode.
+
+- {object} Domain node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofDomain
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the Domain node.
+
+#### Template nodes: Subdomain
+
+Use this node to create a subdomain in templates and preview environment templates. Complete the domain and subdomain verification requirements before routing traffic. See [link a domain to a port](domains.md#link-a-domain-to-a-port) for service routing.
+
+This node uses `spec.domain` and `spec.name` to identify the target subdomain. It does not offer Update mode.
+
+- {object} Subdomain node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofSubdomain
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the Subdomain node.
 
 #### Template nodes: Subdomain path
 
@@ -1565,7 +1785,287 @@ OR
 - spec
   {object} requiredThe specification for the SubdomainPath node.
 
+#### Template nodes: SSH identity
+
+An SSH identity controls access through SSH keys. Use this node in a template to define the identity and its workload restrictions. See [SSH access](run.md#access-services-with-ssh) for connection requirements.
+
+This node is unavailable in release flows and preview environment templates.
+
+Full specification (put or create)
+
+- {object} SSHIdentity node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofSSHIdentity
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the SSHIdentity node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
+
+- {object} SSHIdentity patch node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofSSHIdentity
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the SSHIdentity node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
+
+#### Template nodes: Workload identity
+
+A workload identity grants workloads access to cloud resources. Use this node in a template with [workload identity](bring-your-own-cloud.md#configure-workload-identity) enabled for your account. Configure the cloud integration, role, and workload restrictions in the node form.
+
+This node is unavailable in release flows and preview environment templates.
+
+Full specification (put or create)
+
+- {object} WorkloadIdentity node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofWorkloadIdentity
+- condition
+  string one ofsuccess
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the WorkloadIdentity node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
+
+- {object} WorkloadIdentity patch node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofWorkloadIdentity
+- condition
+  string one ofsuccess
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the WorkloadIdentity node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
+
+#### Template nodes: Load balancer
+
+Use this node in a template to configure a [dedicated load balancer](network.md#configure-load-balancers) and its workload backends. It routes TCP or UDP traffic. This resource is separate from the cluster ingress load balancers used by ordinary HTTP service ports.
+
+This node is unavailable in release flows and preview environment templates.
+
+Full specification (put or create)
+
+- {object} LoadBalancer node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofLoadBalancer
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the LoadBalancer node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
+
+- {object} LoadBalancer patch node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofLoadBalancer
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the LoadBalancer node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
+
+#### Template nodes: Egress IP
+
+An egress IP is an address for outgoing traffic. Use this node in a template to configure a [fixed egress IP](network.md#configure-egress-ips). Configure the region and workload selection in the node form.
+
+This node is unavailable in release flows and preview environment templates.
+
+Full specification (put or create)
+
+- {object} EgressIp node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofEgressIp
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the EgressIp node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
+
+- {object} EgressIp patch node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofEgressIp
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the EgressIp node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
+
+#### Template nodes: Network policy
+
+Use this node in a template to define [network policies](network.md#configure-network-policies) for selected workloads on supported BYOC clusters. Configure the project and tag restrictions and the traffic rules in the node form. Network policies control incoming and outgoing traffic.
+
+This node is unavailable in release flows and preview environment templates.
+
+Full specification (put or create)
+
+- {object} NetworkPolicy node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofNetworkPolicy
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the NetworkPolicy node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
+
+- {object} NetworkPolicy patch node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofNetworkPolicy
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the NetworkPolicy node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
+
+#### Template nodes: OpenTofu
+
+Use this node to manage external cloud resources in templates and preview environment templates. Configure a supported provider and its credentials before running the node. See [manage external infrastructure](infrastructure-as-code.md#manage-external-infrastructure) for provider configuration and examples.
+
+OpenTofu uses its own plan and apply workflow and does not offer Update mode. Use [OpenTofuDestroy in a teardown workflow](infrastructure-as-code.md#configure-teardown-workflows-destroy-opentofu-resources) to remove resources that this node manages.
+
+- {object} OpenTofu node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofOpenTofu
+- condition
+  string one ofsuccess
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the OpenTofu node.
+
 #### Template nodes: Tag
+
+Full specification (put or create)
+
+- {object} ResourceTag node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofResourceTag
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the ResourceTag node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
 
 - {object} ResourceTag patch node
 
@@ -1586,6 +2086,28 @@ OR
   string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
 
 #### Template nodes: Custom plan
+
+Full specification (put or create)
+
+- {object} CustomPlan node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofCustomPlan
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the CustomPlan node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
 
 - {object} CustomPlan patch node
 
@@ -1627,6 +2149,28 @@ OR
 
 A rollout strategy can be attached to a [deployment service](infrastructure-as-code.md#template-nodes-deployment-service) or [combined service](infrastructure-as-code.md#template-nodes-combined-service) node by setting `gradualRolloutStrategyId` in the node's `deployment` object.
 
+Full specification (put or create)
+
+- {object} RolloutStrategy node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofRolloutStrategy
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the RolloutStrategy node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
+
 - {object} RolloutStrategy patch node
 
 - ref
@@ -1647,29 +2191,68 @@ OR
 
 ### Template nodes: Project resource nodes
 
-Project resource nodes can be used to create or update services, jobs, addons, and other resources on the Northflank platform. They can also be used to trigger builds, run jobs, and schedule addon backups.
+Project resource nodes manage services, jobs, addons, and other resources within a project. Use [action nodes](infrastructure-as-code.md#template-nodes-action-nodes) to start builds, run jobs, or back up addons.
 
-Project resource nodes require a [project context](infrastructure-as-code.md#create-a-template-set-project-context) to run. The context can be set directly on the node or inherited from a parent workflow.
+Project resource nodes require a [project context](infrastructure-as-code.md#create-a-template-set-project-context) to run. Set the context on the parent workflow. Nodes with a `spec.projectId` field also accept the context directly.
+
+The editor shows nodes available to your account and template type. Add the resource node in the visual editor. Open its form to configure it. Nodes that offer Update mode support the [resource update modes](infrastructure-as-code.md#template-nodes-resource-update-modes).
 
 | Kind | Description |
 | --- | --- |
 | Combined service | Create or update a combined service |
 | Build service | Create or update a build service |
 | Deployment service | Create or update a deployment service |
+| Harness | Create or update a cloud coding environment |
 | Cron job | Create or update a cron job |
-| Manual job | Creates or update a manual job |
-| Addon | Creates or updates an addon |
-| Secret group | Creates or updates a secret group |
-| Pipeline | Creates or updates a [pipeline](infrastructure-as-code.md#template-nodes-pipeline-node) |
-| Volume | Creates or updates a volume |
+| Manual job | Create or update a manual job |
+| Addon | Create or update an addon |
+| External addon | Manage a resource through an external provider |
+| Secret group | Create or update a secret group |
+| Pipeline | Create or update a [pipeline](infrastructure-as-code.md#template-nodes-pipeline-node) |
+| Environment | Create or update an [environment](infrastructure-as-code.md#template-nodes-environment-node) |
+| Workflow template | Define a reusable [workflow](infrastructure-as-code.md#template-nodes-workflow-template) |
+| Preview blueprint | Define a [preview blueprint](infrastructure-as-code.md#template-nodes-preview-blueprint) |
+| Volume | Create or update a volume |
 
 To enable CI/CD and build from private Git repositories you must have a [Git account linked to your Northflank team](getting-started.md#link-your-git-account). To deploy images from a private container registry you must add your [registry credentials to your team](run.md#save-registry-credentials).
 
 #### Template nodes: Combined service
 
-A combined service will automatically build and deploy the latest commit for the selected branch when it is created.
+A combined service builds code from a repository and deploys the resulting image. Configure its repository, build rules, and deployment in the node form.
 
 You can attach a [canary rollout strategy](release.md#set-up-canary-rollouts) to the service by setting `gradualRolloutStrategyId` in the `deployment` object.
+
+Full specification (put or create)
+
+- {object} CombinedService node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofCombinedService
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- options
+  {object}
+
+- allowUnlinkingDomains
+  (multiple options: oneOf) Allows the template to remove existing domain assignments from this service.
+
+- boolean Allows the template to remove existing domain assignments from this service.
+OR
+- string A string containing one or more references that resolve to allows the template to remove existing domain assignments from this service.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the CombinedService node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
 
 - {object} CombinedService patch node
 
@@ -1701,7 +2284,29 @@ OR
 
 #### Template nodes: Build service
 
-You must trigger a build using a start build node to deploy from a build service later in the template. Otherwise, a build will only be triggered when a commit matching the [build rules](build.md#build-code-from-a-git-repository-build-from-a-repository) is pushed.
+After the build service node, add a Start build node to build an image during the run. Enable Wait for completion before using the image in later nodes. See [build rules](build.md#build-code-from-a-git-repository-build-from-a-repository) for builds triggered by repository changes.
+
+Full specification (put or create)
+
+- {object} BuildService node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofBuildService
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the BuildService node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
 
 - {object} BuildService patch node
 
@@ -1723,13 +2328,41 @@ OR
 
 #### Template nodes: Deployment service
 
-You can link a deployment service to a build service or deploy an image from a container registry.
-
-If you are deploying from a Northflank build service you can toggle between deploying the latest build or the latest commit from the build service.
-
-Latest build will deploy whatever the service has build most recently, regardless of the commit age. Latest commit will deploy the most recent commit to the branch that has been built by the service.
+You can link a deployment service to a build service or deploy an image from a container registry. Select the source and image version in the node form. See [deployment sources](run.md#change-deployment-source) for build and registry choices.
 
 You can attach a [canary rollout strategy](release.md#set-up-canary-rollouts) to the service by setting `gradualRolloutStrategyId` in the `deployment` object.
+
+Full specification (put or create)
+
+- {object} DeploymentService node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofDeploymentService
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- options
+  {object}
+
+- allowUnlinkingDomains
+  (multiple options: oneOf) Allows the template to remove existing domain assignments from this service.
+
+- boolean Allows the template to remove existing domain assignments from this service.
+OR
+- string A string containing one or more references that resolve to allows the template to remove existing domain assignments from this service.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the DeploymentService node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
 
 - {object} DeploymentService patch node
 
@@ -1759,11 +2392,79 @@ OR
 - updateMode
   string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
 
+#### Template nodes: Harness
+
+A Cloud Harness is a cloud environment for coding agents. Use the Harness node in templates and preview environment templates where Cloud Harnesses are available to your account. Configure its deployment source, compute resources, and networking in the node form.
+
+See [create a Cloud Harness](cloud-harness.md#quickstart) for setup and connection instructions.
+
+Full specification (put or create)
+
+- {object} Harness node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofHarness
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the Harness node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
+
+- {object} Harness patch node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofHarness
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the Harness node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
+
 #### Template nodes: Cron job
 
 You can deploy a job using an image from a container registry or one built by a Northflank build service.
 
-You can also build and deploy an image in a job by linking it to a Git repository, and create a build to deploy using a start build node.
+To build the job image from source, link a Git repository. Add a Start build node to build the image during the template run.
+
+Full specification (put or create)
+
+- {object} CronJob node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofCronJob
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the CronJob node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
 
 - {object} CronJob patch node
 
@@ -1787,7 +2488,29 @@ OR
 
 You can deploy a job using an image from a container registry or one built by a Northflank build service.
 
-You can also build and deploy an image in a job by linking it to a Git repository, and create a build to deploy using a start build node.
+To build the job image from source, link a Git repository. Add a Start build node to build the image during the template run.
+
+Full specification (put or create)
+
+- {object} ManualJob node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofManualJob
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the ManualJob node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
 
 - {object} ManualJob patch node
 
@@ -1809,17 +2532,49 @@ OR
 
 #### Template nodes: Addon
 
-You can make an addon's connection details available by linking them in a secret group node. An addon must be running to execute a backup or restore, you can use a [condition node](infrastructure-as-code.md#template-nodes-condition-nodes) to check before performing actions on an addon.
+Use a secret group node to share an addon's connection details with workloads. Before a backup or restore, use a [condition node](infrastructure-as-code.md#template-nodes-condition-nodes) to wait until the addon runs.
 
 ##### Template nodes: Fork an addon
 
-You can fork an addon from an existing project, or one created earlier in the template using a reference. The addon must have a backup available created from the same major version.
+You can fork an addon from an existing project or one created earlier in the template. Select a backup compatible with the target addon version. See [fork an addon](databases-and-persistence.md#fork-an-addon) for version requirements.
 
-You can use `latest` to use the most recent backup, but if no backup exists the template run will fail.
+The `latest` choice uses the most recent backup. The node fails if no backup is available.
 
 ##### Template nodes: Upgrade an addon
 
-You can enable upgrade on version mismatch to allow a template to trigger an upgrade for an existing addon (disabled by default). If the addon version specified in the template is greater than the version of the existing addon, the addon will be upgraded. Addons must follow the upgrade path and cannot skip major versions. For example, to upgrade an addon from version 14 to version 16, you must first run the template with version 15 specified before updating to version 16.
+To allow an upgrade, enable Upgrade on version mismatch or set `options.upgradeOnVersionMismatch: true` on the addon node. This control is disabled by default. Follow the [supported upgrade path](databases-and-persistence.md#upgrade-a-database) for the addon type.
+
+Full specification (put or create)
+
+- {object} Addon node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofAddon
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- options
+  {object}
+
+- upgradeOnVersionMismatch
+  (multiple options: oneOf)
+
+- boolean
+OR
+- string pattern.*\${.*}.*
+
+- spec
+  (multiple options: anyOf) requiredThe provisioner type of the addon
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
 
 - {object} Addon patch node
 
@@ -1849,7 +2604,57 @@ OR
 - updateMode
   string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
 
+#### Template nodes: External addon
+
+Use this node in templates and preview environment templates to manage a resource through a supported external provider. Configure the provider integration, resource type, and resource values in the node form. See [external addon templates](databases-and-persistence.md#create-a-managed-external-addon-create-from-templates) for an example that links outputs to a secret group.
+
+External addons use their own provisioning workflow and do not offer Update mode.
+
+This node uses the parent workflow's project context.
+
+- {object} ExternalAddon node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofExternalAddon
+- condition
+  string one ofsuccess
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the ExternalAddon node.
+
 #### Template nodes: Secret group
+
+Use a secret group node to define shared values and link addon connection details to workloads. Keep sensitive values in [template secrets](infrastructure-as-code.md#create-a-template-provide-secrets-securely-to-a-template).
+
+Full specification (put or create)
+
+- {object} SecretGroup node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofSecretGroup
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the SecretGroup node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
 
 - {object} SecretGroup patch node
 
@@ -1869,9 +2674,75 @@ OR
 - updateMode
   string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
 
+#### Template nodes: Pipeline
+
+Use this node to define a legacy pipeline, its stages, and nested release flow or preview templates. Configure the pipeline in its project context. For separate environments, workflows, and preview blueprints, use the [environment and template nodes](infrastructure-as-code.md#template-nodes-environment-node).
+
+Full specification (put or create)
+
+- {object} Pipeline node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofPipeline
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the Pipeline node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
+
+- {object} Pipeline patch node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofPipeline
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the Pipeline node.
+- updateMode
+  string requiredPartially updates only the supplied fields on an existing resource.one ofpatch
+
 #### Template nodes: Volume
 
-A running service will be restarted when a volume is attached to it.
+Use a volume node to configure persistent storage and its workload attachments. Attaching a volume can restart the affected workload. See [add a volume](databases-and-persistence.md#add-a-persistent-volume) for storage and attachment requirements.
+
+Full specification (put or create)
+
+- {object} Volume node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofVolume
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the Volume node.
+- updateMode
+  string Controls how the resource is created or updated on each template run. `put` (default) creates or fully replaces the resource. `create` only creates the resource and skips the node if it already exists. `patch` partially updates only the supplied fields on an existing resource.one ofput, create
+
+Partial update (patch)
 
 - {object} Volume patch node
 
@@ -1893,51 +2764,83 @@ OR
 
 ### Template nodes: Environment node
 
-Environment nodes are used to create an environment in a project.
+The Environment node creates or updates an environment within a project. Its JSON kind is `ReleaseStage`. Set `spec.name` and `spec.position`, with a [project context](infrastructure-as-code.md#create-a-template-set-project-context) on the node or its parent workflow.
 
-You can also define [workflow and preview blueprint templates](infrastructure-as-code.md#write-a-template-include-workflows-and-preview-blueprints) for each environment using the visual editor within the environment node.
+Use separate Workflow template and Preview blueprint nodes to define reusable automation. These nodes are available in templates, rather than inside release flows or preview environment templates. They do not offer Update mode.
+
+- {object} ReleaseStage node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofReleaseStage
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the ReleaseStage node.
 
 #### Template nodes: References, arguments, and functions in nested templates
 
-Normally composed references, arguments, and functions will not be resolved in workflow or preview blueprint templates in environment nodes when the template is executed. This is to preserve their functionality in the workflow and preview blueprint templates when they are created.
-
-If you want to include references, arguments, or functions that will be executed when the template runs, so that the values are resolved in the workflow and preview blueprint templates when they are created, you can prefix them with `template`.
+References, arguments, and functions within a nested workflow or preview blueprint normally resolve when that nested template runs. Prefix an expression with `template` to resolve it during the parent template run. Use the prefix for parent values needed in nested triggers and rich inputs.
 
 For example:
 
-- `"${refs.build.branch}"` would become `"${template.refs.build.branch}"`
+- `"${template.refs.build.branch}"` uses the parent build node's branch.
 
-- `"${args.SECRET}"` would become `"${template.args.SECRET}"`
+- `"${template.args.SECRET}"` uses an argument from the parent template.
 
-- `"${fn.randomString(64)}"` would become `"${template.fn.randomString(64)}"`
-
-Error fetching template node schema
+- `"${template.fn.randomString(64)}"` generates a value during the parent template run.
 
 #### Template nodes: Preview blueprint
 
-The environment specification can include `preview`, a node with the kind `PreviewBlueprint`. The spec for the `PreviewBlueprint` node includes `apiVersion` and `spec`, where `spec` is the content of the preview blueprint template.
+Use a `PreviewBlueprint` node to create or update a preview blueprint in a project. Put the blueprint's configuration and root node inside the node's `spec`. See [preview blueprints](release.md#set-up-preview-blueprints) for triggers and environment creation.
 
-- {object} previewBlueprint
+- {object} PreviewBlueprint node
 
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
 - kind
-  string The kind of node.one ofPreviewBlueprint
+  string requiredThe kind of node.one ofPreviewBlueprint
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
 - spec
-  {object} requiredThe preview blueprint template specification.
+  {object} requiredThe specification for the PreviewBlueprint node.
 
 #### Template nodes: Workflow
 
-Workflow template specifications can be included in environments.
+Use a `WorkflowTemplate` node to create or update a reusable workflow in a project. Set `spec.stageId` to associate the workflow with an environment. See [configure workflows](release.md#configure-workflows) for workflow configuration and triggers.
 
-- {object} workflow
+- {object} WorkflowTemplate node
 
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
 - kind
-  string requiredThe kind of node.one ofWorkflow
+  string requiredThe kind of node.one ofWorkflowTemplate
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
 - spec
-  {object} requiredThe workflow template specification.
+  {object} requiredThe specification for the WorkflowTemplate node.
 
 ### Template nodes: Action nodes
 
-You can define actions to take on existing services, addons, or Git services.
+Action nodes start operations on existing resources, such as builds, job runs, backups, and domain verification. For operations that support it, enable Wait for completion before later nodes depend on the result.
+
+In [preview blueprints](release.md#set-up-preview-blueprints), `runNodeOnce: "true"` skips a supported node after it succeeds for that environment. Failed nodes can run again. Moving the node or changing its reference can cause it to run again.
 
 | Kind | Description |
 | --- | --- |
@@ -1949,9 +2852,7 @@ You can define actions to take on existing services, addons, or Git services.
 
 #### Template nodes: Run backup
 
-An addon must be in a running state to [run a backup](databases-and-persistence.md#backup-restore-and-import-data) successfully. You can use a [condition node](infrastructure-as-code.md#template-nodes-condition-nodes) to ensure an addon is ready before the backup node runs.
-
-In [preview blueprints](getting-started.md#set-up-environments) you can enable `runNodeOnce` to run this node only the first time the blueprint runs for an environment, and skip it on every subsequent run for that environment. This is useful for one-off setup steps, such as seeding a database, that should not repeat when the environment is later redeployed.
+An addon must be in a running state to [run a backup](databases-and-persistence.md#backup-restore-and-import-data) successfully. Before the backup node runs, use a [condition node](infrastructure-as-code.md#template-nodes-condition-nodes) to wait until the addon runs.
 
 - {object} AddonBackup node
 
@@ -1982,8 +2883,6 @@ OR
 
 Start a [job run](run.md#run-an-image-once-or-on-a-schedule). The job must have a build or image available.
 
-In [preview blueprints](getting-started.md#set-up-environments) you can enable `runNodeOnce` to run this node only the first time the blueprint runs for an environment, and skip it on every subsequent run for that environment.
-
 - {object} JobRun node
 
 - ref
@@ -2013,13 +2912,11 @@ OR
 
 Import a backup into an addon from a URL or live database connection. Use this to automate data seeding, cross-environment migrations, or disaster recovery workflows in templates, workflows, and preview blueprints. See [backup, restore, and import data](databases-and-persistence.md#backup-restore-and-import-data-import-a-backup) for the UI method.
 
-Provide exactly one of `url` (for publicly accessible backup files) or `connectionString` (to dump a live external database). File upload is only supported via the UI, not in template nodes.
+Set `spec.importUrl` to a backup file URL or `spec.connectionString` to a live database connection string. Supply exactly one of these fields. Template import nodes do not accept file uploads.
 
-By default, imports run asynchronously. Enable `waitForCompletion` to pause the workflow until the import finishes.
+By default, the node continues while the import runs. Enable Wait for completion to wait for a successful import. In JSON, set `condition: "success"` beside the node's `kind` and `spec`.
 
 You can combine this with a `Run action` node to import and restore data in the same workflow.
-
-In [preview blueprints](getting-started.md#set-up-environments) you can enable `runNodeOnce` to run this node only the first time the blueprint runs for an environment, and skip it on every subsequent run for that environment.
 
 - {object} AddonImport node
 
@@ -2070,7 +2967,7 @@ OR
 
 #### Template nodes: Run action
 
-The run action node can be used to perform actions in services, jobs, addons, and VCS (version control system) accounts.
+The Run action node acts on services, jobs, addons, domains, and VCS (version control system) accounts.
 
 | Kind | On resource |
 | --- | --- |
@@ -2078,10 +2975,9 @@ The run action node can be used to perform actions in services, jobs, addons, an
 | Execute command | Service or job |
 | Restore addon from backup | Addon (with available backup) |
 | Clone repository | Linked VCS account |
+| Verify domain | Domain in your account |
 
 Commands in action nodes do not invoke a shell by default. Learn more about [executing commands in action nodes](run.md#access-running-containers-locally-execute-commands-in-an-action-node).
-
-In [preview blueprints](getting-started.md#set-up-environments) you can enable `runNodeOnce` to run this node only the first time the blueprint runs for an environment, and skip it on every subsequent run for that environment.
 
 - {object} Action node
 
@@ -2106,19 +3002,43 @@ OR
 - spec
   (multiple options: oneOf) requiredThe specification for the Action node.
 
+#### Template nodes: Verify a domain
+
+The domain verification action starts ownership verification for a domain already in your account. Add the DNS records requested by Northflank before running it. The action does not create records at your DNS provider.
+
+In a Run action node, select Domain and Verify. Enable Wait for completion to wait for verification. In JSON, use the following structure:
+
+```json
+{
+  "kind": "Action",
+  "spec": {
+    "kind": "Domain",
+    "spec": {
+      "type": "verify",
+      "data": {
+        "domain": "example.com"
+      },
+      "condition": "verified"
+    }
+  }
+}
+```
+
+Without the condition, the action continues after starting verification. It does not wait for the domain to become verified. Use the [domain condition](infrastructure-as-code.md#template-nodes-domain-verification) to wait for verification that is already in progress.
+
 ### Template nodes: Message node
 
 A message node sends a notification when it runs. You can use it to report progress from a template, workflow, or preview blueprint.
 
 | Kind | Description |
 | --- | --- |
-| Slack | Sends a message to Slack via a webhook or a [Slack integration](https://northflank.com/docs/v1/application/secure/manage-integrations) |
+| Slack | Sends a message to Slack via a webhook or a [Slack integration](observe.md#configure-notification-integrations-slack-notifications) |
 | Webhook | Sends a message to an arbitrary webhook URL |
 | VCS | Comments on a pull request in a linked version control repository |
 
 The message content supports template arguments, functions, and references, so you can include values such as a generated preview domain in the notification.
 
-In [preview blueprints](getting-started.md#set-up-environments) you can enable `runNodeOnce` to send this notification only the first time the blueprint runs for an environment, and skip it on every subsequent run for that environment.
+In [preview blueprints](release.md#set-up-preview-blueprints), set `runNodeOnce: "true"` to skip the message node after it succeeds for that environment. Failed nodes can run again. Moving the node or changing its reference can cause it to run again.
 
 - {object} Message node
 
@@ -2145,27 +3065,21 @@ OR
 
 ### Template nodes: Condition nodes
 
-You can use condition nodes to check the status of a resource or action in a template or in an individual workflow. The workflow or template will continue to run until the condition is met, or until it times out.
+Condition nodes wait for a resource state or an operation result. In a sequential workflow, later nodes wait until the condition succeeds. In a parallel workflow, other nodes continue, but the workflow waits for the condition before it completes.
 
-In a sequential workflow the condition will stop following steps from running until the condition is met. In a parallel workflow all the steps will run, but the workflow will not be marked as completed unless the condition is met.
-
-Below is a list of checks you can include in your template.
+Use the node form to select a resource and condition. Set a timeout to limit how long the node waits. A failed condition or timeout fails the node.
 
 | Kind | Description |
 | --- | --- |
-| Running | Check a service, addon, or BYOC cluster is running |
-| Success | Check a job, build, or addon backup has completed successfully |
-| VCS | Check that a repository has been created |
-
-| Kind | Description |
-| --- | --- |
-| Service | Check a service is running |
-| Addon | Check an addon is running |
-| Addon backup | Check an addon backup has completed successfully |
-| BYOC cluster | Check a BYOC cluster is running |
-| VCS | Check a Git repository has been cloned successfully |
-| Build | Check a build has completed successfully |
-| Job run | Check a job run has completed successfully |
+| Service | Wait until a service runs |
+| Addon | Wait until an addon runs |
+| Addon backup | Wait until an addon backup succeeds |
+| Addon import | Wait until an addon import succeeds |
+| BYOC cluster | Wait until a BYOC cluster runs |
+| VCS | Wait until a Git repository clone succeeds |
+| Build | Wait until a build succeeds |
+| Job run | Wait until a job run succeeds |
+| Domain | Wait until the domain is verified |
 
 - {object} Condition node
 
@@ -2182,6 +3096,34 @@ OR
 
 - spec
   (multiple options: oneOf) requiredThe specification for the Condition node.
+
+#### Template nodes: Domain verification
+
+The domain condition waits for an existing domain to become verified. It does not start verification or create DNS records. Start verification through the [domain action](infrastructure-as-code.md#template-nodes-verify-a-domain) or the domain page before waiting for it.
+
+In a condition node, select Domain and Domain is verified. Use `spec.kind: "Domain"`, `spec.spec.type: "verified"`, and `spec.spec.data.domain` for the domain name in JSON. A missing domain, a final verification failure, or an expired timeout causes the condition to fail.
+
+#### Template nodes: Approval
+
+An Approval node waits until it receives the required approvals. Later nodes in a sequential workflow wait for approval. Other nodes in a parallel workflow can continue.
+
+Set Number of approvals required in the form, or use a positive integer in `spec.amount`. Approve the node from the template run page to continue.
+
+- {object} Approval node
+
+- ref
+  string An identifier that can used to reference the output of this node later in the template.
+- kind
+  string requiredThe kind of node.one ofApproval
+- skipNodeExecution
+  (multiple options: oneOf) If set to 'true', the execution of the node will be skipped.
+
+- string If set to 'true', the execution of the node will be skipped.one oftrue, false
+OR
+- string A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped.pattern.*\${.*}.*
+
+- spec
+  {object} requiredThe specification for the Approval node.
 
 ### Template nodes: Next steps
 
@@ -2215,9 +3157,9 @@ You can reuse other workflows from your own repository, public repositories, or 
 
 #### Use GitHub Actions with Northflank: Workflow example
 
-This example workflow builds and publishes and image, and then [triggers a Northflank release flow run](https://northflank.com/docs/v1/application/release/create-a-pipeline-and-release-flow) to deploy it.
+This example workflow builds and publishes and image, and then [triggers a Northflank release flow run](release.md#create-a-pipeline-and-release-flow) to deploy it.
 
-The workflow logs in to the [GitHub container registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry), builds the pull request branch in the repository and pushes the image to [https://ghcr.io/](https://ghcr.io/), and then [triggers a Northflank release flow using a webhook](https://northflank.com/docs/v1/application/release/create-a-pipeline-and-release-flow#release-flow-settings).
+The workflow logs in to the [GitHub container registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry), builds the pull request branch in the repository and pushes the image to [https://ghcr.io/](https://ghcr.io/), and then [triggers a Northflank release flow using a webhook](release.md#configure-a-release-flow-enable-webhook-for-a-release-flow).
 
 The events that trigger the workflow to run are defined in `on`, the environment variables to use in the workflow are defined in `env`, and the jobs to run as part of the workflow are defined in `jobs`.
 
@@ -2227,9 +3169,9 @@ The `build-and-push-image` job specifies the base image to run the steps on (`ub
 
 The steps include `checkout repository`, which uses the published [checkout](https://github.com/marketplace/actions/checkout) action, `log in to the container registry` which uses the [Docker login](https://github.com/marketplace/actions/docker-login) action, and `build and push Docker image` which uses the [build and push Docker image](https://github.com/marketplace/actions/build-and-push-docker-images) action.
 
-The final step runs a command (`curl`) to send a GET request to a Northflank release flow webhook, stored in the `NF_WEBHOOK` secret, and provides `image_tag` as a URL query parameter, which can then be [accessed in the release flow via the `args` object](https://northflank.com/docs/v1/application/release/configure-a-release-flow#node-arguments-and-references) to provide an image tag to deploy.
+The final step runs a command (`curl`) to send a GET request to a Northflank release flow webhook, stored in the `NF_WEBHOOK` secret, and provides `image_tag` as a URL query parameter, which can then be [accessed in the release flow via the `args` object](release.md#configure-a-release-flow-arguments) to provide an image tag to deploy.
 
-The workflow also uses two [secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets), `GITHUB_TOKEN` which is automatically generated and passed to the workflow, and `NF_WEBHOOK`, which is generated in your [release flow's settings](https://northflank.com/docs/v1/application/release/create-a-pipeline-and-release-flow#release-flow-settings).
+The workflow also uses two [secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets), `GITHUB_TOKEN` which is automatically generated and passed to the workflow, and `NF_WEBHOOK`, which is generated in your [release flow's settings](release.md#configure-a-release-flow-enable-webhook-for-a-release-flow).
 
 ```yaml
 name: Publish image and run release flow
@@ -2279,7 +3221,7 @@ You can define secrets for a repository in the security section of the repositor
 
 You can also give job steps an `id`, which can then be used to refer to the output from the Action used in that step, via the `steps` context (for example, `${{ steps.<id>.outputs.<key> }}`).
 
-Learn more about the [contexts available in workflows](https://docs.github.com/en/actions/learn-github-actions/contexts), and see the [deploy to Northflank](infrastructure-as-code.md#use-github-actions-with-northflank-deploy-to-Northflank) workflow for more examples of contexts.
+Learn more about the [contexts available in workflows](https://docs.github.com/en/actions/learn-github-actions/contexts), and see the [deploy to Northflank](infrastructure-as-code.md#use-github-actions-with-northflank-deploy-to-northflank-using-a-github-action) workflow for more examples of contexts.
 
 ### Use GitHub Actions with Northflank: Deploy to Northflank using a GitHub Action
 
@@ -2382,7 +3324,7 @@ You can create and update resources across multiple projects by setting differen
 
 ![Setting the project context for a workflow in the Northflank application](https://assets.northflank.com/documentation/v1/application/infrastructure-as-code/create-a-template/setting-project-context.png)
 
-You can set the context as an existing project from your team, or create a new project in the template. If you [use a reference](infrastructure-as-code.md#make-a-template-dynamic-node-references) to set the project context, the project node must run before the reference is used in the template.
+You can set the context as an existing project from your team, or create a new project in the template. If you [use a reference](infrastructure-as-code.md#make-a-template-dynamic-get-node-outputs-from-references) to set the project context, the project node must run before the reference is used in the template.
 
 If you run a template with nodes that require, but do not have, a project context, the template run will fail.
 
@@ -2458,7 +3400,7 @@ Project context can be supplied to nodes in the specification, either as a hardc
 
 A reference is automatically generated for each node you create, and you can manually edit node references in the template section of a node form. Some nodes display their output variables in a list that you can expand in the template editor.
 
-You can refer to the output of a previous node by selecting the [node reference](infrastructure-as-code.md#make-a-template-dynamic-node-references) from the drop-down menu in another node, which will display relevant resources. You can use this to create sequences of actions, such as creating a build service, starting a build on that service, and then deploying the build image in a deployment service.
+You can refer to the output of a previous node by selecting the [node reference](infrastructure-as-code.md#make-a-template-dynamic-get-node-outputs-from-references) from the drop-down menu in another node, which will display relevant resources. You can use this to create sequences of actions, such as creating a build service, starting a build on that service, and then deploying the build image in a deployment service.
 
 You can also check the values a node outputs by viewing a template run and expanding the node you want to view. The node's outputs that are accessible via the reference are contained in the `data` object within `response`.
 
@@ -2492,11 +3434,11 @@ You can [add a condition to nodes and workflows](infrastructure-as-code.md#make-
 
 ### Write a template: Include workflows and preview blueprints
 
-[Environment nodes](infrastructure-as-code.md#template-nodes-environment-node) include the ability to create and edit workflows and preview blueprint templates within the template editor.
+[Environment and template nodes](infrastructure-as-code.md#template-nodes-environment-node) define environments, workflows, and preview blueprints within a parent template. Use an Environment node for the environment itself. Add separate Workflow template or Preview blueprint nodes for reusable automation.
 
-Editing a workflow or preview blueprint within a template will open the specific editors for those templates, and return you to the template editor when you save or exit the nested editor.
+Editing a nested workflow or preview blueprint opens its editor. Saving or exiting returns you to the parent template editor.
 
-[Workflow](release.md#configure-workflows) and [preview blueprint](release.md#set-up-preview-blueprints) templates have some unique nodes and behaviour to consider when creating them.
+[Workflow](release.md#configure-workflows) and [preview blueprint](release.md#set-up-preview-blueprints) templates have some unique nodes and behavior to consider when creating them.
 
 ![A pipeline node in a template in the Northflank application](https://assets.northflank.com/documentation/v1/application/infrastructure-as-code/write-a-template/pipeline-node-resources-templates.png)
 
@@ -2509,6 +3451,7 @@ The `spec` object contains the body of the template, the workflows, conditions, 
 If you create or edit a template using the Northflank application you can configure all the template options on the settings page.
 
 > [!note]
+>
 > Properties not mentioned in the Northflank application documentation may only be applicable to templates [created using the API](../api/team/templates/create-template.md) and should not be included in templates managed using the Northflank application or a Git repository.
 
 Top level template fields
@@ -2717,13 +3660,12 @@ Deploy an addon and combined service
                   ],
                   "buildSettings": {
                     "dockerfile": {
-                      "buildEngine": "kaniko",
-                      "useCache": false,
+                      "buildEngine": "buildkit",
                       "dockerWorkDir": "/",
                       "dockerFilePath": "/Dockerfile",
                       "buildkit": {
-                        "useInternalCache": false,
-                        "internalCacheStorage": 16384
+                        "useCache": false,
+                        "cacheStorageSize": 16384
                       }
                     }
                   }
@@ -2847,13 +3789,12 @@ Create a secret group
                   ],
                   "buildSettings": {
                     "dockerfile": {
-                      "buildEngine": "kaniko",
-                      "useCache": false,
+                      "buildEngine": "buildkit",
                       "dockerWorkDir": "/",
                       "dockerFilePath": "/Dockerfile",
                       "buildkit": {
-                        "useInternalCache": false,
-                        "internalCacheStorage": 16384
+                        "useCache": false,
+                        "cacheStorageSize": 16384
                       }
                     }
                   }
@@ -3011,13 +3952,12 @@ Configure template settings
                   ],
                   "buildSettings": {
                     "dockerfile": {
-                      "buildEngine": "kaniko",
-                      "useCache": false,
+                      "buildEngine": "buildkit",
                       "dockerWorkDir": "/",
                       "dockerFilePath": "/Dockerfile",
                       "buildkit": {
-                        "useInternalCache": false,
-                        "internalCacheStorage": 16384
+                        "useCache": false,
+                        "cacheStorageSize": 16384
                       }
                     }
                   },
@@ -3193,13 +4133,12 @@ Await conditions and restart the service
                   ],
                   "buildSettings": {
                     "dockerfile": {
-                      "buildEngine": "kaniko",
-                      "useCache": false,
+                      "buildEngine": "buildkit",
                       "dockerWorkDir": "/",
                       "dockerFilePath": "/Dockerfile",
                       "buildkit": {
-                        "useInternalCache": false,
-                        "internalCacheStorage": 16384
+                        "useCache": false,
+                        "cacheStorageSize": 16384
                       }
                     }
                   },

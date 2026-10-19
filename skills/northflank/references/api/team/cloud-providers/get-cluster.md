@@ -19,7 +19,7 @@ Required permission: Account > Cloud > Clusters > Read
   - `name`: (string) (required) The name of the cluster. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 20)
   - `entityType`: (string) (enum: org, team)
   - `description`: (string) The description of the cluster. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, byok)
+  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, aws-eusc, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, byok)
   - `region`: (string) Region of the cluster. Can only be updated for BYOK clusters.
   - `status`: {object}
     - `state`: {object}
@@ -165,7 +165,14 @@ Required permission: Account > Cloud > Clusters > Read
       - `overlayCIDR`: (string) CIDR range for the overlay network. (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
       - `istio`: {object}
         - `enablePublicLoadBalancer`: (boolean) Whether the cluster runs a public ingress load balancer. Defaults to true.
-        - `enablePrivateLoadBalancer`: (boolean) Whether the cluster runs a private (VPC-only) ingress load balancer. Defaults to false.
+        - `enablePrivateLoadBalancer`: (boolean) Whether the cluster runs a VPC ingress load balancer. Defaults to false; BYOK exposure is customer-controlled.
+        - `privateLoadBalancerAwsSecurityGroupId`: (string) Customer-managed frontend security group for a private AWS NLB managed by the AWS Load Balancer Controller. (pattern: ^sg-(?:[a-f0-9]{8}|[a-f0-9]{17})$)
+        - `publicLoadBalancer`: {object}
+          - `serviceAnnotations`: {object}
+          - `loadBalancerClass`: (string) (pattern: ^(?:(?=[^/]{1,253}\/)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\/)?[a-zA-Z0-9](?:[a-zA-Z0-9_.-]{0,61}[a-zA-Z0-9])?(?![\s\S]))
+        - `privateLoadBalancer`: {object}
+          - `serviceAnnotations`: {object}
+          - `loadBalancerClass`: (string) (pattern: ^(?:(?=[^/]{1,253}\/)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\/)?[a-zA-Z0-9](?:[a-zA-Z0-9_.-]{0,61}[a-zA-Z0-9])?(?![\s\S]))
     - `vanityDomains`: {object}
       - `apps`: {object}
         - `zoneName`: (string) (required)
@@ -464,6 +471,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.cloud.cluster({
   parameters: {
@@ -558,5 +567,111 @@ await apiClient.get.cloud.cluster({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.cloud.cluster(
+    cluster_id="gcp-cluster-1",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "id": "gcp-cluster-1",
+  "name": "GCP Cluster 1",
+  "entityType": "team",
+  "description": "This is a new cluster.",
+  "provider": "gcp",
+  "region": "europe-west2",
+  "status": {
+    "state": {
+      "state": "running"
+    }
+  },
+  "kubernetesVersion": "1.30",
+  "integrationId": "gcp-integration",
+  "nodePools": [
+    {
+      "id": "6aa96121-0345-43ad-bade-af36d540c222",
+      "nodeType": "n2-standard-8",
+      "nodeCount": 3,
+      "autoscaling": {
+        "enabled": true,
+        "min": 0,
+        "max": 10
+      },
+      "computeResources": {
+        "gpu": {
+          "type": "h100",
+          "resources": {
+            "memoryInfo": {
+              "sizeInGiB": 80
+            }
+          },
+          "count": 1
+        }
+      },
+      "preemptible": false,
+      "diskSize": 100
+    }
+  ],
+  "settings": {
+    "builds": {
+      "plan": "nf-compute-200"
+    },
+    "registry": {
+      "registryId": "my-registry-credentials"
+    },
+    "requestModifiers": {
+      "services": {
+        "cpu": 0.5,
+        "memory": 0.8
+      },
+      "jobs": {
+        "cpu": 0.5,
+        "memory": 0.8
+      },
+      "builds": {
+        "cpu": 0.2,
+        "memory": 0.5
+      },
+      "addons": {
+        "cpu": 0.5,
+        "memory": 0.8
+      }
+    }
+  },
+  "aws": {
+    "subnetConfiguration": {
+      "subnets": [
+        "eu-west-1a",
+        "eu-west-1a"
+      ],
+      "mode": "default-subnets-for-azs"
+    }
+  },
+  "dns": "xxxxxxxxxx",
+  "updatedAt": "2021-01-20T11:19:53.175Z",
+  "createdAt": "2021-01-20T11:19:53.175Z",
+  "deletionRequested": false
 }
 ```

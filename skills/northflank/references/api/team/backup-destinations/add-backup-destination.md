@@ -16,9 +16,9 @@ Required permission: Account > Platform > BackupDestinations > Create
 - `prefix`: (string) (required) A prefix path to add to the bucket objects if not writing to / (pattern: ^([a-zA-Z0-9-_]+)\/$)
 - `credentials`: {object}
   - `authMode`: (string) Whether the destination authenticates with static AWS credentials or a workload identity. (enum: staticCreds, workloadIdentity)
-  - `workloadIdentityId`: (multiple options) (string) | (string)
-  - `accessKey`: (multiple options) (string)
-  - `secretKey`: (multiple options) (string)
+  - `workloadIdentityId`: (multiple options) (string) ID of the workload identity used to authenticate with the S3 destination. | (string) ID of the workload identity used to authenticate with the S3 destination.
+  - `accessKey`: (multiple options) (string) Access key used to authenticate with the S3 destination.
+  - `secretKey`: (multiple options) (string) Secret key used to authenticate with the S3 destination.
   - `bucketName`: (string) (required)
   - `region`: (string) (required)
   - `endpoint`: (string) (required) S3 destination including region, fe s3.us-west-2.amazonaws.com
@@ -36,9 +36,9 @@ Required permission: Account > Platform > BackupDestinations > Create
   - `prefix`: (string) (required) A prefix path to add to the bucket objects if not writing to / (pattern: ^([a-zA-Z0-9-_]+)\/$)
   - `credentials`: {object}
     - `authMode`: (string) Whether the destination authenticates with static AWS credentials or a workload identity. (enum: staticCreds, workloadIdentity)
-    - `workloadIdentityId`: (multiple options) (string) | (string)
-    - `accessKey`: (multiple options) (string)
-    - `secretKey`: (multiple options) (string)
+    - `workloadIdentityId`: (multiple options) (string) ID of the workload identity used to authenticate with the S3 destination. | (string) ID of the workload identity used to authenticate with the S3 destination.
+    - `accessKey`: (multiple options) (string) Access key used to authenticate with the S3 destination.
+    - `secretKey`: (multiple options) (string) Secret key used to authenticate with the S3 destination.
     - `bucketName`: (string) (required)
     - `region`: (string) (required)
     - `endpoint`: (string) (required) S3 destination including region, fe s3.us-west-2.amazonaws.com
@@ -195,7 +195,7 @@ Options:
 
 #### Example request
 
-Request body
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
 await apiClient.add.backupDestination({
@@ -226,5 +226,54 @@ await apiClient.add.backupDestination({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.add.backup_destination(
+    data={
+        "name": "Example Backup Destination",
+        "type": "s3",
+        "usage": "globalBackups",
+        "prefix": "example/",
+        "credentials": {
+            "bucketName": "string",
+            "region": "string",
+            "endpoint": "string",
+        },
+    },
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "name": "Example Backup Destination",
+  "id": "example-backup-destination",
+  "type": "s3",
+  "usage": "globalBackups",
+  "prefix": "example/",
+  "credentials": {
+    "bucketName": "string",
+    "region": "string",
+    "endpoint": "string"
+  }
 }
 ```

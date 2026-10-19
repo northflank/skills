@@ -31,7 +31,9 @@ northflank download service file --projectId [project-name] --service [service-n
 For jobs, the analog commands can be used: `northflank [download|upload] job file <args>`
 
 > [!note]
+>
 > If the target directory does not exist, it will be created.
+
 Some arguments are optional in specific scenarios:
 
 - For downloads, the `--localPath` argument can be omitted. In this case the current working directory from which the CLI is started is used to stored the downloaded files.

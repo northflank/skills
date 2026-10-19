@@ -6,7 +6,7 @@ This endpoint is deprecated and will be removed in the future. Please avoid maki
 
 Requests should instead use the relevant GET endpoint.
 
-[Use /jobs/get-job instead](get-job.md)
+[Use /project/jobs/get-job instead](get-job.md)
 
 Returns the runtime environment for the given job. If the API key does not have the permission 'Project > Secrets > General > Read', secrets inherited from secret groups will not be displayed.
 
@@ -101,6 +101,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.job.runtimeEnvironment({
   parameters: {
@@ -135,5 +137,47 @@ await apiClient.get.job.runtimeEnvironment({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.job.runtime_environment(
+    job_id="example-job",
+    project_id="default-project",
+    replace_templated_values="true",
+    show="all",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "runtimeEnvironment": {
+    "VARIABLE_1": "abcdef",
+    "VARIABLE_2": "12345"
+  },
+  "runtimeFiles": {
+    "/dir/fileName": {
+      "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+      "encoding": "utf-8"
+    }
+  }
 }
 ```

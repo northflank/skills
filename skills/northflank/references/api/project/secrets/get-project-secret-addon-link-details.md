@@ -111,6 +111,8 @@ Options:
 
 #### Example request
 
+With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
+
 ```javascript
 await apiClient.get.secretLink({
   parameters: {
@@ -150,5 +152,54 @@ await apiClient.get.secretLink({
   "rawResponse": "...",
   "request": "...",
   "error": "..."
+}
+```
+
+### Python client reference
+
+#### Example request
+
+[Set up the Python client](../../use-the-python-client.md#usage).
+
+With an organization token, add `team_id`. [Organization API access](../../use-the-api.md#organization-api-access).
+
+```python
+from northflank import ApiClient
+
+# Reads NORTHFLANK_API_TOKEN or NF_API_TOKEN
+client = ApiClient()
+
+response = client.get.secret_link(
+    addon_id="example-addon",
+    project_id="default-project",
+    secret_id="example-secret",
+)
+print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "secretName": "Example secret group",
+  "secretId": "example-secret-group",
+  "addonName": "Example Addon",
+  "addonId": "example-addon",
+  "addonType": "mongodb",
+  "linked": true,
+  "linkedKeys": [
+    {
+      "keyName": "USERNAME",
+      "aliases": [
+        "MONGO_USERNAME"
+      ],
+      "defaultKey": "NF_EXAMPLE-ADDON_USERNAME"
+    }
+  ],
+  "availableKeys": [
+    "username"
+  ]
 }
 ```

@@ -11,34 +11,37 @@ Northflank is a developer platform for building, deploying, and scaling workload
 
 **Base API URL:** `https://api.northflank.com/v1/`  
 **Auth:** `Authorization: Bearer <token>`  
-**Rate limit:** 1000 req/hr (`x-ratelimit-remaining` header)
+**Rate limits:** Use the response rate-limit headers; limits depend on the account and server configuration.
 
 ## Before You Start
 
-Before writing any Northflank code, verify setup:
+Use the interface requested by the user. Check prerequisites only for that interface:
 
-1. **CLI or JS client?** Pick the interface that matches who's doing the work:
-   - **Prefer the CLI** when *you* (the agent) are operating on the user's Northflank account on their behalf — deploying a service, tailing logs, exec-ing into a container, forwarding a port, restarting a workload, inspecting state. The CLI uses the user's existing `northflank login` session, doesn't require an extra token in the environment, and keeps one-off operations auditable.
-   - **Use the JS client (`@northflank/js-client`) or REST API** when the *user* is building a feature, product, or automation **on top of** Northflank — i.e. code that will run in their app, script, or service. That's when you want a programmatic SDK, typed responses, retries, and an `NF_API_TOKEN` baked into their deployment.
-   - Rule of thumb: if the artefact of the task is "the operation happened," reach for the CLI. If the artefact is "code the user keeps and runs later," reach for the SDK.
+1. **MCP:** When connected, use its tools for platform operations. Do not install the CLI or request another API token for operations the MCP already supports. Use `deploy_app` for new image/Git apps, `deploy_job` for jobs, and detailed tools for existing resources or advanced settings.
+2. **CLI:** Use the user's existing `northflank login` session for CLI operations, local tunnels, exec, or workflows unavailable through the connected MCP. Check `northflank --help` only when using the CLI.
+3. **JS client or REST:** Use these when writing code the user will keep and run. Check for `@northflank/js-client` only when that code needs it. Resolve credentials through the user's existing setup; never print tokens.
+4. **Account and project:** Reuse known context. Project IDs are slugs, such as `my-project`. With MCP, call `get_auth_context` only when team or workload scope is unknown. Own-project workload credentials should use `workload.projectId`; do not enumerate all projects. For a requested new project, pass `newProject` to the deployment workflow.
 
-2. **CLI installed?** Check `northflank --help`. If missing:
-   ```bash
-   npm install -g @northflank/cli
-   # or
-   yarn global add @northflank/cli
-   ```
+## MCP not connected?
 
-3. **JS client installed?** Check `package.json` for `@northflank/js-client`. If missing:
-   ```bash
-   npm install @northflank/js-client
-   # or
-   yarn add @northflank/js-client
-   ```
+Follow [Connect your agent to Northflank](https://northflank.com/docs/v1/application/ai-agents/mcp-server) for client-specific setup and authentication.
 
-4. **API token set?** Check the environment for `NF_API_TOKEN` (or equivalent). If not set, tell the user to create one from their team page: **Team page → Team settings (top right) → API → Tokens → Create API token**. They also need an API role with appropriate permissions under **Team settings → API → Roles**.
+The hosted endpoint is `https://mcp.northflank.com/mcp`. It uses Streamable HTTP with `Authorization: Bearer <team API token>`. Team workload identity tokens are also supported. MCP OAuth login is not available in this setup.
 
-5. **Project ID known?** Most operations require a `projectId`. It's the slug of the project name (e.g. `"My Project"` → `my-project`). If using the CLI, set a default with `northflank context use project` or pass it explicitly. If using the JS client, list projects with `apiClient.list.projects({})`.
+Installing this skill does not configure the MCP server or grant account access. Help the user configure their requested client using the guide. Keep credentials in the client's secret storage or process environment, never in chat or committed files. Do not install the CLI as a prerequisite for the hosted MCP.
+
+After connection, use `get_auth_context` once if the team or access scope is unknown. For rotating workload tokens, use a client that reads the mounted token before requests or refreshes it after authentication fails. A static environment value does not refresh it.
+
+## Deploy with MCP
+
+1. **Inspect only what deployment needs.** For a local repository, read the remote, branch, HEAD and working-tree state once. Inspect the relevant Dockerfile or build configuration and listening port. Do not clone an already available checkout, scan the whole application, or run unrelated checks. Git deployment uses remote content: account for uncommitted or unpushed changes before claiming to deploy the local branch. Do not silently discard changes or push without user authorization.
+2. **Reuse context.** Keep known IDs and deployment choices. Use MCP inline schemas first. If an operation is not exposed directly, find it with `search_tools` and call it through `execute_tool`. Request omitted constraints with `get_tool_schema` only when needed. Execute returned `next.tool` names directly without another search. With older servers that lack catalog tools, use the exposed resource tools. Do not repeat repository inspection or catalogue calls after authorization.
+3. **Follow the tool workflow.** Use `deploy_app`, `deploy_job` or `create_database` for supported new workloads. Let their results direct Git authorization, recovery and status checks. Retain original inputs and returned resource/session IDs. Open authorization links when a browser is available; otherwise show the link and wait. Workload identities require a team member to grant missing Git access.
+4. **Report the evidence.** Follow returned phases, next steps and polling intervals. A live source revision does not prove that a specific rebuild of that commit is deployed. Check a web endpoint before claiming application health. Recover from existing resources after partial failure; do not repeat creation or execution blindly.
+
+Use `diagnose` for service, job or addon failures when the connected server exposes it. It gathers health, related infrastructure events, deployment revisions, logs, metrics and BYOC node-pool configuration. Missing permissions produce partial evidence. Treat correlations as leads, not proven causes. Use `get_deployment_status` or `get_addon` for routine polling.
+
+`list_addon_types` includes Northflank-managed and team custom addons. For managed databases, it provides versions, storage sizes and replica options. It does not discover storage classes for a BYOC cluster.
 
 ## Destructive Operations — Always Confirm First
 
@@ -49,10 +52,11 @@ Destructive operations include, at minimum:
 - `delete service` / `apiClient.delete.service` — irreversible; loses container state and any service-scoped configuration
 - **`delete addon` / `apiClient.delete.addon`** — **EXTRA CARE**: addons hold persistent data (databases, queues, caches). Deletion is irreversible and **destroys all data** unless the user has a recent backup. Always confirm the addon name back to the user, ask whether a backup exists, and do not proceed without an explicit "yes, delete `<addon-id>`."
 - `delete volume` — destroys persistent disk contents
-- `delete project` — wipes the entire namespace and every resource in it
+- `delete project` — removes a project; the MCP tool requires it to be empty. Recursive deletion through another interface also deletes its resources
 - `delete secret` — may break running workloads that depend on those keys
+- **`patch secret` / `update secret` / `put secret` / `patch service` with `runtimeEnvironment`, `runtimeFiles` or `ports`** — these replace the whole map or array you send, so sending one new key deletes every other key. Follow [Updating maps safely](#updating-maps-safely-secret-groups-and-service-env) and back up the current values first
 - `delete job` — removes the job and its run history
-- `delete template` / running a template that destroys resources
+- `delete template` / running a template that destroys resources, **or any `run template` against a project or environment other than the one it was written for** (see [Templates](#templates-what-they-are-and-what-a-run-does))
 - `delete domain` / `delete dns-record`
 - `delete cluster` (BYOC/BYOK) — affects every workload on that cluster
 - Any `patch` / `update` that **shrinks** persistent state (e.g. lowering replica count on an addon — Northflank rejects this anyway, but never attempt it as a workaround)
@@ -215,7 +219,7 @@ const svc = await apiClient.get.service({
   parameters: { projectId: 'my-project', serviceId: 'my-api' },
 });
 // Deployment rollout state: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED'
-// ('COMPLETED' = rolled out and serving, NOT "exited")
+// COMPLETED describes rollout completion, not application health or process exit.
 console.log(svc.data.status.deployment?.status);
 // Build state (only present for combined/build services):
 // 'QUEUED' | 'PENDING' | 'STARTING' | 'BUILDING' | 'SUCCESS' | 'FAILURE' | ...
@@ -312,12 +316,14 @@ const addonId = data.id; // 'my-postgres'
 
 ### Get addon credentials
 
+For an application connection, prefer a secret group with an addon link. Read credential values only when the task requires them. Keep them out of logs and chat.
+
 ```js
 const creds = await apiClient.get.addon.credentials({
   parameters: { projectId: 'my-project', addonId: 'my-postgres' },
 });
 // creds.data.username, creds.data.password, creds.data.connectionString, etc.
-console.log(creds.data.connectionString);
+// Pass required credentials directly to their destination. Do not log their values.
 ```
 
 ### Manage secret groups
@@ -330,11 +336,15 @@ await apiClient.create.secret({
   parameters: { projectId: 'my-project' },
   data: {
     name: 'app-secrets',
-    secretType: 'environment',   // 'environment' | 'build-arg' | 'global'
+    type: 'secret',              // 'secret' | 'config'
+    secretType: 'environment',   // 'environment' | 'arguments' | 'environment-arguments'
     priority: 10,
-    data: {
-      NODE_ENV: 'production',
-      API_KEY: 'supersecret',
+    secrets: {
+      variables: {
+        NODE_ENV: 'production',
+        API_KEY: 'supersecret',
+      },
+      // files: { '/etc/app.conf': { data: '<base64>' } },  // file contents must be base64
     },
     addonDependencies: [
       {
@@ -354,12 +364,39 @@ await apiClient.create.secret({
 // List secrets in project
 const { data } = await apiClient.list.secrets({ parameters: { projectId: 'my-project' } });
 
-// Update a secret group (add/change key)
+// Add or change ONE key without losing the others: read, merge, write the full map back
+const current = await apiClient.get.secret({
+  parameters: { projectId: 'my-project', secretId: 'app-secrets' },
+});
 await apiClient.patch.secret({
   parameters: { projectId: 'my-project', secretId: 'app-secrets' },
-  data: { data: { FEATURE_FLAG: 'true' } },
+  data: {
+    secrets: {
+      variables: { ...current.data.secrets.variables, FEATURE_FLAG: 'true' },
+    },
+  },
 });
 ```
+
+#### Updating maps safely (secret groups and service env)
+
+Verified against the API with the CLI: **`patch` does not merge inside a map.** Sending `secrets.variables`, `secrets.files`, a service's `runtimeEnvironment` / `runtimeFiles`, or a `ports` array replaces that whole value. Top-level fields you omit are left alone.
+
+| Request | Effect on a secret group that has `A`, `B`, `C` |
+| --- | --- |
+| `patch` / `update` with `{ description: 'x' }` | Only the description changes |
+| `patch` / `update` with `{ secrets: { variables: { D: '4' } } }` | **Variables become `{ D }`. `A`, `B`, `C` are deleted** |
+| `patch` / `update` with `{ data: { D: '4' } }` | Nothing changes and the call still returns success, because unknown body keys are ignored |
+| `put secret` (upsert by `name` in the body) | Like patch, but omitted `description` and `restrictions` reset to defaults |
+
+Rules for agents:
+
+1. To add or change one key, **read the group, merge into the existing map, and send the full map back** (as above). There is no per-key patch and no null-to-delete.
+2. Before any bulk secret or env rewrite, save the current key names (and values, if the user allows) so a mistake can be undone. A lost secret cannot be recovered from Northflank.
+3. After every write, read the group again and check the key set. A 200 response does not prove your change applied, since misspelled or misplaced fields are silently ignored.
+4. The same applies to `patch service deployment|combined|build`: `runtimeEnvironment`, `runtimeFiles` and `ports` are replaced whole, while nested objects such as `deployment` merge field by field. The `POST /services/{id}/ports` endpoint also replaces the full list.
+5. The CLI's `get service` output may omit the env map. Use `get secret` for groups, and the REST or JS client `get.service` response for service-level `runtimeEnvironment`.
+6. Prefer secret groups over per-service `runtimeEnvironment` for shared credentials, so one service update cannot clobber them.
 
 ### Pagination
 
@@ -404,7 +441,7 @@ const reset = rawResponse.headers.get('x-ratelimit-reset'); // seconds
 
 ## Compute & GPU Plans
 
-Full live tables (every compute plan, GPU SKU, pricing, and per-region GPU availability) are auto-generated into [references/plans.md](references/plans.md) by `scripts/generate_references.js`. Re-run with `--force` to refresh after Northflank ships new SKUs or price changes. The underlying endpoints are public — no auth needed:
+Full live tables (every compute plan, GPU SKU, pricing, and per-region GPU availability) are auto-generated into [references/plans.md](references/plans.md) by `scripts/generate_references.js`. Re-run with `--plans-only --force` to refresh after Northflank ships new SKUs or price changes. The underlying endpoints are public — no auth needed:
 
 ```bash
 curl -s https://api.northflank.com/v1/plans   | jq '.data.plans[]   | {id, cpu: .cpuResource, ramMB: .ramResource, hr: .amountPerHour}'
@@ -426,21 +463,28 @@ Format: `nf-compute-<cpu*100>-<ram_gb>` (newer, explicit) or `nf-compute-<cpu*10
 
 ### GPU plan slugs
 
-Format: `nf-gpu-<gpuType>-<count>g` (the `g` suffix is literal, not a unit). The plan bundles CPU/RAM around the GPU — you do **not** combine an `nf-compute-*` plan with a separate GPU. Worked example:
+Format: `nf-gpu-<gpuType>-<count>g`, replacing underscores with hyphens in the plan ID. Keep the original GPU type in `deployment.gpu.configuration.gpuType`. The `g` suffix is literal, not a unit. The plan bundles CPU/RAM around the GPU — you do **not** combine an `nf-compute-*` plan with a separate GPU. Worked example:
 
 ```js
 data: {
   billing: { deploymentPlan: 'nf-gpu-a100-80-1g' },  // 1× A100 80GB
   deployment: {
-    gpu: { enabled: true, gpuType: 'a100-80', gpuCount: 1 },
+    gpu: {
+      enabled: true,
+      configuration: { gpuType: 'a100-80', gpuCount: 1, timesliced: false },
+    },
+    storage: { shmSize: 32768 },
     // ...
   },
 }
 ```
 
-- `gpuType` is the model id (lowercase, no `nvidia-` prefix). Currently: `l4-24`, `a100-40`, `a100-80`, `h100-80`, `h200-141`, `b200-180`.
+- `gpuType` is the model id (lowercase, no `nvidia-` prefix). Currently: `l4-24`, `a100-40`, `a100-80`, `h100-80`, `h200-141`, `b200-180`, `rtx_pro_6000-96`.
 - `gpuCount` must be one of the model's `countOptions` (typically `1, 2, 4, 8`; H200 and B200 are 8-only). Invalid counts are rejected.
-- The `gpu` block can sit under `deployment.gpu` or `billing.gpu`; Northflank's own templates use `deployment.gpu`.
+- Set GPU configuration under `deployment.gpu.configuration`. Include `deployment.gpu.enabled: true`; placing it under `billing` does not enable GPU validation.
+- Counts vary by region. Query the target region's `gpuDevices[].countOptions`, not a global union of counts.
+- H100 1×/8× plans are `nf-gpu-h100-80-1g` / `nf-gpu-h100-80-8g`. RTX PRO 6000 1×/8× plans are `nf-gpu-rtx-pro-6000-96-1g` / `nf-gpu-rtx-pro-6000-96-8g`. `us-central` supports these configurations.
+- Ephemeral storage is optional for managed GPU workloads. The API sets `deployment.storage.ephemeralStorage.storageSize` from the GPU type and count, overriding supplied values. Shared memory is separate: `deployment.storage.shmSize` is optional and defaults to 64 MiB. Set it explicitly within the plan's system RAM if the workload needs more. The example requests 32 GiB. For allocations and older API errors, read [references/gpu-storage.md](references/gpu-storage.md).
 - GPU billing is per GPU per hour, on top of the bundled compute. Pricing and per-region availability live in [references/plans.md](references/plans.md).
 
 For BYOC clusters, GPU node types come from the cloud provider — query with `apiClient.list.cloudProviders.nodeTypes({ options: { hasGpu: true } })` and define custom resource plans (see `references/guides/bring-your-own-cloud.md#create-custom-resource-plans`). Timeslicing is supported on BYOC, not on managed cloud.
@@ -449,41 +493,63 @@ For Northflank-published GPU base images (PyTorch + CUDA + Jupyter pre-installed
 
 ## Common Patterns
 
-### Deploy and watch until healthy
+### Follow deployment progress and check application health
 
-```js
-await apiClient.create.service.deployment({ parameters: { projectId }, data: { ...serviceSpec } });
+With MCP, follow `get_deployment_status` next actions and polling intervals. With the CLI or SDK, poll rollout state with a deadline. Stop on failure or deadline expiry and report the observed state. Do not repeat creation to poll.
 
-// Poll until the deployment has rolled out
-let status;
-do {
-  await new Promise((r) => setTimeout(r, 2000));
-  const svc = await apiClient.get.service({ parameters: { projectId, serviceId: 'my-api' } });
-  status = svc.data.status.deployment?.status;
-  if (status === 'FAILED') throw new Error('Deployment failed');
-} while (status !== 'COMPLETED');
-```
+`COMPLETED` describes rollout completion. It does not prove application health. For a web application, make sure that the endpoint returns the expected response before reporting success. For other workloads, use an appropriate application-level check.
 
 ### Auto-scaling configuration (in create/patch data)
 
 ```js
 data: {
-  deployment: {
-    instances: 1,
-    autoscaling: {
-      horizontal: {
-        enabled: true,
-        minReplicas: 1,
-        maxReplicas: 10,
-        cpu: { enabled: true, thresholdPercentage: 70 },
-        rps: { enabled: true, thresholdValue: 500 },
-      },
+  deployment: { instances: 1 },
+  autoscaling: {
+    horizontal: {
+      enabled: true,
+      minReplicas: 1,
+      maxReplicas: 10,
+      cpu: { enabled: true, thresholdPercentage: 70 },
+      rps: { enabled: true, thresholdValue: 500 },
     },
   },
 }
 ```
 
-### Run a template
+### Templates: what they are and what a run does
+
+A template is Northflank's infrastructure-as-code unit: a spec of nodes (projects, services, add-ons, jobs, secret groups, pipelines, actions). **Running a template applies it to real resources.** It is not a dry run, and it is not a copy of a project.
+
+| Type | Scope | Used for |
+| --- | --- | --- |
+| Team template | Whole team. Can create projects, clusters, services, databases, pipelines | Provisioning or replicating a full stack |
+| Release flow | One pipeline stage | Shipping a release: backup, build, migrate, promote |
+| Preview environment (preview blueprint) | One pipeline | Ephemeral environments per branch or pull request, torn down on close |
+
+**A preview template is not a production deploy mechanism.** If a project has a single template and it is a preview blueprint, do not run it against production because it is the only one. Say so, and ask the user which template and which project or environment they mean.
+
+What happens on each run, per resource node (`updateMode`, default `put`):
+
+| `updateMode` | Behavior |
+| --- | --- |
+| `put` (default) | Creates the resource if missing, or **replaces its configuration** with the spec. Omitted configurable fields can reset or clear |
+| `patch` | Updates only the supplied fields. Fails if the resource does not exist. Arrays and some objects still replace whole values (see [Updating maps safely](#updating-maps-safely-secret-groups-and-service-env)) |
+| `create` | Creates if missing, otherwise skips and leaves the existing resource untouched |
+
+Other facts that cause surprises:
+
+- A node's `name` identifies the target resource. Changing the name creates a second resource next to the old one. Removing a node does **not** delete its resource.
+- Project context comes from the node or its parent workflow, and one template can touch several projects. Read the context on every node, not just the first.
+- Templates with automatic runs enabled (and GitOps-linked templates) run **as soon as they are saved or pushed**. Editing one can change production immediately.
+- Northflank dry-runs only reference, argument and function resolution before execution. It does not preview which resources will be replaced.
+
+Before every `run template`:
+
+1. Read it: `northflank get template --template <id>` (or `apiClient.get.template`). List each node's kind, `updateMode`, project context and `name`.
+2. Compare the node names to what already exists in the target project. Every match under `put` will be overwritten.
+3. State to the user: template ID, type, target project(s), which resources will be created and which replaced, then wait for an explicit yes tied to that run (see the confirmation rules above).
+4. Pass the target through `arguments` where the template supports it, rather than editing the template to point at another project.
+5. After the run, check the run status and read back the changed resources.
 
 ```js
 await apiClient.run.template({
@@ -527,11 +593,11 @@ await apiClient.start.job.run({ parameters: { projectId: 'my-project', jobId: 'd
 2. **Addon storage and replicas** can only increase, never decrease after creation.
 3. **Secret groups with addon links** auto-update connection strings when add-ons rotate credentials or change.
 4. **Port names** max 8 chars, must start with a letter.
-5. **Rate limit is 1000/hr** — batch operations, check `x-ratelimit-remaining`.
+5. **Rate limits vary** — check the response rate-limit headers and pace operations accordingly.
 6. **`put.*` methods use upsert semantics** — create if missing, update if present. Useful for idempotent IaC.
 7. **Pause ≠ delete** — paused services stop billing for compute but keep config and volumes.
 8. **`northflank exec --cmd "..."` swallows output without a TTY** — in CI, agent harnesses, or anything wrapped in `bash -c`, stdout/stderr are silently discarded. Wrap with `script -q /dev/null northflank exec ...` (macOS/BSD) or `script -qfc 'northflank exec ...' /dev/null` (Linux) to capture output.
-9. **Service `status === "COMPLETED"` means "deployment rolled out", not "process exited"** — when polling `svc.data.status.deployment.status` (or top-level `status.status` in `northflank get service -o json`), `COMPLETED` indicates the container is up and serving. The natural reading is the opposite, so don't treat it as a terminal/finished state.
+9. **Service `status === "COMPLETED"` describes rollout completion, not process exit.** It does not prove application health. Make sure that the application responds as expected before reporting success.
 
 ## Reference Cheat Sheet
 
