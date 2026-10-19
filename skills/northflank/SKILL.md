@@ -362,15 +362,25 @@ await apiClient.create.secret({
 // List secrets in project
 const { data } = await apiClient.list.secrets({ parameters: { projectId: 'my-project' } });
 
-// Add or change ONE key without losing the others: read, merge, write the full map back
+// Requires readValues permission. Read only values owned by this group.
 const current = await apiClient.get.secret({
   parameters: { projectId: 'my-project', secretId: 'app-secrets' },
+  options: { show: 'this' },
 });
+const variables = current.data.secrets.variables;
+if (
+  !variables || typeof variables !== 'object' || Array.isArray(variables) ||
+  Object.values(variables).some(value =>
+    typeof value !== 'string' || value === '[REDACTED]' || /^\*+$/.test(value)
+  )
+) {
+  throw new Error('Cannot update secrets without a complete, unredacted variable map.');
+}
 await apiClient.patch.secret({
   parameters: { projectId: 'my-project', secretId: 'app-secrets' },
   data: {
     secrets: {
-      variables: { ...current.data.secrets.variables, FEATURE_FLAG: 'true' },
+      variables: { ...variables, FEATURE_FLAG: 'true' },
     },
   },
 });
@@ -387,12 +397,14 @@ await apiClient.patch.secret({
 | `patch` / `update` with `{ data: { D: '4' } }` | Nothing changes and the call still returns success, because unknown body keys are ignored |
 | `put secret` (upsert by `name` in the body) | Like patch, but omitted `description` and `restrictions` reset to defaults |
 
-1. To add or change one key, **read the group, merge into the existing map, and send the full map back** (as above). There is no per-key patch and no null-to-delete.
+1. To add or change one key, read the group's own values with `show: 'this'` and `readValues` permission. Merge into the complete, unredacted map and send it back. Do not copy inherited addon values into the group. There is no per-key patch and no null-to-delete.
 2. Before any bulk secret or env rewrite, save the current key names (and values, if the user allows) so a mistake can be undone. A lost secret cannot be recovered from Northflank.
-3. After every write, read the group again and check the key set. A 200 response does not prove your change applied, since misspelled or misplaced fields are silently ignored.
+3. After every write, read the group again and check the key set and intended values without logging secrets. Checking key names alone cannot detect overwritten values. A 200 response does not prove your change applied, since misspelled or misplaced fields are silently ignored.
 4. The same applies to `patch service deployment|combined|build`: `runtimeEnvironment`, `runtimeFiles` and `ports` are replaced whole, while nested objects such as `deployment` merge field by field. The `POST /services/{id}/ports` endpoint also replaces the full list.
 5. The CLI's `get service` output may omit the env map. Use `get secret` for groups, and the REST or JS client `get.service` response for service-level `runtimeEnvironment`.
 6. Prefer secret groups over per-service `runtimeEnvironment` for shared credentials, so one service update cannot clobber them.
+
+Without `readValues` permission, the API returns asterisks in place of secret values. MCP also redacts secret maps. Never write these placeholders back: the API stores them as literal values. If a read is redacted or incomplete, stop the merge. Use an authorized unredacted read or a complete map from the user's authoritative secret source. The same restriction applies to secret files and service environment maps.
 
 ### Pagination
 
@@ -534,7 +546,7 @@ What happens on each run, per resource node (`updateMode`, default `put`):
 
 - A node's `name` identifies the target resource. Changing the name creates a second resource next to the old one. Removing a node does **not** delete its resource.
 - Project context comes from the node or its parent workflow, and one template can touch several projects. Read the context on every node, not just the first.
-- Templates with automatic runs enabled (and GitOps-linked templates) run **as soon as they are saved or pushed**. Editing one can change production immediately.
+- When automatic runs are enabled, template changes through the UI, API, or GitOps trigger execution. GitOps linking alone does not enable automatic runs.
 - Northflank dry-runs only reference, argument and function resolution before execution. It does not preview which resources will be replaced.
 
 Before every `run template`:
