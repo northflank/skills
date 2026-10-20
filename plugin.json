@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "northflank",
+  "description": "Deploys, manages, and automates workloads on Northflank, including services, jobs, addons, preview environments, release workflows, sandboxes, GPU workloads, domains, secrets, and templates",
+  "version": "1.2.7",
+  "author": {
+    "name": "Northflank"
+  },
+  "repository": "https://github.com/northflank/skills",
+  "keywords": [
+    "northflank",
+    "skill",
+    "kubernetes",
+    "deployment",
+    "platform",
+    "sandboxes",
+    "gpu",
+    "preview-environments"
+  ]
+}
