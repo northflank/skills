@@ -24,11 +24,34 @@ claude plugin install northflank@northflank
 
 ### OpenAI Codex
 
-Install the Northflank Skill using Codex's built-in skill installer:
+Install the Northflank plugin from its Git marketplace with a Codex version that supports `codex plugin`:
+
+```bash
+codex plugin marketplace add northflank/skills --ref master
+codex plugin add northflank@northflank
+```
+
+Start a new Codex session after installation. The plugin includes the same skill and references as the Claude Code plugin. It does not configure the Northflank MCP server.
+
+To refresh the marketplace from GitHub:
+
+```bash
+codex plugin marketplace upgrade northflank
+```
+
+Restart Codex after refreshing. This setup tracks `master`; a fixed commit would stay pinned. Run the refresh command when you need the latest version. See [Codex plugin packaging and marketplaces](https://developers.openai.com/plugins/build/plugins).
+
+Workspace admins can instead import this repository as a GitHub marketplace. Workspace imports support automatic daily sync. See [workspace plugin management](https://learn.chatgpt.com/docs/enterprise/plugin-management).
+
+If you previously installed the skill separately, remove that standalone copy to avoid loading it alongside the plugin.
+
+For Codex versions without plugin support, use the built-in skill installer:
 
 ```text
 $skill-installer https://github.com/northflank/skills/tree/master/skills/northflank
 ```
+
+This installs a standalone copy rather than a marketplace-managed plugin.
 
 ### Skills CLI
 
@@ -69,6 +92,10 @@ Examples:
 
 ```text
 northflank-skill/
+├── plugin.json
+├── .agents/
+│   └── plugins/
+│       └── marketplace.json
 ├── .claude-plugin/
 │   ├── marketplace.json
 │   └── plugin.json
@@ -83,7 +110,8 @@ northflank-skill/
 
 ## Maintainers
 
-- The repository root is both the marketplace root and the `northflank` plugin root (`source: "./"` in `marketplace.json`).
+- The repository root is both the marketplace root and the `northflank` plugin root. The Codex and Claude marketplace entries both point to `./`.
+- `plugin.json` uses the portable Agent Plugins format. `.claude-plugin/plugin.json` provides the Claude Code manifest. Keep their names, versions, and shared metadata in sync when releasing.
 - The skill lives at `./skills/northflank/`.
 - Generated references under `skills/northflank/references/guides/` and `skills/northflank/references/api/` are rebuilt from Northflank's `llms.txt` index.
 - Refresh generated references with `./skills/northflank/scripts/update-references.sh`
