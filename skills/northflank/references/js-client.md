@@ -36,7 +36,7 @@ const apiClient = new ApiClient(contextProvider, {
 
 The SDK does not throw on HTTP failures by default. Enable this option in agent scripts, or inspect `response.error` before reading `response.data`. A resolved promise does not prove that a resource was created. Stop dependent operations and surface the API message on failure.
 
-If the API rejects creation because of a payment method, follow the [error-handling guidance](../SKILL.md#error-handling). Do not treat every HTTP 409 as a duplicate-resource error or retry without resolving the reported cause.
+If the API rejects creation because of a payment method, follow [Operation failures](../SKILL.md#operation-failures). Do not treat every HTTP 409 as a duplicate-resource error or retry without resolving the reported cause.
 
 ## Request Shape
 

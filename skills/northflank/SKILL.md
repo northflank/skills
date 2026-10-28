@@ -20,11 +20,19 @@ Use the interface requested by the user and reuse their existing authenticated s
 3. **JS client or REST:** Use these when writing code the user will keep and run. Check for `@northflank/js-client` only when that code needs it. Resolve credentials through the user's existing setup; never print tokens.
 4. **Account and project:** Reuse known context. Project IDs are slugs, such as `my-project`. With MCP, call `get_auth_context` only when team or workload scope is unknown. Own-project workload credentials should use `workload.projectId`; do not enumerate all projects. For a requested new project, pass `newProject` to the deployment workflow.
 
+## Operation failures
+
+For MCP, CLI, SDK, or REST failures, report the API message before proposing recovery. Stop dependent operations until the failure is resolved.
+
+If the API reports a missing, expired, or unverified default payment method, explain that billing blocks the operation. Direct the user to Billing → Payment methods for the affected team or organization. Ask them to add or update the default method. Wait for the user to resolve billing before retrying. Do not request card details in chat. See [Add a payment method](references/guides/billing.md#add-a-card).
+
+Do not treat HTTP 409 alone as a duplicate-resource error. Read the API message and recovery guidance. After a partial workflow failure, retain created resource IDs and inspect their state before resuming.
+
 ## MCP not connected?
 
 If `NORTHFLANK_API_TOKEN_FILE` is set in a harness, follow [Managed harnesses](references/cli.md#managed-harnesses) instead of browser login.
 
-For local Claude Code, Codex, Cursor, or OpenCode, use the latest Northflank CLI and the existing team login. If the CLI is missing, install it with `pnpm add -g @northflank/cli@latest`. It requires Node.js 22.13.0 or later, excluding 26.0.x.
+For local Claude Code, Codex, Cursor, or OpenCode, use the latest Northflank CLI and the existing team login. If the CLI is missing, install it with `pnpm add -g @northflank/cli@latest` or `npm install -g @northflank/cli@latest`. It requires Node.js 22.13.0 or later, excluding 26.0.x.
 
 If login is needed, run `nf login` and wait for the user to select their team in the browser. Keep the command running until login completes. Never print credentials or ask the user to paste a token.
 
@@ -90,6 +98,7 @@ Confirmation rules:
 
 ```bash
 pnpm add -g @northflank/cli@latest
+# Or install with: npm install -g @northflank/cli@latest
 northflank login
 northflank context ls
 northflank context use
@@ -457,9 +466,7 @@ if (result.error) {
 }
 ```
 
-If the API reports a missing, expired, or unverified default payment method, explain that billing blocks the requested operation. Direct the user to Billing → Payment methods for the affected team or organization. Ask them to add or update the default method, then wait before retrying. Do not request card details in chat. See [Add a payment method](references/guides/billing.md#add-a-card).
-
-Do not treat HTTP 409 alone as a duplicate-resource error. Read the API message and recovery guidance. After a partial workflow failure, retain created resource IDs and inspect their state before resuming.
+For billing errors, HTTP 409 responses, or partial workflow failures, follow [Operation failures](#operation-failures).
 
 ### Rate limit headers
 

@@ -12,6 +12,8 @@ Install the latest CLI with Node.js 22.13.0 or later, excluding 26.0.x:
 pnpm add -g @northflank/cli@latest
 ```
 
+Alternatively, install with `npm install -g @northflank/cli@latest`.
+
 If you need to log in, run `nf login` and select your team in the browser. Then run:
 
 ```sh

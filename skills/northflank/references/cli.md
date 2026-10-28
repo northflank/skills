@@ -7,6 +7,8 @@ pnpm add -g @northflank/cli@latest
 nf --version
 ```
 
+Alternatively, install with `npm install -g @northflank/cli@latest`.
+
 Requires Node.js 22.13.0 or later, excluding 26.0.x. Both `nf` and `northflank` run the same CLI.
 
 ## Authentication
