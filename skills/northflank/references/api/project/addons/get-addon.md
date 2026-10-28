@@ -32,8 +32,8 @@ Required permission: Project > Addons > General > Read
         - `lifecycleStatus`: (string) (required) The support status of the current addon version. (enum: active, deprecated, discontinued)
         - `deployment`: {object}
           - `replicas`: (integer) (required) The number of replicas running for this addon.
-          - `storageClass`: (string) (required) The type of storage used by the addon.
-          - `storageSize`: (number) (required) The size of the addon storage, in MB. (format: float)
+          - `storageClass`: (string) The type of storage used by the addon.
+          - `storageSize`: (number) The size of the addon storage, in MB. (format: float)
           - `planId`: (string) (required) The deployment plan used by the addon.
           - `region`: (string) (required) The region where the addon is deployed.
         - `networking`: {object}
@@ -44,6 +44,7 @@ Required permission: Project > Addons > General > Read
               - `address`: (string) (required) An IP address used by this rule.
               - `action`: (string) (required) The action for this rule. (enum: DENY, ALLOW)
         - `typeSpecificSettings`: {object}
+          - `memcachedAuthenticationEnabled`: (boolean) Memcached only: Whether SASL authentication is enabled. Cannot be changed after creation.
           - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Whether Supabase mode is enabled (loads supabase extensions and supautils). Set at creation, cannot be changed afterwards.
           - `postgresqlEdbMode`: (boolean) PostgreSQL only: Whether EDB mode is enabled (loads the EDB extension set). Set at creation, cannot be changed afterwards.
         - `secretRotation`: {object}
@@ -109,6 +110,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}
           ]
         },
         "typeSpecificSettings": {
+          "memcachedAuthenticationEnabled": false,
           "postgresqlSupabaseMode": true,
           "postgresqlEdbMode": true
         },
@@ -192,6 +194,7 @@ Options:
         ]
       },
       "typeSpecificSettings": {
+        "memcachedAuthenticationEnabled": false,
         "postgresqlSupabaseMode": true,
         "postgresqlEdbMode": true
       },
@@ -274,6 +277,7 @@ await apiClient.get.addon({
           ]
         },
         "typeSpecificSettings": {
+          "memcachedAuthenticationEnabled": false,
           "postgresqlSupabaseMode": true,
           "postgresqlEdbMode": true
         },
@@ -365,6 +369,7 @@ print(response.data)
         ]
       },
       "typeSpecificSettings": {
+        "memcachedAuthenticationEnabled": false,
         "postgresqlSupabaseMode": true,
         "postgresqlEdbMode": true
       },

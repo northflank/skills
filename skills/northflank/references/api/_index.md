@@ -6,8 +6,8 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 
 - [Miscellaneous](miscellaneous/_index.md) — 3 endpoints
 - [Org](org/_index.md) — 67 endpoints
-- [Project](project/_index.md) — 224 endpoints
-- [Team](team/_index.md) — 187 endpoints
+- [Project](project/_index.md) — 230 endpoints
+- [Team](team/_index.md) — 188 endpoints
 
 ## Pages
 

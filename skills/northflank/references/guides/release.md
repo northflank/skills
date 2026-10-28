@@ -657,6 +657,10 @@ Preview blueprints create ephemeral environments for testing pull requests and b
 
 Click on any preview to view its resources and access URLs.
 
+You can [configure a notification integration](observe.md#configure-notification-integrations) to follow preview blueprint runs from queuing to completion. Select the events you want under Previews → Blueprint Runs in an account or team integration. These notifications cover setup runs. They do not report teardown runs or the ongoing health of preview workloads.
+
+Use project filters to limit which previews send notifications. Resource-tag filters do not apply to preview run events.
+
 ### Manage preview blueprints: Create a preview environment manually
 
 You can create a preview environment without waiting for a Git trigger:

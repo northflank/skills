@@ -52,6 +52,12 @@ Required permission: Account > Observability > Notifications > Read
     - `trigger:release-flow-template-run:success`: (boolean)
     - `trigger:release-flow-template-run:failure`: (boolean)
     - `trigger:release-flow-template-run:aborted`: (boolean)
+    - `trigger:preview-blueprint-run:queued`: (boolean)
+    - `trigger:preview-blueprint-run:start`: (boolean)
+    - `trigger:preview-blueprint-run:success`: (boolean)
+    - `trigger:preview-blueprint-run:failure`: (boolean)
+    - `trigger:preview-blueprint-run:aborted`: (boolean)
+    - `trigger:preview-blueprint-run:skipped`: (boolean)
     - `trigger:template-run:queued`: (boolean)
     - `trigger:template-run:start`: (boolean)
     - `trigger:template-run:update`: (boolean)
@@ -150,6 +156,12 @@ GET /v1/teams/{teamId}/integrations/notifications/{notificationId}
       "trigger:release-flow-template-run:success": true,
       "trigger:release-flow-template-run:failure": true,
       "trigger:release-flow-template-run:aborted": true,
+      "trigger:preview-blueprint-run:queued": true,
+      "trigger:preview-blueprint-run:start": true,
+      "trigger:preview-blueprint-run:success": true,
+      "trigger:preview-blueprint-run:failure": true,
+      "trigger:preview-blueprint-run:aborted": true,
+      "trigger:preview-blueprint-run:skipped": true,
       "trigger:template-run:queued": true,
       "trigger:template-run:start": true,
       "trigger:template-run:update": true,
@@ -259,6 +271,12 @@ Options:
     "trigger:release-flow-template-run:success": true,
     "trigger:release-flow-template-run:failure": true,
     "trigger:release-flow-template-run:aborted": true,
+    "trigger:preview-blueprint-run:queued": true,
+    "trigger:preview-blueprint-run:start": true,
+    "trigger:preview-blueprint-run:success": true,
+    "trigger:preview-blueprint-run:failure": true,
+    "trigger:preview-blueprint-run:aborted": true,
+    "trigger:preview-blueprint-run:skipped": true,
     "trigger:template-run:queued": true,
     "trigger:template-run:start": true,
     "trigger:template-run:update": true,
@@ -368,6 +386,12 @@ await apiClient.get.notification({
       "trigger:release-flow-template-run:success": true,
       "trigger:release-flow-template-run:failure": true,
       "trigger:release-flow-template-run:aborted": true,
+      "trigger:preview-blueprint-run:queued": true,
+      "trigger:preview-blueprint-run:start": true,
+      "trigger:preview-blueprint-run:success": true,
+      "trigger:preview-blueprint-run:failure": true,
+      "trigger:preview-blueprint-run:aborted": true,
+      "trigger:preview-blueprint-run:skipped": true,
       "trigger:template-run:queued": true,
       "trigger:template-run:start": true,
       "trigger:template-run:update": true,
@@ -486,6 +510,12 @@ print(response.data)
     "trigger:release-flow-template-run:success": true,
     "trigger:release-flow-template-run:failure": true,
     "trigger:release-flow-template-run:aborted": true,
+    "trigger:preview-blueprint-run:queued": true,
+    "trigger:preview-blueprint-run:start": true,
+    "trigger:preview-blueprint-run:success": true,
+    "trigger:preview-blueprint-run:failure": true,
+    "trigger:preview-blueprint-run:aborted": true,
+    "trigger:preview-blueprint-run:skipped": true,
     "trigger:template-run:queued": true,
     "trigger:template-run:start": true,
     "trigger:template-run:update": true,

@@ -463,7 +463,7 @@ The [default VPC](https://docs.aws.amazon.com/vpc/latest/userguide/work-with-def
 
 For production deployments, [use a custom VPC](bring-your-own-cloud.md#amazon-web-services-on-northflank-use-a-custom-vpc) to select private subnets or access other services in your AWS account. Private nodes can still receive workload traffic through public ingress. See [Public and VPC ingress](bring-your-own-cloud.md#configure-your-cluster-public-and-vpc-ingress) for cluster ingress choices. Separate VPCs are defined for each [region](bring-your-own-cloud.md#amazon-web-services-on-northflank-check-your-quotas).
 
-You can select which subnets (and therefore availability zones) will host the control plane components for your cluster, this has no impact on the subnets that you can select for node pools. You should select between 2 and 4 subnets for the cluster's control plane.
+In Subnets, select at least two subnets in different availability zones that support Amazon EKS. You select node pool subnets separately.
 
 #### Amazon Web Services on Northflank: Configure node pools
 
@@ -542,7 +542,9 @@ Custom VPC example
 
 #### Amazon Web Services on Northflank: Cluster subnet selection
 
-You can select which subnets (and therefore availability zones) will host the control plane components for your cluster, this has no impact on the subnets that you can select for node pools. You should select between 2 and 4 subnets for the cluster's control plane.
+Control plane subnets must span at least two availability zones that support Amazon EKS. We recommend two to four subnets. Selecting more can prevent provisioning in regions with limited capacity.
+
+You select node pool subnets separately, based on the instance type and available subnets.
 
 Keep at least one public subnet in your custom VPC, including for private-only ingress. You do not need to select that public subnet for the cluster.
 

@@ -10,7 +10,6 @@ Required permission: Project > PreviewBlueprints > General > Create
 
 {object}
 - `projectId`: (string) (required) ID of the project
-- `previewBlueprintId`: (string) (required) ID of the preview blueprint
 
 **Request body:**
 
@@ -304,8 +303,6 @@ $ northflank create preview-blueprint
 Options:
 
 - `--projectId <projectId>`: ID of the project
-
-- `--previewBlueprintId <previewBlueprintId>`: ID of the preview blueprint
 
 - `-f --file <file>`: Path to a JSON/YAML resource definition file
 

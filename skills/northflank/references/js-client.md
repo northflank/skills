@@ -29,9 +29,14 @@ await contextProvider.addContext({
   token: process.env.NF_API_TOKEN,
 });
 
-// Pass true to throw on HTTP error responses
-const apiClient = new ApiClient(contextProvider, true);
+const apiClient = new ApiClient(contextProvider, {
+  throwErrorOnHttpErrorCode: true,
+});
 ```
+
+The SDK does not throw on HTTP failures by default. Enable this option in agent scripts, or inspect `response.error` before reading `response.data`. A resolved promise does not prove that a resource was created. Stop dependent operations and surface the API message on failure.
+
+If the API rejects creation because of a payment method, follow [Operation failures](../SKILL.md#operation-failures). Do not treat every HTTP 409 as a duplicate-resource error or retry without resolving the reported cause.
 
 ## Request Shape
 

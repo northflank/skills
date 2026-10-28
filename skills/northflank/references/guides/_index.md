@@ -7,7 +7,7 @@ Generated from the application pages listed in `https://northflank.com/docs/llms
 - [Ai Agents](ai-agents.md) — 3 pages
 - [Billing](billing.md) — 10 pages
 - [Bring Your Own Cloud](bring-your-own-cloud.md) — 18 pages
-- [Build](build.md) — 10 pages
+- [Build](build.md) — 12 pages
 - [Cloud Harness](cloud-harness.md) — 2 pages
 - [Cloud Integrations](cloud-integrations.md) — 4 pages
 - [Collaborate](collaborate.md) — 5 pages

@@ -12,7 +12,7 @@
 
 1. Open your team page, then go to Team Settings -> API -> Tokens -> Create API token
 2. Make sure an API role exists under Team Settings -> API -> Roles with the required permissions
-3. Use in CLI: `northflank login -t <token>`
+3. Enter the token through the CLI prompt: `northflank login --token-login`.
 
 ## URL Structure
 
@@ -335,8 +335,8 @@ Global secrets (team-level):
 import { ApiClient, ApiClientInMemoryContextProvider } from '@northflank/js-client';
 
 const contextProvider = new ApiClientInMemoryContextProvider();
-await contextProvider.addContext({ name: 'default', token: '<API_TOKEN>' });
-const apiClient = new ApiClient(contextProvider);
+await contextProvider.addContext({ name: 'default', token: process.env.NF_API_TOKEN });
+const apiClient = new ApiClient(contextProvider, { throwErrorOnHttpErrorCode: true });
 
 // List projects
 const { data } = await apiClient.list.projects({});
@@ -352,5 +352,7 @@ const all = await apiClient.list.projects.all({});
 ```
 
 The JS client mirrors the API structure: `apiClient.<action>.<resource>({ parameters, data, options })`.
+
+This example throws on HTTP errors. Without that option, inspect `result.error` before using `result.data`. Follow the [error-handling guidance](../SKILL.md#error-handling) before retrying failed operations.
 
 For JavaScript client usage docs, see `api/use-the-javascript-client.md`.

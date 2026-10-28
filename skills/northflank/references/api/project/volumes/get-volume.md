@@ -35,6 +35,8 @@ Required permission: Project > Volumes > General > Read
        - `day`: [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday.
      - `retentionTime`: (integer) (required) The time the backup is retained for, in days.
   - `status`: (string) (required) Status the volume is in on the cluster
+  - `migration`: {object}
+    - `status`: (string) (required) (enum: PENDING, SNAPSHOTTING, RESTORING, RELOCATING, ATTACHING, COMPLETED, FAILED)
   - `createdAt`: (string) (required) The timestamp the volume was created at (format: date-time)
   - `updatedAt`: (string) (required) The timestamp the volume was last updated at (format: date-time)
 

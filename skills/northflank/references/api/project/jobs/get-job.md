@@ -82,6 +82,14 @@ Required permission: Project > Jobs > General > Read
   - `disabledCI`: (boolean) (required) Whether Continuous Integration is disabled
   - `disabledCD`: (boolean) (required) Whether Continuous Deployment is disabled
   - `deployment`: {object}
+    - `image`: {object}
+      - `projectId`: (string) (required) (min length: 24) (max length: 24)
+      - `name`: (string) (required)
+      - `group`: (string)
+      - `tag`: (string) (required)
+    - `importedImage`: {object}
+      - `projectId`: (string) (required) (min length: 24) (max length: 24)
+      - `imageId`: (string) (required) (min length: 24) (max length: 24)
     - `region`: (string) Region where this job is deployed and built
     - `buildpack`: {object}
       - `configType`: (string) (required) Type of buildpack run configuration. (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)

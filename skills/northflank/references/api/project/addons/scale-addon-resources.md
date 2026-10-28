@@ -22,7 +22,7 @@ Required permission: Project > Addons > General > Update
 
 {object}
 - `deploymentPlan`: (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `storage`: (integer) The size of the addon storage, in megabytes.
+- `storage`: (integer) The size of the addon storage, in megabytes. Omit for stateless addon types such as Memcached.
 - `replicas`: (integer) The number of addon replicas to run.
 
 **Response body:**

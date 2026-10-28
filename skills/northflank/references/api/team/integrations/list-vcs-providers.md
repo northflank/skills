@@ -6,6 +6,13 @@ Lists linked version control providers
 
 Required permission: Account > Git > General > Read
 
+**Query parameters:**
+
+{object}
+- `per_page`: (integer) The number of results to display per request. Maximum of 100 results per page.
+- `page`: (integer) The page number to access.
+- `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
+
 **Response body:**
 
 {object}
@@ -25,6 +32,10 @@ Required permission: Account > Git > General > Read
      - `originRepoSelectionMode`: (string) Whether the Origin installation grants all or selected repositories. (enum: all, selected)
      - `originScopes`: [array of] (string)
      - `originMissingScopes`: [array of] (string)
+- `pagination`: {object}
+  - `hasNextPage`: (boolean) (required) Is there another page of results available?
+  - `cursor`: (string) The cursor to access the next page of results.
+  - `count`: (number) (required) The number of results returned by this request. (format: float)
 
 ### API reference
 
@@ -53,6 +64,10 @@ GET /v1/teams/{teamId}/integrations/vcs
         "originTargetSlug": "example-team"
       }
     ]
+  },
+  "pagination": {
+    "hasNextPage": false,
+    "count": 1
   }
 }
 ```
@@ -62,6 +77,12 @@ GET /v1/teams/{teamId}/integrations/vcs
 $ northflank list vcs
 
 Options:
+
+- `--per_page <per_page>`: The number of results to display per request. Maximum of 100 results per page.
+
+- `--page <page>`: The page number to access.
+
+- `--cursor <cursor>`: The cursor returned from the previous page of results, used to request the next page.
 
 - `--verbose `: Verbose output
 
@@ -99,7 +120,12 @@ Options:
 With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
 ```javascript
-await apiClient.list.vcs({});
+await apiClient.list.vcs({
+  options: {
+    "per_page": 50,
+    "page": 1
+  }
+});
 ```
 
 #### Example Response
@@ -123,6 +149,10 @@ await apiClient.list.vcs({});
         "originTargetSlug": "example-team"
       }
     ]
+  },
+  "pagination": {
+    "hasNextPage": false,
+    "count": 1
   },
   "rawResponse": "...",
   "request": "...",

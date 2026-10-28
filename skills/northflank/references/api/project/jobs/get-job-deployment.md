@@ -37,6 +37,11 @@ Required permission: Project > Jobs > General > Read
      - `ephemeralStorage`: {object}
        - `storageSize`: (number) (required) Ephemeral storage per container in MB (format: float)
      - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
+   - `image`: {object}
+     - `projectId`: (string) (required) (min length: 24) (max length: 24)
+     - `name`: (string) (required)
+     - `group`: (string)
+     - `tag`: (string) (required)
    - `internal`: {object}
      - `appId`: (string) (required) Full identifier of deployed entity
      - `nfObjectId`: (string) (required) ID of deployed entity
@@ -62,10 +67,38 @@ Required permission: Project > Jobs > General > Read
      - `ephemeralStorage`: {object}
        - `storageSize`: (number) (required) Ephemeral storage per container in MB (format: float)
      - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
+   - `image`: {object}
+     - `projectId`: (string) (required) (min length: 24) (max length: 24)
+     - `name`: (string) (required)
+     - `group`: (string)
+     - `tag`: (string) (required)
    - `external`: {object}
      - `imagePath`: (string) (required) Path of the external image excluding the hostname
      - `registryProvider`: (string) (required) Registry provider hosting the external image (enum: acr, ecr, gar, dockerhub, dhi, github, gitlab, custom, legacy)
-     - `privateImage`: (boolean) (required) Does the image require authentication
+     - `privateImage`: (boolean) (required) Does the image require authentication | {object}
+   - `region`: (string) Region where this service is deployed and/or built
+   - `instances`: (integer) Number of instances/replicas running
+   - `docker`: {object}
+     - `configType`: (string) (required) Override configuration which is used at runtime. (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
+     - `customEntrypoint`: (string) The CMD to run instead of the default if entrypoint override is enabled.
+     - `customCommand`: (string) The CMD to run instead of the default if CMD override is enabled.
+   - `buildpack`: {object}
+     - `configType`: (string) (required) Type of buildpack run configuration. (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
+     - `customProcess`: (string) Custom process which should be run.
+     - `customEntrypoint`: (string) Custom entrypoint which should be run.
+     - `customCommand`: (string) Custom command which should be run.
+   - `storage`: {object}
+     - `ephemeralStorage`: {object}
+       - `storageSize`: (number) (required) Ephemeral storage per container in MB (format: float)
+     - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
+   - `image`: {object}
+     - `projectId`: (string) (required) (min length: 24) (max length: 24)
+     - `name`: (string) (required)
+     - `group`: (string)
+     - `tag`: (string) (required)
+   - `importedImage`: {object}
+     - `projectId`: (string) (required) (min length: 24) (max length: 24)
+     - `imageId`: (string) (required) (min length: 24) (max length: 24)
 
 ### API reference
 
@@ -132,6 +165,29 @@ OR
       "imagePath": "nginx:latest",
       "registryProvider": "dockerhub",
       "privateImage": false
+    }
+  }
+}
+```
+
+OR
+
+```json
+{
+  "data": {
+    "region": "europe-west",
+    "instances": 1,
+    "docker": {
+      "configType": "default",
+      "customCommand": "nginx -g"
+    },
+    "buildpack": {
+      "configType": "default"
+    },
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 1024
+      }
     }
   }
 }
@@ -209,6 +265,27 @@ OR
     "imagePath": "nginx:latest",
     "registryProvider": "dockerhub",
     "privateImage": false
+  }
+}
+```
+
+OR
+
+```json
+{
+  "region": "europe-west",
+  "instances": 1,
+  "docker": {
+    "configType": "default",
+    "customCommand": "nginx -g"
+  },
+  "buildpack": {
+    "configType": "default"
+  },
+  "storage": {
+    "ephemeralStorage": {
+      "storageSize": 1024
+    }
   }
 }
 ```
@@ -298,6 +375,32 @@ OR
 }
 ```
 
+OR
+
+```json
+{
+  "data": {
+    "region": "europe-west",
+    "instances": 1,
+    "docker": {
+      "configType": "default",
+      "customCommand": "nginx -g"
+    },
+    "buildpack": {
+      "configType": "default"
+    },
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 1024
+      }
+    }
+  },
+  "rawResponse": "...",
+  "request": "...",
+  "error": "..."
+}
+```
+
 ### Python client reference
 
 #### Example request
@@ -373,6 +476,34 @@ print(response.data)
     "imagePath": "nginx:latest",
     "registryProvider": "dockerhub",
     "privateImage": false
+  }
+}
+```
+
+```json
+{
+  "region": "europe-west",
+  "instances": 1,
+  "docker": {
+    "configType": "default",
+    "customCommand": "nginx -g"
+  },
+  "buildpack": {
+    "configType": "default"
+  },
+  "storage": {
+    "ephemeralStorage": {
+      "storageSize": 1024
+    }
+  },
+  "image": {
+    "projectId": "stringaaaaaaaaaaaaaaaaaa",
+    "name": "string",
+    "tag": "string"
+  },
+  "importedImage": {
+    "projectId": "stringaaaaaaaaaaaaaaaaaa",
+    "imageId": "stringaaaaaaaaaaaaaaaaaa"
   }
 }
 ```

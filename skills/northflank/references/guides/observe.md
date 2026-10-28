@@ -1176,6 +1176,8 @@ You can also [build the image again](build.md#build-code-from-a-git-repository) 
 
 ![Viewing a list of builds on a build service in the Northflank application](https://assets.northflank.com/documentation/v1/application/observe/see-builds/build-list.png)
 
+If you enable [container scanning](build.md#scan-container-images), open Scan results on an individual build to read its report.
+
 #### See builds: Build statuses
 
 Pending: the build is queued to start
@@ -1264,7 +1266,7 @@ Northflank provides access to live and historical logs from builds, running and 
 
 Logs allow you to review builds and examine running containers to ensure your code is performant and without errors. You can also configure [log sinks](observe.md#configure-log-sinks) to send logs from your projects to aggregators and observability platforms.
 
-Logs can be viewed for all containers in a deployment on the [observe page](observe.md#monitor-containers), or you can select an individual container or build in a Northflank service. You can also [tail logs using the Northflank API, CLI, and JavaScript client](../api/log-tailing.md).
+Logs can be viewed for all containers in a deployment on the [observe page](observe.md#monitor-containers), or you can select an individual container or build in a Northflank service. You can also [retrieve logs or stream them live using the API, CLI, or JavaScript client](../api/log-tailing.md).
 
 ![Viewing build logs from a build in the Northflank application](https://assets.northflank.com/documentation/v1/application/observe/view-logs/build-logs.png)
 

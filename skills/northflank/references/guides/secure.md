@@ -999,7 +999,9 @@ You can use [dynamic templating](secure.md#inject-secrets-dynamic-templating) to
 
 Source: https://northflank.com/docs/v1/application/secure/reference-global-secrets.md
 
-Global secrets can be referenced directly in your template definitions to inject configuration and sensitive data. You can choose when secrets are resolved: at template execution time or at container runtime.
+Reference global secrets in templates to pass configuration and sensitive data to resources. Templates, including preview blueprints, do not inject these values automatically. Assign individual values or the whole `values` object to the resource's build arguments or runtime variables.
+
+You can resolve references when the template runs or when containers start. See [Syntax](secure.md#reference-global-secrets-syntax) for the difference.
 
 ### Reference global secrets: Syntax
 
@@ -1050,6 +1052,22 @@ Arrays can be referenced directly:
 }
 ```
 
+#### Reference global secrets: Use all values
+
+Whole-object references resolve when the template runs, and the values appear in template run logs. For [runtime resolution](secure.md#reference-global-secrets-syntax), reference individual values instead.
+
+Assign the whole `values` object to a resource node's `buildArguments` to use every entry as a build argument:
+
+```json
+{
+  "buildArguments": "${secrets.build-config.values}"
+}
+```
+
+For runtime variables, use `"runtimeEnvironment": "${secrets.build-config.values}"` instead. Build arguments and runtime variables are separate. Setting one does not set the other.
+
+Use valid variable names with string, number, or boolean values. Nested objects and arrays fail validation. Reference [secret files](secure.md#reference-global-secrets-accessing-files) separately. A whole-object reference assigns the entire field.
+
 ### Reference global secrets: Accessing files
 
 Reference files using their identifier (not path):
@@ -1071,7 +1089,7 @@ Reference files using their identifier (not path):
 
 ### Reference global secrets: Secret inheritance
 
-The [Secret Inheritance node](infrastructure-as-code.md#template-nodes-secret-inheritance) allows you to merge multiple global secrets in a specific order within your template. This enables layered configurations by combining base settings with overrides.
+The [Secret Inheritance node](infrastructure-as-code.md#template-nodes-secret-inheritance) allows you to merge multiple global secrets in a specific order within your template. The node returns merged values and files. It does not inject them into subsequent resources.
 
 #### Reference global secrets: How it works
 
@@ -1083,29 +1101,45 @@ Add a Secret Inheritance node to your template:
   "ref": "merged-config",
   "spec": {
     "secrets": [
-      "base-secrets"
-      "club-secrets"
-      ],
+      "base-secrets",
+      "override-secrets"
+    ],
     "requiredKeys": [
       "API_KEY",
       "DATABASE_HOST"
-      ]
+    ]
   }
 }
 ```
 
-Secrets are merged in order, with the last secret taking precedence for conflicting keys. Objects are deeply merged, while arrays and primitives are replaced.
+Secrets are merged in order. Later secrets override matching values, and nested objects are merged.
 
 #### Reference global secrets: Accessing merged data
+
+Run the inheritance node before resource nodes that reference its output. Merged values resolve when the template runs and appear in template run logs. For [runtime resolution](secure.md#reference-global-secrets-syntax), reference individual global secrets directly instead.
+
+Map individual merged values into a resource node:
 
 ```json
 {
   "runtimeEnvironment": {
-    "API_KEY": "${{refs.merged-config.values.API_KEY}}",
+    "API_KEY": "${refs.merged-config.values.API_KEY}",
     "DB_HOST": "${refs.merged-config.values.DATABASE_HOST}"
   }
 }
 ```
+
+To use all merged values as build arguments, set:
+
+```json
+{
+  "buildArguments": "${refs.merged-config.values}"
+}
+```
+
+Use `runtimeEnvironment` instead for runtime variables. The [same value requirements](secure.md#reference-global-secrets-use-all-values) apply.
+
+To share the values across resources, populate a [project secret group](secure.md#manage-secret-groups). Services and jobs inherit its variables according to the group's scope and restrictions.
 
 #### Reference global secrets: Required validation
 

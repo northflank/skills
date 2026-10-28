@@ -51,6 +51,14 @@ Required permission: Project > Services > General > Read
       - `image`: (string) Name of the deployed image.
       - `tag`: (string) Tag of the deployed image.
       - `sha`: (string) Digest of the deployed image.
+    - `imageSelector`: {object}
+      - `projectId`: (string) (required) (min length: 24) (max length: 24)
+      - `name`: (string) (required)
+      - `group`: (string)
+      - `tag`: (string) (required)
+    - `importedImage`: {object}
+      - `projectId`: (string) (required) (min length: 24) (max length: 24)
+      - `imageId`: (string) (required) (min length: 24) (max length: 24)
     - `commit`: {object}
       - `sha`: (string) Commit the deployed image was built from.
       - `message`: (string) Commit message.
@@ -73,6 +81,14 @@ Required permission: Project > Services > General > Read
       - `image`: (string) Name of the deployed image.
       - `tag`: (string) Tag of the deployed image.
       - `sha`: (string) Digest of the deployed image.
+    - `imageSelector`: {object}
+      - `projectId`: (string) (required) (min length: 24) (max length: 24)
+      - `name`: (string) (required)
+      - `group`: (string)
+      - `tag`: (string) (required)
+    - `importedImage`: {object}
+      - `projectId`: (string) (required) (min length: 24) (max length: 24)
+      - `imageId`: (string) (required) (min length: 24) (max length: 24)
     - `commit`: {object}
       - `sha`: (string) Commit the deployed image was built from.
       - `message`: (string) Commit message.

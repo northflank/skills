@@ -26,6 +26,7 @@ Required permission: Project > Addons > General > Read
      - `upgradeId`: (string) (required) The unique identifier of the addon upgrade.
      - `status`: {object}
        - `status`: (string) (required) The status of the addon upgrade. (enum: scheduled, in-progress, completed, aborting, aborted, failed, not-supported)
+       - `message`: (string) Details about why the upgrade failed.
      - `createdAt`: (string) (required) The time the upgrade was initiated. (format: date-time)
      - `upgradeType`: (string) (required) Whether the version updated to is a major or minor version. (enum: major, minor, patch)
      - `previousVersion`: (string) (required) The version upgraded from.
@@ -58,7 +59,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}/version
       {
         "upgradeId": "611d0da52cd838bbdeec4792",
         "status": {
-          "status": "completed"
+          "status": "completed",
+          "message": "Upgrade to MySQL 9.7.2 blocked because schema compatibility could not be checked."
         },
         "createdAt": "2021-08-18 13:39:49.475Z",
         "upgradeType": "minor",
@@ -106,7 +108,8 @@ Options:
     {
       "upgradeId": "611d0da52cd838bbdeec4792",
       "status": {
-        "status": "completed"
+        "status": "completed",
+        "message": "Upgrade to MySQL 9.7.2 blocked because schema compatibility could not be checked."
       },
       "createdAt": "2021-08-18 13:39:49.475Z",
       "upgradeType": "minor",
@@ -153,7 +156,8 @@ await apiClient.get.addon.version({
       {
         "upgradeId": "611d0da52cd838bbdeec4792",
         "status": {
-          "status": "completed"
+          "status": "completed",
+          "message": "Upgrade to MySQL 9.7.2 blocked because schema compatibility could not be checked."
         },
         "createdAt": "2021-08-18 13:39:49.475Z",
         "upgradeType": "minor",
@@ -209,7 +213,8 @@ print(response.data)
     {
       "upgradeId": "611d0da52cd838bbdeec4792",
       "status": {
-        "status": "completed"
+        "status": "completed",
+        "message": "Upgrade to MySQL 9.7.2 blocked because schema compatibility could not be checked."
       },
       "createdAt": "2021-08-18 13:39:49.475Z",
       "upgradeType": "minor",

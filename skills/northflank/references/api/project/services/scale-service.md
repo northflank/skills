@@ -29,7 +29,7 @@ Required permission: Project > Services > General > Update
   - `ephemeralStorage`: {object}
     - `storageSize`: (integer) Ephemeral storage per container in MB
   - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
-- `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+- `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
 
 **Response body:**
 

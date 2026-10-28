@@ -1,6 +1,6 @@
 # Build
 
-Generated from 10 application pages listed in `llms.txt`.
+Generated from 12 application pages listed in `llms.txt`.
 
 ## Pages
 
@@ -10,8 +10,10 @@ Generated from 10 application pages listed in `llms.txt`.
 - [Build with buildpacks](#build-with-buildpacks)
 - [Build your code on Northflank](#build-your-code-on-northflank)
 - [GitHub Enterprise support](#github-enterprise-support)
+- [Import container images](#import-container-images)
 - [Inject build arguments](#inject-build-arguments)
 - [Pull images from Northflank](#pull-images-from-northflank)
+- [Scan container images](#scan-container-images)
 - [Share builds across projects](#share-builds-across-projects)
 - [Use custom build registry](#use-custom-build-registry)
 
@@ -443,6 +445,8 @@ If you require the entire git history to be available, you can also enable full 
 
 ### Build with a Dockerfile: Next steps
 
+You can [scan container images](build.md#scan-container-images) for vulnerabilities and secrets before upload.
+
 - [Build from a Git repository: Start building from your linked Git repositories in minutes.](build.md#build-code-from-a-git-repository)
 - [Inject build arguments: Pass secrets and configuration settings to your builds.](build.md#inject-build-arguments)
 - [Run an image continuously: Deploy a built image as a continuously-running service.](run.md#run-an-image-continuously)
@@ -508,6 +512,8 @@ Northflank does not provide built-in caching for buildpack builds. For built-in 
 
 ### Build with buildpacks: Next steps
 
+You can [scan container images](build.md#scan-container-images) for vulnerabilities and secrets before upload.
+
 - [Build from a Git repository: Start building from your linked Git repositories in minutes.](build.md#build-code-from-a-git-repository)
 - [Inject build arguments: Pass secrets and configuration settings to your builds.](build.md#inject-build-arguments)
 - [Run an image continuously: Deploy a built image as a continuously-running service.](run.md#run-an-image-continuously)
@@ -524,6 +530,10 @@ Northflank builds Docker container images from your repositories, which can then
 When building from Git you can enable continuous integration (CI) to automatically build new commits to the repository, or to specific branches or pull requests.
 
 To build and run an image in one self-contained service you can use [a combined service](run.md#run-an-image-continuously-build-and-run-an-image-in-one-service).
+
+You can [scan container images](build.md#scan-container-images) for vulnerabilities and secrets before upload.
+
+You can also [import container images](build.md#import-container-images) from a registry, an archive, or Docker.
 
 - [Build from a Git repository: Start building from your linked Git repositories in minutes.](build.md#build-code-from-a-git-repository)
 - [Add a self-hosted VCS: Add your own self-hosted Git provider and build from its repositories.](collaborate.md#manage-git-integrations-add-a-self-hosted-vcs)
@@ -600,6 +610,116 @@ Once linked, you can select GHE repositories when creating build services or job
 ### GitHub Enterprise support: Next steps
 
 - [Build from a Git repository: Start building from your linked Git repositories in minutes.](build.md#build-code-from-a-git-repository)
+
+## Import container images
+
+Source: https://northflank.com/docs/v1/application/build/import-container-images.md
+
+Import container images into your project's image library to deploy them without a Northflank build. You can copy an image from a registry, upload an archive, or push an image with Docker.
+
+Imports store a copy in Northflank's registry. To deploy directly from another registry, use an [external image](run.md#run-an-image-from-a-container-registry).
+
+#### Import container images: Requirements
+
+- Your role needs Images → Read and Images → Import permissions for the project.
+
+- A Linux image for `linux/amd64` or `linux/arm64`. The image must support your deployment's architecture.
+
+- The image and deployment must be in the same project. Import the image into each project that needs it.
+
+In your project, select Images under Config & data. Select Import image.
+
+#### Import container images: Choose a name and tag
+
+Use a lowercase image name, such as `api`, to group versions of the same image.
+
+Give each version a unique tag, such as `release-2026-10-19`. You cannot overwrite a version tag or import an image with the destination tag `latest`. The Latest selection resolves to the newest ready version.
+
+> [!warning] New versions can deploy automatically
+>
+> If a service uses Latest with continuous deployment enabled, a new ready version can trigger a deployment. Use a specific version tag when you need to control updates.
+
+#### Import container images: Import from a registry
+
+The source registry must use HTTPS and a publicly routable address. A registry on a private network is not supported. For a private image, you need matching saved credentials with pull access and access to this project. You also need permission to read those credentials.
+
+1. Select From Registry.
+
+2. Enter a Source image reference, such as `nginx:1.28` or `ghcr.io/example/api:v1`.
+
+3. For a private image, select the appropriate [registry credentials](run.md#save-registry-credentials).
+
+4. Enter the Destination image name and Destination image tag.
+
+5. Select Import image.
+
+Closing the dialog does not cancel a submitted import.
+
+#### Import container images: Upload an archive
+
+Use an uncompressed tar archive in Docker (`docker-archive`) or OCI image layout (`oci-archive`) format. For example, save a local image:
+
+```shell
+docker save -o image.tar api:v1
+```
+
+1. Select Upload Archive and choose your file in Image archive.
+
+2. Enter the destination Image name and Image tag.
+
+3. If the archive contains several images, select one in Image in archive.
+
+4. Select Upload image.
+
+Keep the page open until the transfer completes. Cancel transfer stops an active transfer. If Northflank already received the image, the import can finish after cancellation.
+
+#### Import container images: Push with Docker
+
+1. Select Docker Push to get commands for your project.
+
+2. Create an [API token](secure.md#grant-api-access) with Images → Import permission and access to the project.
+
+3. Run the displayed login command with your Northflank username. Enter the token when Docker prompts for a password.
+
+4. Run the displayed tag and push commands for your local image and destination name and tag.
+
+For example, replace the username, project ID, and local image reference (`api:v1`) before running:
+
+```shell
+docker login -u USERNAME registry.northflank.com
+docker tag api:v1 registry.northflank.com/PROJECT_ID/api:v1
+docker push registry.northflank.com/PROJECT_ID/api:v1
+```
+
+#### Import container images: Deploy and update an image
+
+Wait until the image shows Ready in Images. Transfer completion alone does not make an image ready. If it shows Failed, open the image to read the error.
+
+1. Create a [deployment service](run.md#run-an-image-continuously) or [job](run.md#run-an-image-once-or-on-a-schedule) in the same project.
+
+2. Select Northflank as the deployment source.
+
+3. In Link image source, select the imported image in Image source.
+
+4. If Group appears, select No group for imported images.
+
+5. Select a specific Image tag, or Latest for the newest ready version.
+
+6. Complete the resource configuration and create the service or job.
+
+To publish an update, import or push the same image name with a new version tag. Services that use Latest with [continuous deployment](release.md#manage-cicd) enabled receive new ready versions automatically.
+
+To update a service manually, change its image or tag. This starts a rollout restart:
+
+1. Select Edit image source on the service overview.
+
+2. Select Northflank and choose the image and tag.
+
+3. Select Update & rollout restart.
+
+4. Wait for the deployment to become ready.
+
+Open a ready image in Images to view its architecture and Pull Docker image commands. Pulling an imported image requires an API token with Images → Read permission.
 
 ## Inject build arguments
 
@@ -700,6 +820,8 @@ A reference to an image in the Northflank CR takes the format:
 
 - `buildId` can either be the Northflank-generated name for the build, the Git commit SHA, or `latest` to use the most recent build
 
+You can also [import images](build.md#import-container-images) into your project. Open a ready imported image in Images for its pull commands. Imported images require Images → Read permission.
+
 ### Pull images from Northflank: Pull and run an image from Northflank
 
 For projects that use Northflank's managed registry, you can pull build images with the [Docker CLI](https://docs.docker.com/reference/cli/docker/).
@@ -746,6 +868,56 @@ FROM registry.northflank.com/${PROJECT_ID}/${SERVICE_ID}:${BUILD_ID} as builder
 - [Build a repository using a Dockerfile: Configure your application build process using a Dockerfile.](build.md#build-with-a-dockerfile)
 - [Inject secrets: Set build arguments and inject runtime variables into running deployments.](secure.md#inject-secrets)
 - [Upload a secret file: Add secret files that will be mounted in your container.](secure.md#upload-secret-files)
+
+## Scan container images
+
+Source: https://northflank.com/docs/v1/application/build/scan-container-images.md
+
+Container scanning finds vulnerabilities and secrets in images that you build on Northflank. Enable scanning on a build or combined service to scan each new image before upload to the build registry.
+
+#### Scan container images: Requirements
+
+- A build that uses a Dockerfile or buildpacks.
+
+- Permission to update the service's build configuration. To read reports and software bills of materials, you also need the project permission Projects → Security → View Container Scan Reports.
+
+#### Scan container images: Enable scanning
+
+> [!warning] Scan failures stop the build
+>
+> If the scan fails, the build fails before the image uploads to the build registry. A completed scan can still report vulnerabilities. Review the findings before deploying the image.
+
+Scanning applies to new builds only.
+
+1. Open your build or combined service.
+
+2. Under the Build heading, select Build options.
+
+3. Enable Scan image before upload.
+
+4. Select Update build options.
+
+5. [Start a new build](build.md#build-code-from-a-git-repository-manually-trigger-a-build), or wait for your next automatic build.
+
+You can also enable Scan image before upload in Build options when you [create the service](build.md#build-code-from-a-git-repository-build-from-a-repository).
+
+#### Scan container images: Read scan results
+
+1. Open Builds under the service's Build heading.
+
+2. Select the build that you want to inspect.
+
+3. Open Scan results.
+
+Wait for the scan to complete and the report to become available. The report lists vulnerabilities and detected secrets, with severity counts. Use the findings to identify affected packages and review available fixes.
+
+If the scan fails, read the error in Scan results and open the build's Logs tab for details. After resolving the error, start a new build to scan again.
+
+#### Scan container images: View the software bill of materials
+
+A software bill of materials (SBOM) lists packages, versions, and licenses for the latest deployment. Use it to search for a dependency.
+
+The deployed Northflank build must have completed scan results with package information. Open the deployment or combined service. Under Configure, expand More and select SBOM.
 
 ## Share builds across projects
 

@@ -327,6 +327,43 @@ Required permission: Project > PreviewBlueprints > Runs > Read
        - `backoff`: {object}
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
+     - `kind`: (string) (required) The kind of node. (enum: ContainerScan)
+     - `condition`: (string) (enum: success)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `response`: {object}
+       - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
+       - `retries`: {object}
+         - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
+         - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
+         - `timestamp`: (integer) (required) The timestamp of the most recent attempt.
+         - `nextAttempt`: (integer) The timestamp of the next attempt.
+         - `initialCheckTime`: (integer) The timestamp of the initial condition check.
+       - `startTime`: (integer) The timestamp of the initial attempt.
+       - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
+       - `data`: {object}
+         - `id`: (string) (required) (format: uuid)
+         - `status`: (string) (required) (enum: pending, completed, failed)
+         - `vulnerabilities`: {object}
+           - `criticalCount`: (integer) (required)
+           - `highCount`: (integer) (required)
+           - `mediumCount`: (integer) (required)
+           - `lowCount`: (integer) (required)
+           - `noneCount`: (integer) (required)
+     - `spec`: {object}
+       - `projectId`: (multiple options) (string) ID of the project containing the build (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the project containing the build (pattern: .*\${.*}.*)
+       - `buildServiceId`: (multiple options) (string) ID of the build service (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the build service (pattern: .*\${.*}.*)
+       - `branch`: (multiple options) (string) Branch used by the build | (string) A string containing one or more references that resolve to branch used by the build (pattern: .*\${.*}.*)
+       - `buildId`: (multiple options) (string) ID of the build to scan (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the build to scan (pattern: .*\${.*}.*) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `settings`: {object}
+       - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
+       - `backoff`: {object}
+         - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
+         - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: JobRun)
      - `condition`: (string) (enum: success)
      - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
@@ -403,7 +440,33 @@ Required permission: Project > PreviewBlueprints > Runs > Read
                - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
            - `external`: {object}
              - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
-             - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
+             - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*) | {object}
+           - `docker`: {object}
+             - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
+             - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
+             - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
+           - `buildpack`: {object}
+             - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
+             - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
+             - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
+             - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
+           - `storage`: {object}
+             - `useHdbStorage`: (boolean)
+             - `usePdSsdStorage`: (boolean)
+             - `ephemeralStorage`: {object}
+               - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
+             - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
+           - `gpu`: {object}
+             - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
+             - `configuration`: {object}
+               - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+               - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+               - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
+           - `image`: {object}
+             - `projectId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
+             - `name`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+             - `group`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+             - `tag`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
        - `jobId`: (multiple options) (string) The ID of the job to run. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the ID of the job to run. (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}

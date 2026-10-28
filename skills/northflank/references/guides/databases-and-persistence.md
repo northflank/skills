@@ -330,6 +330,8 @@ Source: https://northflank.com/docs/v1/application/databases-and-persistence/bac
 
 Volume backups allow you to create point-in-time snapshots of your persistent volumes. You can restore these backups to new volumes or clone existing volumes for testing and development.
 
+To find volume backups across projects, use the [team backup listing API](databases-and-persistence.md#backup-restore-and-import-data-list-backups-across-your-team). The list includes retained backups of deleted volumes.
+
 ### Backup and clone volumes: Creating volume backups
 
 Volume backups create snapshots of your volume at a specific point in time.
@@ -498,7 +500,7 @@ Source: https://northflank.com/docs/v1/application/databases-and-persistence/bac
 
 You can create, import, and delete backups of your database or addon from the backups page, as well as restore your database or addon from an existing backup.
 
-You can also use backups to [fork an existing addon]().
+You can also use backups to [fork an existing addon](databases-and-persistence.md#fork-an-addon).
 
 ### Backup, restore, and import data: Types of backup
 
@@ -620,6 +622,41 @@ You can click on the entry in the list to view the backup logs, restore history,
 You can reset an addon from the billing page. Resetting an addon will erase all the data, and restore it to the state of a newly-provisioned addon. If you reset an addon that was created by [forking an existing addon](databases-and-persistence.md#fork-an-addon), the backup must still be available to restore from.
 
 This can be used to reset the addon's data while retaining the same [connection details](databases-and-persistence.md#connect-database-secrets-to-workloads) used in any environment variables, secret groups, or to connect locally.
+
+### Backup, restore, and import data: List backups across your team
+
+Use `GET /v1/backups` to find backups across projects, including retained backups of deleted addons and volumes. Each request lists either addon backups or volume backups. Deleted backups are excluded.
+
+Listing backups requires the team permission Platform → Backups → Read. Downloads, restores, and deletion require separate permissions.
+
+Set `NORTHFLANK_API_TOKEN` to an [API token](../api/use-the-api.md#authentication) for your team. This example lists the newest addon backups from two projects. Replace the project IDs with your own values:
+
+```shell
+curl --get 'https://api.northflank.com/v1/backups' \
+  --header "Authorization: Bearer $NORTHFLANK_API_TOKEN" \
+  --data-urlencode 'resourceType=addon' \
+  --data-urlencode 'projectId=production,staging' \
+  --data-urlencode 'per_page=50'
+```
+
+Omit `projectId` to search across the team. Set `resourceType=volume` to list volume backups instead.
+
+Use these filters to narrow the results:
+
+| Filter | Use |
+| --- | --- |
+| `projectId` | One project ID or comma-separated project IDs. |
+| `addonId`, `addonType`, `backupType` | Filter addon backups. For example, use `backupType=snapshot,global`. For dump backups, use `backupType=sameAddon`. |
+| `volumeId` | One volume ID or comma-separated volume IDs. Only valid with `resourceType=volume`. |
+| `status` | Status values are case-sensitive. For completed backups, use `status=completed` for addons or `status=READY` for volumes. |
+| `after`, `before` | Select backups created at or after, or at or before, an ISO 8601 timestamp. |
+| `search` | Match part of the backup name or ID, without case sensitivity. |
+
+Filters combine to narrow the results. For filters that accept comma-separated values, a backup can match any listed value. Do not use addon filters with `resourceType=volume`, or `volumeId` with `resourceType=addon`.
+
+The response lists backups in `data.backups`, newest first.
+
+`per_page` defaults to 50 and accepts up to 100. If `pagination.hasNextPage` is `true`, pass `pagination.cursor` as `cursor` in the next request. Keep the same resource type and filters. Do not combine `cursor` with `page`.
 
 ### Backup, restore, and import data: Next steps
 
@@ -2237,9 +2274,9 @@ Global backups are team-level backup resources that can be accessed and restored
 >
 > Global backups are available to enterprise accounts. Contact [[support@northflank.com](mailto:support@northflank.com)](mailto:support@northflank.com) or [schedule a meeting](https://cal.com/team/northflank/northflank-enterprise) to enable access for your team.
 
-To view or manage global backups, navigate to the `Backups` page from your team menu.
+To view or manage global backups, select Backups → All backups in your team navigation.
 
-The global backups page displays all backups created in your team, including both native snapshots and database dumps, regardless of which project they originated from.
+The page lists addon backups across projects, including snapshot, dump, and global backups. The [team backup listing API](databases-and-persistence.md#backup-restore-and-import-data-list-backups-across-your-team) also lists addon or volume backups.
 
 > [!note]
 >
@@ -3850,7 +3887,7 @@ If your database has an upgrade available you will see a notice in the database'
 
 If your database version is deprecated you will see a warning in the database's header: Upgrade recommended
 
-We strongly recommend that you upgrade a database to a newer version if it becomes deprecated. Northflank will always ensure a valid upgrade path from a deprecated version.
+We strongly recommend that you upgrade a database to a newer version if it becomes deprecated. Available upgrade paths can require changes to your database schema before you proceed.
 
 ### Upgrade a database: Upgrading
 
@@ -3865,6 +3902,12 @@ Upgrading will incur some downtime as the addon will be restarted. Major upgrade
 You will be able to see a list of previous upgrades and their statuses on the upgrade page.
 
 ![Upgrading an addon's version in the Northflank application](https://assets.northflank.com/documentation/v1/application/databases-and-persistence/upgrade-a-database/addon-upgrade.png)
+
+#### Upgrade a database: MySQL 9.6 compatibility
+
+For upgrades from MySQL versions below 9.6 to 9.6 or later, Northflank checks schema compatibility. Northflank blocks the upgrade if generated columns, expression defaults, functional indexes, or views use `MD5()`, `SHA()`, or `SHA1()`. A blocked upgrade leaves the database version unchanged.
+
+Hover over the failed status in Upgrade history to read the reason. Update affected schema definitions to use supported expressions. Then retry the upgrade. If Northflank cannot complete the compatibility check, retry the upgrade or contact Northflank support.
 
 ### Upgrade a database: Next steps
 

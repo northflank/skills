@@ -20,15 +20,37 @@ Use the interface requested by the user and reuse their existing authenticated s
 3. **JS client or REST:** Use these when writing code the user will keep and run. Check for `@northflank/js-client` only when that code needs it. Resolve credentials through the user's existing setup; never print tokens.
 4. **Account and project:** Reuse known context. Project IDs are slugs, such as `my-project`. With MCP, call `get_auth_context` only when team or workload scope is unknown. Own-project workload credentials should use `workload.projectId`; do not enumerate all projects. For a requested new project, pass `newProject` to the deployment workflow.
 
+## Operation failures
+
+For MCP, CLI, SDK, or REST failures, report the API message before proposing recovery. Stop dependent operations until the failure is resolved.
+
+If the API reports a missing, expired, or unverified default payment method, explain that billing blocks the operation. Direct the user to Billing → Payment methods for the affected team or organization. Ask them to add or update the default method. Wait for the user to resolve billing before retrying. Do not request card details in chat. See [Add a payment method](references/guides/billing.md#add-a-card).
+
+Do not treat HTTP 409 alone as a duplicate-resource error. Read the API message and recovery guidance. After a partial workflow failure, retain created resource IDs and inspect their state before resuming.
+
 ## MCP not connected?
 
-Follow [Connect your agent to Northflank](https://northflank.com/docs/v1/application/ai-agents/mcp-server) for client-specific setup and authentication.
+If `NORTHFLANK_API_TOKEN_FILE` is set in a harness, follow [Managed harnesses](references/cli.md#managed-harnesses) instead of browser login.
 
-The hosted endpoint is `https://mcp.northflank.com/mcp`. It uses Streamable HTTP with `Authorization: Bearer <team API token>`. Team workload identity tokens are also supported. MCP OAuth login is not available in this setup.
+For local Claude Code, Codex, Cursor, or OpenCode, use the latest Northflank CLI and the existing team login. If the CLI is missing, install it with `pnpm add -g @northflank/cli@latest` or `npm install -g @northflank/cli@latest`. It requires Node.js 22.13.0 or later, excluding 26.0.x.
 
-Installing this skill does not configure the MCP server or grant account access. Help the user configure their requested client using the guide. Keep credentials in the client's secret storage or process environment, never in chat or committed files. The hosted MCP can be configured independently of the CLI.
+If login is needed, run `nf login` and wait for the user to select their team in the browser. Keep the command running until login completes. Never print credentials or ask the user to paste a token.
 
-After connection, use `get_auth_context` once if the team or access scope is unknown. For rotating workload tokens, use a client that reads the mounted token before requests or refreshes it after authentication fails. A static environment value does not refresh it.
+Replace `<agent>` with `claude`, `codex`, `cursor`, or `opencode`:
+
+```sh
+nf agent setup --agent <agent> --dry-run
+nf agent setup --agent <agent> --yes
+nf agent status --check --agent <agent>
+```
+
+Target only the requested agents. Explain any replacement before applying setup. `--yes` accepts replacement of conflicting Northflank MCP entries after a private backup. Preserve modified skills and other MCP servers. Setup includes MCP at user scope by default. Use `--no-mcp --scope user` for skills or plugins only.
+
+Ask the user to reconnect if the current agent session cannot load the connection. Then call `get_auth_context` to confirm the intended team. Saving configuration alone does not prove that the agent connected.
+
+For expired credentials, follow the bridge's login instructions to renew the same context and team. This updates the normal CLI session too. See [CLI setup and recovery](references/cli.md#coding-agent-setup), including setup inside a managed harness.
+
+For clients without the CLI, follow [Connect your agent to Northflank](https://northflank.com/docs/v1/application/ai-agents/mcp-server) for direct HTTP setup. The hosted endpoint is `https://mcp.northflank.com/mcp`. Use a team API token from the client's secret storage. Do not put credentials in chat or committed files. Installing this skill alone does not configure MCP or grant account access.
 
 ## Deploy with MCP
 
@@ -38,6 +60,8 @@ After connection, use `get_auth_context` once if the team or access scope is unk
 4. Follow returned phases, next steps and polling intervals. A live source revision does not prove that a specific rebuild of that commit is deployed. Check a web endpoint before claiming application health. After partial failure, recover from existing resources. Do not repeat creation or execution blindly.
 
 Use `diagnose` for service, job or addon failures when the connected server exposes it. It gathers health, related infrastructure events, deployment revisions, logs, metrics and BYOC node-pool configuration. Missing permissions produce partial evidence. Treat correlations as leads, not proven causes. Use `get_deployment_status` or `get_addon` for routine polling.
+
+For invalid arguments, use the returned field constraints and guidance to correct the request. For an unknown schema path, request the returned `parentPath` or an `availablePaths` entry. Inspect arrays and alternatives through their containing field. Follow build-error guidance without changing the user's requested revision or source. On conflicts, inspect existing resources and any workflow progress before retrying.
 
 `list_addon_types` includes Northflank-managed and team custom addons. For managed databases, it provides versions, storage sizes and replica options. It does not discover storage classes for a BYOC cluster.
 
@@ -73,16 +97,19 @@ Confirmation rules:
 ### Install, login, and pick a context
 
 ```bash
-npm i -g @northflank/cli
+pnpm add -g @northflank/cli@latest
+# Or install with: npm install -g @northflank/cli@latest
 northflank login
 northflank context ls
 northflank context use
 northflank context use project
 ```
 
-- `northflank login` creates a context and can open a browser to select or create a token.
+- `northflank login` opens the browser and saves a session for the selected team. No separate API token is required.
 - Use `northflank context use project|service|job` to set defaults so later commands can omit repeated IDs.
 - Use `northflank command-overview` to see the command tree.
+
+Use `northflank.yaml` for shared repository resource defaults, not credentials. See [Repository defaults](references/cli.md#repository-defaults) for precedence and supported fields.
 
 ### Inspect resources
 
@@ -151,8 +178,9 @@ await contextProvider.addContext({
   token: process.env.NF_API_TOKEN,
 });
 
-// Pass true as second arg to throw on HTTP errors
-const apiClient = new ApiClient(contextProvider, true);
+const apiClient = new ApiClient(contextProvider, {
+  throwErrorOnHttpErrorCode: true,
+});
 ```
 
 All methods follow the pattern:
@@ -428,21 +456,17 @@ if (page1.pagination?.hasNextPage) {
 
 ### Error handling
 
+The SDK returns HTTP failures in `result.error` by default. Use `throwErrorOnHttpErrorCode: true` in agent scripts, or inspect `result.error` before reading `result.data`. Stop dependent operations on failure. Report the API message to the user before proposing recovery. Never report successful creation from a resolved promise alone.
+
 ```js
-// Option 1: check result.error (client does NOT throw by default)
+// Without throwing enabled, handle the returned error before using data.
 const result = await apiClient.get.service({ parameters: { projectId, serviceId } });
 if (result.error) {
-  console.error(result.error.status, result.error.message);
-}
-
-// Option 2: init client with throwOnError = true
-const apiClient = new ApiClient(contextProvider, true);
-try {
-  await apiClient.get.service({ parameters: { projectId, serviceId } });
-} catch (err) {
-  console.error(err);
+  throw new Error(`Northflank HTTP ${result.error.status}: ${result.error.message}`);
 }
 ```
+
+For billing errors, HTTP 409 responses, or partial workflow failures, follow [Operation failures](#operation-failures).
 
 ### Rate limit headers
 

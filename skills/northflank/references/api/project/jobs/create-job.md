@@ -51,7 +51,7 @@ Required permission: Project > Jobs > General > Create
        - `gpuType`: (string) (required) The type of GPU to use.
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
    - `metadata`: {object}
      - `labels`: {object}
      - `annotations`: {object}
@@ -83,7 +83,7 @@ Required permission: Project > Jobs > General > Create
        - `gpuType`: (string) (required) The type of GPU to use.
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
    - `metadata`: {object}
      - `labels`: {object}
      - `annotations`: {object}
@@ -111,7 +111,7 @@ Required permission: Project > Jobs > General > Create
        - `gpuType`: (string) (required) The type of GPU to use.
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
    - `metadata`: {object}
      - `labels`: {object}
      - `annotations`: {object}
@@ -120,6 +120,36 @@ Required permission: Project > Jobs > General > Create
      - `branch`: (string) Branch to deploy
      - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
      - `buildId`: (string) ID of the build that should be deployed | {object}
+   - `buildpack`: {object}
+     - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
+     - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
+     - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
+     - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
+   - `docker`: {object}
+     - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
+     - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
+     - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
+   - `storage`: {object}
+     - `useHdbStorage`: (boolean)
+     - `usePdSsdStorage`: (boolean)
+     - `ephemeralStorage`: {object}
+       - `storageSize`: (integer) Ephemeral storage per container in MB
+     - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
+   - `gpu`: {object}
+     - `enabled`: (boolean) Whether GPUs are enabled for this workload.
+     - `configuration`: {object}
+       - `gpuType`: (string) (required) The type of GPU to use.
+       - `gpuCount`: (integer) The number of GPUs to allocate.
+       - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
+   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
+   - `metadata`: {object}
+     - `labels`: {object}
+     - `annotations`: {object}
+   - `image`: {object}
+     - `projectId`: (string) (min length: 24) (max length: 24)
+     - `name`: (string) (required) (min length: 1)
+     - `group`: (string) (min length: 1)
+     - `tag`: (string) (required) (min length: 1) | {object}
 - `disabledCI`: (boolean) Whether CI should be disabled. Only relevant for jobs deploying directly from version control.
 - `buildConfiguration`: {object}
   - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
@@ -285,7 +315,7 @@ Required permission: Project > Jobs > General > Create
         - `gpuType`: (string) (required) The type of GPU to use.
         - `gpuCount`: (integer) The number of GPUs to allocate.
         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
     - `metadata`: {object}
       - `labels`: {object}
       - `annotations`: {object}
@@ -304,6 +334,11 @@ Required permission: Project > Jobs > General > Create
       - `branch`: (string) Branch to deploy
       - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
       - `buildId`: (string) ID of the build that should be deployed
+    - `image`: {object}
+      - `projectId`: (string) (min length: 24) (max length: 24)
+      - `name`: (string) (required) (min length: 1)
+      - `group`: (string) (min length: 1)
+      - `tag`: (string) (required) (min length: 1)
     - `imageUrl`: (string) Image registry url of the deployed image.
   - `status`: {object}
     - `build`: {object}

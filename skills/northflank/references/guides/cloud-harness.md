@@ -189,7 +189,7 @@ When you create a Cloud Harness:
 
 1. Northflank provisions a cloud coding environment in your environment (managed cloud or your own infrastructure).
 
-2. If you use a coding agent, authenticate with an API key or linked account.
+2. If you use a coding agent, sign in or provide an API key as your agent requires.
 
 3. (Optional) You connect a Git repository for the agent to work with.
 
@@ -201,6 +201,14 @@ An active Cloud Harness runs continuously until you pause or delete it. With [wo
 
 With Team privacy, team members with the required permissions can work in the same Cloud Harness simultaneously. With Private privacy, only the creator can access the workspace. See [privacy and team policies](cloud-harness.md#configure-and-manage-cloud-harnesses-choose-privacy).
 
+#### Quickstart: Browser tools and agent skills
+
+The Managed runtime image includes `playwright-cli` and Chromium for browser tasks without a graphical interface. You can ask your agent to inspect a website or capture screenshots with the bundled `northflank-browser` skill.
+
+Managed images also include the `northflank` skill for [working with Northflank resources](ai-agents.md#agent-skills).
+
+For a custom runtime image, tool and skill availability depends on the image that you use. Make sure that it includes the tools that your agent needs.
+
 ### Quickstart: Create your first Cloud Harness
 
 > [!note] Requirements
@@ -208,7 +216,7 @@ With Team privacy, team members with the required permissions can work in the sa
 > You will need the following to get started:
 >
 > - A [Northflank account](https://app.northflank.com/signup). Free projects support one harness, including paused harnesses.
-> - For a coding agent, an account or API key (Claude, Codex, Pi, or your own agent).
+> - For a coding agent, an account or API key that your selected agent supports.
 > - A [Git integration](getting-started.md#link-your-git-account) if you want to connect a repository.
 > - For BYOC, a supported microVM runtime installed on the cluster and nodes that can run it. See [cluster sandbox setup](sandboxes.md#sandboxes-in-your-own-cloud-configure-your-cluster-for-sandboxes). Harnesses do not require changing the default runtime for other services.
 
@@ -234,7 +242,7 @@ To create a Cloud Harness:
 
 5. Select the environment where you want to run it.
 
-6. For a coding agent, select an authentication method under Authentication.
+6. For a coding agent, choose an available authentication method or review the terminal sign-in instructions under Authentication.
 
 7. Under Repository, select a repository and branch, create a new repository, or continue without a repository.
 
@@ -242,9 +250,22 @@ To create a Cloud Harness:
 
 9. Click Create harness.
 
-Northflank opens the Cloud Harness terminal. If you selected account authentication, sign in to your coding agent when prompted.
+Northflank opens the Cloud Harness terminal. Follow the [sign-in instructions](cloud-harness.md#quickstart-sign-in-to-your-coding-agent) for your agent.
 
 ![Creating a Cloud Harness in the Northflank application](https://assets.northflank.com/documentation/v1/application/ai-agents/harnesses/create-harness.png)
+
+#### Quickstart: Sign in to your coding agent
+
+For Claude Code, OpenAI Codex, or Cursor, you can enable Authenticate with an API key under Authentication during creation. Otherwise, sign in from the terminal when prompted.
+
+Pi, OpenCode, OMP, and Devin CLI use terminal sign-in after creation:
+
+| Agent | Sign in | Start the agent |
+| --- | --- | --- |
+| Pi | Run `pi`, then enter `/login` and follow the prompts. | Run `pi`. |
+| OpenCode | Run `opencode`, then enter `/connect` and follow the prompts. | Run `opencode`. |
+| OMP | Run `omp`, then enter `/login` and follow the prompts. | Run `omp`. |
+| Devin CLI | Run `devin auth login` and follow the prompts. | Run `devin`. |
 
 #### Quickstart: Quick create and terminal dock
 
@@ -260,7 +281,7 @@ Quick create uses Team privacy. To choose privacy, connect a repository, or conf
 
 4. Click Quick create.
 
-The terminal opens in the dock. Sign in to your coding agent when prompted.
+The terminal opens in the dock. Follow the [sign-in instructions](cloud-harness.md#quickstart-sign-in-to-your-coding-agent) for your agent.
 
 You can also open an existing harness from the dock. Closing its tab or minimizing the dock does not pause the harness.
 

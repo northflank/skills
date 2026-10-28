@@ -56,7 +56,7 @@ Required permission: Project > Services > General > Update
       - `gpuType`: (string) The type of GPU to use.
       - `gpuCount`: (integer) The number of GPUs to allocate.
       - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-  - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+  - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
   - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
   - `ssh`: {object}
     - `enabled`: (boolean) Enables SSH access if the resource matches an SSH identity selector.
@@ -199,6 +199,8 @@ Required permission: Project > Services > General > Update
     - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
     - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
     - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+    - `scan`: {object}
+      - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
     - `buildkit`: {object}
       - `useCache`: (boolean) Use persistent storage to cache build layers.
       - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
@@ -207,6 +209,8 @@ Required permission: Project > Services > General > Update
     - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
     - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
     - `useCache`: (boolean) Should build dependencies be cached?
+    - `scan`: {object}
+      - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
 - `buildConfiguration`: {object}
   - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
   - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
@@ -413,6 +417,8 @@ Required permission: Project > Services > General > Update
        - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
        - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
        - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+       - `scan`: {object}
+         - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
        - `buildkit`: {object}
          - `useCache`: (boolean) Use persistent storage to cache build layers.
          - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
@@ -424,6 +430,8 @@ Required permission: Project > Services > General > Update
        - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
        - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
        - `useCache`: (boolean) Should build dependencies be cached?
+       - `scan`: {object}
+         - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
   - `buildConfiguration`: {object}
     - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
     - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
@@ -519,7 +527,7 @@ Required permission: Project > Services > General > Update
         - `gpuType`: (string) (required) The type of GPU to use.
         - `gpuCount`: (integer) The number of GPUs to allocate.
         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
     - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
     - `ssh`: {object}
       - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.

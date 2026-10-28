@@ -45,6 +45,8 @@ Required permission: Project > Services > General > Update
     - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
     - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
     - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+    - `scan`: {object}
+      - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
     - `buildkit`: {object}
       - `useCache`: (boolean) Use persistent storage to cache build layers.
       - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
@@ -53,6 +55,8 @@ Required permission: Project > Services > General > Update
     - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
     - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
     - `useCache`: (boolean) Should build dependencies be cached?
+    - `scan`: {object}
+      - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
 - `buildConfiguration`: {object}
   - `prRestrictions`: [array of] (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
   - `branchRestrictions`: [array of] (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
@@ -114,6 +118,8 @@ Required permission: Project > Services > General > Update
        - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
        - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
        - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+       - `scan`: {object}
+         - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
        - `buildkit`: {object}
          - `useCache`: (boolean) Use persistent storage to cache build layers.
          - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
@@ -125,6 +131,8 @@ Required permission: Project > Services > General > Update
        - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
        - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
        - `useCache`: (boolean) Should build dependencies be cached?
+       - `scan`: {object}
+         - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
   - `buildConfiguration`: {object}
     - `prRestrictions`: [array of] (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
     - `branchRestrictions`: [array of] (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)

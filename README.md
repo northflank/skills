@@ -4,6 +4,29 @@ An agent skill for deploying, operating, and automating workloads on Northflank.
 
 ## Installation
 
+### Connect your coding agent
+
+Install the latest CLI with Node.js 22.13.0 or later, excluding 26.0.x:
+
+```sh
+pnpm add -g @northflank/cli@latest
+```
+
+Alternatively, install with `npm install -g @northflank/cli@latest`.
+
+If you need to log in, run `nf login` and select your team in the browser. Then run:
+
+```sh
+nf agent setup --agent claude
+nf agent status --check --agent claude
+```
+
+Replace `claude` with `codex`, `cursor`, or `opencode`. Setup installs the skill or Codex plugin and connects MCP using your saved team login. You do not need another API token. Restart or reconnect your agent, then call `get_auth_context` to confirm the team.
+
+For preview, unattended setup, or login recovery, see the [CLI reference](skills/northflank/references/cli.md#coding-agent-setup).
+
+The methods below install only the skill or plugin. They do not connect MCP.
+
 ### Claude Code
 
 From inside an interactive Claude Code session:
@@ -75,7 +98,7 @@ If your editor supports loading skills from a directory, copy `skills/northflank
 
 ## Usage
 
-For guided deployments and resource management from your coding agent, [connect the Northflank MCP server](https://northflank.com/docs/v1/application/ai-agents/mcp-server). The skill also supports the Northflank CLI and SDK workflows, so you can use your existing tools and authentication. Installing the skill and connecting MCP are separate setup steps.
+For guided deployments and resource management from your coding agent, [connect the Northflank MCP server](https://northflank.com/docs/v1/application/ai-agents/mcp-server). The skill also supports CLI and SDK workflows. `nf agent setup` installs the skill or plugin and connects MCP by default.
 
 After installation, ask your coding agent to do Northflank work directly. The skill should load automatically when the task involves Northflank projects, services, jobs, addons, preview environments, release workflows, AI sandboxes, GPU workloads, domains, secrets, templates, or the Northflank API and CLI.
 
