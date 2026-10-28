@@ -169,8 +169,9 @@ await contextProvider.addContext({
   token: process.env.NF_API_TOKEN,
 });
 
-// Pass true as second arg to throw on HTTP errors
-const apiClient = new ApiClient(contextProvider, true);
+const apiClient = new ApiClient(contextProvider, {
+  throwErrorOnHttpErrorCode: true,
+});
 ```
 
 All methods follow the pattern:
@@ -446,21 +447,19 @@ if (page1.pagination?.hasNextPage) {
 
 ### Error handling
 
+The SDK returns HTTP failures in `result.error` by default. Use `throwErrorOnHttpErrorCode: true` in agent scripts, or inspect `result.error` before reading `result.data`. Stop dependent operations on failure. Report the API message to the user before proposing recovery. Never report successful creation from a resolved promise alone.
+
 ```js
-// Option 1: check result.error (client does NOT throw by default)
+// Without throwing enabled, handle the returned error before using data.
 const result = await apiClient.get.service({ parameters: { projectId, serviceId } });
 if (result.error) {
-  console.error(result.error.status, result.error.message);
-}
-
-// Option 2: init client with throwOnError = true
-const apiClient = new ApiClient(contextProvider, true);
-try {
-  await apiClient.get.service({ parameters: { projectId, serviceId } });
-} catch (err) {
-  console.error(err);
+  throw new Error(`Northflank HTTP ${result.error.status}: ${result.error.message}`);
 }
 ```
+
+If the API reports a missing, expired, or unverified default payment method, explain that billing blocks the requested operation. Direct the user to Billing → Payment methods for the affected team or organization. Ask them to add or update the default method, then wait before retrying. Do not request card details in chat. See [Add a payment method](references/guides/billing.md#add-a-card).
+
+Do not treat HTTP 409 alone as a duplicate-resource error. Read the API message and recovery guidance. After a partial workflow failure, retain created resource IDs and inspect their state before resuming.
 
 ### Rate limit headers
 
