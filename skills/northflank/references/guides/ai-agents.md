@@ -38,6 +38,26 @@ Northflank agent skills are installed into your AI code editor. The installation
 
 Installing a skill does not connect your Northflank account. To give the agent authenticated platform tools, [add the Northflank MCP server](ai-agents.md#connect-your-agent-with-mcp). You can use the skill with MCP or with your existing CLI setup.
 
+#### Agent Skills: Install and connect with the Northflank CLI
+
+Use the [latest Northflank CLI](ai-agents.md#connect-your-agent-with-mcp-connect-with-your-cli-login) for this workflow. To include MCP, first run `nf login` and select your team, or reuse a valid team login. Then run:
+
+```sh
+nf agent setup --agent claude
+```
+
+Replace `claude` with `codex`, `cursor`, or `opencode` for another agent. The command installs the canonical skill, or the Codex plugin, and configures MCP with your saved CLI team login. You do not need to create another API token.
+
+To install skills without MCP, add `--no-mcp`. Use `--scope project --no-mcp` to install skills in the current project. Codex plugins require user scope.
+
+Restart or reconnect your agent after setup. Run `nf agent status --check --agent claude`, replacing `claude` with your agent. Follow the [MCP connection guide](ai-agents.md#connect-your-agent-with-mcp-connect-with-your-cli-login) to resolve an existing configuration.
+
+To let your agent perform setup, use the [copyable setup prompt](ai-agents.md#connect-your-agent-with-mcp-ask-your-agent-to-set-up-northflank). It covers installation, browser login, configuration, and connection checks.
+
+For agents that use the CLI, add [repository defaults in `northflank.yaml`](../api/use-the-cli.md#repository-defaults-with-northflankyaml) to select resources without repeating CLI options. This file does not contain credentials or configure MCP.
+
+The methods below install the skill only. They do not configure MCP.
+
 #### Agent Skills: Claude Code
 
 From inside an interactive Claude Code session:
@@ -136,25 +156,117 @@ Give agents domain-specific knowledge about Northflank. With Skills, agents can 
 
 Source: https://northflank.com/docs/v1/application/ai-agents/mcp-server.md
 
-Connect your coding agent to Northflank with Model Context Protocol (MCP), a standard for calling tools from an AI client. The hosted server lets agents deploy applications and jobs, manage databases, and inspect resources.
-
-Northflank hosts the server. You do not need the Northflank CLI, a local MCP process, or a deployment in your team.
+Connect your coding agent to Northflank to deploy applications, manage databases, and inspect resources. Setup installs the Northflank skill or plugin and connects the hosted MCP server using your CLI login.
 
 #### Connect your agent with MCP: Requirements
 
-Use a team API token and a client that supports Streamable HTTP with an Authorization header. The token's role controls which resources and operations the agent can access.
+Use the [latest CLI](../api/use-the-cli.md) and an installed copy of Claude Code, Codex, Cursor, or OpenCode. Codex also needs the `codex` command with plugin support.
 
-The hosted endpoint is:
+Select a team when you log in. MCP uses that team's permissions. Personal and organization-scoped logins are not supported. You do not need to create another API token.
 
-```text
-https://mcp.northflank.com/mcp
+#### Connect your agent with MCP: Connect with your CLI login
+
+1. Install or update the CLI:
+
+  ```sh
+  pnpm add -g @northflank/cli@latest
+  ```
+
+2. If you need to log in, run `nf login` and select your team in the browser.
+
+3. Set up your agent:
+
+  ```sh
+  nf agent setup --agent claude
+  ```
+
+4. Restart or reconnect the agent to load the new connection.
+
+Replace `claude` with `codex`, `cursor`, or `opencode`. You can pass several names after `--agent`.
+
+Setup applies to all your projects. It reads your saved CLI session when needed, without copying the token into agent configuration.
+
+##### Connect your agent with MCP: Ask your agent to set up Northflank
+
+You can give your agent this prompt instead:
+
+Set up the latest Northflank CLI, skill or plugin, and MCP connection for this agent.
+Follow [https://northflank.com/docs/v1/application/ai-agents/mcp-server](ai-agents.md#connect-your-agent-with-mcp).
+
+Reuse my team login.
+If login is needed, run `nf login` and wait for me to finish in the browser.
+Never print saved credentials or ask me to paste a token.
+
+Preview setup with `nf agent setup --agent <agent> --dry-run`.
+Explain any replacement before applying it with `--yes`.
+Preserve modified skills and other MCP servers.
+
+Run `nf agent status --check --agent <agent>`.
+Tell me if I need to reconnect.
+Then use `get_auth_context` to confirm the team.
+Do not create or change cloud resources.
+
+Replace `<agent>` with `claude`, `codex`, `cursor`, or `opencode`. Keep the login command running while the user completes the browser step.
+
+#### Connect your agent with MCP: Confirm the connection
+
+Run:
+
+```sh
+nf agent status --check --agent claude
 ```
 
-The server accepts team API tokens and team workload identity tokens. Personal, organization, and browser session tokens are not accepted by this hosted entry point.
+Then ask your agent to show the authenticated team with `get_auth_context`. Make sure that it matches the team you intended.
 
-MCP authentication currently uses a bearer token, not an OAuth sign-in flow. Clients that require OAuth and cannot send a custom Authorization header cannot use this setup.
+#### Connect your agent with MCP: Setup options
 
-#### Connect your agent with MCP: Prepare your token
+> [!warning]
+>
+> `--yes` accepts replacement of conflicting Northflank MCP entries. Setup saves a private backup first. Keep backups private because they can contain credentials.
+
+| Option | Use |
+| --- | --- |
+| `--yes` | Apply without prompts. Specify `--agent`. Browser login can still require your input. |
+| `--dry-run` | Preview changes without installing or testing authentication. |
+| `--no-mcp` | Install skills or plugins only. Add `--scope user` or `--scope project` for non-interactive use. Codex plugins require user scope. |
+
+Setup preserves modified skills and other MCP servers. Use `nf agent update --agent claude` to update, or `nf agent remove --agent claude` to remove managed installation files and MCP configuration.
+
+##### Connect your agent with MCP: Login changes and expiry
+
+If your session expires, MCP returns login instructions to the agent. Follow those instructions to renew the same context and team. This updates your normal CLI login too, and the running bridge uses it on the next request.
+
+The `--override` login option clears that context's saved resource defaults. Reconnect only if the agent disconnected. To change teams, select the new CLI context, rerun setup, and reconnect.
+
+#### Connect your agent with MCP: Troubleshooting
+
+| Problem | Next step |
+| --- | --- |
+| No tools appear | Run `nf agent status --check --agent claude`, then reconnect. In Claude Code, use `/mcp` and `claude mcp get northflank` to inspect the active connection. |
+| Login is rejected | Use a team login. For an expired session, follow the returned [login instructions](ai-agents.md#connect-your-agent-with-mcp-login-changes-and-expiry). |
+| An environment token overrides your login | Unset `NF_API_TOKEN`, `NORTHFLANK_API_TOKEN`, `NF_API_HOST`, and `NORTHFLANK_API_HOST` before setup. |
+| Access is denied | Make sure that the credential's role permits the requested operation. |
+| CLI or Node.js moved | Rerun setup with the installed CLI, then reconnect. |
+
+#### Connect your agent with MCP: Deploy your first application
+
+Deployment creates billable resources. Ask your agent:
+
+Deploy nginx:latest in a new Northflank project named mcp-demo. Expose HTTP port 80. Show me the region and plan before creating resources, then return the working URL.
+
+For Git deployments, push your changes first. Private repositories need a Git connection with access to the repository. Follow any authorization link the agent returns.
+
+Your agent can also manage jobs, databases, and existing resources. Ask it to inspect the available tools for your task. If creation fails partway through, inspect any returned resource IDs before retrying.
+
+The [Northflank skill](ai-agents.md#agent-skills) supplies platform guidance. MCP supplies authenticated tools. CLI setup installs both by default.
+
+#### Connect your agent with MCP: Use an API token for authentication
+
+For clients without the CLI, connect directly with a team API token.
+
+##### Connect your agent with MCP: Prepare your token
+
+Use a client that supports Streamable HTTP and an Authorization header. The endpoint is `https://mcp.northflank.com/mcp`. Northflank MCP does not support OAuth login.
 
 1. [Create a team API token](secure.md#grant-api-access-generate-an-api-token) with permissions for the resources you want the agent to manage.
 
@@ -166,9 +278,9 @@ Set the variable to the token alone, without the `Bearer ` prefix. The client co
 
 For deployment, the role needs permission to create and read the relevant resources. A new project also needs project creation permission. Connecting a Git account needs a user-associated token with Git management permission. Public repositories do not require a Git account connection.
 
-The configurations below reference the environment variable instead of storing the token in a project file. Do not paste the token into chat or commit it to Git. A desktop app must receive the variable in its own process environment. Setting it in an unrelated terminal does not update an already running app.
+Do not paste the token into chat or commit it to Git. Start the agent with the environment variable available. An already running desktop app does not inherit variables from another terminal.
 
-#### Connect your agent with MCP: Add MCP to your client
+##### Connect your agent with MCP: Add MCP to your client
 
 Merge the Northflank entry into your existing configuration. Preserve other servers. After saving, restart or reconnect the client so it loads the new configuration and environment.
 
@@ -254,143 +366,3 @@ Authorization: Bearer <YOUR_TEAM_API_TOKEN>
 ```
 
 Use the client's secret storage or environment substitution where available. Configuration syntax differs between clients.
-
-#### Connect your agent with MCP: Confirm the connection
-
-Ask the agent:
-
-Use the Northflank MCP to show my authenticated team and access scope. Do not create or change resources.
-
-The agent can use `get_auth_context` to read the credential context. Make sure that the returned team matches your intended team.
-
-If no Northflank tools appear, make sure that the server is enabled and reconnect the client. The endpoint is a protocol URL, not a web page. Opening it in a browser is not a connection test.
-
-#### Connect your agent with MCP: Deploy your first application
-
-Deployment creates billable resources. Use a new project name, and choose a region and plan that fit your requirements.
-
-Ask the agent:
-
-Use the Northflank MCP to deploy nginx:latest into a new project named mcp-demo. Expose HTTP port 80. Show the region and plan before creating resources, then return the public URL when the app is ready.
-
-The agent uses `deploy_app` and follows the returned status instructions. Creation does not establish readiness. For a web application, the agent must also check the public URL before reporting success.
-
-For a Git repository, ask:
-
-Use the Northflank MCP to deploy this repository's remote branch into a new project named repo-demo. Use its Dockerfile. If Northflank needs Git access, give me the authorization link and resume after I authorize it.
-
-Git deployment uses the remote repository. Uncommitted or unpushed local changes are not included. The agent can inspect local build configuration, but the hosted MCP does not read your local files.
-
-Public repositories work without linking a Git account. For private repositories, the team needs a connection with access to that repository.
-
-If Git access is missing, the deployment workflow can return a browser authorization link before creating resources. Complete the link, then ask the agent to continue. It resumes with the original inputs and the returned session ID.
-
-If you connect the repository separately in Northflank, the original session can remain pending. Tell the agent that you connected it separately. Retry the original deployment without `gitConnectionSessionId` so the workflow checks repository access again. Preserve an explicitly selected `source.vcsLinkId` unless you intend to select a different connection. Do not create another authorization session while the original one is pending.
-
-Git authorization grants repository access. It does not replace the team API token used to authenticate the MCP connection.
-
-#### Connect your agent with MCP: Available workflows
-
-The MCP includes deployment workflows and detailed resource operations. Permissions apply to every operation.
-
-Common operations appear directly in the tool list. The agent finds advanced operations with `search_tools` and calls them through `execute_tool`. It uses `get_tool_schema` only for omitted fields or constraints. Returned `next.tool` names can be executed without another search.
-
-| Task | Tools and behavior |
-| --- | --- |
-| Deploy an image or Git application | `deploy_app` checks Git access when needed and creates a service in an existing or new project. |
-| Create a manual or scheduled job | `deploy_job` supports image and Git sources. Manual execution uses `run_job`. |
-| Add a database | `create_database` handles common database settings and explicit environment-variable linking. |
-| Inspect deployment progress | `get_deployment_status` summarizes build, rollout, run state and active source revisions. Follow its next action for recovery or diagnostics. A source revision match does not confirm the exact build artifact. |
-| Manage existing resources | Resource operations cover projects, services, jobs, addons, secrets, volumes, harnesses, and supported BYOC operations. |
-| Investigate a failure | `diagnose` gathers service, job or addon health, infrastructure events, deployment revisions, logs and metrics. For BYOC, it also reads cluster and node-pool configuration. |
-
-Diagnosis gathers evidence without changing resources. Missing permissions produce partial results. It does not prove a root cause or test application connectivity. Use `get_deployment_status` or `get_addon` for routine polling.
-
-`list_addon_types` returns Northflank-managed addon types and custom addon types available to your team. Managed type details include versions, storage sizes and replica options. Storage classes depend on the target cluster and are not included in type discovery.
-
-For BYOC databases, set `create_database.storageClass` to a class supported by the target cluster. Its default is `nvme`, which is unavailable on some clusters. Addon type discovery does not confirm that a storage class exists on your cluster.
-
-`list_cluster_nodes` returns recorded BYOC nodes and their `RUNNING` or `DELETED` state. This state does not establish Kubernetes readiness or schedulability.
-
-The MCP does not expose every public API operation. Ask the agent to inspect the available tools before assuming a capability exists.
-
-#### Connect your agent with MCP: Use MCP with the Northflank skill
-
-The [Northflank skill](ai-agents.md#agent-skills) provides deployment guidance and platform knowledge. MCP supplies authenticated tools that execute operations.
-
-You can use either independently. Install the skill alongside MCP when you want both guidance and tools. Installing the skill does not configure the MCP connection or grant account access.
-
-#### Connect your agent with MCP: Workload identity
-
-Agents running on Northflank can use a team workload identity token instead of a copied team API token. The token's permissions and project restrictions still apply.
-
-Send the workload token in the same Authorization header. If `NORTHFLANK_API_TOKEN_FILE` is provided, use a client that can read the mounted token file again when the token rotates.
-
-The static environment configurations above do not provide automatic workload token refresh. Use a client credential mechanism that reads the mounted token file before each request or refreshes it when authentication fails.
-
-Workload identities cannot authorize a personal Git account. A team member must grant the required repository access in the team's Git integrations.
-
-##### Connect your agent with MCP: Prepare a workload token helper
-
-Codex and Claude Code can generate authentication headers with a local helper. The examples below require Node.js and access to the mounted workload token file.
-
-Save this helper as `northflank-mcp-headers.cjs` in a trusted directory. The client runs it. Do not run it in a shared terminal because its output contains the token.
-
-```js
-const { readFileSync } = require('node:fs');
-const tokenFile = process.argv[2];
-if (!tokenFile) throw new Error('Supply the workload token file path.');
-const token = readFileSync(tokenFile, 'utf8').trim();
-if (!token) throw new Error('The workload token file is empty.');
-process.stdout.write(JSON.stringify({ Authorization: `Bearer ${token}` }));
-```
-
-##### Connect your agent with MCP: Refresh workload tokens in Codex
-
-For a local Codex HTTP connection, configure [`http_headers_helper`](https://developers.openai.com/codex/mcp/#streamable-http-servers) in `~/.codex/config.toml`. Use the helper above and replace both file paths. Use the MCP URL for the workload's Northflank environment.
-
-```toml
-[mcp_servers.northflank]
-url = "https://mcp.northflank.com/mcp"
-http_headers_helper = "node /absolute/path/northflank-mcp-headers.cjs /absolute/path/to/workload-token"
-```
-
-Remove `bearer_token_env_var` and other static Authorization headers for this server. An explicit bearer token or stored OAuth credential takes precedence over the helper's Authorization header.
-
-Codex caches the helper's headers for the connection. After a same-origin POST returns HTTP `401` or `403`, it refreshes the headers once. It retries only if the helper returns changed values. The helper is not supported for connections through a remote execution environment. Do not retry uncertain mutations yourself.
-
-##### Connect your agent with MCP: Refresh workload tokens in Claude Code
-
-Claude Code supports [dynamic authentication headers](https://code.claude.com/docs/en/mcp#use-dynamic-headers-for-custom-authentication).
-
-1. Save the helper from [Prepare a workload token helper](ai-agents.md#connect-your-agent-with-mcp-prepare-a-workload-token-helper).
-
-2. Add an HTTP MCP configuration with `headersHelper`. Replace both file paths. Use the MCP URL for the workload's Northflank environment. Remove any static Authorization header for this server.
-
-```json
-{
-  "mcpServers": {
-    "northflank": {
-      "type": "http",
-      "url": "https://mcp.northflank.com/mcp",
-      "headersHelper": "node /absolute/path/northflank-mcp-headers.cjs /absolute/path/to/workload-token"
-    }
-  }
-}
-```
-
-1. Reconnect through `/mcp`. For project configuration, trust the directory before the helper can run.
-
-Claude Code reads fresh headers on connection and reconnect. After a tool call receives HTTP `401` or `403`, it refreshes the headers and retries once. It does not read the file before every request. A permission denial still requires a role or scope change. Do not retry uncertain mutations yourself.
-
-#### Connect your agent with MCP: Troubleshooting
-
-| Symptom | Action |
-| --- | --- |
-| Missing tools or a connection failure | Make sure that the client enables the server, uses Streamable HTTP, and sends requests to the URL ending in `/mcp`. |
-| `401` authentication error | Make sure that the agent receives the token variable and sends a valid team token. Replace an expired or revoked token. |
-| `403` permission error | Inspect the token role and workload restrictions. Grant the required permission or use a credential with the intended scope. |
-| An unexpected OAuth prompt | Configure the bearer header. In OpenCode, set `oauth` to `false`. The hosted server does not provide MCP OAuth login. |
-| Git authorization cannot complete | Follow the returned recovery instructions. Check the credential's team and user context before requesting a replacement link. |
-
-If a request fails after resource creation, retain the returned resource IDs. Inspect those resources before retrying so you do not create duplicates.

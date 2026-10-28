@@ -70,7 +70,33 @@ Required permission: Project > Jobs > General > Run Job
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `external`: {object}
      - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
-     - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
+     - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | {object}
+   - `docker`: {object}
+     - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
+     - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
+     - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
+   - `buildpack`: {object}
+     - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
+     - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
+     - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
+     - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
+   - `storage`: {object}
+     - `useHdbStorage`: (boolean)
+     - `usePdSsdStorage`: (boolean)
+     - `ephemeralStorage`: {object}
+       - `storageSize`: (integer) Ephemeral storage per container in MB
+     - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
+   - `gpu`: {object}
+     - `enabled`: (boolean) Whether GPUs are enabled for this workload.
+     - `configuration`: {object}
+       - `gpuType`: (string) (required) The type of GPU to use.
+       - `gpuCount`: (integer) The number of GPUs to allocate.
+       - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
+   - `image`: {object}
+     - `projectId`: (string) (min length: 24) (max length: 24)
+     - `name`: (string) (required) (min length: 1)
+     - `group`: (string) (min length: 1)
+     - `tag`: (string) (required) (min length: 1)
 
 **Response body:**
 

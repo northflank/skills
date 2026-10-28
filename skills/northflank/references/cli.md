@@ -3,12 +3,11 @@
 ## Installation
 
 ```bash
-npm i -g @northflank/cli
-# or
-yarn global add @northflank/cli
+pnpm add -g @northflank/cli@latest
+nf --version
 ```
 
-Requires Node.js 12+.
+Requires Node.js 22.13.0 or later, excluding 26.0.x. Both `nf` and `northflank` run the same CLI.
 
 ## Authentication
 
@@ -16,12 +15,54 @@ Requires Node.js 12+.
 # Browser-based login
 northflank login
 
-# Token-based login (non-interactive)
-northflank login -t <TOKEN>
+# Manual API-token login through a prompt
+northflank login --token-login
 
 # Name the context for switching later
 northflank login -n my-context
 ```
+
+Browser login saves a CLI session without a separately created API token. Select the intended team and wait for the command to finish. Never paste credentials into an agent conversation.
+
+## Coding agent setup
+
+Use a team login and an installed Claude Code, Codex, Cursor, or OpenCode client. Codex requires the `codex` command with plugin support. Personal and organization-scoped logins cannot connect through the CLI bridge, which reads your saved CLI session for MCP requests.
+
+Replace `claude` with the requested agent:
+
+```sh
+nf agent setup --agent claude --dry-run
+nf agent setup --agent claude --yes
+nf agent status --check --agent claude
+```
+
+Setup installs the canonical skill or Codex plugin and configures MCP for all your projects. Tokens stay out of the agent configuration. `--dry-run` previews changes without authentication checks. Explain any replacement before applying it. `--yes` accepts replacement of conflicting Northflank MCP entries after a private backup. Keep backups private because they can contain credentials. Modified skills and other MCP servers are preserved.
+
+Reconnect or restart the agent if it cannot load the new connection. Then call `get_auth_context` to confirm the intended team. In Claude Code, use `/mcp` or `claude mcp get northflank` to inspect connection failures. A project entry can override the user connection.
+
+Use `nf agent update --agent claude` to update the installation. Use `nf agent remove --agent claude` to remove the managed installation and MCP connection. Both include MCP by default. Add `--yes` for non-interactive changes.
+
+For skills or plugins only, add `--no-mcp --scope user`. For a project skill, use `--no-mcp --scope project`. Codex plugins require user scope. These flags also apply to update, status, and removal.
+
+### Login recovery
+
+When credentials expire, the bridge returns login instructions. Follow them to renew the same named context and team. Renewal updates the normal CLI login too. The running bridge reads the new session on the next request. Reconnect only if the agent disconnected.
+
+The `--override` login option clears the context's saved resource defaults. To change teams or context names, select the intended CLI context, rerun setup, and reconnect. Rerun setup if the CLI or Node.js installation moves.
+
+If an environment token overrides your saved login, unset `NF_API_TOKEN`, `NORTHFLANK_API_TOKEN`, `NF_API_HOST`, and `NORTHFLANK_API_HOST` before setup.
+
+### Managed harnesses
+
+On harness images with automatic MCP setup, startup configures the selected supported agent when `NORTHFLANK_API_TOKEN_FILE` is set. This file contains a rotating workload identity token. It grants the harness its assigned permissions. Reuse this connection instead of logging in with a personal CLI session.
+
+If `NORTHFLANK_API_TOKEN_FILE` is set but MCP is not configured, run:
+
+```sh
+nf agent mcp setup-workload --agent claude
+```
+
+Replace `claude` with `codex`, `cursor`, or `opencode` as needed. The command configures MCP without installing skills. It preserves conflicting user configuration. Follow the reported error before making changes. The bridge reads the mounted token as it rotates. Do not copy it into a static environment value or run `nf login` to replace it.
 
 ## Contexts
 
@@ -37,6 +78,23 @@ northflank context use project
 northflank context use service
 northflank context use job
 ```
+
+## Repository defaults
+
+Create `northflank.yaml` to share resource defaults in a repository:
+
+```yaml
+context:
+  team: my-team
+  project: my-project
+  service: my-service
+```
+
+Use resource IDs, as you do with `--projectId` and `--serviceId`. Supported fields are `team`, `project`, `service`, `job`, `addon`, `volume`, and `harness`. Keep credentials and API endpoints out of this file. Saved logins remain in `~/.northflank/config.json`, or the configured CLI directory, and use JSON only.
+
+The CLI checks the current directory, then the Git repository root. It supports `northflank.yaml` and `northflank.yml`, with `.yaml` taking precedence in each directory. Explicit command options override file defaults. When a local file is present, omitted fields do not inherit global defaults. Use `--noDefaults` to ignore both. Deletion commands also ignore resource defaults.
+
+Use a regular file of at most 64 KiB. Invalid files cause a warning and disable local and global defaults. `nf context use` changes global defaults, not this file. See the [generated CLI guide](api/use-the-cli.md) for the full file rules.
 
 ## Creating Resources
 

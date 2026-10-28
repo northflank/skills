@@ -211,10 +211,11 @@ OR
 - `sinkType`: (string) (required) The type of log sink to target (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
 - `sinkData`: {object}
   - `dataset`: (string) (required) Name of the data
-  - `token`: (string) Axiom API/Personal token
-  - `tokenType`: (string) Using a personal token (enum: personal, api)
-  - `orgId`: (string) The ID of the organisation, required if using a personal token
-  - `url`: (string) The Axiom url to use. Only change if self hosting axiom.
+  - `token`: (string) Axiom API token
+  - `tokenType`: (string) Deprecated token type. (enum: personal, api)
+  - `orgId`: (string) Deprecated Axiom organisation ID.
+  - `region`: (string) Axiom edge deployment domain, without a scheme or path. (pattern: ^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.aws\.edge\.axiom\.co$)
+  - `url`: (string) Custom Axiom endpoint. A URL with a path is used as-is.
 
 OR
 
@@ -1191,7 +1192,7 @@ Update a log sink using Axiom
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"restricted":true,"projects":["default-project"],"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"resumeLogSink":false,"sinkType":"http","sinkData":{"dataset":"staging","token":"b1dd3feb585asd1a3e9edpo9kmn5e590hg9","tokenType":"api"}}' \
+  --data '{"restricted":true,"projects":["default-project"],"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"resumeLogSink":false,"sinkType":"http","sinkData":{"dataset":"staging","token":"b1dd3feb585asd1a3e9edpo9kmn5e590hg9","tokenType":"api","region":"eu-central-1.aws.edge.axiom.co"}}' \
   https://api.northflank.com/v1/integrations/log-sinks/{logSinkId}/settings
 ```
 
@@ -1212,7 +1213,8 @@ const payload = {
   "sinkData": {
     "dataset": "staging",
     "token": "b1dd3feb585asd1a3e9edpo9kmn5e590hg9",
-    "tokenType": "api"
+    "tokenType": "api",
+    "region": "eu-central-1.aws.edge.axiom.co"
   }
 }
 
@@ -1234,7 +1236,7 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks/{logSinkId}/settings"
 
-payload = {"restricted":true,"projects":["default-project"],"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"resumeLogSink":false,"sinkType":"http","sinkData":{"dataset":"staging","token":"b1dd3feb585asd1a3e9edpo9kmn5e590hg9","tokenType":"api"}}
+payload = {"restricted":true,"projects":["default-project"],"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"resumeLogSink":false,"sinkType":"http","sinkData":{"dataset":"staging","token":"b1dd3feb585asd1a3e9edpo9kmn5e590hg9","tokenType":"api","region":"eu-central-1.aws.edge.axiom.co"}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -1255,7 +1257,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks/{logSinkId}/settings"
 
-  var jsonStr = []byte(`{"restricted":true,"projects":["default-project"],"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"resumeLogSink":false,"sinkType":"http","sinkData":{"dataset":"staging","token":"b1dd3feb585asd1a3e9edpo9kmn5e590hg9","tokenType":"api"}}`)
+  var jsonStr = []byte(`{"restricted":true,"projects":["default-project"],"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"resumeLogSink":false,"sinkType":"http","sinkData":{"dataset":"staging","token":"b1dd3feb585asd1a3e9edpo9kmn5e590hg9","tokenType":"api","region":"eu-central-1.aws.edge.axiom.co"}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -1773,7 +1775,8 @@ Update a log sink using Axiom
   "sinkData": {
     "dataset": "staging",
     "token": "b1dd3feb585asd1a3e9edpo9kmn5e590hg9",
-    "tokenType": "api"
+    "tokenType": "api",
+    "region": "eu-central-1.aws.edge.axiom.co"
   }
 }
 ```
@@ -2187,7 +2190,8 @@ await apiClient.update.logSink({
     "sinkData": {
       "dataset": "staging",
       "token": "b1dd3feb585asd1a3e9edpo9kmn5e590hg9",
-      "tokenType": "api"
+      "tokenType": "api",
+      "region": "eu-central-1.aws.edge.axiom.co"
     }
   }
 });
@@ -2641,6 +2645,7 @@ response = client.update.log_sink(
             "dataset": "staging",
             "token": "b1dd3feb585asd1a3e9edpo9kmn5e590hg9",
             "tokenType": "api",
+            "region": "eu-central-1.aws.edge.axiom.co",
         },
     },
 )

@@ -42,6 +42,8 @@ Required permission: Project > Services > General > Read
         - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
         - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
         - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+        - `scan`: {object}
+          - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
         - `buildkit`: {object}
           - `useCache`: (boolean) Use persistent storage to cache build layers.
           - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
@@ -53,6 +55,8 @@ Required permission: Project > Services > General > Read
         - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
         - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
         - `useCache`: (boolean) Should build dependencies be cached?
+        - `scan`: {object}
+          - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
    - `buildConfiguration`: {object}
      - `prRestrictions`: [array of] (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
      - `branchRestrictions`: [array of] (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
@@ -244,6 +248,8 @@ Required permission: Project > Services > General > Read
         - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
         - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
         - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+        - `scan`: {object}
+          - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
         - `buildkit`: {object}
           - `useCache`: (boolean) Use persistent storage to cache build layers.
           - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
@@ -255,6 +261,8 @@ Required permission: Project > Services > General > Read
         - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
         - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
         - `useCache`: (boolean) Should build dependencies be cached?
+        - `scan`: {object}
+          - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
    - `buildConfiguration`: {object}
      - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
      - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
@@ -350,7 +358,7 @@ Required permission: Project > Services > General > Read
          - `gpuType`: (string) (required) The type of GPU to use.
          - `gpuCount`: (integer) The number of GPUs to allocate.
          - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-     - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+     - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
      - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
      - `ssh`: {object}
        - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
@@ -572,6 +580,25 @@ Required permission: Project > Services > General > Read
      - `volumesToAttach`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
      - `expiryTime`: (integer) Number of seconds from creation after which the service should automatically expire. Once reached, the service is paused and scheduled for deletion. Must be between 300 (5 minutes) and 604800 (7 days).
    - `serviceType`: (string) (required) Type of the service (combined, build or deployment) (enum: deployment)
+   - `id`: (string) (required) Identifier for the service
+   - `appId`: (string) (required) Full identifier used for service deployment
+   - `cluster`: {object}
+     - `id`: (string) (required) The id of the cluster associated with this project.
+     - `name`: (string) (required) The name of the cluster associated with this project.
+     - `namespace`: (string) Namespace this resource is located within on the cluster.
+     - `loadBalancers`: [array of] (string)
+   - `createdAt`: (string) time of creation (format: date-time)
+   - `updatedAt`: (string) time of update (format: date-time)
+   - `expiryTime`: (string) Absolute time at which the service is scheduled to automatically expire. Resolved from createOptions.expiryTime on creation; cleared once the service has expired. (format: date-time)
+   - `expiredAt`: (string) Time at which the service expired and was paused. (format: date-time)
+   - `scheduledDeletion`: (string) Time at which the expired service is scheduled for deletion. (format: date-time)
+   - `status`: {object}
+     - `deployment`: {object}
+       - `status`: (string) (required) The current status of the deployment. (enum: PENDING, IN_PROGRESS, COMPLETED, FAILED)
+       - `reason`: (string) (required) The reason the current deployment was started. (enum: SCALING, DEPLOYING)
+       - `lastTransitionTime`: (string) The timestamp of when the deployment reached this status. (format: date-time)
+   - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
+   - `stageId`: (string) ID of the environment the service belongs to.
    - `deployment`: {object}
      - `type`: (string) The way the service should be deployed. Either as a deployment (default), or as a stateful set. (enum: deployment, statefulSet)
      - `instances`: (integer) (required) The number of instances to run the service on.
@@ -604,7 +631,7 @@ Required permission: Project > Services > General > Read
          - `gpuType`: (string) (required) The type of GPU to use.
          - `gpuCount`: (integer) The number of GPUs to allocate.
          - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-     - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+     - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
      - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
      - `ssh`: {object}
        - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
@@ -635,26 +662,15 @@ Required permission: Project > Services > General > Read
      - `external`: {object}
        - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
        - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
+     - `image`: {object}
+       - `projectId`: (string) (min length: 24) (max length: 24)
+       - `name`: (string) (required) (min length: 1)
+       - `group`: (string) (min length: 1)
+       - `tag`: (string) (required) (min length: 1)
      - `imageUrl`: (string) Image registry url of the deployed image.
-   - `id`: (string) (required) Identifier for the service
-   - `appId`: (string) (required) Full identifier used for service deployment
-   - `cluster`: {object}
-     - `id`: (string) (required) The id of the cluster associated with this project.
-     - `name`: (string) (required) The name of the cluster associated with this project.
-     - `namespace`: (string) Namespace this resource is located within on the cluster.
-     - `loadBalancers`: [array of] (string)
-   - `createdAt`: (string) time of creation (format: date-time)
-   - `updatedAt`: (string) time of update (format: date-time)
-   - `expiryTime`: (string) Absolute time at which the service is scheduled to automatically expire. Resolved from createOptions.expiryTime on creation; cleared once the service has expired. (format: date-time)
-   - `expiredAt`: (string) Time at which the service expired and was paused. (format: date-time)
-   - `scheduledDeletion`: (string) Time at which the expired service is scheduled for deletion. (format: date-time)
-   - `status`: {object}
-     - `deployment`: {object}
-       - `status`: (string) (required) The current status of the deployment. (enum: PENDING, IN_PROGRESS, COMPLETED, FAILED)
-       - `reason`: (string) (required) The reason the current deployment was started. (enum: SCALING, DEPLOYING)
-       - `lastTransitionTime`: (string) The timestamp of when the deployment reached this status. (format: date-time)
-   - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
-   - `stageId`: (string) ID of the environment the service belongs to.
+     - `importedImage`: {object}
+       - `projectId`: (string) (required) (min length: 24) (max length: 24)
+       - `imageId`: (string) (required) (min length: 24) (max length: 24)
 
 ### API reference
 
@@ -1263,6 +1279,28 @@ OR
       "expiryTime": 86400
     },
     "serviceType": "deployment",
+    "id": "example-service",
+    "appId": "/example-user/default-project/example-service",
+    "cluster": {
+      "id": "nf-europe-west",
+      "name": "nf-europe-west",
+      "namespace": "ns-8zy2mcjh9zn2",
+      "loadBalancers": [
+        "lb.659200800000000000000000.northflank.com"
+      ]
+    },
+    "expiryTime": "2024-01-01T00:00:00.000Z",
+    "expiredAt": "2024-01-01T00:00:00.000Z",
+    "scheduledDeletion": "2024-01-31T00:00:00.000Z",
+    "status": {
+      "deployment": {
+        "status": "COMPLETED",
+        "reason": "DEPLOYING",
+        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+      }
+    },
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
+    "stageId": "staging",
     "deployment": {
       "instances": 1,
       "docker": {
@@ -1298,29 +1336,7 @@ OR
         "imagePath": "nginx:latest",
         "credentials": "example-credentials"
       }
-    },
-    "id": "example-service",
-    "appId": "/example-user/default-project/example-service",
-    "cluster": {
-      "id": "nf-europe-west",
-      "name": "nf-europe-west",
-      "namespace": "ns-8zy2mcjh9zn2",
-      "loadBalancers": [
-        "lb.659200800000000000000000.northflank.com"
-      ]
-    },
-    "expiryTime": "2024-01-01T00:00:00.000Z",
-    "expiredAt": "2024-01-01T00:00:00.000Z",
-    "scheduledDeletion": "2024-01-31T00:00:00.000Z",
-    "status": {
-      "deployment": {
-        "status": "COMPLETED",
-        "reason": "DEPLOYING",
-        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
-      }
-    },
-    "uid": "68f0aa1b9c4e2d7f11a3b402",
-    "stageId": "staging"
+    }
   }
 }
 ```
@@ -1937,6 +1953,28 @@ OR
     "expiryTime": 86400
   },
   "serviceType": "deployment",
+  "id": "example-service",
+  "appId": "/example-user/default-project/example-service",
+  "cluster": {
+    "id": "nf-europe-west",
+    "name": "nf-europe-west",
+    "namespace": "ns-8zy2mcjh9zn2",
+    "loadBalancers": [
+      "lb.659200800000000000000000.northflank.com"
+    ]
+  },
+  "expiryTime": "2024-01-01T00:00:00.000Z",
+  "expiredAt": "2024-01-01T00:00:00.000Z",
+  "scheduledDeletion": "2024-01-31T00:00:00.000Z",
+  "status": {
+    "deployment": {
+      "status": "COMPLETED",
+      "reason": "DEPLOYING",
+      "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+    }
+  },
+  "uid": "68f0aa1b9c4e2d7f11a3b402",
+  "stageId": "staging",
   "deployment": {
     "instances": 1,
     "docker": {
@@ -1972,29 +2010,7 @@ OR
       "imagePath": "nginx:latest",
       "credentials": "example-credentials"
     }
-  },
-  "id": "example-service",
-  "appId": "/example-user/default-project/example-service",
-  "cluster": {
-    "id": "nf-europe-west",
-    "name": "nf-europe-west",
-    "namespace": "ns-8zy2mcjh9zn2",
-    "loadBalancers": [
-      "lb.659200800000000000000000.northflank.com"
-    ]
-  },
-  "expiryTime": "2024-01-01T00:00:00.000Z",
-  "expiredAt": "2024-01-01T00:00:00.000Z",
-  "scheduledDeletion": "2024-01-31T00:00:00.000Z",
-  "status": {
-    "deployment": {
-      "status": "COMPLETED",
-      "reason": "DEPLOYING",
-      "lastTransitionTime": "2021-11-29T11:47:16.624Z"
-    }
-  },
-  "uid": "68f0aa1b9c4e2d7f11a3b402",
-  "stageId": "staging"
+  }
 }
 ```
 
@@ -2620,6 +2636,28 @@ OR
       "expiryTime": 86400
     },
     "serviceType": "deployment",
+    "id": "example-service",
+    "appId": "/example-user/default-project/example-service",
+    "cluster": {
+      "id": "nf-europe-west",
+      "name": "nf-europe-west",
+      "namespace": "ns-8zy2mcjh9zn2",
+      "loadBalancers": [
+        "lb.659200800000000000000000.northflank.com"
+      ]
+    },
+    "expiryTime": "2024-01-01T00:00:00.000Z",
+    "expiredAt": "2024-01-01T00:00:00.000Z",
+    "scheduledDeletion": "2024-01-31T00:00:00.000Z",
+    "status": {
+      "deployment": {
+        "status": "COMPLETED",
+        "reason": "DEPLOYING",
+        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
+      }
+    },
+    "uid": "68f0aa1b9c4e2d7f11a3b402",
+    "stageId": "staging",
     "deployment": {
       "instances": 1,
       "docker": {
@@ -2655,29 +2693,7 @@ OR
         "imagePath": "nginx:latest",
         "credentials": "example-credentials"
       }
-    },
-    "id": "example-service",
-    "appId": "/example-user/default-project/example-service",
-    "cluster": {
-      "id": "nf-europe-west",
-      "name": "nf-europe-west",
-      "namespace": "ns-8zy2mcjh9zn2",
-      "loadBalancers": [
-        "lb.659200800000000000000000.northflank.com"
-      ]
-    },
-    "expiryTime": "2024-01-01T00:00:00.000Z",
-    "expiredAt": "2024-01-01T00:00:00.000Z",
-    "scheduledDeletion": "2024-01-31T00:00:00.000Z",
-    "status": {
-      "deployment": {
-        "status": "COMPLETED",
-        "reason": "DEPLOYING",
-        "lastTransitionTime": "2021-11-29T11:47:16.624Z"
-      }
-    },
-    "uid": "68f0aa1b9c4e2d7f11a3b402",
-    "stageId": "staging"
+    }
   },
   "rawResponse": "...",
   "request": "...",
@@ -3300,28 +3316,6 @@ print(response.data)
     "expiryTime": 86400
   },
   "serviceType": "deployment",
-  "deployment": {
-    "instances": 1,
-    "docker": {
-      "configType": "default"
-    },
-    "storage": {
-      "ephemeralStorage": {
-        "storageSize": 1024
-      }
-    },
-    "gradualRolloutStrategyId": "strategy-id",
-    "internal": {
-      "id": "example-build-service",
-      "branch": "master",
-      "buildSHA": "latest",
-      "buildId": "premium-guide-6393"
-    },
-    "external": {
-      "imagePath": "nginx:latest",
-      "credentials": "example-credentials"
-    }
-  },
   "id": "example-service",
   "appId": "/example-user/default-project/example-service",
   "cluster": {
@@ -3343,6 +3337,28 @@ print(response.data)
     }
   },
   "uid": "68f0aa1b9c4e2d7f11a3b402",
-  "stageId": "staging"
+  "stageId": "staging",
+  "deployment": {
+    "instances": 1,
+    "docker": {
+      "configType": "default"
+    },
+    "storage": {
+      "ephemeralStorage": {
+        "storageSize": 1024
+      }
+    },
+    "gradualRolloutStrategyId": "strategy-id",
+    "internal": {
+      "id": "example-build-service",
+      "branch": "master",
+      "buildSHA": "latest",
+      "buildId": "premium-guide-6393"
+    },
+    "external": {
+      "imagePath": "nginx:latest",
+      "credentials": "example-credentials"
+    }
+  }
 }
 ```

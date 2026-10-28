@@ -26,7 +26,7 @@ Required permission: Project > Addons > General > Create
  - `billing`: {object}
    - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
    - `storageClass`: (string) The type of storage. Only configurable if the relevant feature flag is enabled for you account (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
-   - `storage`: (integer) (required) The size of the addon storage, in megabytes.
+   - `storage`: (integer) The size of the addon storage, in megabytes. Required for addon types that support persistent storage; omit for stateless addon types.
    - `replicas`: (integer) (required) The number of addon replicas to run.
    - `zonalRedundancy`: {object}
      - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: required, disabled)
@@ -61,6 +61,7 @@ Required permission: Project > Addons > General > Create
    - `mysqlHaModeEnabled`: (boolean) MySQL only: Run MySQL in HA configuration with auto-failover and connection poolers.
    - `mysqlHaRouterEnabled`: (boolean) MySQL HA only: Run connection routers in front of MySQL instances.
    - `mysqlRouterReplicas`: (integer) MysqlHA only: Number of connection router replicas in case connection router is enabled.
+   - `memcachedAuthenticationEnabled`: (boolean) Memcached only: Enable SASL authentication. Defaults to false and cannot be changed after creation. Required for public or VPC access.
  - `customCredentials`: {object}
    - `dbName`: (string) Custom database name. Not supported for all addon types.
  - `backupSchedules`: [array of] {object}
@@ -114,7 +115,7 @@ Required permission: Project > Addons > General > Create
    - `billing`: {object}
      - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `storageClass`: (string) The type of storage. Only configurable if the relevant feature flag is enabled for you account (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
-     - `storage`: (integer) (required) The size of the addon storage, in megabytes.
+     - `storage`: (integer) The size of the addon storage, in megabytes. Required for addon types that support persistent storage; omit for stateless addon types.
      - `replicas`: (integer) (required) The number of addon replicas to run.
      - `zonalRedundancy`: {object}
        - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: required, disabled)
@@ -149,6 +150,7 @@ Required permission: Project > Addons > General > Create
      - `mysqlHaModeEnabled`: (boolean) MySQL only: Run MySQL in HA configuration with auto-failover and connection poolers.
      - `mysqlHaRouterEnabled`: (boolean) MySQL HA only: Run connection routers in front of MySQL instances.
      - `mysqlRouterReplicas`: (integer) MysqlHA only: Number of connection router replicas in case connection router is enabled.
+     - `memcachedAuthenticationEnabled`: (boolean) Memcached only: Enable SASL authentication. Defaults to false and cannot be changed after creation. Required for public or VPC access.
    - `customCredentials`: {object}
      - `dbName`: (string) Custom database name. Not supported for all addon types.
    - `backupSchedules`: [array of] {object}

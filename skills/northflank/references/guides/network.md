@@ -1532,7 +1532,11 @@ When you create a service you can select the load-balancing strategy to use, the
 
 ### Networking on Northflank: Headers
 
-You can access the source IP of a request from the [X-Forwarded-For header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For), which is attached to all HTTP/S requests by the Northflank load balancer.
+For public HTTP/S requests, Northflank sets [`X-Envoy-External-Address`](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_conn_man/headers.html#x-envoy-external-address) to the IP address of the connecting client. It replaces any value sent by the client. If a CDN or another proxy sits in front of Northflank, the header identifies that proxy.
+
+For internal or VPC requests, do not assume this header exists or that Northflank replaces values sent by the client.
+
+The [`X-Forwarded-For`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Forwarded-For) header contains a comma-separated list of addresses supplied by clients and proxies. For requests through Northflank's ingress, Northflank preserves existing entries and appends the connecting client's IP to the end. Do not assume that all entries in `X-Forwarded-For` are trustworthy.
 
 Request and response headers can also be managed by configuring path-based routing for your subdomains.
 

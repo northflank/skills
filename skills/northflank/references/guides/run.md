@@ -303,7 +303,9 @@ You can open the edit deployment dialog from the service overview.
 
 #### Change deployment source: Northflank
 
-Change the source to an image built on Northflank from a Git repository. Select a build service and branch to deploy builds from, the deployment service will use the latest build from the branch.
+Select an image built on Northflank, or an [imported image](build.md#import-container-images) in the same project.
+
+For a built image, select a build service and branch. The deployment service uses the latest build from that branch.
 
 #### Change deployment source: External image
 
@@ -550,6 +552,8 @@ Deployment services can be added to a pipeline to create complex workflows.
 
 Alternatively you can build and run from one repository branch in a single combined service.
 
+You can also deploy an [imported image](build.md#import-container-images) from your project's image library.
+
 > [!note]
 >
 > [Click here](https://app.northflank.com/s/project/create/service) to create a deployment or combined service.
@@ -603,6 +607,8 @@ You can run images from container registries in three different ways on Northfla
 
 - As a manually-run job
 
+To store a copy in Northflank's registry, [import the image](build.md#import-container-images) into your project.
+
 > [!note]
 >
 > [Click here](https://app.northflank.com/s/project/create/service) to create a deployment service.
@@ -653,7 +659,7 @@ You can create a job from the following sources:
 
 - External image: deploy an image from a [container registry](run.md#run-an-image-from-a-container-registry)
 
-- Northflank: deploy an image built by a [Northflank build service](build.md#build-code-from-a-git-repository)
+- Northflank: deploy an image built by a [Northflank build service](build.md#build-code-from-a-git-repository), or an [imported image](build.md#import-container-images) from the same project
 
 From the job overview you can run manual jobs, or pause and resume scheduled jobs.
 

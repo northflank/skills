@@ -60,7 +60,7 @@ Required permission: Project > Services > General > Create
        - `gpuType`: (string) (required) The type of GPU to use.
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
    - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
    - `ssh`: {object}
      - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
@@ -119,7 +119,7 @@ Required permission: Project > Services > General > Create
        - `gpuType`: (string) (required) The type of GPU to use.
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
    - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
    - `ssh`: {object}
      - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
@@ -176,7 +176,66 @@ Required permission: Project > Services > General > Create
        - `gpuType`: (string) (required) The type of GPU to use.
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
+   - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
+   - `ssh`: {object}
+     - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
+   - `metadata`: {object}
+     - `labels`: {object}
+     - `annotations`: {object}
+   - `volumes`: [array of] {object}
+      - `id`: (string) (required) Slug identifying this volume within the service. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+      - `mounts`: [array of] {object}
+          - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
+          - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
+      - `spec`: {object}
+        - `accessMode`: (string) Access mode of a per-replica volume. Always `ReadWriteOnce`. (enum: ReadWriteOnce)
+        - `storageClassName`: (string) The type of the storage.
+        - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
+   - `containerSnapshot`: {object}
+     - `restoreFrom`: (string) The successful container snapshot to restore the service from. (format: uuid)
+     - `capture`: {object}
+       - `backupDestinationId`: (string) The backup destination for termination snapshots.
+       - `onTermination`: (boolean) Creates a snapshot when a service container terminates, including crashes, rollouts, scale-downs, evictions, and manual restarts.
+       - `retention`: {object}
+         - `maxSnapshots`: (integer) The maximum number of termination snapshots retained for the service.
+   - `image`: {object}
+     - `projectId`: (string) (min length: 24) (max length: 24)
+     - `name`: (string) (required) (min length: 1)
+     - `group`: (string) (min length: 1)
+     - `tag`: (string) (required) (min length: 1) | {object}
+   - `type`: (string) The way the service should be deployed. Either as a deployment (default), or as a stateful set. (enum: deployment, statefulSet)
+   - `instances`: (integer) (required) The number of instances to run the service on.
+   - `buildpack`: {object}
+     - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
+     - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
+     - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
+     - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
+   - `docker`: {object}
+     - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
+     - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
+     - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
+   - `storage`: {object}
+     - `useHdbStorage`: (boolean)
+     - `usePdSsdStorage`: (boolean)
+     - `ephemeralStorage`: {object}
+       - `storageSize`: (integer) Ephemeral storage per container in MB
+     - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
+   - `strategy`: {object}
+     - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate)
+     - `settings`: {object}
+       - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
+       - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
+   - `zonalRedundancy`: {object}
+     - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required)
+     - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
+   - `gpu`: {object}
+     - `enabled`: (boolean) Whether GPUs are enabled for this workload.
+     - `configuration`: {object}
+       - `gpuType`: (string) (required) The type of GPU to use.
+       - `gpuCount`: (integer) The number of GPUs to allocate.
+       - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
+   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
    - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
    - `ssh`: {object}
      - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
@@ -551,7 +610,7 @@ Required permission: Project > Services > General > Create
         - `gpuType`: (string) (required) The type of GPU to use.
         - `gpuCount`: (integer) The number of GPUs to allocate.
         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
     - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
     - `ssh`: {object}
       - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
@@ -582,6 +641,11 @@ Required permission: Project > Services > General > Create
     - `external`: {object}
       - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
       - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
+    - `image`: {object}
+      - `projectId`: (string) (min length: 24) (max length: 24)
+      - `name`: (string) (required) (min length: 1)
+      - `group`: (string) (min length: 1)
+      - `tag`: (string) (required) (min length: 1)
     - `imageUrl`: (string) Image registry url of the deployed image.
   - `id`: (string) (required) Identifier for the service
   - `appId`: (string) (required) Full identifier used for service deployment

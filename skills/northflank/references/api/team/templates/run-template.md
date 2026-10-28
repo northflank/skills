@@ -2508,6 +2508,8 @@ Required permission: Account > Templates > General > Run
                - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
                - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
                - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+               - `scan`: {object}
+                 - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
                - `buildkit`: {object}
                  - `useCache`: (boolean) Use persistent storage to cache build layers.
                  - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
@@ -2519,6 +2521,8 @@ Required permission: Account > Templates > General > Run
                - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
                - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
                - `useCache`: (boolean) Should build dependencies be cached?
+               - `scan`: {object}
+                 - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
          - `buildConfiguration`: {object}
            - `prRestrictions`: [array of] (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
            - `branchRestrictions`: [array of] (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
@@ -2556,6 +2560,9 @@ Required permission: Account > Templates > General > Run
            - `build`: {object}
              - `status`: (string) (required) The current status of the build. (enum: QUEUED, PENDING, UNSCHEDULABLE, STARTING, CLONING, BUILDING, UPLOADING, ABORTED, FAILURE, SUBMISSION_FAILURE, SUCCESS, CRASHED, IN_PROGRESS)
              - `lastTransitionTime`: (string) The timestamp of when the build reached this status. (format: date-time)
+         - `image`: {object}
+           - `projectId`: (string) (required)
+           - `name`: (string) (required)
      - `spec`: {object}
        - `description`: (multiple options) (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the service. (pattern: .*\${.*}.*)
        - `stageId`: (multiple options) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) (pattern: .*\${.*}.*)
@@ -2587,6 +2594,8 @@ Required permission: Account > Templates > General > Run
            - `dockerFilePath`: (multiple options) (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$) | (string) A string containing one or more references that resolve to the file path of the Dockerfile. (pattern: .*\${.*}.*)
            - `dockerWorkDir`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
            - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+           - `scan`: {object}
+             - `enabled`: (multiple options) (boolean) Scan the built image before uploading it to the registry. | (string) A string containing one or more references that resolve to scan the built image before uploading it to the registry. (pattern: .*\${.*}.*)
            - `buildkit`: {object}
              - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
              - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
@@ -2595,6 +2604,8 @@ Required permission: Account > Templates > General > Run
            - `buildpackLocators`: [array of] (multiple options) (string) Url or registry identifier of custom Buildpack. | (string) A string containing one or more references that resolve to url or registry identifier of custom Buildpack. (pattern: .*\${.*}.*)
            - `buildContext`: (multiple options) (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory to build in. (pattern: .*\${.*}.*)
            - `useCache`: (multiple options) (boolean) Should build dependencies be cached? | (string) A string containing one or more references that resolve to should build dependencies be cached? (pattern: .*\${.*}.*)
+           - `scan`: {object}
+             - `enabled`: (multiple options) (boolean) Scan the built image before uploading it to the registry. | (string) A string containing one or more references that resolve to scan the built image before uploading it to the registry. (pattern: .*\${.*}.*)
        - `buildConfiguration`: {object}
          - `prRestrictions`: [array of] (multiple options) (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$) | (string) A string containing one or more references that resolve to a pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: .*\${.*}.*)
          - `branchRestrictions`: [array of] (multiple options) (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$) | (string) A string containing one or more references that resolve to a branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: .*\${.*}.*)
@@ -2676,6 +2687,8 @@ Required permission: Account > Templates > General > Run
                - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
                - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
                - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+               - `scan`: {object}
+                 - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
                - `buildkit`: {object}
                  - `useCache`: (boolean) Use persistent storage to cache build layers.
                  - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
@@ -2687,6 +2700,8 @@ Required permission: Account > Templates > General > Run
                - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
                - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
                - `useCache`: (boolean) Should build dependencies be cached?
+               - `scan`: {object}
+                 - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
          - `buildConfiguration`: {object}
            - `prRestrictions`: [array of] (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
            - `branchRestrictions`: [array of] (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$)
@@ -2724,6 +2739,9 @@ Required permission: Account > Templates > General > Run
            - `build`: {object}
              - `status`: (string) (required) The current status of the build. (enum: QUEUED, PENDING, UNSCHEDULABLE, STARTING, CLONING, BUILDING, UPLOADING, ABORTED, FAILURE, SUBMISSION_FAILURE, SUCCESS, CRASHED, IN_PROGRESS)
              - `lastTransitionTime`: (string) The timestamp of when the build reached this status. (format: date-time)
+         - `image`: {object}
+           - `projectId`: (string) (required)
+           - `name`: (string) (required)
      - `spec`: {object}
        - `name`: (multiple options) (string) The name of the service. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) A string containing one or more references that resolve to the name of the service. (pattern: .*\${.*}.*)
        - `description`: (multiple options) (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the service. (pattern: .*\${.*}.*)
@@ -2759,6 +2777,8 @@ Required permission: Account > Templates > General > Run
              - `dockerFilePath`: (multiple options) (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$) | (string) A string containing one or more references that resolve to the file path of the Dockerfile. (pattern: .*\${.*}.*)
              - `dockerWorkDir`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
              - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+             - `scan`: {object}
+               - `enabled`: (multiple options) (boolean) Scan the built image before uploading it to the registry. | (string) A string containing one or more references that resolve to scan the built image before uploading it to the registry. (pattern: .*\${.*}.*)
              - `buildkit`: {object}
                - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
                - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*) | {object}
@@ -2770,6 +2790,8 @@ Required permission: Account > Templates > General > Run
              - `buildpackLocators`: [array of] (multiple options) (string) Url or registry identifier of custom Buildpack. | (string) A string containing one or more references that resolve to url or registry identifier of custom Buildpack. (pattern: .*\${.*}.*)
              - `buildContext`: (multiple options) (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory to build in. (pattern: .*\${.*}.*)
              - `useCache`: (multiple options) (boolean) Should build dependencies be cached? | (string) A string containing one or more references that resolve to should build dependencies be cached? (pattern: .*\${.*}.*)
+             - `scan`: {object}
+               - `enabled`: (multiple options) (boolean) Scan the built image before uploading it to the registry. | (string) A string containing one or more references that resolve to scan the built image before uploading it to the registry. (pattern: .*\${.*}.*)
        - `buildConfiguration`: {object}
          - `prRestrictions`: [array of] (multiple options) (string) A pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$) | (string) A string containing one or more references that resolve to a pull request build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from pull requests from branches that start with `feature/`. (pattern: .*\${.*}.*)
          - `branchRestrictions`: [array of] (multiple options) (string) A branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: ^[^?:@$~ [\]{}]*$) | (string) A string containing one or more references that resolve to a branch build rule. Can contain `*` as a wildcard to match multiple branch names. For example, `feature/*` will build all commits from branches that start with `feature/`. (pattern: .*\${.*}.*)
@@ -2961,6 +2983,8 @@ Required permission: Account > Templates > General > Run
                - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
                - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
                - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+               - `scan`: {object}
+                 - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
                - `buildkit`: {object}
                  - `useCache`: (boolean) Use persistent storage to cache build layers.
                  - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
@@ -2972,6 +2996,8 @@ Required permission: Account > Templates > General > Run
                - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
                - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
                - `useCache`: (boolean) Should build dependencies be cached?
+               - `scan`: {object}
+                 - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
          - `buildConfiguration`: {object}
            - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
            - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
@@ -3067,7 +3093,7 @@ Required permission: Account > Templates > General > Run
                - `gpuType`: (string) (required) The type of GPU to use.
                - `gpuCount`: (integer) The number of GPUs to allocate.
                - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
            - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
            - `ssh`: {object}
              - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
@@ -3146,7 +3172,7 @@ Required permission: Account > Templates > General > Run
              - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
              - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
              - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
-         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
+         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. (pattern: .*\${.*}.*)
          - `gradualRolloutStrategyId`: (multiple options) (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the strategy to be attached to service. (pattern: .*\${.*}.*)
          - `ssh`: {object}
            - `enabled`: (multiple options) (boolean) Enables SSH access if the resource matches an SSH identity selector. | (string) A string containing one or more references that resolve to enables SSH access if the resource matches an SSH identity selector. (pattern: .*\${.*}.*)
@@ -3289,6 +3315,8 @@ Required permission: Account > Templates > General > Run
            - `dockerFilePath`: (multiple options) (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$) | (string) A string containing one or more references that resolve to the file path of the Dockerfile. (pattern: .*\${.*}.*)
            - `dockerWorkDir`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
            - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+           - `scan`: {object}
+             - `enabled`: (multiple options) (boolean) Scan the built image before uploading it to the registry. | (string) A string containing one or more references that resolve to scan the built image before uploading it to the registry. (pattern: .*\${.*}.*)
            - `buildkit`: {object}
              - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
              - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*)
@@ -3297,6 +3325,8 @@ Required permission: Account > Templates > General > Run
            - `buildpackLocators`: [array of] (multiple options) (string) Url or registry identifier of custom Buildpack. | (string) A string containing one or more references that resolve to url or registry identifier of custom Buildpack. (pattern: .*\${.*}.*)
            - `buildContext`: (multiple options) (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory to build in. (pattern: .*\${.*}.*)
            - `useCache`: (multiple options) (boolean) Should build dependencies be cached? | (string) A string containing one or more references that resolve to should build dependencies be cached? (pattern: .*\${.*}.*)
+           - `scan`: {object}
+             - `enabled`: (multiple options) (boolean) Scan the built image before uploading it to the registry. | (string) A string containing one or more references that resolve to scan the built image before uploading it to the registry. (pattern: .*\${.*}.*)
        - `buildConfiguration`: {object}
          - `pathIgnoreRules`: [array of] (multiple options) (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260) | (string) A string containing one or more references that resolve to a path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (pattern: .*\${.*}.*)
          - `isAllowList`: (multiple options) (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. | (string) A string containing one or more references that resolve to if `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. (pattern: .*\${.*}.*)
@@ -3525,6 +3555,8 @@ Required permission: Account > Templates > General > Run
                - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
                - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
                - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+               - `scan`: {object}
+                 - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
                - `buildkit`: {object}
                  - `useCache`: (boolean) Use persistent storage to cache build layers.
                  - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
@@ -3536,6 +3568,8 @@ Required permission: Account > Templates > General > Run
                - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
                - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
                - `useCache`: (boolean) Should build dependencies be cached?
+               - `scan`: {object}
+                 - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
          - `buildConfiguration`: {object}
            - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
            - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
@@ -3631,7 +3665,7 @@ Required permission: Account > Templates > General > Run
                - `gpuType`: (string) (required) The type of GPU to use.
                - `gpuCount`: (integer) The number of GPUs to allocate.
                - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
            - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
            - `ssh`: {object}
              - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
@@ -3717,7 +3751,7 @@ Required permission: Account > Templates > General > Run
              - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
              - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
              - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
-         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
+         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. (pattern: .*\${.*}.*)
          - `gradualRolloutStrategyId`: (multiple options) (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the strategy to be attached to service. (pattern: .*\${.*}.*)
          - `ssh`: {object}
            - `enabled`: (multiple options) (boolean) Enables SSH access if the resource matches an SSH identity selector. | (string) A string containing one or more references that resolve to enables SSH access if the resource matches an SSH identity selector. (pattern: .*\${.*}.*)
@@ -3860,6 +3894,8 @@ Required permission: Account > Templates > General > Run
              - `dockerFilePath`: (multiple options) (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$) | (string) A string containing one or more references that resolve to the file path of the Dockerfile. (pattern: .*\${.*}.*)
              - `dockerWorkDir`: (multiple options) (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory of the Dockerfile. (pattern: .*\${.*}.*)
              - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+             - `scan`: {object}
+               - `enabled`: (multiple options) (boolean) Scan the built image before uploading it to the registry. | (string) A string containing one or more references that resolve to scan the built image before uploading it to the registry. (pattern: .*\${.*}.*)
              - `buildkit`: {object}
                - `useCache`: (multiple options) (boolean) Use persistent storage to cache build layers. | (string) A string containing one or more references that resolve to use persistent storage to cache build layers. (pattern: .*\${.*}.*)
                - `cacheStorageSize`: (multiple options) (integer) The amount of persistent storage available to each build in MB. | (string) A string containing one or more references that resolve to the amount of persistent storage available to each build in MB. (pattern: .*\${.*}.*) | {object}
@@ -3871,6 +3907,8 @@ Required permission: Account > Templates > General > Run
              - `buildpackLocators`: [array of] (multiple options) (string) Url or registry identifier of custom Buildpack. | (string) A string containing one or more references that resolve to url or registry identifier of custom Buildpack. (pattern: .*\${.*}.*)
              - `buildContext`: (multiple options) (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$) | (string) A string containing one or more references that resolve to the working directory to build in. (pattern: .*\${.*}.*)
              - `useCache`: (multiple options) (boolean) Should build dependencies be cached? | (string) A string containing one or more references that resolve to should build dependencies be cached? (pattern: .*\${.*}.*)
+             - `scan`: {object}
+               - `enabled`: (multiple options) (boolean) Scan the built image before uploading it to the registry. | (string) A string containing one or more references that resolve to scan the built image before uploading it to the registry. (pattern: .*\${.*}.*)
        - `buildConfiguration`: {object}
          - `pathIgnoreRules`: [array of] (multiple options) (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260) | (string) A string containing one or more references that resolve to a path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (pattern: .*\${.*}.*)
          - `isAllowList`: (multiple options) (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. | (string) A string containing one or more references that resolve to if `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`. (pattern: .*\${.*}.*)
@@ -4156,7 +4194,7 @@ Required permission: Account > Templates > General > Run
                - `gpuType`: (string) (required) The type of GPU to use.
                - `gpuCount`: (integer) The number of GPUs to allocate.
                - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
            - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
            - `ssh`: {object}
              - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
@@ -4187,6 +4225,11 @@ Required permission: Account > Templates > General > Run
            - `external`: {object}
              - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
              - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
+           - `image`: {object}
+             - `projectId`: (string) (min length: 24) (max length: 24)
+             - `name`: (string) (required) (min length: 1)
+             - `group`: (string) (min length: 1)
+             - `tag`: (string) (required) (min length: 1)
            - `imageUrl`: (string) Image registry url of the deployed image.
          - `id`: (string) (required) Identifier for the service
          - `appId`: (string) (required) Full identifier used for service deployment
@@ -4246,7 +4289,7 @@ Required permission: Account > Templates > General > Run
              - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
              - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
              - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
-         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
+         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. (pattern: .*\${.*}.*)
          - `gradualRolloutStrategyId`: (multiple options) (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the strategy to be attached to service. (pattern: .*\${.*}.*)
          - `ssh`: {object}
            - `enabled`: (multiple options) (boolean) Enables SSH access if the resource matches an SSH identity selector. | (string) A string containing one or more references that resolve to enables SSH access if the resource matches an SSH identity selector. (pattern: .*\${.*}.*)
@@ -4275,6 +4318,11 @@ Required permission: Account > Templates > General > Run
          - `external`: {object}
            - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
            - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
+         - `image`: {object}
+           - `projectId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
+           - `name`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `group`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `tag`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
        - `ports`: [array of] {object}
            - `name`: (multiple options) (string) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8) | (string) A string containing one or more references that resolve to the name used to identify the port. (pattern: .*\${.*}.*)
            - `internalPort`: (multiple options) (integer) The port number. | (string) A string containing one or more references that resolve to the port number. (pattern: .*\${.*}.*)
@@ -4646,7 +4694,7 @@ Required permission: Account > Templates > General > Run
                - `gpuType`: (string) (required) The type of GPU to use.
                - `gpuCount`: (integer) The number of GPUs to allocate.
                - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
            - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
            - `ssh`: {object}
              - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
@@ -4677,6 +4725,11 @@ Required permission: Account > Templates > General > Run
            - `external`: {object}
              - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
              - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
+           - `image`: {object}
+             - `projectId`: (string) (min length: 24) (max length: 24)
+             - `name`: (string) (required) (min length: 1)
+             - `group`: (string) (min length: 1)
+             - `tag`: (string) (required) (min length: 1)
            - `imageUrl`: (string) Image registry url of the deployed image.
          - `id`: (string) (required) Identifier for the service
          - `appId`: (string) (required) Full identifier used for service deployment
@@ -4743,7 +4796,7 @@ Required permission: Account > Templates > General > Run
              - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
              - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
              - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
-         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
+         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. (pattern: .*\${.*}.*)
          - `gradualRolloutStrategyId`: (multiple options) (string) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the id of the strategy to be attached to service. (pattern: .*\${.*}.*)
          - `ssh`: {object}
            - `enabled`: (multiple options) (boolean) Enables SSH access if the resource matches an SSH identity selector. | (string) A string containing one or more references that resolve to enables SSH access if the resource matches an SSH identity selector. (pattern: .*\${.*}.*)
@@ -4774,6 +4827,11 @@ Required permission: Account > Templates > General > Run
          - `external`: {object}
            - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
            - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
+         - `image`: {object}
+           - `projectId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
+           - `name`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `group`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `tag`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
          - `releaseFlowControlled`: (multiple options) (boolean) When enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. | (string) A string containing one or more references that resolve to when enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. (pattern: .*\${.*}.*)
        - `ports`: [array of] {object}
            - `name`: (multiple options) (string) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8) | (string) A string containing one or more references that resolve to the name used to identify the port. (pattern: .*\${.*}.*)
@@ -6094,7 +6152,7 @@ Required permission: Account > Templates > General > Run
                - `gpuType`: (string) (required) The type of GPU to use.
                - `gpuCount`: (integer) The number of GPUs to allocate.
                - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
            - `metadata`: {object}
              - `labels`: {object}
              - `annotations`: {object}
@@ -6113,6 +6171,11 @@ Required permission: Account > Templates > General > Run
              - `branch`: (string) Branch to deploy
              - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
              - `buildId`: (string) ID of the build that should be deployed
+           - `image`: {object}
+             - `projectId`: (string) (min length: 24) (max length: 24)
+             - `name`: (string) (required) (min length: 1)
+             - `group`: (string) (min length: 1)
+             - `tag`: (string) (required) (min length: 1)
            - `imageUrl`: (string) Image registry url of the deployed image.
          - `status`: {object}
            - `build`: {object}
@@ -6158,7 +6221,7 @@ Required permission: Account > Templates > General > Run
              - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
              - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
              - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
-         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
+         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. (pattern: .*\${.*}.*)
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
@@ -6177,6 +6240,11 @@ Required permission: Account > Templates > General > Run
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
+         - `image`: {object}
+           - `projectId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
+           - `name`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `group`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `tag`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
        - `disabledCI`: (multiple options) (boolean) Whether CI should be disabled. Only relevant for jobs deploying directly from version control. | (string) A string containing one or more references that resolve to whether CI should be disabled. Only relevant for jobs deploying directly from version control. (pattern: .*\${.*}.*)
        - `buildConfiguration`: {object}
          - `pathIgnoreRules`: [array of] (multiple options) (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260) | (string) A string containing one or more references that resolve to a path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (pattern: .*\${.*}.*)
@@ -6355,7 +6423,7 @@ Required permission: Account > Templates > General > Run
                - `gpuType`: (string) (required) The type of GPU to use.
                - `gpuCount`: (integer) The number of GPUs to allocate.
                - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
            - `metadata`: {object}
              - `labels`: {object}
              - `annotations`: {object}
@@ -6374,6 +6442,11 @@ Required permission: Account > Templates > General > Run
              - `branch`: (string) Branch to deploy
              - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
              - `buildId`: (string) ID of the build that should be deployed
+           - `image`: {object}
+             - `projectId`: (string) (min length: 24) (max length: 24)
+             - `name`: (string) (required) (min length: 1)
+             - `group`: (string) (min length: 1)
+             - `tag`: (string) (required) (min length: 1)
            - `imageUrl`: (string) Image registry url of the deployed image.
          - `status`: {object}
            - `build`: {object}
@@ -6425,7 +6498,7 @@ Required permission: Account > Templates > General > Run
              - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
              - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
              - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
-         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
+         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. (pattern: .*\${.*}.*)
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
@@ -6444,6 +6517,11 @@ Required permission: Account > Templates > General > Run
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
+         - `image`: {object}
+           - `projectId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
+           - `name`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `group`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `tag`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
          - `releaseFlowControlled`: (multiple options) (boolean) When enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. | (string) A string containing one or more references that resolve to when enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. (pattern: .*\${.*}.*)
        - `disabledCI`: (multiple options) (boolean) Whether CI should be disabled. Only relevant for jobs deploying directly from version control. | (string) A string containing one or more references that resolve to whether CI should be disabled. Only relevant for jobs deploying directly from version control. (pattern: .*\${.*}.*)
        - `buildConfiguration`: {object}
@@ -6622,7 +6700,7 @@ Required permission: Account > Templates > General > Run
                - `gpuType`: (string) (required) The type of GPU to use.
                - `gpuCount`: (integer) The number of GPUs to allocate.
                - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
            - `metadata`: {object}
              - `labels`: {object}
              - `annotations`: {object}
@@ -6641,6 +6719,11 @@ Required permission: Account > Templates > General > Run
              - `branch`: (string) Branch to deploy
              - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
              - `buildId`: (string) ID of the build that should be deployed
+           - `image`: {object}
+             - `projectId`: (string) (min length: 24) (max length: 24)
+             - `name`: (string) (required) (min length: 1)
+             - `group`: (string) (min length: 1)
+             - `tag`: (string) (required) (min length: 1)
            - `imageUrl`: (string) Image registry url of the deployed image.
          - `status`: {object}
            - `build`: {object}
@@ -6686,7 +6769,7 @@ Required permission: Account > Templates > General > Run
              - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
              - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
              - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
-         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
+         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. (pattern: .*\${.*}.*)
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
@@ -6705,6 +6788,11 @@ Required permission: Account > Templates > General > Run
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
+         - `image`: {object}
+           - `projectId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
+           - `name`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `group`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `tag`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
        - `disabledCI`: (multiple options) (boolean) Whether CI should be disabled. Only relevant for jobs deploying directly from version control. | (string) A string containing one or more references that resolve to whether CI should be disabled. Only relevant for jobs deploying directly from version control. (pattern: .*\${.*}.*)
        - `buildConfiguration`: {object}
          - `pathIgnoreRules`: [array of] (multiple options) (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260) | (string) A string containing one or more references that resolve to a path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (pattern: .*\${.*}.*)
@@ -6877,7 +6965,7 @@ Required permission: Account > Templates > General > Run
                - `gpuType`: (string) (required) The type of GPU to use.
                - `gpuCount`: (integer) The number of GPUs to allocate.
                - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
            - `metadata`: {object}
              - `labels`: {object}
              - `annotations`: {object}
@@ -6896,6 +6984,11 @@ Required permission: Account > Templates > General > Run
              - `branch`: (string) Branch to deploy
              - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
              - `buildId`: (string) ID of the build that should be deployed
+           - `image`: {object}
+             - `projectId`: (string) (min length: 24) (max length: 24)
+             - `name`: (string) (required) (min length: 1)
+             - `group`: (string) (min length: 1)
+             - `tag`: (string) (required) (min length: 1)
            - `imageUrl`: (string) Image registry url of the deployed image.
          - `status`: {object}
            - `build`: {object}
@@ -6947,7 +7040,7 @@ Required permission: Account > Templates > General > Run
              - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
              - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
              - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
-         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
+         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. (pattern: .*\${.*}.*)
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
@@ -6966,6 +7059,11 @@ Required permission: Account > Templates > General > Run
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
+         - `image`: {object}
+           - `projectId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
+           - `name`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `group`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `tag`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
          - `releaseFlowControlled`: (multiple options) (boolean) When enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. | (string) A string containing one or more references that resolve to when enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. (pattern: .*\${.*}.*)
        - `disabledCI`: (multiple options) (boolean) Whether CI should be disabled. Only relevant for jobs deploying directly from version control. | (string) A string containing one or more references that resolve to whether CI should be disabled. Only relevant for jobs deploying directly from version control. (pattern: .*\${.*}.*)
        - `buildConfiguration`: {object}
@@ -7146,7 +7244,7 @@ Required permission: Account > Templates > General > Run
                - `gpuType`: (string) (required) The type of GPU to use.
                - `gpuCount`: (integer) The number of GPUs to allocate.
                - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
            - `metadata`: {object}
              - `labels`: {object}
              - `annotations`: {object}
@@ -7165,6 +7263,11 @@ Required permission: Account > Templates > General > Run
              - `branch`: (string) Branch to deploy
              - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
              - `buildId`: (string) ID of the build that should be deployed
+           - `image`: {object}
+             - `projectId`: (string) (min length: 24) (max length: 24)
+             - `name`: (string) (required) (min length: 1)
+             - `group`: (string) (min length: 1)
+             - `tag`: (string) (required) (min length: 1)
            - `imageUrl`: (string) Image registry url of the deployed image.
          - `status`: {object}
            - `build`: {object}
@@ -7210,7 +7313,7 @@ Required permission: Account > Templates > General > Run
              - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
              - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
              - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
-         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
+         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. (pattern: .*\${.*}.*)
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
@@ -7229,6 +7332,11 @@ Required permission: Account > Templates > General > Run
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
+         - `image`: {object}
+           - `projectId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
+           - `name`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `group`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `tag`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
        - `disabledCI`: (multiple options) (boolean) Whether CI should be disabled. Only relevant for jobs deploying directly from version control. | (string) A string containing one or more references that resolve to whether CI should be disabled. Only relevant for jobs deploying directly from version control. (pattern: .*\${.*}.*)
        - `buildConfiguration`: {object}
          - `pathIgnoreRules`: [array of] (multiple options) (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260) | (string) A string containing one or more references that resolve to a path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (pattern: .*\${.*}.*)
@@ -7411,7 +7519,7 @@ Required permission: Account > Templates > General > Run
                - `gpuType`: (string) (required) The type of GPU to use.
                - `gpuCount`: (integer) The number of GPUs to allocate.
                - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+           - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
            - `metadata`: {object}
              - `labels`: {object}
              - `annotations`: {object}
@@ -7430,6 +7538,11 @@ Required permission: Account > Templates > General > Run
              - `branch`: (string) Branch to deploy
              - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
              - `buildId`: (string) ID of the build that should be deployed
+           - `image`: {object}
+             - `projectId`: (string) (min length: 24) (max length: 24)
+             - `name`: (string) (required) (min length: 1)
+             - `group`: (string) (min length: 1)
+             - `tag`: (string) (required) (min length: 1)
            - `imageUrl`: (string) Image registry url of the deployed image.
          - `status`: {object}
            - `build`: {object}
@@ -7481,7 +7594,7 @@ Required permission: Account > Templates > General > Run
              - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
              - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
              - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
-         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. (pattern: .*\${.*}.*)
+         - `gracePeriodSeconds`: (multiple options) (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. | (string) A string containing one or more references that resolve to the maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects. (pattern: .*\${.*}.*)
          - `metadata`: {object}
            - `labels`: {object}
            - `annotations`: {object}
@@ -7500,6 +7613,11 @@ Required permission: Account > Templates > General > Run
            - `branch`: (multiple options) (string) Branch to deploy | (string) A string containing one or more references that resolve to branch to deploy (pattern: .*\${.*}.*)
            - `buildSHA`: (multiple options) (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest) | (string) A string containing one or more references that resolve to commit SHA to deploy, or 'latest' to deploy the most recent commit (pattern: .*\${.*}.*)
            - `buildId`: (multiple options) (string) ID of the build that should be deployed | (string) A string containing one or more references that resolve to iD of the build that should be deployed (pattern: .*\${.*}.*)
+         - `image`: {object}
+           - `projectId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
+           - `name`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `group`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+           - `tag`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
          - `releaseFlowControlled`: (multiple options) (boolean) When enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. | (string) A string containing one or more references that resolve to when enabled the deployment source will only be set on creation. All changes to the deployment source must be done via a release flow or manually. (pattern: .*\${.*}.*)
        - `disabledCI`: (multiple options) (boolean) Whether CI should be disabled. Only relevant for jobs deploying directly from version control. | (string) A string containing one or more references that resolve to whether CI should be disabled. Only relevant for jobs deploying directly from version control. (pattern: .*\${.*}.*)
        - `buildConfiguration`: {object}
@@ -7598,7 +7716,7 @@ Required permission: Account > Templates > General > Run
            - `billing`: {object}
              - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
              - `storageClass`: (string) The type of storage. Only configurable if the relevant feature flag is enabled for you account (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
-             - `storage`: (integer) (required) The size of the addon storage, in megabytes.
+             - `storage`: (integer) The size of the addon storage, in megabytes. Required for addon types that support persistent storage; omit for stateless addon types.
              - `replicas`: (integer) (required) The number of addon replicas to run.
              - `zonalRedundancy`: {object}
                - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: required, disabled)
@@ -7633,6 +7751,7 @@ Required permission: Account > Templates > General > Run
              - `mysqlHaModeEnabled`: (boolean) MySQL only: Run MySQL in HA configuration with auto-failover and connection poolers.
              - `mysqlHaRouterEnabled`: (boolean) MySQL HA only: Run connection routers in front of MySQL instances.
              - `mysqlRouterReplicas`: (integer) MysqlHA only: Number of connection router replicas in case connection router is enabled.
+             - `memcachedAuthenticationEnabled`: (boolean) Memcached only: Enable SASL authentication. Defaults to false and cannot be changed after creation. Required for public or VPC access.
            - `customCredentials`: {object}
              - `dbName`: (string) Custom database name. Not supported for all addon types.
            - `backupSchedules`: [array of] {object}
@@ -7706,7 +7825,7 @@ Required permission: Account > Templates > General > Run
          - `billing`: {object}
            - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
            - `storageClass`: (multiple options) (string) The type of storage. Only configurable if the relevant feature flag is enabled for you account (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the type of storage. Only configurable if the relevant feature flag is enabled for you account (pattern: .*\${.*}.*)
-           - `storage`: (multiple options) (integer) The size of the addon storage, in megabytes. | (string) A string containing one or more references that resolve to the size of the addon storage, in megabytes. (pattern: .*\${.*}.*)
+           - `storage`: (multiple options) (integer) The size of the addon storage, in megabytes. Required for addon types that support persistent storage; omit for stateless addon types. | (string) A string containing one or more references that resolve to the size of the addon storage, in megabytes. Required for addon types that support persistent storage; omit for stateless addon types. (pattern: .*\${.*}.*)
            - `replicas`: (multiple options) (integer) The number of addon replicas to run. | (string) A string containing one or more references that resolve to the number of addon replicas to run. (pattern: .*\${.*}.*)
            - `diskAutoscaling`: {object}
              - `enabled`: (boolean) (required) Enable automatic disk scaling when usage exceeds the configured threshold.
@@ -7793,7 +7912,7 @@ Required permission: Account > Templates > General > Run
            - `billing`: {object}
              - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
              - `storageClass`: (string) The type of storage. Only configurable if the relevant feature flag is enabled for you account (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
-             - `storage`: (integer) (required) The size of the addon storage, in megabytes.
+             - `storage`: (integer) The size of the addon storage, in megabytes. Required for addon types that support persistent storage; omit for stateless addon types.
              - `replicas`: (integer) (required) The number of addon replicas to run.
              - `zonalRedundancy`: {object}
                - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: required, disabled)
@@ -7828,6 +7947,7 @@ Required permission: Account > Templates > General > Run
              - `mysqlHaModeEnabled`: (boolean) MySQL only: Run MySQL in HA configuration with auto-failover and connection poolers.
              - `mysqlHaRouterEnabled`: (boolean) MySQL HA only: Run connection routers in front of MySQL instances.
              - `mysqlRouterReplicas`: (integer) MysqlHA only: Number of connection router replicas in case connection router is enabled.
+             - `memcachedAuthenticationEnabled`: (boolean) Memcached only: Enable SASL authentication. Defaults to false and cannot be changed after creation. Required for public or VPC access.
            - `customCredentials`: {object}
              - `dbName`: (string) Custom database name. Not supported for all addon types.
            - `backupSchedules`: [array of] {object}
@@ -7906,7 +8026,7 @@ Required permission: Account > Templates > General > Run
          - `billing`: {object}
            - `deploymentPlan`: (multiple options) (string) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the ID of the deployment plan to use. (pattern: .*\${.*}.*)
            - `storageClass`: (multiple options) (string) The type of storage. Only configurable if the relevant feature flag is enabled for you account (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the type of storage. Only configurable if the relevant feature flag is enabled for you account (pattern: .*\${.*}.*)
-           - `storage`: (multiple options) (integer) The size of the addon storage, in megabytes. | (string) A string containing one or more references that resolve to the size of the addon storage, in megabytes. (pattern: .*\${.*}.*)
+           - `storage`: (multiple options) (integer) The size of the addon storage, in megabytes. Required for addon types that support persistent storage; omit for stateless addon types. | (string) A string containing one or more references that resolve to the size of the addon storage, in megabytes. Required for addon types that support persistent storage; omit for stateless addon types. (pattern: .*\${.*}.*)
            - `replicas`: (multiple options) (integer) The number of addon replicas to run. | (string) A string containing one or more references that resolve to the number of addon replicas to run. (pattern: .*\${.*}.*)
            - `zonalRedundancy`: {object}
              - `type`: (multiple options) (string) Defines scheduling behaviour across different zones within the same region. (enum: required, disabled) | (string) A string containing one or more references that resolve to defines scheduling behaviour across different zones within the same region. (pattern: .*\${.*}.*)
@@ -7941,6 +8061,7 @@ Required permission: Account > Templates > General > Run
            - `mysqlHaModeEnabled`: (boolean) MySQL only: Run MySQL in HA configuration with auto-failover and connection poolers.
            - `mysqlHaRouterEnabled`: (boolean) MySQL HA only: Run connection routers in front of MySQL instances.
            - `mysqlRouterReplicas`: (multiple options) (integer) MysqlHA only: Number of connection router replicas in case connection router is enabled. | (string) A string containing one or more references that resolve to mysqlHA only: Number of connection router replicas in case connection router is enabled. (pattern: .*\${.*}.*)
+           - `memcachedAuthenticationEnabled`: (boolean) Memcached only: Enable SASL authentication. Defaults to false and cannot be changed after creation. Required for public or VPC access.
          - `customCredentials`: {object}
            - `dbName`: (multiple options) (string) Custom database name. Not supported for all addon types. | (string) A string containing one or more references that resolve to custom database name. Not supported for all addon types. (pattern: .*\${.*}.*)
          - `backupSchedules`: [array of] {object}
@@ -9106,6 +9227,43 @@ Required permission: Account > Templates > General > Run
        - `backoff`: {object}
          - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
          - `delay`: (integer) The time between attempts in seconds.
+     - `kind`: (string) (required) The kind of node. (enum: ContainerScan)
+     - `condition`: (string) (enum: success)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `response`: {object}
+       - `status`: (string) (required) The status of the node. (enum: waiting, invalid, failure, retrying, success, aborted, aborting, skipped, async_wait, approval_wait, unknown)
+       - `error`: (multiple options) {object}
+           - `code`: (integer) (required)
+           - `message`: (string) (required) | (undefined)
+       - `retries`: {object}
+         - `attempts`: (integer) (required) The current number of attempts that have been made by this node.
+         - `maxAttempts`: (integer) (required) The maximum number of attempts before the node is marked as `failure`.
+         - `timestamp`: (integer) (required) The timestamp of the most recent attempt.
+         - `nextAttempt`: (integer) The timestamp of the next attempt.
+         - `initialCheckTime`: (integer) The timestamp of the initial condition check.
+       - `startTime`: (integer) The timestamp of the initial attempt.
+       - `endTime`: (integer) The timestamp of the final attempt.
+       - `diff`: {object}
+       - `data`: {object}
+         - `id`: (string) (required) (format: uuid)
+         - `status`: (string) (required) (enum: pending, completed, failed)
+         - `vulnerabilities`: {object}
+           - `criticalCount`: (integer) (required)
+           - `highCount`: (integer) (required)
+           - `mediumCount`: (integer) (required)
+           - `lowCount`: (integer) (required)
+           - `noneCount`: (integer) (required)
+     - `spec`: {object}
+       - `projectId`: (multiple options) (string) ID of the project containing the build (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the project containing the build (pattern: .*\${.*}.*)
+       - `buildServiceId`: (multiple options) (string) ID of the build service (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the build service (pattern: .*\${.*}.*)
+       - `branch`: (multiple options) (string) Branch used by the build | (string) A string containing one or more references that resolve to branch used by the build (pattern: .*\${.*}.*)
+       - `buildId`: (multiple options) (string) ID of the build to scan (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the build to scan (pattern: .*\${.*}.*) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `settings`: {object}
+       - `maxAttempts`: (integer) The maximum number of attempts before the node is marked as `failure`.
+       - `backoff`: {object}
+         - `type`: (string) The type of backoff to use. If set to `fixed`, the node will wait the same amount of time between attempts. (enum: fixed)
+         - `delay`: (integer) The time between attempts in seconds.
      - `kind`: (string) (required) The kind of node. (enum: JobRun)
      - `condition`: (string) (enum: success)
      - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
@@ -9182,7 +9340,33 @@ Required permission: Account > Templates > General > Run
                - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
            - `external`: {object}
              - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
-             - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
+             - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*) | {object}
+           - `docker`: {object}
+             - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
+             - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
+             - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
+           - `buildpack`: {object}
+             - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
+             - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
+             - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
+             - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
+           - `storage`: {object}
+             - `useHdbStorage`: (boolean)
+             - `usePdSsdStorage`: (boolean)
+             - `ephemeralStorage`: {object}
+               - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
+             - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
+           - `gpu`: {object}
+             - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
+             - `configuration`: {object}
+               - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+               - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+               - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
+           - `image`: {object}
+             - `projectId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
+             - `name`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+             - `group`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+             - `tag`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
        - `jobId`: (multiple options) (string) The ID of the job to run. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the ID of the job to run. (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `settings`: {object}

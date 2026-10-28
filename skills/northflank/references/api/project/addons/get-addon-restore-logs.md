@@ -22,7 +22,7 @@ Required permission: Project > Addons > Deployment > View Observability
 - `startTime`: (string) Fetch logs generated after this timestamp. (format: date-time)
 - `endTime`: (string) Fetch logs generated before this timestamp. (format: date-time)
 - `duration`: (integer) Range duration in seconds. If set, only one of `startTime` or `endTime` can be set.
-- `lineLimit`: (number) Number of log lines to fetch. (format: float)
+- `lineLimit`: (integer) Number of log lines to fetch.
 - `direction`: (string) Ordering of log lines (enum: backward, forward)
 - `textIncludes`: (string) Filter log lines to match this search string (min length: 1) (max length: 100)
 - `textNotIncludes`: (string) Filter log lines to not match this search string (min length: 1) (max length: 100)

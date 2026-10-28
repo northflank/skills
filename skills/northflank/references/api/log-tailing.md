@@ -2,13 +2,106 @@
 
 Source: https://northflank.com/docs/v1/api/log-tailing.md
 
-You can stream live logs from your services, jobs, and addons using the log tailing feature in the Northflank [JavaScript client](use-the-javascript-client.md) and the [Northflank CLI](use-the-cli.md). Both methods use WebSockets to stream the requested logs from your resources.
+Use the [logs endpoint](log-tailing.md#get-logs-through-one-endpoint) to retrieve a log range over HTTP or stream live logs over WebSockets. You can also stream service, job, and addon logs with the [JavaScript client](use-the-javascript-client.md) or [Northflank CLI](use-the-cli.md).
 
-You can receive logs from containers for deployed services and addons, or build logs from builds. Much like [viewing logs in the Northflank application](../guides/observe.md#view-logs), you can live tail all logs or filter them based on various parameters.
+Live log streams return the 10 most recent lines from the previous 30 minutes by default, followed by new lines as they arrive. You can change the initial line count and time range.
 
-To fetch logs without live tailing, you can use the standard `get.logs` and `get.buildLogs` methods, for example [get logs](project/services/get-service-logs.md) and [get build logs](project/services/get-service-build-logs.md) for services.
+### Get logs through one endpoint
 
-When you start a live log tailing session it will by default return the 10 most recent log lines from the previous 30 minutes. You can change these parameters to include more log lines from the previous period, or retrieve logs from an earlier start time. After retrieving the previous logs, the session will then begin returning log lines live, as they are generated.
+Retrieve logs for a service, job, or another resource with `GET /v1/logs`. Include the resource IDs as query parameters and use an API token with permission to read its logs.
+
+The HTTP and WebSocket examples below use a [team-scoped API token](use-the-api.md#token-scope-and-request-routes). With an organization-scoped token, use `/v1/teams/{teamId}/logs` and replace `{teamId}` with the target team ID.
+
+Choose one target from this table. Do not combine target IDs from different rows.
+
+| Target | Required query parameters | Supported `logSource` values |
+| --- | --- | --- |
+| Service | `projectId`, `serviceId` | `runtime`, `build` |
+| Job | `projectId`, `jobId` | `runtime`, `build` |
+| Harness | `projectId`, `harnessId` | `runtime` |
+| Addon | `projectId`, `addonId` | `runtime`, `backup`, `restore` |
+| Container scan | `projectId`, `containerScanId` | `runtime` |
+| OpenTofu job | `opentofuJobId` | `runtime` |
+| Unmanaged cluster pod | `clusterId`, `podName` | `runtime` |
+
+Omit `projectId` for OpenTofu jobs and cluster pods. Container scan logs require permission to view scan reports. Scans from service builds also require permission to view service observability.
+
+To read harness logs with an API token, the harness must use Team privacy. API tokens cannot access private harness logs, even for the creator. See [harness privacy](../guides/cloud-harness.md#configure-and-manage-cloud-harnesses-choose-privacy).
+
+For addon backup logs, include `backupId`. For restore logs, include both `backupId` and `restoreId`. These IDs select `backup` or `restore` automatically. Otherwise, `logSource` defaults to `runtime`. An explicit `logSource` must match the selected IDs.
+
+For build logs, set `logSource=build`. Add `buildId` to select a specific build. For a specific job run, include `jobId` and `runId`.
+
+#### Retrieve a log range
+
+HTTP requests use `queryType=range` by default.
+
+Set `NORTHFLANK_API_TOKEN` to an [API token](use-the-api.md#authentication) with access to the target. Replace the project and service IDs with your own values. This example retrieves up to 100 service log lines that contain `error` from the last 10 minutes:
+
+```shell
+curl --get 'https://api.northflank.com/v1/logs' \
+  --header "Authorization: Bearer $NORTHFLANK_API_TOKEN" \
+  --data-urlencode 'projectId=default-project' \
+  --data-urlencode 'serviceId=site-api' \
+  --data-urlencode 'duration=600' \
+  --data-urlencode 'lineLimit=100' \
+  --data-urlencode 'textIncludes=error'
+```
+
+The response contains log entries in `data` and pagination information in `pagination`. Each entry includes `containerId`, `log`, and `ts`.
+
+Use these filters to limit the results:
+
+| Filter | Behavior |
+| --- | --- |
+| `startTime`, `endTime` | Select logs after or before an ISO 8601 timestamp, such as `2026-10-18T14:00:00Z`. |
+| `duration` | Select a time range in seconds. Combine it with at most one of `startTime` and `endTime`. |
+| `lineLimit` | Request up to 1,000 lines. Range requests default to 250 lines. |
+| `direction` | Order range results `backward` (the default) or `forward`. |
+| `textIncludes`, `textNotIncludes` | Include or exclude lines that contain the given text. |
+| `regexIncludes`, `regexNotIncludes` | Include or exclude lines that match a regular expression. |
+
+#### Stream live logs
+
+To stream logs, open a WebSocket connection to `wss://api.northflank.com/v1/logs` with `queryType=tail` and the same target parameters. For example:
+
+```text
+wss://api.northflank.com/v1/logs?projectId=default-project&serviceId=site-api&queryType=tail&lineLimit=10
+```
+
+After the connection opens, send this initialization message. Replace `<API_TOKEN>` with your token:
+
+```json
+{
+  "type": "init",
+  "data": {
+    "auth": {
+      "type": "apiToken",
+      "apiToken": "<API_TOKEN>"
+    }
+  }
+}
+```
+
+A successful initialization returns an `init` message with `data.auth` set to `successful`. Log batches arrive in `log-lines` messages.
+
+Tail requests default to 10 initial lines. Use `startTime`, `duration`, and text filters to limit the stream. `endTime` and `direction` apply to range requests only. An ordinary HTTP request with `queryType=tail` does not open a stream.
+
+#### Resource-specific filters
+
+For supported runtime targets, use `podName` or `containerName` to select instances. Repeat `containerName` to select several instances. `podName` takes precedence over `containerName`.
+
+`type` filters log categories where supported. It does not replace `logSource`.
+
+For build logs, OpenTofu jobs, and container scans, omit `containerName` or use `all`. These targets do not accept `podName`.
+
+| Target or source | Restrictions |
+| --- | --- |
+| Service or harness runtime logs | Use `deploymentId` to select a deployment. |
+| Build logs | Use `buildId`. Do not use `deploymentId`. |
+| OpenTofu job | Do not use `deploymentId` or `type`. |
+| Container scan | Do not use `deploymentId`, `buildId`, or `runId`. Only `type=runtime` is accepted. |
+| Cluster pod | `podName` is required. Do not use `deploymentId`. Only `type=runtime` is accepted. |
 
 ### Tail logs using the JavaScript client
 
@@ -61,6 +154,8 @@ The method calls take two arguments, the required object `parameters` and an opt
   string Only returns log lines matching the specified regex. Only one text or regex filter can be used on a single query.
 - regexNotIncludes
   string Only returns log lines that do not match the specified regex. Only one text or regex filter can be used on a single query.
+
+To fetch logs without streaming, use `get.logs` or `get.buildLogs`. For services, see [get logs](project/services/get-service-logs.md) and [get build logs](project/services/get-service-build-logs.md).
 
 #### LogsClient
 

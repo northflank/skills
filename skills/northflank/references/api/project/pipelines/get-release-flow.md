@@ -180,6 +180,15 @@ Required permission: Project > Pipelines > General > Read
        - `reuseExistingBuilds`: (boolean) If true, the build node will return an existing build if one is available for that commit. Otherwise, a new build will be created with every new preview environment. Defaults to `true`.
        - `buildRuleFallThroughHandling`: (string) Define handling if build rules do not match the specified commit (enum: fail, skip, useLastBuild) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
+     - `kind`: (string) (required) The kind of node. (enum: ContainerScan)
+     - `condition`: (string) (enum: success)
+     - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
+     - `spec`: {object}
+       - `projectId`: (multiple options) (string) ID of the project containing the build (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the project containing the build (pattern: .*\${.*}.*)
+       - `buildServiceId`: (multiple options) (string) ID of the build service (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the build service (pattern: .*\${.*}.*)
+       - `branch`: (multiple options) (string) Branch used by the build | (string) A string containing one or more references that resolve to branch used by the build (pattern: .*\${.*}.*)
+       - `buildId`: (multiple options) (string) ID of the build to scan (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the build to scan (pattern: .*\${.*}.*) | {object}
+     - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: JobRun)
      - `condition`: (string) (enum: success)
      - `skipNodeExecution`: (multiple options) (string) If set to 'true', the execution of the node will be skipped. (enum: true, false) | (string) A string containing one or more references that resolve to if set to 'true', the execution of the node will be skipped. (pattern: .*\${.*}.*)
@@ -241,7 +250,33 @@ Required permission: Project > Pipelines > General > Read
                - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
            - `external`: {object}
              - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
-             - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
+             - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*) | {object}
+           - `docker`: {object}
+             - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
+             - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
+             - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
+           - `buildpack`: {object}
+             - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
+             - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
+             - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
+             - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
+           - `storage`: {object}
+             - `useHdbStorage`: (boolean)
+             - `usePdSsdStorage`: (boolean)
+             - `ephemeralStorage`: {object}
+               - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
+             - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
+           - `gpu`: {object}
+             - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
+             - `configuration`: {object}
+               - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+               - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+               - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
+           - `image`: {object}
+             - `projectId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
+             - `name`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+             - `group`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+             - `tag`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
        - `jobId`: (multiple options) (string) The ID of the job to run. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the ID of the job to run. (pattern: .*\${.*}.*) | {object}
      - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
      - `kind`: (string) (required) The kind of node. (enum: LoopWorkflow)
@@ -531,7 +566,33 @@ Required permission: Project > Pipelines > General > Read
                   - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
               - `external`: {object}
                 - `imagePath`: (multiple options) (string) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$) | (string) A string containing one or more references that resolve to image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: .*\${.*}.*)
-                - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*)
+                - `credentials`: (multiple options) (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to iD of the saved credentials to use to access this external image. (pattern: .*\${.*}.*) | {object}
+              - `docker`: {object}
+                - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
+                - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
+                - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
+              - `buildpack`: {object}
+                - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
+                - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
+                - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
+                - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
+              - `storage`: {object}
+                - `useHdbStorage`: (boolean)
+                - `usePdSsdStorage`: (boolean)
+                - `ephemeralStorage`: {object}
+                  - `storageSize`: (multiple options) (integer) Ephemeral storage per container in MB | (string) A string containing one or more references that resolve to ephemeral storage per container in MB (pattern: .*\${.*}.*)
+                - `shmSize`: (multiple options) (integer) Configures the amount of available memory-backed disk space available to /dev/shm | (string) A string containing one or more references that resolve to configures the amount of available memory-backed disk space available to /dev/shm (pattern: .*\${.*}.*)
+              - `gpu`: {object}
+                - `enabled`: (multiple options) (boolean) Whether GPUs are enabled for this workload. | (string) A string containing one or more references that resolve to whether GPUs are enabled for this workload. (pattern: .*\${.*}.*)
+                - `configuration`: {object}
+                  - `gpuType`: (multiple options) (string) The type of GPU to use. | (string) A string containing one or more references that resolve to the type of GPU to use. (pattern: .*\${.*}.*)
+                  - `gpuCount`: (multiple options) (integer) The number of GPUs to allocate. | (string) A string containing one or more references that resolve to the number of GPUs to allocate. (pattern: .*\${.*}.*)
+                  - `timesliced`: (multiple options) (boolean) Whether GPU timeslicing is enabled. | (string) A string containing one or more references that resolve to whether GPU timeslicing is enabled. (pattern: .*\${.*}.*)
+              - `image`: {object}
+                - `projectId`: (multiple options) (string) (min length: 24) (max length: 24) | (string) (pattern: .*\${.*}.*)
+                - `name`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+                - `group`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
+                - `tag`: (multiple options) (string) (min length: 1) | (string) (pattern: .*\${.*}.*)
           - `jobId`: (multiple options) (string) The ID of the job to run. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52) | (string) A string containing one or more references that resolve to the ID of the job to run. (pattern: .*\${.*}.*) | {object}
         - `ref`: (string) An identifier that can used to reference the output of this node later in the template.
         - `kind`: (string) (required) The kind of node. (enum: LoopWorkflow)

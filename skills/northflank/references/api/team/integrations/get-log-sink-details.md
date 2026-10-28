@@ -79,10 +79,11 @@ Required permission: Account > Observability > LogSinks > Read
        - `codec`: (string) (required) Codec to encode logs in (enum: text, json)
      - `endpointType`: (string) (required) Solar Winds endpoint type (enum: unitary, bulk) | {object}
      - `dataset`: (string) (required) Name of the data
-     - `token`: (string) (required) Axiom API/Personal token
-     - `tokenType`: (string) (required) Using a personal token (enum: personal, api)
-     - `orgId`: (string) The ID of the organisation, required if using a personal token
-     - `url`: (string) The Axiom url to use. Only change if self hosting axiom. | {object}
+     - `token`: (string) (required) Axiom API token
+     - `tokenType`: (string) Deprecated token type. (enum: personal, api)
+     - `orgId`: (string) Deprecated Axiom organisation ID.
+     - `region`: (string) Axiom edge deployment domain, without a scheme or path. (pattern: ^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.aws\.edge\.axiom\.co$)
+     - `url`: (string) Custom Axiom endpoint. A URL with a path is used as-is. | {object}
      - `accountId`: (string) (required) New Relic Account ID
      - `licenseKey`: (string) (required) New Relic License Key
      - `region`: (string) (required) (enum: eu, us) | {object}

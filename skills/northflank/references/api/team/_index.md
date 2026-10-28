@@ -7,6 +7,7 @@ Generated from the API pages listed in `https://northflank.com/docs/llms.txt`.
 - [Addons](addons/_index.md) — 1 endpoints
 - [API Tokens](api-tokens/_index.md) — 3 endpoints
 - [Backup Destinations](backup-destinations/_index.md) — 6 endpoints
+- [Backups](backups/_index.md) — 1 endpoints
 - [Billing](billing/_index.md) — 5 endpoints
 - [Cloud Providers](cloud-providers/_index.md) — 19 endpoints
 - [Container Snapshots](container-snapshots/_index.md) — 3 endpoints

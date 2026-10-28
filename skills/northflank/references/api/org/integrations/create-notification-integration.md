@@ -6,11 +6,6 @@ Create a new notification integration.
 
 Required permission: Account > Observability > Notifications > Create
 
-**Path parameters:**
-
-{object}
-- `notificationId`: (string) (required) ID of the notification integration
-
 **Request body:**
 
 {object}
@@ -49,6 +44,12 @@ Required permission: Account > Observability > Notifications > Create
   - `trigger:release-flow-template-run:success`: (boolean)
   - `trigger:release-flow-template-run:failure`: (boolean)
   - `trigger:release-flow-template-run:aborted`: (boolean)
+  - `trigger:preview-blueprint-run:queued`: (boolean)
+  - `trigger:preview-blueprint-run:start`: (boolean)
+  - `trigger:preview-blueprint-run:success`: (boolean)
+  - `trigger:preview-blueprint-run:failure`: (boolean)
+  - `trigger:preview-blueprint-run:aborted`: (boolean)
+  - `trigger:preview-blueprint-run:skipped`: (boolean)
   - `trigger:template-run:queued`: (boolean)
   - `trigger:template-run:start`: (boolean)
   - `trigger:template-run:update`: (boolean)
@@ -138,6 +139,12 @@ Required permission: Account > Observability > Notifications > Create
     - `trigger:release-flow-template-run:success`: (boolean)
     - `trigger:release-flow-template-run:failure`: (boolean)
     - `trigger:release-flow-template-run:aborted`: (boolean)
+    - `trigger:preview-blueprint-run:queued`: (boolean)
+    - `trigger:preview-blueprint-run:start`: (boolean)
+    - `trigger:preview-blueprint-run:success`: (boolean)
+    - `trigger:preview-blueprint-run:failure`: (boolean)
+    - `trigger:preview-blueprint-run:aborted`: (boolean)
+    - `trigger:preview-blueprint-run:skipped`: (boolean)
     - `trigger:template-run:queued`: (boolean)
     - `trigger:template-run:start`: (boolean)
     - `trigger:template-run:update`: (boolean)
@@ -200,7 +207,7 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"Example Notification","type":"RAW_WEBHOOK","webhook":"https://example.com/webhooks","restricted":true,"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"projects":["default-project"],"events":{"trigger:service:autoscaling:event":true,"trigger:service:deployment:status-update":true,"trigger:harness:autoscaling:event":true,"trigger:harness:deployment:status-update":true,"trigger:project:tailscale-regen-failure":true,"trigger:addon-backup:start":true,"trigger:addon-backup:success":true,"trigger:addon-backup:failure":true,"trigger:addon-backup:abort":true,"trigger:build:start":true,"trigger:build:success":true,"trigger:build:failure":true,"trigger:build:abort":true,"trigger:job-run:start":true,"trigger:job-run:success":true,"trigger:job-run:failure":true,"trigger:job-run:abort":true,"trigger:job-run:terminate":true,"trigger:release-flow-template-run:start":true,"trigger:release-flow-template-run:update":true,"trigger:release-flow-template-run:success":true,"trigger:release-flow-template-run:failure":true,"trigger:release-flow-template-run:aborted":true,"trigger:template-run:queued":true,"trigger:template-run:start":true,"trigger:template-run:update":true,"trigger:template-run:success":true,"trigger:template-run:failure":true,"trigger:resource:certificate-success":true,"trigger:resource:certificate-final-failure":true,"trigger:cdn:action-success":true,"trigger:cdn:action-failure":true,"trigger:cdn:action-delay":true,"trigger:log-sink:paused":true,"trigger:billing:billing-alert-exceeded":true,"trigger:billing:invoice-payment-action-required":true,"trigger:billing:invoice-payment-failed":true,"trigger:billing:invoice-paid":true,"trigger:billing:invoice-carried-over":true,"trigger:infrastructure:service:container-crash":true,"trigger:infrastructure:service:container-eviction":true,"trigger:infrastructure:build:container-eviction":true,"trigger:infrastructure:addon:container-crash":true,"trigger:infrastructure:addon:container-eviction":true,"trigger:infrastructure:job:container-crash":true,"trigger:infrastructure:job:container-eviction":true,"trigger:infrastructure:build:container-cpuSpike90":true,"trigger:infrastructure:build:container-cpuSustained90":true,"trigger:infrastructure:service:container-cpuSpike90":true,"trigger:infrastructure:service:container-cpuSustained90":true,"trigger:infrastructure:job:container-cpuSpike90":true,"trigger:infrastructure:job:container-cpuSustained90":true,"trigger:infrastructure:addon:container-cpuSpike90":true,"trigger:infrastructure:addon:container-cpuSustained90":true,"trigger:infrastructure:build:container-memorySpike90":true,"trigger:infrastructure:build:container-memorySustained90":true,"trigger:infrastructure:service:container-memorySpike90":true,"trigger:infrastructure:service:container-memorySustained90":true,"trigger:infrastructure:job:container-memorySpike90":true,"trigger:infrastructure:job:container-memorySustained90":true,"trigger:infrastructure:addon-volume:usage-75-exceeded":true,"trigger:infrastructure:addon-volume:usage-90-exceeded":true,"trigger:infrastructure:platform-volume:usage-75-exceeded":true,"trigger:infrastructure:platform-volume:usage-90-exceeded":true,"trigger:infrastructure:addon-volume:disk-autoresize-triggered":true,"trigger:infrastructure:byoc:cluster:error":true,"trigger:infrastructure:byoc:node-pool:error":true,"trigger:infrastructure:byoc:scheduling:error":true,"trigger:infrastructure:byoc:volume:error":true,"trigger:infrastructure:byoc:volume:attach":true}}' \
+  --data '{"name":"Example Notification","type":"RAW_WEBHOOK","webhook":"https://example.com/webhooks","restricted":true,"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"projects":["default-project"],"events":{"trigger:service:autoscaling:event":true,"trigger:service:deployment:status-update":true,"trigger:harness:autoscaling:event":true,"trigger:harness:deployment:status-update":true,"trigger:project:tailscale-regen-failure":true,"trigger:addon-backup:start":true,"trigger:addon-backup:success":true,"trigger:addon-backup:failure":true,"trigger:addon-backup:abort":true,"trigger:build:start":true,"trigger:build:success":true,"trigger:build:failure":true,"trigger:build:abort":true,"trigger:job-run:start":true,"trigger:job-run:success":true,"trigger:job-run:failure":true,"trigger:job-run:abort":true,"trigger:job-run:terminate":true,"trigger:release-flow-template-run:start":true,"trigger:release-flow-template-run:update":true,"trigger:release-flow-template-run:success":true,"trigger:release-flow-template-run:failure":true,"trigger:release-flow-template-run:aborted":true,"trigger:preview-blueprint-run:queued":true,"trigger:preview-blueprint-run:start":true,"trigger:preview-blueprint-run:success":true,"trigger:preview-blueprint-run:failure":true,"trigger:preview-blueprint-run:aborted":true,"trigger:preview-blueprint-run:skipped":true,"trigger:template-run:queued":true,"trigger:template-run:start":true,"trigger:template-run:update":true,"trigger:template-run:success":true,"trigger:template-run:failure":true,"trigger:resource:certificate-success":true,"trigger:resource:certificate-final-failure":true,"trigger:cdn:action-success":true,"trigger:cdn:action-failure":true,"trigger:cdn:action-delay":true,"trigger:log-sink:paused":true,"trigger:billing:billing-alert-exceeded":true,"trigger:billing:invoice-payment-action-required":true,"trigger:billing:invoice-payment-failed":true,"trigger:billing:invoice-paid":true,"trigger:billing:invoice-carried-over":true,"trigger:infrastructure:service:container-crash":true,"trigger:infrastructure:service:container-eviction":true,"trigger:infrastructure:build:container-eviction":true,"trigger:infrastructure:addon:container-crash":true,"trigger:infrastructure:addon:container-eviction":true,"trigger:infrastructure:job:container-crash":true,"trigger:infrastructure:job:container-eviction":true,"trigger:infrastructure:build:container-cpuSpike90":true,"trigger:infrastructure:build:container-cpuSustained90":true,"trigger:infrastructure:service:container-cpuSpike90":true,"trigger:infrastructure:service:container-cpuSustained90":true,"trigger:infrastructure:job:container-cpuSpike90":true,"trigger:infrastructure:job:container-cpuSustained90":true,"trigger:infrastructure:addon:container-cpuSpike90":true,"trigger:infrastructure:addon:container-cpuSustained90":true,"trigger:infrastructure:build:container-memorySpike90":true,"trigger:infrastructure:build:container-memorySustained90":true,"trigger:infrastructure:service:container-memorySpike90":true,"trigger:infrastructure:service:container-memorySustained90":true,"trigger:infrastructure:job:container-memorySpike90":true,"trigger:infrastructure:job:container-memorySustained90":true,"trigger:infrastructure:addon-volume:usage-75-exceeded":true,"trigger:infrastructure:addon-volume:usage-90-exceeded":true,"trigger:infrastructure:platform-volume:usage-75-exceeded":true,"trigger:infrastructure:platform-volume:usage-90-exceeded":true,"trigger:infrastructure:addon-volume:disk-autoresize-triggered":true,"trigger:infrastructure:byoc:cluster:error":true,"trigger:infrastructure:byoc:node-pool:error":true,"trigger:infrastructure:byoc:scheduling:error":true,"trigger:infrastructure:byoc:volume:error":true,"trigger:infrastructure:byoc:volume:attach":true}}' \
   https://api.northflank.com/v1/integrations/notifications
 ```
 
@@ -243,6 +250,12 @@ const payload = {
     "trigger:release-flow-template-run:success": true,
     "trigger:release-flow-template-run:failure": true,
     "trigger:release-flow-template-run:aborted": true,
+    "trigger:preview-blueprint-run:queued": true,
+    "trigger:preview-blueprint-run:start": true,
+    "trigger:preview-blueprint-run:success": true,
+    "trigger:preview-blueprint-run:failure": true,
+    "trigger:preview-blueprint-run:aborted": true,
+    "trigger:preview-blueprint-run:skipped": true,
     "trigger:template-run:queued": true,
     "trigger:template-run:start": true,
     "trigger:template-run:update": true,
@@ -311,7 +324,7 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/notifications"
 
-payload = {"name":"Example Notification","type":"RAW_WEBHOOK","webhook":"https://example.com/webhooks","restricted":true,"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"projects":["default-project"],"events":{"trigger:service:autoscaling:event":true,"trigger:service:deployment:status-update":true,"trigger:harness:autoscaling:event":true,"trigger:harness:deployment:status-update":true,"trigger:project:tailscale-regen-failure":true,"trigger:addon-backup:start":true,"trigger:addon-backup:success":true,"trigger:addon-backup:failure":true,"trigger:addon-backup:abort":true,"trigger:build:start":true,"trigger:build:success":true,"trigger:build:failure":true,"trigger:build:abort":true,"trigger:job-run:start":true,"trigger:job-run:success":true,"trigger:job-run:failure":true,"trigger:job-run:abort":true,"trigger:job-run:terminate":true,"trigger:release-flow-template-run:start":true,"trigger:release-flow-template-run:update":true,"trigger:release-flow-template-run:success":true,"trigger:release-flow-template-run:failure":true,"trigger:release-flow-template-run:aborted":true,"trigger:template-run:queued":true,"trigger:template-run:start":true,"trigger:template-run:update":true,"trigger:template-run:success":true,"trigger:template-run:failure":true,"trigger:resource:certificate-success":true,"trigger:resource:certificate-final-failure":true,"trigger:cdn:action-success":true,"trigger:cdn:action-failure":true,"trigger:cdn:action-delay":true,"trigger:log-sink:paused":true,"trigger:billing:billing-alert-exceeded":true,"trigger:billing:invoice-payment-action-required":true,"trigger:billing:invoice-payment-failed":true,"trigger:billing:invoice-paid":true,"trigger:billing:invoice-carried-over":true,"trigger:infrastructure:service:container-crash":true,"trigger:infrastructure:service:container-eviction":true,"trigger:infrastructure:build:container-eviction":true,"trigger:infrastructure:addon:container-crash":true,"trigger:infrastructure:addon:container-eviction":true,"trigger:infrastructure:job:container-crash":true,"trigger:infrastructure:job:container-eviction":true,"trigger:infrastructure:build:container-cpuSpike90":true,"trigger:infrastructure:build:container-cpuSustained90":true,"trigger:infrastructure:service:container-cpuSpike90":true,"trigger:infrastructure:service:container-cpuSustained90":true,"trigger:infrastructure:job:container-cpuSpike90":true,"trigger:infrastructure:job:container-cpuSustained90":true,"trigger:infrastructure:addon:container-cpuSpike90":true,"trigger:infrastructure:addon:container-cpuSustained90":true,"trigger:infrastructure:build:container-memorySpike90":true,"trigger:infrastructure:build:container-memorySustained90":true,"trigger:infrastructure:service:container-memorySpike90":true,"trigger:infrastructure:service:container-memorySustained90":true,"trigger:infrastructure:job:container-memorySpike90":true,"trigger:infrastructure:job:container-memorySustained90":true,"trigger:infrastructure:addon-volume:usage-75-exceeded":true,"trigger:infrastructure:addon-volume:usage-90-exceeded":true,"trigger:infrastructure:platform-volume:usage-75-exceeded":true,"trigger:infrastructure:platform-volume:usage-90-exceeded":true,"trigger:infrastructure:addon-volume:disk-autoresize-triggered":true,"trigger:infrastructure:byoc:cluster:error":true,"trigger:infrastructure:byoc:node-pool:error":true,"trigger:infrastructure:byoc:scheduling:error":true,"trigger:infrastructure:byoc:volume:error":true,"trigger:infrastructure:byoc:volume:attach":true}}
+payload = {"name":"Example Notification","type":"RAW_WEBHOOK","webhook":"https://example.com/webhooks","restricted":true,"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"projects":["default-project"],"events":{"trigger:service:autoscaling:event":true,"trigger:service:deployment:status-update":true,"trigger:harness:autoscaling:event":true,"trigger:harness:deployment:status-update":true,"trigger:project:tailscale-regen-failure":true,"trigger:addon-backup:start":true,"trigger:addon-backup:success":true,"trigger:addon-backup:failure":true,"trigger:addon-backup:abort":true,"trigger:build:start":true,"trigger:build:success":true,"trigger:build:failure":true,"trigger:build:abort":true,"trigger:job-run:start":true,"trigger:job-run:success":true,"trigger:job-run:failure":true,"trigger:job-run:abort":true,"trigger:job-run:terminate":true,"trigger:release-flow-template-run:start":true,"trigger:release-flow-template-run:update":true,"trigger:release-flow-template-run:success":true,"trigger:release-flow-template-run:failure":true,"trigger:release-flow-template-run:aborted":true,"trigger:preview-blueprint-run:queued":true,"trigger:preview-blueprint-run:start":true,"trigger:preview-blueprint-run:success":true,"trigger:preview-blueprint-run:failure":true,"trigger:preview-blueprint-run:aborted":true,"trigger:preview-blueprint-run:skipped":true,"trigger:template-run:queued":true,"trigger:template-run:start":true,"trigger:template-run:update":true,"trigger:template-run:success":true,"trigger:template-run:failure":true,"trigger:resource:certificate-success":true,"trigger:resource:certificate-final-failure":true,"trigger:cdn:action-success":true,"trigger:cdn:action-failure":true,"trigger:cdn:action-delay":true,"trigger:log-sink:paused":true,"trigger:billing:billing-alert-exceeded":true,"trigger:billing:invoice-payment-action-required":true,"trigger:billing:invoice-payment-failed":true,"trigger:billing:invoice-paid":true,"trigger:billing:invoice-carried-over":true,"trigger:infrastructure:service:container-crash":true,"trigger:infrastructure:service:container-eviction":true,"trigger:infrastructure:build:container-eviction":true,"trigger:infrastructure:addon:container-crash":true,"trigger:infrastructure:addon:container-eviction":true,"trigger:infrastructure:job:container-crash":true,"trigger:infrastructure:job:container-eviction":true,"trigger:infrastructure:build:container-cpuSpike90":true,"trigger:infrastructure:build:container-cpuSustained90":true,"trigger:infrastructure:service:container-cpuSpike90":true,"trigger:infrastructure:service:container-cpuSustained90":true,"trigger:infrastructure:job:container-cpuSpike90":true,"trigger:infrastructure:job:container-cpuSustained90":true,"trigger:infrastructure:addon:container-cpuSpike90":true,"trigger:infrastructure:addon:container-cpuSustained90":true,"trigger:infrastructure:build:container-memorySpike90":true,"trigger:infrastructure:build:container-memorySustained90":true,"trigger:infrastructure:service:container-memorySpike90":true,"trigger:infrastructure:service:container-memorySustained90":true,"trigger:infrastructure:job:container-memorySpike90":true,"trigger:infrastructure:job:container-memorySustained90":true,"trigger:infrastructure:addon-volume:usage-75-exceeded":true,"trigger:infrastructure:addon-volume:usage-90-exceeded":true,"trigger:infrastructure:platform-volume:usage-75-exceeded":true,"trigger:infrastructure:platform-volume:usage-90-exceeded":true,"trigger:infrastructure:addon-volume:disk-autoresize-triggered":true,"trigger:infrastructure:byoc:cluster:error":true,"trigger:infrastructure:byoc:node-pool:error":true,"trigger:infrastructure:byoc:scheduling:error":true,"trigger:infrastructure:byoc:volume:error":true,"trigger:infrastructure:byoc:volume:attach":true}}
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
 response = requests.request("POST", url, headers = headers, json = payload)
@@ -332,7 +345,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/notifications"
 
-  var jsonStr = []byte(`{"name":"Example Notification","type":"RAW_WEBHOOK","webhook":"https://example.com/webhooks","restricted":true,"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"projects":["default-project"],"events":{"trigger:service:autoscaling:event":true,"trigger:service:deployment:status-update":true,"trigger:harness:autoscaling:event":true,"trigger:harness:deployment:status-update":true,"trigger:project:tailscale-regen-failure":true,"trigger:addon-backup:start":true,"trigger:addon-backup:success":true,"trigger:addon-backup:failure":true,"trigger:addon-backup:abort":true,"trigger:build:start":true,"trigger:build:success":true,"trigger:build:failure":true,"trigger:build:abort":true,"trigger:job-run:start":true,"trigger:job-run:success":true,"trigger:job-run:failure":true,"trigger:job-run:abort":true,"trigger:job-run:terminate":true,"trigger:release-flow-template-run:start":true,"trigger:release-flow-template-run:update":true,"trigger:release-flow-template-run:success":true,"trigger:release-flow-template-run:failure":true,"trigger:release-flow-template-run:aborted":true,"trigger:template-run:queued":true,"trigger:template-run:start":true,"trigger:template-run:update":true,"trigger:template-run:success":true,"trigger:template-run:failure":true,"trigger:resource:certificate-success":true,"trigger:resource:certificate-final-failure":true,"trigger:cdn:action-success":true,"trigger:cdn:action-failure":true,"trigger:cdn:action-delay":true,"trigger:log-sink:paused":true,"trigger:billing:billing-alert-exceeded":true,"trigger:billing:invoice-payment-action-required":true,"trigger:billing:invoice-payment-failed":true,"trigger:billing:invoice-paid":true,"trigger:billing:invoice-carried-over":true,"trigger:infrastructure:service:container-crash":true,"trigger:infrastructure:service:container-eviction":true,"trigger:infrastructure:build:container-eviction":true,"trigger:infrastructure:addon:container-crash":true,"trigger:infrastructure:addon:container-eviction":true,"trigger:infrastructure:job:container-crash":true,"trigger:infrastructure:job:container-eviction":true,"trigger:infrastructure:build:container-cpuSpike90":true,"trigger:infrastructure:build:container-cpuSustained90":true,"trigger:infrastructure:service:container-cpuSpike90":true,"trigger:infrastructure:service:container-cpuSustained90":true,"trigger:infrastructure:job:container-cpuSpike90":true,"trigger:infrastructure:job:container-cpuSustained90":true,"trigger:infrastructure:addon:container-cpuSpike90":true,"trigger:infrastructure:addon:container-cpuSustained90":true,"trigger:infrastructure:build:container-memorySpike90":true,"trigger:infrastructure:build:container-memorySustained90":true,"trigger:infrastructure:service:container-memorySpike90":true,"trigger:infrastructure:service:container-memorySustained90":true,"trigger:infrastructure:job:container-memorySpike90":true,"trigger:infrastructure:job:container-memorySustained90":true,"trigger:infrastructure:addon-volume:usage-75-exceeded":true,"trigger:infrastructure:addon-volume:usage-90-exceeded":true,"trigger:infrastructure:platform-volume:usage-75-exceeded":true,"trigger:infrastructure:platform-volume:usage-90-exceeded":true,"trigger:infrastructure:addon-volume:disk-autoresize-triggered":true,"trigger:infrastructure:byoc:cluster:error":true,"trigger:infrastructure:byoc:node-pool:error":true,"trigger:infrastructure:byoc:scheduling:error":true,"trigger:infrastructure:byoc:volume:error":true,"trigger:infrastructure:byoc:volume:attach":true}}`)
+  var jsonStr = []byte(`{"name":"Example Notification","type":"RAW_WEBHOOK","webhook":"https://example.com/webhooks","restricted":true,"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"projects":["default-project"],"events":{"trigger:service:autoscaling:event":true,"trigger:service:deployment:status-update":true,"trigger:harness:autoscaling:event":true,"trigger:harness:deployment:status-update":true,"trigger:project:tailscale-regen-failure":true,"trigger:addon-backup:start":true,"trigger:addon-backup:success":true,"trigger:addon-backup:failure":true,"trigger:addon-backup:abort":true,"trigger:build:start":true,"trigger:build:success":true,"trigger:build:failure":true,"trigger:build:abort":true,"trigger:job-run:start":true,"trigger:job-run:success":true,"trigger:job-run:failure":true,"trigger:job-run:abort":true,"trigger:job-run:terminate":true,"trigger:release-flow-template-run:start":true,"trigger:release-flow-template-run:update":true,"trigger:release-flow-template-run:success":true,"trigger:release-flow-template-run:failure":true,"trigger:release-flow-template-run:aborted":true,"trigger:preview-blueprint-run:queued":true,"trigger:preview-blueprint-run:start":true,"trigger:preview-blueprint-run:success":true,"trigger:preview-blueprint-run:failure":true,"trigger:preview-blueprint-run:aborted":true,"trigger:preview-blueprint-run:skipped":true,"trigger:template-run:queued":true,"trigger:template-run:start":true,"trigger:template-run:update":true,"trigger:template-run:success":true,"trigger:template-run:failure":true,"trigger:resource:certificate-success":true,"trigger:resource:certificate-final-failure":true,"trigger:cdn:action-success":true,"trigger:cdn:action-failure":true,"trigger:cdn:action-delay":true,"trigger:log-sink:paused":true,"trigger:billing:billing-alert-exceeded":true,"trigger:billing:invoice-payment-action-required":true,"trigger:billing:invoice-payment-failed":true,"trigger:billing:invoice-paid":true,"trigger:billing:invoice-carried-over":true,"trigger:infrastructure:service:container-crash":true,"trigger:infrastructure:service:container-eviction":true,"trigger:infrastructure:build:container-eviction":true,"trigger:infrastructure:addon:container-crash":true,"trigger:infrastructure:addon:container-eviction":true,"trigger:infrastructure:job:container-crash":true,"trigger:infrastructure:job:container-eviction":true,"trigger:infrastructure:build:container-cpuSpike90":true,"trigger:infrastructure:build:container-cpuSustained90":true,"trigger:infrastructure:service:container-cpuSpike90":true,"trigger:infrastructure:service:container-cpuSustained90":true,"trigger:infrastructure:job:container-cpuSpike90":true,"trigger:infrastructure:job:container-cpuSustained90":true,"trigger:infrastructure:addon:container-cpuSpike90":true,"trigger:infrastructure:addon:container-cpuSustained90":true,"trigger:infrastructure:build:container-memorySpike90":true,"trigger:infrastructure:build:container-memorySustained90":true,"trigger:infrastructure:service:container-memorySpike90":true,"trigger:infrastructure:service:container-memorySustained90":true,"trigger:infrastructure:job:container-memorySpike90":true,"trigger:infrastructure:job:container-memorySustained90":true,"trigger:infrastructure:addon-volume:usage-75-exceeded":true,"trigger:infrastructure:addon-volume:usage-90-exceeded":true,"trigger:infrastructure:platform-volume:usage-75-exceeded":true,"trigger:infrastructure:platform-volume:usage-90-exceeded":true,"trigger:infrastructure:addon-volume:disk-autoresize-triggered":true,"trigger:infrastructure:byoc:cluster:error":true,"trigger:infrastructure:byoc:node-pool:error":true,"trigger:infrastructure:byoc:scheduling:error":true,"trigger:infrastructure:byoc:volume:error":true,"trigger:infrastructure:byoc:volume:attach":true}}`)
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -395,6 +408,12 @@ func main() {
       "trigger:release-flow-template-run:success": true,
       "trigger:release-flow-template-run:failure": true,
       "trigger:release-flow-template-run:aborted": true,
+      "trigger:preview-blueprint-run:queued": true,
+      "trigger:preview-blueprint-run:start": true,
+      "trigger:preview-blueprint-run:success": true,
+      "trigger:preview-blueprint-run:failure": true,
+      "trigger:preview-blueprint-run:aborted": true,
+      "trigger:preview-blueprint-run:skipped": true,
       "trigger:template-run:queued": true,
       "trigger:template-run:start": true,
       "trigger:template-run:update": true,
@@ -453,8 +472,6 @@ $ northflank create notification
 
 Options:
 
-- `--notificationId <notificationId>`: ID of the notification integration
-
 - `-f --file <file>`: Path to a JSON/YAML resource definition file
 
 - `-i --input <definition>`: JSON/YAML resource definition string (takes precedence over --file)
@@ -504,6 +521,12 @@ Options:
     "trigger:release-flow-template-run:success": true,
     "trigger:release-flow-template-run:failure": true,
     "trigger:release-flow-template-run:aborted": true,
+    "trigger:preview-blueprint-run:queued": true,
+    "trigger:preview-blueprint-run:start": true,
+    "trigger:preview-blueprint-run:success": true,
+    "trigger:preview-blueprint-run:failure": true,
+    "trigger:preview-blueprint-run:aborted": true,
+    "trigger:preview-blueprint-run:skipped": true,
     "trigger:template-run:queued": true,
     "trigger:template-run:start": true,
     "trigger:template-run:update": true,
@@ -598,6 +621,12 @@ Options:
     "trigger:release-flow-template-run:success": true,
     "trigger:release-flow-template-run:failure": true,
     "trigger:release-flow-template-run:aborted": true,
+    "trigger:preview-blueprint-run:queued": true,
+    "trigger:preview-blueprint-run:start": true,
+    "trigger:preview-blueprint-run:success": true,
+    "trigger:preview-blueprint-run:failure": true,
+    "trigger:preview-blueprint-run:aborted": true,
+    "trigger:preview-blueprint-run:skipped": true,
     "trigger:template-run:queued": true,
     "trigger:template-run:start": true,
     "trigger:template-run:update": true,
@@ -695,6 +724,12 @@ await apiClient.create.notification({
       "trigger:release-flow-template-run:success": true,
       "trigger:release-flow-template-run:failure": true,
       "trigger:release-flow-template-run:aborted": true,
+      "trigger:preview-blueprint-run:queued": true,
+      "trigger:preview-blueprint-run:start": true,
+      "trigger:preview-blueprint-run:success": true,
+      "trigger:preview-blueprint-run:failure": true,
+      "trigger:preview-blueprint-run:aborted": true,
+      "trigger:preview-blueprint-run:skipped": true,
       "trigger:template-run:queued": true,
       "trigger:template-run:start": true,
       "trigger:template-run:update": true,
@@ -791,6 +826,12 @@ await apiClient.create.notification({
       "trigger:release-flow-template-run:success": true,
       "trigger:release-flow-template-run:failure": true,
       "trigger:release-flow-template-run:aborted": true,
+      "trigger:preview-blueprint-run:queued": true,
+      "trigger:preview-blueprint-run:start": true,
+      "trigger:preview-blueprint-run:success": true,
+      "trigger:preview-blueprint-run:failure": true,
+      "trigger:preview-blueprint-run:aborted": true,
+      "trigger:preview-blueprint-run:skipped": true,
       "trigger:template-run:queued": true,
       "trigger:template-run:start": true,
       "trigger:template-run:update": true,

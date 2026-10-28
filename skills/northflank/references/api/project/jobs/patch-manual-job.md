@@ -185,7 +185,7 @@ Required permission: Project > Jobs > General > Update
         - `gpuType`: (string) (required) The type of GPU to use.
         - `gpuCount`: (integer) The number of GPUs to allocate.
         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system.
+    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
     - `metadata`: {object}
       - `labels`: {object}
       - `annotations`: {object}
@@ -204,6 +204,11 @@ Required permission: Project > Jobs > General > Update
       - `branch`: (string) Branch to deploy
       - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
       - `buildId`: (string) ID of the build that should be deployed
+    - `image`: {object}
+      - `projectId`: (string) (min length: 24) (max length: 24)
+      - `name`: (string) (required) (min length: 1)
+      - `group`: (string) (min length: 1)
+      - `tag`: (string) (required) (min length: 1)
     - `imageUrl`: (string) Image registry url of the deployed image.
   - `status`: {object}
     - `build`: {object}
