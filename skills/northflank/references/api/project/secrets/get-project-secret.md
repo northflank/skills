@@ -4,6 +4,8 @@ Source: https://northflank.com/docs/v1/api/project/secrets/get-project-secret.md
 
 View a project secret including its contents
 
+Required permission: Project > Secrets > SecretGroups > Read Keys
+
 **Path parameters:**
 
 {object}
@@ -17,33 +19,52 @@ View a project secret including its contents
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) Identifier for the secret group
   - `name`: (string) (required) Secret group name
-  - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `tags`: [array of] (required) An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `description`: (string) A short description of the secret group
   - `type`: (string) (required) The permission type of the secret group. (enum: secret, config)
   - `secretType`: (string) (required) The type of the created secret group (enum: environment-arguments, environment, arguments)
   - `projectId`: (string) (required) ID of the project that the secret group belongs to
   - `priority`: (integer) (required) The priority with which different secret groups will be merged
-  - `restrictions`: {object}
+  - `restrictions`: {object} (required) Restriction settings of the secret
     - `restricted`: (boolean) Whether the secret is restricted to specific resources, tags, or environments. If this is `true`, resources listed in `nfObjects`, with a tag listed in `tags`, or in an environment listed in `stageIds` will have access to these secrets. Otherwise, all resources in the project will be able to access it.
-    - `nfObjects`: [array of] {object}
+    - `nfObjects`: [array of] List of Northflank services & jobs the secret is restricted to {object}
         - `id`: (string) (required) ID of the entity the secret is restricted to. (pattern: ^[A-Za-z0-9-]+$)
         - `type`: (string) (required) Type of the entity the secret is restricted to. (enum: service, job)
-    - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `tags`: [array of] List of tags the secret is restricted to. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
-    - `stageIds`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `stageIds`: [array of] IDs of the environments the secret is restricted to. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `createdAt`: (string) (required) The timestamp when the secret group was created at (format: date-time)
   - `updatedAt`: (string) (required) The timestamp the secret group was last updated at (format: date-time)
-  - `secrets`: {object}
+  - `secrets`: {object} (required) Decrypted secret data. If the `show` parameter is set to `this`, this will only contain secrets saved to this group. If the `show` parameter is set to `inherited`, this will only contain secrets inherited from linked addons. Otherwise, this will contain both.
 
 ### API reference
 
 GET /v1/projects/{projectId}/secrets/{secretId}
 
 GET /v1/teams/{teamId}/projects/{projectId}/secrets/{secretId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/secrets/{secretId}?show=all"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/secrets/{secretId}?show=all"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -82,7 +103,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/secrets/{secretId}
           "encoding": "utf-8"
         }
       }
-    }
+    },
+    "tags": []
   }
 }
 ```
@@ -141,7 +163,8 @@ Options:
         "encoding": "utf-8"
       }
     }
-  }
+  },
+  "tags": []
 }
 ```
 
@@ -200,7 +223,8 @@ await apiClient.get.secret({
           "encoding": "utf-8"
         }
       }
-    }
+    },
+    "tags": []
   },
   "rawResponse": "...",
   "request": "...",

@@ -2,7 +2,7 @@
 
 Source: https://northflank.com/docs/v1/api/org/api-tokens/rotate-a-key-on-an-api-token.md
 
-Creates a new key for an API token and sets all other keys to expire.
+Creates a new key for an API token and sets all other keys to expire. The replacement key scope must be contained by the calling API token role, one of the session user roles, or the normalized workload role scope. Rotation outside that scope returns 403. The caller-expiry cap is deferred for rotation compatibility: non-delegated tokens can renew their configured lifetime, including six-month tokens, and replacement keys may outlive the caller. Delegated callers can rotate only their own token, regardless of role permissions. Delegated token expiry stays fixed: rotating its parent does not renew it. Delegated replacement keys remain bounded by that fixed token deadline.
 
 Required permission: Account > Admin > ApiTokens > Update
 
@@ -18,9 +18,9 @@ Required permission: Account > Admin > ApiTokens > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `key`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `key`: {object} (required) The newly created API key.
     - `id`: (string) (required) UUID of the new API key. (format: uuid)
     - `issuedAt`: (string) (required) The time the key was issued. (format: date-time)
   - `token`: (string) (required) The API token for authentication.
@@ -40,7 +40,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{}' \
-  https://api.northflank.com/v1/tokens/{tokenId}/keys
+  "https://api.northflank.com/v1/tokens/{tokenId}/keys"
 ```
 
 ```javascript
@@ -64,10 +64,10 @@ import requests
 
 url = "https://api.northflank.com/v1/tokens/{tokenId}/keys"
 
-payload = {}
+payload = "{}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -85,7 +85,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/tokens/{tokenId}/keys"
 
-  var jsonStr = []byte(`{}`)
+  var jsonStr = []byte("{}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

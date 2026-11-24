@@ -14,8 +14,8 @@ Required permission: Project > Projects > Security > View Container Scan Reports
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) (format: uuid)
   - `buildId`: (string) (required)
   - `serviceId`: (string) (required)
@@ -44,12 +44,39 @@ GET /v1/projects/{projectId}/container-scans/{containerScanId}
 
 GET /v1/teams/{teamId}/projects/{projectId}/container-scans/{containerScanId}
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/container-scans/{containerScanId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/container-scans/{containerScanId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: The container scan and its available results.
 
 ```json
-undefined
+{
+  "data": {
+    "id": "00000000-0000-4000-8000-000000000000",
+    "buildId": "string",
+    "serviceId": "string",
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "status": "creating"
+  }
+}
 ```
 
 ### CLI reference
@@ -73,7 +100,13 @@ Options:
  The container scan and its available results.
 
 ```json
-undefined
+{
+  "id": "00000000-0000-4000-8000-000000000000",
+  "buildId": "string",
+  "serviceId": "string",
+  "createdAt": "1970-01-01T00:00:00.000Z",
+  "status": "creating"
+}
 ```
 
 ### JavaScript client reference
@@ -97,6 +130,13 @@ await apiClient.get.containerScan({
 
 ```json
 {
+  "data": {
+    "id": "00000000-0000-4000-8000-000000000000",
+    "buildId": "string",
+    "serviceId": "string",
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "status": "creating"
+  },
   "rawResponse": "...",
   "request": "...",
   "error": "..."

@@ -20,11 +20,11 @@ Required permission: Project > Workflows > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `workflows`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `workflows`: [array of] (required) An array of workflows in this project. {object} A workflow.
      - `apiVersion`: (string) (required) The version of the Northflank API to run the template against. (enum: v1.2)
-     - `arguments`: {object}
+     - `arguments`: {object} A set of arguments that can be referenced in a template using '${args.argumentName}'.
      - `gitops`: {object}
        - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
        - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
@@ -36,23 +36,23 @@ Required permission: Project > Workflows > General > Read
      - `$schema`: (string)
      - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-     - `spec`: (undefined)
-     - `richInputs`: [array of] (undefined)
-     - `options`: {object}
+     - `spec`:
+     - `richInputs`: [array of] An array of rich UI override inputs for the workflow.
+     - `options`: {object} Options regarding how the template is run.
        - `autorun`: (boolean) If true, the template will run automatically whenever a change is made to it.
        - `concurrencyPolicy`: (string) Defines the concurrency behaviour of the template with respect to parallel runs. (enum: allow, queue, forbid, latest, replace)
-     - `teardownSpec`: {object}
-       - `spec`: (undefined) (required) The root node of the teardown workflow.
+     - `teardownSpec`: {object} (nullable) Optional spec to run when the workflow is deleted.
+       - `spec`: (required) The root node of the teardown workflow.
        - `failurePolicy`: (string) Controls what happens if the teardown spec fails or times out. `ignore` (default) — proceed with resource deletion regardless. `block` — halt deletion and set the environment to `teardown_failed` (enum: ignore, block)
-     - `argumentOverrides`: {object}
-     - `crossProjectAccess`: {object}
+     - `argumentOverrides`: {object} A set of arguments that can be referenced in a template using '${args.argumentName}'.
+     - `crossProjectAccess`: {object} Controls which projects can run this workflow.
        - `enabled`: (boolean) (required) Allow this workflow to be run from other projects.
-       - `projects`: [array of] (string) (pattern: ^[A-Za-z0-9-]+$)
+       - `projects`: [array of] (required) A list of project IDs used as an allow list or deny list. (string) (pattern: ^[A-Za-z0-9-]+$)
        - `isAllowList`: (boolean) (required) If true, only the listed projects can run this workflow. If false, all projects except the listed ones can run this workflow.
-     - `stageId`: (multiple options) (string) ID of the stage (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to iD of the stage (pattern: .*\${.*}.*)
+     - `stageId`: (multiple options) ID of the stage (string) (nullable) ID of the stage (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to iD of the stage (pattern: .*\${.*}.*)
      - `triggers`: [array of] (multiple options) {object}
            - `kind`: (string) (required) (enum: vcs-push)
-           - `spec`: {object}
+           - `spec`: {object} (required)
              - `vcs`: {object}
                - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
                - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
@@ -62,16 +62,16 @@ Required permission: Project > Workflows > General > Read
              - `branchNamePatterns`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
              - `commitMessageFlags`: {object}
                - `enabled`: (boolean)
-               - `flags`: [array of] (string) A commit ignore flag. (max length: 72)
+               - `flags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
              - `filePaths`: {object}
                - `enabled`: (boolean)
                - `allowList`: (boolean)
-               - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+               - `paths`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
            - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
            - `id`: (string)
            - `paused`: (boolean) | {object}
            - `kind`: (string) (required) (enum: vcs-pr)
-           - `spec`: {object}
+           - `spec`: {object} (required)
              - `vcs`: {object}
                - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
                - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
@@ -81,23 +81,23 @@ Required permission: Project > Workflows > General > Read
              - `branchNamePatterns`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
              - `commitMessageFlags`: {object}
                - `enabled`: (boolean)
-               - `flags`: [array of] (string) A commit ignore flag. (max length: 72)
+               - `flags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
              - `filePaths`: {object}
                - `enabled`: (boolean)
                - `allowList`: (boolean)
-               - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+               - `paths`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
              - `ignoreDrafts`: (boolean) If `true`, draft pull requests from this repo will not trigger the template.
            - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
            - `id`: (string)
            - `paused`: (boolean) | {object}
            - `kind`: (string) (required) (enum: webhook)
-           - `spec`: {object}
+           - `spec`: {object} (required)
              - `token`: (string) (required)
            - `ref`: (string) (required) A reference that can be used to access the output of this trigger in the template.
            - `id`: (string)
            - `paused`: (boolean) | {object}
            - `kind`: (string) (required) (enum: vcs-release)
-           - `spec`: {object}
+           - `spec`: {object} (required)
              - `vcs`: {object}
                - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
                - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
@@ -108,7 +108,7 @@ Required permission: Project > Workflows > General > Read
            - `id`: (string)
            - `paused`: (boolean) | {object}
            - `kind`: (string) (required) (enum: vcs-pr-label)
-           - `spec`: {object}
+           - `spec`: {object} (required)
              - `vcs`: {object}
                - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
                - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
@@ -121,17 +121,17 @@ Required permission: Project > Workflows > General > Read
                - `names`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
              - `commitMessageFlags`: {object}
                - `enabled`: (boolean)
-               - `flags`: [array of] (string) A commit ignore flag. (max length: 72)
+               - `flags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
              - `filePaths`: {object}
                - `enabled`: (boolean)
                - `allowList`: (boolean)
-               - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+               - `paths`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
              - `ignoreDrafts`: (boolean) If `true`, draft pull requests from this repo will not trigger the template.
            - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
            - `id`: (string)
            - `paused`: (boolean) | {object}
            - `kind`: (string) (required) (enum: vcs-check-suite)
-           - `spec`: {object}
+           - `spec`: {object} (required)
              - `vcs`: {object}
                - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
                - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
@@ -141,24 +141,24 @@ Required permission: Project > Workflows > General > Read
              - `branchNamePatterns`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
              - `commitMessageFlags`: {object}
                - `enabled`: (boolean)
-               - `flags`: [array of] (string) A commit ignore flag. (max length: 72)
+               - `flags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
              - `filePaths`: {object}
                - `enabled`: (boolean)
                - `allowList`: (boolean)
-               - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+               - `paths`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
            - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
            - `id`: (string)
            - `paused`: (boolean) | {object}
            - `kind`: (string) (required) (enum: cron)
-           - `spec`: {object}
+           - `spec`: {object} (required)
              - `cron`: (string) (required) A cron expression that defines the schedule on which the template will be executed.
            - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
            - `id`: (string)
            - `paused`: (boolean)
      - `id`: (string) (required) Identifier for the workflow
-     - `createdAt`: (string) (required) Timestamp the template was created at. (format: date-time)
-     - `updatedAt`: (string) (required) Timestamp the template was last updated at. (format: date-time)
-- `pagination`: {object}
+     - `createdAt`: (string) (required) Timestamp the workflow was created at. (format: date-time)
+     - `updatedAt`: (string) (required) Timestamp the workflow was last updated at. (format: date-time)
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -168,6 +168,25 @@ Required permission: Project > Workflows > General > Read
 GET /v1/projects/{projectId}/workflows
 
 GET /v1/teams/{teamId}/projects/{projectId}/workflows
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/workflows?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/workflows?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -193,7 +212,9 @@ GET /v1/teams/{teamId}/projects/{projectId}/workflows
         "crossProjectAccess": {
           "projects": [
             "example-project"
-          ]
+          ],
+          "enabled": false,
+          "isAllowList": false
         },
         "triggers": [
           {
@@ -205,7 +226,13 @@ GET /v1/teams/{teamId}/projects/{projectId}/workflows
               },
               "commitMessageFlags": {
                 "flags": [
-                  "[skip ci]"
+                  "[skip ci]",
+                  "[ci skip]",
+                  "[no ci]",
+                  "[skip nf]",
+                  "[nf skip]",
+                  "[northflank skip]",
+                  "[skip northflank]"
                 ]
               },
               "filePaths": {
@@ -213,12 +240,14 @@ GET /v1/teams/{teamId}/projects/{projectId}/workflows
                   "README.md"
                 ]
               }
-            }
+            },
+            "kind": "vcs-push"
           }
         ],
         "id": "example-workflow",
-        "createdAt": "2021-01-01 12:00:00.000Z",
-        "updatedAt": "2021-01-01 12:00:00.000Z"
+        "createdAt": "2021-01-01T12:00:00.000Z",
+        "updatedAt": "2021-01-01T12:00:00.000Z",
+        "name": "string"
       }
     ]
   },
@@ -272,7 +301,9 @@ Options:
       "crossProjectAccess": {
         "projects": [
           "example-project"
-        ]
+        ],
+        "enabled": false,
+        "isAllowList": false
       },
       "triggers": [
         {
@@ -284,7 +315,13 @@ Options:
             },
             "commitMessageFlags": {
               "flags": [
-                "[skip ci]"
+                "[skip ci]",
+                "[ci skip]",
+                "[no ci]",
+                "[skip nf]",
+                "[nf skip]",
+                "[northflank skip]",
+                "[skip northflank]"
               ]
             },
             "filePaths": {
@@ -292,12 +329,14 @@ Options:
                 "README.md"
               ]
             }
-          }
+          },
+          "kind": "vcs-push"
         }
       ],
       "id": "example-workflow",
-      "createdAt": "2021-01-01 12:00:00.000Z",
-      "updatedAt": "2021-01-01 12:00:00.000Z"
+      "createdAt": "2021-01-01T12:00:00.000Z",
+      "updatedAt": "2021-01-01T12:00:00.000Z",
+      "name": "string"
     }
   ]
 }
@@ -345,7 +384,9 @@ await apiClient.list.workflows({
         "crossProjectAccess": {
           "projects": [
             "example-project"
-          ]
+          ],
+          "enabled": false,
+          "isAllowList": false
         },
         "triggers": [
           {
@@ -357,7 +398,13 @@ await apiClient.list.workflows({
               },
               "commitMessageFlags": {
                 "flags": [
-                  "[skip ci]"
+                  "[skip ci]",
+                  "[ci skip]",
+                  "[no ci]",
+                  "[skip nf]",
+                  "[nf skip]",
+                  "[northflank skip]",
+                  "[skip northflank]"
                 ]
               },
               "filePaths": {
@@ -365,12 +412,14 @@ await apiClient.list.workflows({
                   "README.md"
                 ]
               }
-            }
+            },
+            "kind": "vcs-push"
           }
         ],
         "id": "example-workflow",
-        "createdAt": "2021-01-01 12:00:00.000Z",
-        "updatedAt": "2021-01-01 12:00:00.000Z"
+        "createdAt": "2021-01-01T12:00:00.000Z",
+        "updatedAt": "2021-01-01T12:00:00.000Z",
+        "name": "string"
       }
     ]
   },
@@ -503,8 +552,8 @@ print(response.data)
         }
       ],
       "id": "example-workflow",
-      "createdAt": "2021-01-01 12:00:00.000Z",
-      "updatedAt": "2021-01-01 12:00:00.000Z",
+      "createdAt": "2021-01-01T12:00:00.000Z",
+      "updatedAt": "2021-01-01T12:00:00.000Z",
       "name": "string"
     }
   ]

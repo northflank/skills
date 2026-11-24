@@ -14,15 +14,15 @@ Required permission: Project > Services > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `volumes`: [array of] {object}
-     - `id`: (string) (required) The user-facing slug of the volume definition, or null when the definition has already been purged but a retained PVC is still being reported.
-     - `slug`: (string) Best-effort display slug for a purged (definitionMissing) group, recovered from the PVC labels so the group keeps its original name. Equal to `id` when the definition exists.
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `volumes`: [array of] (required) The per-replica statefulSet volumes grouped by volume definition. {object}
+     - `id`: (string) (required) (nullable) The user-facing slug of the volume definition, or null when the definition has already been purged but a retained PVC is still being reported.
+     - `slug`: (string) (nullable) Best-effort display slug for a purged (definitionMissing) group, recovered from the PVC labels so the group keeps its original name. Equal to `id` when the definition exists.
      - `definitionMissing`: (boolean) (required) True when the volume definition no longer exists. Its retained PVCs remain individually deletable, but the group DELETE endpoint cannot target the missing definition.
      - `pendingDelete`: (boolean) (required) True if the volume has been removed from the service and only its retained orphaned PVCs remain. When definitionMissing is false, the group can be fully deleted via the group DELETE endpoint; definition-missing groups are reclaimed by background cleanup.
      - `cleanupPending`: (boolean) (required) True when the group's definition is already purged and the background reaper owns removing the retained PVCs — no manual delete is possible (its replicas report deletable: false).
-     - `replicas`: [array of] {object}
+     - `replicas`: [array of] (required) The per-replica PVCs of this volume. {object}
          - `ordinal`: (number) (required) The statefulSet replica ordinal this PVC belongs to. (format: float)
          - `pvcName`: (string) (required) The name of the per-replica PVC.
          - `deletable`: (boolean) (required) True if the PVC can be deleted now via the per-replica DELETE endpoint: it is orphaned (its volume was removed or its ordinal is scaled down) AND its volume definition still exists. Bound PVCs are refused with 409; claims of a purged volume are false (see group cleanupPending).
@@ -33,12 +33,35 @@ GET /v1/projects/{projectId}/services/{serviceId}/per-replica-volumes
 
 GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/per-replica-volumes
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/per-replica-volumes"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/per-replica-volumes"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: The list of per-replica volumes for the service.
 
 ```json
-undefined
+{
+  "data": {
+    "volumes": []
+  }
+}
 ```
 
 ### CLI reference
@@ -62,7 +85,9 @@ Options:
  The list of per-replica volumes for the service.
 
 ```json
-undefined
+{
+  "volumes": []
+}
 ```
 
 ### JavaScript client reference
@@ -86,6 +111,9 @@ await apiClient.get.service.perReplicaVolumes({
 
 ```json
 {
+  "data": {
+    "volumes": []
+  },
   "rawResponse": "...",
   "request": "...",
   "error": "..."

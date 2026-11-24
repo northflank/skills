@@ -8,8 +8,8 @@ Required permission: Project > Projects > Manage > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `dns`: (string) (required) The partially random string associated with the authenticated account, used for generating DNS entries.
 
 ### API reference
@@ -17,6 +17,25 @@ Required permission: Project > Projects > Manage > Read
 GET /v1/dns-id
 
 GET /v1/teams/{teamId}/dns-id
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/dns-id"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/dns-id"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

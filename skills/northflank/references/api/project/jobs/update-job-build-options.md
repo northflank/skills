@@ -20,21 +20,21 @@ Required permission: Project > Jobs > General > Update
 
 **Request body:**
 
-{object}
-- `dockerfile`: {object}
+{object} Build from a Dockerfile
+- `dockerfile`: {object} (required)
   - `buildEngine`: (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko)
   - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
   - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
-  - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+  - `dockerfileContents`: (string) (nullable) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
   - `scan`: {object}
     - `enabled`: (boolean) (required)
   - `buildkit`: {object}
     - `useCache`: (boolean) Use persistent storage to cache build layers.
     - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB.
-- `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+- `pathIgnoreRules`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
 - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
 - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
-- `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+- `ciIgnoreFlags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
 - `ignoreEmptyCommits`: (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules.
 - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
 - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
@@ -47,27 +47,27 @@ Required permission: Project > Jobs > General > Update
 
 OR
 
-{object}
-- `buildpack`: {object}
-  - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
-  - `buildpackLocators`: [array of] (string) Url or registry identifier of custom buildpack.
+{object} Build from a Buildpack
+- `buildpack`: {object} (required)
+  - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_26`. (enum: HEROKU_26, HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_RESOLUTE, PAKETO_NOBLE, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
+  - `buildpackLocators`: [array of] Array of custom buildpacks to use. (string) Url or registry identifier of custom buildpack.
   - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
   - `useCache`: (boolean) Should build dependencies be cached?
   - `scan`: {object}
     - `enabled`: (boolean) (required)
-- `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+- `pathIgnoreRules`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
 - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
 - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
-- `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+- `ciIgnoreFlags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
 - `ignoreEmptyCommits`: (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules.
 
 OR
 
-{object}
-- `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+{object} Don't modify build type settings
+- `pathIgnoreRules`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
 - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
 - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
-- `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+- `ciIgnoreFlags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
 - `ignoreEmptyCommits`: (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules.
 - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
 - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
@@ -80,8 +80,8 @@ OR
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -100,7 +100,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}' \
-  https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build-options
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build-options"
 ```
 
 ```javascript
@@ -152,10 +152,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build-options"
 
-payload = {"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}
+payload = "{\"dockerfile\":{\"buildEngine\":\"buildkit\",\"dockerFilePath\":\"/Dockerfile\",\"dockerWorkDir\":\"/\"},\"pathIgnoreRules\":[\"README.md\"],\"isAllowList\":false,\"ciIgnoreFlags\":[\"[skip ci]\",\"[ci skip]\",\"[no ci]\",\"[skip nf]\",\"[nf skip]\",\"[northflank skip]\",\"[skip northflank]\"],\"ignoreEmptyCommits\":false,\"dockerCredentials\":[\"example-docker-credential\"],\"storage\":{\"ephemeralStorage\":{\"storageSize\":16384}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -173,7 +173,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build-options"
 
-  var jsonStr = []byte(`{"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/"},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}`)
+  var jsonStr = []byte("{\"dockerfile\":{\"buildEngine\":\"buildkit\",\"dockerFilePath\":\"/Dockerfile\",\"dockerWorkDir\":\"/\"},\"pathIgnoreRules\":[\"README.md\"],\"isAllowList\":false,\"ciIgnoreFlags\":[\"[skip ci]\",\"[ci skip]\",\"[no ci]\",\"[skip nf]\",\"[nf skip]\",\"[northflank skip]\",\"[skip northflank]\"],\"ignoreEmptyCommits\":false,\"dockerCredentials\":[\"example-docker-credential\"],\"storage\":{\"ephemeralStorage\":{\"storageSize\":16384}}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -200,14 +200,14 @@ Build from a Buildpack
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false}' \
-  https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build-options
+  --data '{"buildpack":{"builder":"HEROKU_26","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false}' \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build-options"
 ```
 
 ```javascript
 const payload = {
   "buildpack": {
-    "builder": "HEROKU_24",
+    "builder": "HEROKU_26",
     "buildpackLocators": [
       "https://buildpack-registry.heroku.com/cnb/mars/create-react-app"
     ],
@@ -248,10 +248,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build-options"
 
-payload = {"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false}
+payload = "{\"buildpack\":{\"builder\":\"HEROKU_26\",\"buildpackLocators\":[\"https://buildpack-registry.heroku.com/cnb/mars/create-react-app\"],\"buildContext\":\"/\",\"useCache\":false},\"pathIgnoreRules\":[\"README.md\"],\"isAllowList\":false,\"ciIgnoreFlags\":[\"[skip ci]\",\"[ci skip]\",\"[no ci]\",\"[skip nf]\",\"[nf skip]\",\"[northflank skip]\",\"[skip northflank]\"],\"ignoreEmptyCommits\":false}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -269,7 +269,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build-options"
 
-  var jsonStr = []byte(`{"buildpack":{"builder":"HEROKU_24","buildpackLocators":["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],"buildContext":"/","useCache":false},"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false}`)
+  var jsonStr = []byte("{\"buildpack\":{\"builder\":\"HEROKU_26\",\"buildpackLocators\":[\"https://buildpack-registry.heroku.com/cnb/mars/create-react-app\"],\"buildContext\":\"/\",\"useCache\":false},\"pathIgnoreRules\":[\"README.md\"],\"isAllowList\":false,\"ciIgnoreFlags\":[\"[skip ci]\",\"[ci skip]\",\"[no ci]\",\"[skip nf]\",\"[nf skip]\",\"[northflank skip]\",\"[skip northflank]\"],\"ignoreEmptyCommits\":false}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -297,7 +297,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}' \
-  https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build-options
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build-options"
 ```
 
 ```javascript
@@ -344,10 +344,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build-options"
 
-payload = {"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}
+payload = "{\"pathIgnoreRules\":[\"README.md\"],\"isAllowList\":false,\"ciIgnoreFlags\":[\"[skip ci]\",\"[ci skip]\",\"[no ci]\",\"[skip nf]\",\"[nf skip]\",\"[northflank skip]\",\"[skip northflank]\"],\"ignoreEmptyCommits\":false,\"dockerCredentials\":[\"example-docker-credential\"],\"storage\":{\"ephemeralStorage\":{\"storageSize\":16384}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -365,7 +365,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build-options"
 
-  var jsonStr = []byte(`{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}}`)
+  var jsonStr = []byte("{\"pathIgnoreRules\":[\"README.md\"],\"isAllowList\":false,\"ciIgnoreFlags\":[\"[skip ci]\",\"[ci skip]\",\"[no ci]\",\"[skip nf]\",\"[nf skip]\",\"[northflank skip]\",\"[skip northflank]\"],\"ignoreEmptyCommits\":false,\"dockerCredentials\":[\"example-docker-credential\"],\"storage\":{\"ephemeralStorage\":{\"storageSize\":16384}}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -455,7 +455,7 @@ Build from a Buildpack
 ```json
 {
   "buildpack": {
-    "builder": "HEROKU_24",
+    "builder": "HEROKU_26",
     "buildpackLocators": [
       "https://buildpack-registry.heroku.com/cnb/mars/create-react-app"
     ],
@@ -576,7 +576,7 @@ await apiClient.update.job.buildOptions({
   },
   data: {
     "buildpack": {
-      "builder": "HEROKU_24",
+      "builder": "HEROKU_26",
       "buildpackLocators": [
         "https://buildpack-registry.heroku.com/cnb/mars/create-react-app"
       ],
@@ -706,7 +706,7 @@ response = client.update.job.build_options(
     project_id="default-project",
     data={
         "buildpack": {
-            "builder": "HEROKU_24",
+            "builder": "HEROKU_26",
             "buildpackLocators": ["https://buildpack-registry.heroku.com/cnb/mars/create-react-app"],
             "buildContext": "/",
             "useCache": False,

@@ -17,6 +17,25 @@ GET /v1/network-policies/{networkPolicyId}
 
 GET /v1/teams/{teamId}/network-policies/{networkPolicyId}
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/network-policies/{networkPolicyId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/network-policies/{networkPolicyId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: success

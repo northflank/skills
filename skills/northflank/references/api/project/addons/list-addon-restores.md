@@ -21,15 +21,15 @@ Required permission: Project > Addons > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `restores`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `restores`: [array of] (required) A list of restores for the given addon. {object} Data about a restore.
      - `id`: (string) (required) The identifier for the backup.
      - `status`: (string) (required) The current status of the backup. (enum: scheduled, in-progress, completed, aborting, aborted, failed, not-supported)
      - `restoreTimestamp`: (string) (required) The time the backup was initiated. (format: date-time)
      - `completedAt`: (string) The time the restore was completed. (format: date-time)
      - `backupId`: (string) (required) The identifier for the backup.
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -39,6 +39,25 @@ Required permission: Project > Addons > General > Read
 GET /v1/projects/{projectId}/addons/{addonId}/restores
 
 GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}/restores
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/restores?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/restores?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

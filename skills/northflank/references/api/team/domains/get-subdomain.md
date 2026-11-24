@@ -14,8 +14,8 @@ Required permission: Account > Networking > Subdomains > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `recordType`: (string) (required) The record type to use for the DNS record to verify the subdomain - always CNAME for subdomains.
   - `name`: (string) (required) The subdomain.
   - `fullName`: (string) (required) The full domain name with subdomain
@@ -28,23 +28,23 @@ Required permission: Account > Networking > Subdomains > Read
     - `expiryDate`: (string) Expiry date of the current certificate (format: date-time)
     - `refreshDare`: (string) Refresh date of the current certificate (format: date-time)
   - `certificateValidationMethod`: (string) How the subdomain's TLS certificate is validated and issued. (enum: http, dcv, imported)
-  - `dcvRecord`: {object}
+  - `dcvRecord`: {object} DCV delegation record. Only present when certificateValidationMethod is dcv.
     - `record`: (string) (required) CNAME record used for DCV delegation.
     - `target`: (string) (required) Expected target of the DCV CNAME record.
-  - `options`: {object}
+  - `options`: {object} Optional advanced configuration for the subdomain.
     - `tlsMode`: (string) Desired TLS mode for the subdomain. (enum: default, passthrough)
     - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
     - `autoVerify`: (boolean) The domain will be automatically verified on creation. Only configurable if the relevant feature flag is enabled for you account.
-    - `aliasDomains`: [array of] (string)
+    - `aliasDomains`: [array of] Alias domains which should be routable. Only configurable if the relevant feature flag is enabled for you account. (string)
   - `routingMode`: (string) The routing mode for the subdomain. (enum: paths, geoRouting, loadBalancerSubdomain)
-  - `geoRouting`: {object}
+  - `geoRouting`: {object} Geo routing configuration. Only present when routingMode is geoRouting.
     - `strategy`: (string) The geo routing strategy. (enum: continent, closest)
     - `rules`: [array of] {object}
-        - `continents`: [array of] (string) (enum: NA, SA, EU, AF, AS, OC, AN)
-        - `backend`: {object}
+        - `continents`: [array of] Continent codes this rule covers (for continent strategy) (string) (enum: NA, SA, EU, AF, AS, OC, AN)
+        - `backend`: {object} (required)
           - `id`: (string) (required) Backend reference in format {projectInternalId}/{serviceInternalId} (pattern: ^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$)
           - `port`: (string) (required) Port name on the backend service
-    - `defaultBackend`: {object}
+    - `defaultBackend`: {object} (required)
       - `id`: (string) (required) Backend reference in format {projectInternalId}/{serviceInternalId} (pattern: ^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$)
       - `port`: (string) (required) Port name on the backend service
   - `cdn`: {object}
@@ -76,7 +76,7 @@ Required permission: Account > Networking > Subdomains > Read
             - `name`: (string) (required) (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
             - `type`: (string) (required) (enum: init, recv, hash, hit, miss, pass, fetch, error, deliver, log, none)
             - `dynamic`: (string) (required) (enum: 0, 1)
-            - `priority`: (multiple options) (number) Execution priority for the VCL snippet. (format: float)
+            - `priority`: (multiple options) Execution priority for the VCL snippet. (number) Execution priority for the VCL snippet. (format: float)
             - `content`: (string) (required)
         - `cacheSettings`: [array of] {object}
             - `id`: (string)
@@ -92,6 +92,25 @@ Required permission: Account > Networking > Subdomains > Read
 GET /v1/domains/{domain}/subdomains/{subdomain}
 
 GET /v1/teams/{teamId}/domains/{domain}/subdomains/{subdomain}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

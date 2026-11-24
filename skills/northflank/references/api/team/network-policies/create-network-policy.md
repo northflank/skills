@@ -11,33 +11,33 @@ Required permission: Account > Networking > NetworkPolicies > Create
 {object}
 - `name`: (string) (required) The name of the network policy. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
 - `description`: (string) The description of the network policy. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-- `spec`: {object}
+- `spec`: {object} (required)
   - `restrictions`: {object}
-    - `projects`: {object}
+    - `projects`: {object} (required)
       - `enabled`: (boolean) (required)
-      - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+      - `items`: [array of] (required) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
       - `restrictionMode`: (string) (enum: in, notIn)
-    - `tags`: {object}
+    - `tags`: {object} (required)
       - `enabled`: (boolean) (required)
-      - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+      - `items`: [array of] (required) (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
       - `matchCondition`: (string) (required) (enum: or, and)
   - `egress`: {object}
     - `denyAll`: (boolean)
-    - `allowTo`: [array of] (string) (min length: 1)
-    - `allowToTags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-    - `allowToProjects`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `allowTo`: (multiple options) External destinations that egress traffic is allowed to: IP addresses, CIDR ranges, or hostnames. A hostname allows TCP port 443, a single TCP port with `hostname:port`, or all TCP ports with `hostname:*`. [array of] (nullable) Must be empty or null, as destinations cannot be assigned when all traffic is denied  (string) (min length: 1)
+    - `allowToTags`: (multiple options) Tags of workloads that egress traffic is allowed to [array of] (nullable) Must be empty or null, as tags cannot be assigned when all traffic is denied  (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `allowToProjects`: (multiple options) Projects that egress traffic is allowed to [array of] (nullable) Must be empty or null, as projects cannot be assigned when all traffic is denied  (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `ingress`: {object}
     - `denyAll`: (boolean)
-    - `allowFromTags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-    - `allowFromProjects`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-  - `loadBalancerIngress`: {object}
-    - `targets`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `allowFromTags`: (multiple options) Tags of workloads that ingress traffic is allowed from [array of] (nullable) Must be empty or null, as tags cannot be assigned when all traffic is denied  (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `allowFromProjects`: (multiple options) Projects that ingress traffic is allowed from [array of] (nullable) Must be empty or null, as projects cannot be assigned when all traffic is denied  (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `loadBalancerIngress`: {object} (nullable) Controls client ingress to selected load balancers.
+    - `targets`: [array of] (required) Load balancer internal IDs this ingress rule applies to. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `mode`: (string) (required) Whether the listed source ranges are allowed or denied. (enum: allowList, denyList)
-    - `cidrs`: [array of] (string)
+    - `cidrs`: [array of] (required) Source IP addresses and CIDR ranges. (string)
   - `egressSecretInjection`: [array of] {object}
      - `name`: (string) (required) (pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$) (max length: 63)
      - `header`: (string) (required) (pattern: ^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$) (max length: 256)
-     - `hosts`: [array of] (string) (max length: 253)
+     - `hosts`: [array of] (required) (string) (max length: 253)
      - `value`: (string) (required) The secret value to inject.
 
 ### API reference
@@ -55,7 +55,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"restrict-api-ingress","description":"Restrict ingress to the api service.","spec":{}}' \
-  https://api.northflank.com/v1/network-policies
+  "https://api.northflank.com/v1/network-policies"
 ```
 
 ```javascript
@@ -83,10 +83,10 @@ import requests
 
 url = "https://api.northflank.com/v1/network-policies"
 
-payload = {"name":"restrict-api-ingress","description":"Restrict ingress to the api service.","spec":{}}
+payload = "{\"name\":\"restrict-api-ingress\",\"description\":\"Restrict ingress to the api service.\",\"spec\":{}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -104,7 +104,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/network-policies"
 
-  var jsonStr = []byte(`{"name":"restrict-api-ingress","description":"Restrict ingress to the api service.","spec":{}}`)
+  var jsonStr = []byte("{\"name\":\"restrict-api-ingress\",\"description\":\"Restrict ingress to the api service.\",\"spec\":{}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

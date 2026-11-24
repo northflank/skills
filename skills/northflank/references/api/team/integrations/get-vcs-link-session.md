@@ -13,8 +13,8 @@ Required permission: Account > Git > General > Manage
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `status`: (string) (required) Current status of the link session. (enum: pending, completed, failed)
   - `vcsLinkId`: (string) ID of the created version control link. Present when `status` is `completed`.
   - `error`: (string) Reason the link failed. Present when `status` is `failed`.
@@ -24,6 +24,25 @@ Required permission: Account > Git > General > Manage
 GET /v1/integrations/vcs/link-sessions/{linkSessionId}
 
 GET /v1/teams/{teamId}/integrations/vcs/link-sessions/{linkSessionId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/integrations/vcs/link-sessions/{linkSessionId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/integrations/vcs/link-sessions/{linkSessionId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

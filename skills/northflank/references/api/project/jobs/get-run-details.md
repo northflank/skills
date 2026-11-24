@@ -15,8 +15,8 @@ Required permission: Project > Jobs > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) The ID of the job run
   - `active`: (integer) (required) Whether the run is currently in progress (enum: 0, 1)
   - `backoffLimit`: (integer) (required) The number of attempts to retry this job run before it is marked as failed.
@@ -34,6 +34,25 @@ Required permission: Project > Jobs > General > Read
 GET /v1/projects/{projectId}/jobs/{jobId}/runs/{runId}
 
 GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/runs/{runId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/runs/{runId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/runs/{runId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

@@ -17,13 +17,13 @@ Required permission: Project > Projects > Manage > Update
 - `description`: (string) The description of the project. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `color`: (string) The color of the project in the Northflank App. (pattern: ^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$)
 - `networking`: {object}
-  - `allowedIngressProjects`: [array of] (string) (pattern: ^[A-Za-z0-9-]+$)
+  - `allowedIngressProjects`: [array of] Projects from which ingress request should be permitted. (string) (pattern: ^[A-Za-z0-9-]+$)
   - `tailscale`: {object}
     - `enabled`: (boolean) Whether or not to inject a Tailscale sidecar for this project's resources
-    - `authKeyTags`: [array of] (string) (pattern: ^tag:.+)
+    - `authKeyTags`: [array of] Tailscale tags to apply to generated auth keys, must match with the tags applied when creating the OAuth Client. (string) (pattern: ^tag:.+)
     - `restrictions`: {object}
       - `enabled`: (boolean) Whether or not to restrict the settings to resources with specific tags
-      - `tags`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+      - `tags`: [array of] The tags which determine the resources the settings should be applied to (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
       - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
     - `options`: {object}
       - `applyToAddons`: (boolean) Apply the Tailscale configuration to addons.
@@ -33,46 +33,46 @@ Required permission: Project > Projects > Manage > Update
       - `acceptRoutes`: (boolean) Accept advertised routes from the Tailscale network
       - `tailnetServicesEnabled`: (boolean) Enable automatic creation of Tailnet services for resources in this project
       - `useUnscopedServiceNames`: (boolean) Use the service internal ID as the Tailnet Service name without the project UID. This causes undefined behavior when two services in the tailnet have matching internal IDs.
-      - `tailnetServicesRestrictions`: {object}
+      - `tailnetServicesRestrictions`: {object} Restrict which resources get Tailnet services created for them
         - `enabled`: (boolean) (required) Whether or not to restrict the settings to resources with specific tags
-        - `tags`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+        - `tags`: [array of] The tags which determine the resources the settings should be applied to (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
         - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
     - `secrets`: {object}
       - `clientId`: (string) Tailscale OAuth client ID (required for generating auth keys for Tailscale)
       - `clientSecret`: (string) Tailscale OAuth client secret (required for generating auth keys for Tailscale)
   - `hostAliases`: {object}
     - `enabled`: (boolean) Enable support for adding /etc/hosts overrides for a container
-    - `hostEntries`: [array of] {object}
+    - `hostEntries`: [array of] Entries to add to /etc/hosts {object}
         - `ipAddress`: (string) (required) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$)
-        - `hostnames`: [array of] (string) (pattern: ^(([a-z0-9][a-z0-9-]*)|[a-z0-9]\.)*([a-z]+|xn-\-[a-z0-9]+)\.?$)
+        - `hostnames`: [array of] (required) (string) (pattern: ^(([a-z0-9][a-z0-9-]*)|[a-z0-9]\.)*([a-z]+|xn-\-[a-z0-9]+)\.?$)
     - `restrictions`: {object}
       - `enabled`: (boolean) Whether or not to restrict the settings to resources with specific tags
-      - `tags`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+      - `tags`: [array of] The tags which determine the resources the settings should be applied to (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
       - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) Identifier for the project
   - `name`: (string) (required) The name of the project. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `description`: (string) The description of the project. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
   - `color`: (string) The color of the project in the Northflank App. (pattern: ^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$)
   - `region`: (string) The region the project will be hosted in.
   - `clusterId`: (string) The BYOC cluster this project will be hosted in. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
-  - `customRegistry`: {object}
+  - `customRegistry`: {object} Registry configuration for the project. Can be PaaS or Self-Hosted
     - `enabled`: (boolean)
     - `configuration`: {object}
       - `credentialId`: (string) (required) (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
       - `provider`: (string) (enum: acr, ecr, gar, dockerhub, dhi, github, gitlab, custom, legacy)
-  - `networking`: {object}
-    - `allowedIngressProjects`: [array of] (string) (pattern: ^[A-Za-z0-9-]+$)
-    - `tailscale`: {object}
+  - `networking`: {object} Advanced project networking settings.
+    - `allowedIngressProjects`: [array of] Projects from which ingress request should be permitted. (string) (pattern: ^[A-Za-z0-9-]+$)
+    - `tailscale`: {object} Defines this project's Tailscale sidecar settings
       - `enabled`: (boolean) Whether or not to inject a Tailscale sidecar for this project's resources
-      - `authKeyTags`: [array of] (string) (pattern: ^tag:.+)
+      - `authKeyTags`: [array of] Tailscale tags to apply to generated auth keys, must match with the tags applied when creating the OAuth Client. (string) (pattern: ^tag:.+)
       - `restrictions`: {object}
         - `enabled`: (boolean) (required) Whether or not to restrict the settings to resources with specific tags
-        - `tags`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+        - `tags`: [array of] The tags which determine the resources the settings should be applied to (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
         - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
       - `options`: {object}
         - `applyToAddons`: (boolean) Apply the Tailscale configuration to addons.
@@ -82,21 +82,21 @@ Required permission: Project > Projects > Manage > Update
         - `acceptRoutes`: (boolean) Accept advertised routes from the Tailscale network
         - `tailnetServicesEnabled`: (boolean) Enable automatic creation of Tailnet services for resources in this project
         - `useUnscopedServiceNames`: (boolean) Use the service internal ID as the Tailnet Service name without the project UID. This causes undefined behavior when two services in the tailnet have matching internal IDs.
-        - `tailnetServicesRestrictions`: {object}
+        - `tailnetServicesRestrictions`: {object} Restrict which resources get Tailnet services created for them
           - `enabled`: (boolean) (required) Whether or not to restrict the settings to resources with specific tags
-          - `tags`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+          - `tags`: [array of] The tags which determine the resources the settings should be applied to (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
           - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
-      - `secrets`: {object}
+      - `secrets`: {object} Relevant Tailscale secrets
         - `clientId`: (string) (required) Tailscale OAuth client ID (required for generating auth keys for Tailscale)
         - `clientSecret`: (string) (required) Tailscale OAuth client secret (required for generating auth keys for Tailscale)
-    - `hostAliases`: {object}
+    - `hostAliases`: {object} Defines the project host alias overrides to apply to /etc/hosts in resource containers
       - `enabled`: (boolean) Enable support for adding /etc/hosts overrides for a container
-      - `hostEntries`: [array of] {object}
+      - `hostEntries`: [array of] Entries to add to /etc/hosts {object}
           - `ipAddress`: (string) (required) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$)
-          - `hostnames`: [array of] (string) (pattern: ^(([a-z0-9][a-z0-9-]*)|[a-z0-9]\.)*([a-z]+|xn-\-[a-z0-9]+)\.?$)
+          - `hostnames`: [array of] (required) (string) (pattern: ^(([a-z0-9][a-z0-9-]*)|[a-z0-9]\.)*([a-z]+|xn-\-[a-z0-9]+)\.?$)
       - `restrictions`: {object}
         - `enabled`: (boolean) (required) Whether or not to restrict the settings to resources with specific tags
-        - `tags`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
+        - `tags`: [array of] The tags which determine the resources the settings should be applied to (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
         - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
   - `lifecycleStatus`: (string) (required) Status of resource on the platform (enum: pending_initialization, creating, created, creation_failed, upgrading, upgrade_failed, migration_pending, migrating, migration_failed, deleting, deletion_failed, deleted, cluster_deleted, initializing, tearing_down, teardown_failed)
   - `createdAt`: (string) time of creation (format: date-time)
@@ -117,7 +117,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
   --data '{"description":"This is a new project.","color":"#EF233C","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or","enabled":false}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}' \
-  https://api.northflank.com/v1/projects/{projectId}
+  "https://api.northflank.com/v1/projects/{projectId}"
 ```
 
 ```javascript
@@ -162,10 +162,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}"
 
-payload = {"description":"This is a new project.","color":"#EF233C","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or","enabled":false}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}
+payload = "{\"description\":\"This is a new project.\",\"color\":\"#EF233C\",\"networking\":{\"tailscale\":{\"restrictions\":{\"tagMatchCondition\":\"or\"},\"tailscaleOptions\":{\"tailnetServicesRestrictions\":{\"tagMatchCondition\":\"or\",\"enabled\":false}}},\"hostAliases\":{\"restrictions\":{\"tagMatchCondition\":\"or\"}}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PATCH", url, headers = headers, json = payload)
+response = requests.request("PATCH", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -183,7 +183,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}"
 
-  var jsonStr = []byte(`{"description":"This is a new project.","color":"#EF233C","networking":{"tailscale":{"restrictions":{"tagMatchCondition":"or"},"tailscaleOptions":{"tailnetServicesRestrictions":{"tagMatchCondition":"or","enabled":false}}},"hostAliases":{"restrictions":{"tagMatchCondition":"or"}}}}`)
+  var jsonStr = []byte("{\"description\":\"This is a new project.\",\"color\":\"#EF233C\",\"networking\":{\"tailscale\":{\"restrictions\":{\"tagMatchCondition\":\"or\"},\"tailscaleOptions\":{\"tailnetServicesRestrictions\":{\"tagMatchCondition\":\"or\",\"enabled\":false}}},\"hostAliases\":{\"restrictions\":{\"tagMatchCondition\":\"or\"}}}}")
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -218,17 +218,20 @@ func main() {
     "networking": {
       "tailscale": {
         "restrictions": {
-          "tagMatchCondition": "or"
+          "tagMatchCondition": "or",
+          "enabled": false
         },
         "tailscaleOptions": {
           "tailnetServicesRestrictions": {
-            "tagMatchCondition": "or"
+            "tagMatchCondition": "or",
+            "enabled": false
           }
         }
       },
       "hostAliases": {
         "restrictions": {
-          "tagMatchCondition": "or"
+          "tagMatchCondition": "or",
+          "enabled": false
         }
       }
     },
@@ -297,17 +300,20 @@ Options:
   "networking": {
     "tailscale": {
       "restrictions": {
-        "tagMatchCondition": "or"
+        "tagMatchCondition": "or",
+        "enabled": false
       },
       "tailscaleOptions": {
         "tailnetServicesRestrictions": {
-          "tagMatchCondition": "or"
+          "tagMatchCondition": "or",
+          "enabled": false
         }
       }
     },
     "hostAliases": {
       "restrictions": {
-        "tagMatchCondition": "or"
+        "tagMatchCondition": "or",
+        "enabled": false
       }
     }
   },
@@ -369,17 +375,20 @@ await apiClient.patch.project({
     "networking": {
       "tailscale": {
         "restrictions": {
-          "tagMatchCondition": "or"
+          "tagMatchCondition": "or",
+          "enabled": false
         },
         "tailscaleOptions": {
           "tailnetServicesRestrictions": {
-            "tagMatchCondition": "or"
+            "tagMatchCondition": "or",
+            "enabled": false
           }
         }
       },
       "hostAliases": {
         "restrictions": {
-          "tagMatchCondition": "or"
+          "tagMatchCondition": "or",
+          "enabled": false
         }
       }
     },

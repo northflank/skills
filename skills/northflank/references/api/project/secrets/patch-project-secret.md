@@ -14,67 +14,67 @@ Updates a project secret with the specified payload
 
 {object}
 - `description`: (string) A description of the secret. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-- `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+- `stageId`: (string) (nullable) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+- `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `type`: (string) The hierarchy type of the created secret. (enum: secret, config)
 - `secretType`: (string) The injection scope of the created secret (enum: environment-arguments, environment, arguments)
 - `priority`: (integer) The priority with which different secrets will be merged.
 - `restrictions`: {object}
   - `restricted`: (boolean) Whether the secret is restricted to specific resources, tags, or environments. If this is `true`, resources listed in `nfObjects`, with a tag listed in `tags`, or in an environment listed in `stageIds` will have access to these secrets. Otherwise, all resources in the project will be able to access it.
-  - `nfObjects`: [array of] {object}
+  - `nfObjects`: [array of] List of Northflank services & jobs the secret is restricted to {object}
      - `id`: (string) (required) ID of the entity the secret is restricted to. (pattern: ^[A-Za-z0-9-]+$)
      - `type`: (string) (required) Type of the entity the secret is restricted to. (enum: service, job)
-  - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `tags`: [array of] List of tags the secret is restricted to. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
-  - `stageIds`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `addonDependencies`: [array of] {object}
+  - `stageIds`: [array of] IDs of the environments the secret is restricted to. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+- `addonDependencies`: [array of] An array of addons to link to this secret group. {object} An object containing data about the addon to link.
    - `addonId`: (string) (required) The id of the addon to link. (pattern: ^[A-Za-z0-9-]+$)
-   - `keys`: [array of] {object}
+   - `keys`: [array of] (required) An array of objects containing details about the keys to link to this secret group. {object} Details about the key to link to this secret group.
       - `keyName`: (string) (required) The name of the key to link. (pattern: [a-zA-Z]+)
-      - `aliases`: [array of] (string) The name of the alias. Keys may only contain letters, numbers, hyphens, forward slashes and dots. (pattern: ^[a-zA-Z0-9_./-]*$)
-- `externalAddonDependencies`: [array of] {object}
+      - `aliases`: [array of] An array of aliases for the key. (string) The name of the alias. Keys may only contain letters, numbers, hyphens, forward slashes and dots. (pattern: ^[a-zA-Z0-9_./-]*$)
+- `externalAddonDependencies`: [array of] An array of external addons to link to this secret group. {object} An object containing data about the external addon to link.
    - `addonId`: (string) (required) The id of the external addon to link. (pattern: ^[A-Za-z0-9-]+$)
-   - `keys`: [array of] {object}
+   - `keys`: [array of] (required) An array of objects containing details about the keys to link to this secret group. {object} Details about the key to link to this secret group.
       - `keyName`: (string) (required) The name of the key to link. (pattern: [a-zA-Z]+)
-      - `aliases`: [array of] (string) The name of the alias. Keys may only contain letters, numbers, hyphens, forward slashes and dots. (pattern: ^[a-zA-Z0-9_./-]*$)
+      - `aliases`: [array of] An array of aliases for the key. (string) The name of the alias. Keys may only contain letters, numbers, hyphens, forward slashes and dots. (pattern: ^[a-zA-Z0-9_./-]*$)
 - `secrets`: {object}
-  - `variables`: {object}
-  - `files`: {object}
-  - `dockerSecretMounts`: {object}
+  - `variables`: {object} Secret variables as JSON object, encrypted at rest. Keys may only contain letters, numbers, hyphens, forward slashes and dots.
+  - `files`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+  - `dockerSecretMounts`: {object} Docker secret mount contents as JSON object, encrypted at rest. Must be a valid Docker secret mount identifier
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `name`: (string) (required) The name of the secret. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `description`: (string) A description of the secret. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
   - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-  - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `type`: (string) The hierarchy type of the created secret. (enum: secret, config)
   - `secretType`: (string) (required) The injection scope of the created secret (enum: environment-arguments, environment, arguments)
   - `priority`: (integer) (required) The priority with which different secrets will be merged.
-  - `restrictions`: {object}
+  - `restrictions`: {object} Restriction settings of the secret
     - `restricted`: (boolean) Whether the secret is restricted to specific resources, tags, or environments. If this is `true`, resources listed in `nfObjects`, with a tag listed in `tags`, or in an environment listed in `stageIds` will have access to these secrets. Otherwise, all resources in the project will be able to access it.
-    - `nfObjects`: [array of] {object}
+    - `nfObjects`: [array of] List of Northflank services & jobs the secret is restricted to {object}
         - `id`: (string) (required) ID of the entity the secret is restricted to. (pattern: ^[A-Za-z0-9-]+$)
         - `type`: (string) (required) Type of the entity the secret is restricted to. (enum: service, job)
-    - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `tags`: [array of] List of tags the secret is restricted to. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
-    - `stageIds`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-  - `addonDependencies`: [array of] {object}
+    - `stageIds`: [array of] IDs of the environments the secret is restricted to. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `addonDependencies`: [array of] An array of addons to link to this secret group. {object} An object containing data about the addon to link.
      - `addonId`: (string) (required) The id of the addon to link. (pattern: ^[A-Za-z0-9-]+$)
-     - `keys`: [array of] {object}
+     - `keys`: [array of] (required) An array of objects containing details about the keys to link to this secret group. {object} Details about the key to link to this secret group.
          - `keyName`: (string) (required) The name of the key to link. (pattern: [a-zA-Z]+)
-         - `aliases`: [array of] (string) The name of the alias. Keys may only contain letters, numbers, hyphens, forward slashes and dots. (pattern: ^[a-zA-Z0-9_./-]*$)
-  - `externalAddonDependencies`: [array of] {object}
+         - `aliases`: [array of] An array of aliases for the key. (string) The name of the alias. Keys may only contain letters, numbers, hyphens, forward slashes and dots. (pattern: ^[a-zA-Z0-9_./-]*$)
+  - `externalAddonDependencies`: [array of] An array of external addons to link to this secret group. {object} An object containing data about the external addon to link.
      - `addonId`: (string) (required) The id of the external addon to link. (pattern: ^[A-Za-z0-9-]+$)
-     - `keys`: [array of] {object}
+     - `keys`: [array of] (required) An array of objects containing details about the keys to link to this secret group. {object} Details about the key to link to this secret group.
          - `keyName`: (string) (required) The name of the key to link. (pattern: [a-zA-Z]+)
-         - `aliases`: [array of] (string) The name of the alias. Keys may only contain letters, numbers, hyphens, forward slashes and dots. (pattern: ^[a-zA-Z0-9_./-]*$)
+         - `aliases`: [array of] An array of aliases for the key. (string) The name of the alias. Keys may only contain letters, numbers, hyphens, forward slashes and dots. (pattern: ^[a-zA-Z0-9_./-]*$)
   - `secrets`: {object}
-    - `variables`: {object}
-    - `files`: {object}
-    - `dockerSecretMounts`: {object}
+    - `variables`: {object} Secret variables as JSON object, encrypted at rest. Keys may only contain letters, numbers, hyphens, forward slashes and dots.
+    - `files`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+    - `dockerSecretMounts`: {object} Docker secret mount contents as JSON object, encrypted at rest. Must be a valid Docker secret mount identifier
   - `id`: (string) (required) Identifier for the secret group (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `createdAt`: (string) time of creation (format: date-time)
   - `updatedAt`: (string) time of update (format: date-time)
@@ -94,7 +94,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
   --data '{"description":"A description","type":"secret","secretType":"environment","priority":10,"restrictions":{"restricted":true,"nfObjects":[{"id":"example-service","type":"service"}],"tagMatchCondition":"or"},"addonDependencies":[{"addonId":"example-addon","keys":[{"keyName":"USERNAME","aliases":["MONGO_USERNAME"]}]}],"externalAddonDependencies":[{"addonId":"example-addon","keys":[{"keyName":"USERNAME","aliases":["MONGO_USERNAME"]}]}],"secrets":{"variables":{"NODE_ENV":"production","MONGO_DB":"some_connection_string"},"files":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}}' \
-  https://api.northflank.com/v1/projects/{projectId}/secrets/{secretId}
+  "https://api.northflank.com/v1/projects/{projectId}/secrets/{secretId}"
 ```
 
 ```javascript
@@ -177,10 +177,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/secrets/{secretId}"
 
-payload = {"description":"A description","type":"secret","secretType":"environment","priority":10,"restrictions":{"restricted":true,"nfObjects":[{"id":"example-service","type":"service"}],"tagMatchCondition":"or"},"addonDependencies":[{"addonId":"example-addon","keys":[{"keyName":"USERNAME","aliases":["MONGO_USERNAME"]}]}],"externalAddonDependencies":[{"addonId":"example-addon","keys":[{"keyName":"USERNAME","aliases":["MONGO_USERNAME"]}]}],"secrets":{"variables":{"NODE_ENV":"production","MONGO_DB":"some_connection_string"},"files":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}}
+payload = "{\"description\":\"A description\",\"type\":\"secret\",\"secretType\":\"environment\",\"priority\":10,\"restrictions\":{\"restricted\":true,\"nfObjects\":[{\"id\":\"example-service\",\"type\":\"service\"}],\"tagMatchCondition\":\"or\"},\"addonDependencies\":[{\"addonId\":\"example-addon\",\"keys\":[{\"keyName\":\"USERNAME\",\"aliases\":[\"MONGO_USERNAME\"]}]}],\"externalAddonDependencies\":[{\"addonId\":\"example-addon\",\"keys\":[{\"keyName\":\"USERNAME\",\"aliases\":[\"MONGO_USERNAME\"]}]}],\"secrets\":{\"variables\":{\"NODE_ENV\":\"production\",\"MONGO_DB\":\"some_connection_string\"},\"files\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"dockerSecretMounts\":{\"example-secret-mount_1\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PATCH", url, headers = headers, json = payload)
+response = requests.request("PATCH", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -198,7 +198,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/secrets/{secretId}"
 
-  var jsonStr = []byte(`{"description":"A description","type":"secret","secretType":"environment","priority":10,"restrictions":{"restricted":true,"nfObjects":[{"id":"example-service","type":"service"}],"tagMatchCondition":"or"},"addonDependencies":[{"addonId":"example-addon","keys":[{"keyName":"USERNAME","aliases":["MONGO_USERNAME"]}]}],"externalAddonDependencies":[{"addonId":"example-addon","keys":[{"keyName":"USERNAME","aliases":["MONGO_USERNAME"]}]}],"secrets":{"variables":{"NODE_ENV":"production","MONGO_DB":"some_connection_string"},"files":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}}`)
+  var jsonStr = []byte("{\"description\":\"A description\",\"type\":\"secret\",\"secretType\":\"environment\",\"priority\":10,\"restrictions\":{\"restricted\":true,\"nfObjects\":[{\"id\":\"example-service\",\"type\":\"service\"}],\"tagMatchCondition\":\"or\"},\"addonDependencies\":[{\"addonId\":\"example-addon\",\"keys\":[{\"keyName\":\"USERNAME\",\"aliases\":[\"MONGO_USERNAME\"]}]}],\"externalAddonDependencies\":[{\"addonId\":\"example-addon\",\"keys\":[{\"keyName\":\"USERNAME\",\"aliases\":[\"MONGO_USERNAME\"]}]}],\"secrets\":{\"variables\":{\"NODE_ENV\":\"production\",\"MONGO_DB\":\"some_connection_string\"},\"files\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"dockerSecretMounts\":{\"example-secret-mount_1\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}}}}")
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

@@ -14,28 +14,28 @@ Required permission: Project > Volumes > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) Identifier for the volume
   - `uid`: (string) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
   - `name`: (string) (required) Volume name
-  - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-  - `spec`: {object}
-    - `accessMode`: (string) (required) Access mode of the volume. Only `ReadWriteOnce` is generally available. (enum: ReadWriteOnce, ReadWriteMany)
-    - `storageClassName`: (string) The type of the storage.
+  - `tags`: [array of] (required) An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `spec`: {object} (required) Example storage schema
+    - `accessMode`: (string) (required) Access mode of the volume. `ReadWriteOnce` volumes attach to one workload at a time. `ReadWriteMany` volumes can attach to multiple workloads and are required for GPU workloads on Northflank-managed clusters. (enum: ReadWriteOnce, ReadWriteMany)
+    - `storageClassName`: (string) The storage class of the volume. Defaults to `nvme` for `ReadWriteOnce` volumes and `nf-multi-rw` for `ReadWriteMany` volumes. Available storage classes depend on the region.
     - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
-  - `attachedObjects`: [array of] {object}
+  - `attachedObjects`: [array of] List of objects this volume is attached to. {object} The object to attach this volume to.
      - `id`: (string) (required) The id of object to attach this volume to. (pattern: ^[A-Za-z0-9-]+$)
      - `type`: (string) (required) The type of the object to attach this volume to. (enum: service, job)
   - `backupSchedules`: [array of] {object}
-     - `scheduling`: {object}
+     - `scheduling`: {object} (required) Schedule for the backup.
        - `interval`: (string) (required) The interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (enum: hourly, daily, weekly)
-       - `minute`: [array of] (integer) A minute when the backup should be performed.
-       - `hour`: [array of] (integer) An hour when the backup should be performed, in 24 hour format.
-       - `day`: [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday.
+       - `minute`: [array of] (required) An array of minutes when the backup should be performed. (integer) A minute when the backup should be performed.
+       - `hour`: [array of] An array of hours in 24 hour format when the backup should be performed. At these hours, a backup will be performed at each of the minutes provided in the `minute` field. Required for `daily` and `weekly` intervals and unavailable for `hourly` intervals. (integer) An hour when the backup should be performed, in 24 hour format.
+       - `day`: [array of] An array of days of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday. On these days, a backup will be performed at each of the minutes provided in the `minute` field whenever it is an hour from the `hour` field. Required for `weekly` intervals and unavailable for `hourly` and `daily` intervals. (integer) A day of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday.
      - `retentionTime`: (integer) (required) The time the backup is retained for, in days.
   - `status`: (string) (required) Status the volume is in on the cluster
-  - `migration`: {object}
+  - `migration`: {object} Clone migration phase, separate from the volume binding status.
     - `status`: (string) (required) (enum: PENDING, SNAPSHOTTING, RESTORING, RELOCATING, ATTACHING, COMPLETED, FAILED)
   - `createdAt`: (string) (required) The timestamp the volume was created at (format: date-time)
   - `updatedAt`: (string) (required) The timestamp the volume was last updated at (format: date-time)
@@ -45,6 +45,25 @@ Required permission: Project > Volumes > General > Read
 GET /v1/projects/{projectId}/volumes/{volumeId}
 
 GET /v1/teams/{teamId}/projects/{projectId}/volumes/{volumeId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -58,7 +77,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/volumes/{volumeId}
     "name": "Example Volume",
     "spec": {
       "storageClassName": "nvme",
-      "storageSize": 6144
+      "storageSize": 6144,
+      "accessMode": "ReadWriteOnce"
     },
     "attachedObjects": [
       {
@@ -85,7 +105,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/volumes/{volumeId}
     ],
     "status": "BOUND",
     "createdAt": "2021-01-01 12:00:00.000Z",
-    "updatedAt": "2021-01-01 12:00:00.000Z"
+    "updatedAt": "2021-01-01 12:00:00.000Z",
+    "tags": []
   }
 }
 ```
@@ -117,7 +138,8 @@ Options:
   "name": "Example Volume",
   "spec": {
     "storageClassName": "nvme",
-    "storageSize": 6144
+    "storageSize": 6144,
+    "accessMode": "ReadWriteOnce"
   },
   "attachedObjects": [
     {
@@ -144,7 +166,8 @@ Options:
   ],
   "status": "BOUND",
   "createdAt": "2021-01-01 12:00:00.000Z",
-  "updatedAt": "2021-01-01 12:00:00.000Z"
+  "updatedAt": "2021-01-01 12:00:00.000Z",
+  "tags": []
 }
 ```
 
@@ -175,7 +198,8 @@ await apiClient.get.volume({
     "name": "Example Volume",
     "spec": {
       "storageClassName": "nvme",
-      "storageSize": 6144
+      "storageSize": 6144,
+      "accessMode": "ReadWriteOnce"
     },
     "attachedObjects": [
       {
@@ -202,7 +226,8 @@ await apiClient.get.volume({
     ],
     "status": "BOUND",
     "createdAt": "2021-01-01 12:00:00.000Z",
-    "updatedAt": "2021-01-01 12:00:00.000Z"
+    "updatedAt": "2021-01-01 12:00:00.000Z",
+    "tags": []
   },
   "rawResponse": "...",
   "request": "...",

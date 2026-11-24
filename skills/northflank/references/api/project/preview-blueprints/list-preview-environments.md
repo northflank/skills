@@ -21,16 +21,16 @@ Required permission: Project > PreviewBlueprints > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `previewEnvironments`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `previewEnvironments`: [array of] (required) A list of currently available preview environments for the template. {object}
      - `id`: (string) (required) Identifier for the preview template environment
-     - `vcsData`: {object}
+     - `vcsData`: {object} (required) Data about the version control action that triggered environment creation
        - `repoUrl`: (string) (required)
      - `paused`: (boolean) Whether the preview environment has been paused.
      - `createdAt`: (string) time of creation (format: date-time)
      - `updatedAt`: (string) time of update (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -40,6 +40,25 @@ Required permission: Project > PreviewBlueprints > General > Read
 GET /v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}/previews
 
 GET /v1/teams/{teamId}/projects/{projectId}/preview-blueprints/{previewBlueprintId}/previews
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}/previews?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}/previews?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -51,7 +70,10 @@ GET /v1/teams/{teamId}/projects/{projectId}/preview-blueprints/{previewBlueprint
     "previewEnvironments": [
       {
         "id": "clean-step",
-        "paused": false
+        "paused": false,
+        "vcsData": {
+          "repoUrl": "string"
+        }
       }
     ]
   },
@@ -93,7 +115,10 @@ Options:
   "previewEnvironments": [
     {
       "id": "clean-step",
-      "paused": false
+      "paused": false,
+      "vcsData": {
+        "repoUrl": "string"
+      }
     }
   ]
 }
@@ -128,7 +153,10 @@ await apiClient.list.blueprintTemplatePreviews({
     "previewEnvironments": [
       {
         "id": "clean-step",
-        "paused": false
+        "paused": false,
+        "vcsData": {
+          "repoUrl": "string"
+        }
       }
     ]
   },

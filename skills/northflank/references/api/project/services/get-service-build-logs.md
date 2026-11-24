@@ -29,10 +29,10 @@ Required permission: Project > Services > Deployment > View Observability
 
 **Response body:**
 
-{object}
-- `data`: [array of] {object}
+{object} Response object.
+- `data`: [array of] (required) Result data. {object}
    - `containerId`: (string) (required)
-   - `log`: (undefined) (required)
+   - `log`: (required)
    - `ts`: (string) (required) (format: date-time)
 
 ### API reference
@@ -40,6 +40,25 @@ Required permission: Project > Services > Deployment > View Observability
 GET /v1/projects/{projectId}/services/{serviceId}/build-logs
 
 GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/build-logs
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-logs?buildId=fantastic-build-2345&queryType=range&startTime=2023-02-16T14%3A00%3A00.000Z&endTime=2023-02-16T15%3A00%3A00.000Z&duration=600&lineLimit=250&direction=backward&textIncludes=myvalue&textNotIncludes=myvalue&regexIncludes=my.*value&regexNotIncludes=my.*value"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-logs?buildId=fantastic-build-2345&queryType=range&startTime=2023-02-16T14%3A00%3A00.000Z&endTime=2023-02-16T15%3A00%3A00.000Z&duration=600&lineLimit=250&direction=backward&textIncludes=myvalue&textNotIncludes=myvalue&regexIncludes=my.*value&regexNotIncludes=my.*value"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -50,7 +69,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/build-logs
   "data": [
     {
       "log": "stdout F This is a log line",
-      "ts": "2023-03-21T15:01:17.310Z"
+      "ts": "2023-03-21T15:01:17.310Z",
+      "containerId": "string"
     }
   ]
 }
@@ -102,7 +122,8 @@ Options:
 [
   {
     "log": "stdout F This is a log line",
-    "ts": "2023-03-21T15:01:17.310Z"
+    "ts": "2023-03-21T15:01:17.310Z",
+    "containerId": "string"
   }
 ]
 ```
@@ -144,7 +165,8 @@ await apiClient.get.service.buildLogs({
   "data": [
     {
       "log": "stdout F This is a log line",
-      "ts": "2023-03-21T15:01:17.310Z"
+      "ts": "2023-03-21T15:01:17.310Z",
+      "containerId": "string"
     }
   ],
   "rawResponse": "...",

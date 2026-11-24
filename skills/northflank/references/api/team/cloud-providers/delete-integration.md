@@ -13,8 +13,8 @@ Required permission: Account > Cloud > Integrations > Delete
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 

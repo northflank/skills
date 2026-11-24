@@ -15,16 +15,16 @@ Required permission: Account > GlobalSecrets > Secrets > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `secrets`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `secrets`: [array of] (required) An array of global secrets {object} A global secret object
      - `id`: (string) (required) Identifier for the global secret
      - `name`: (string) (required) Global secret name
      - `description`: (string) A short description of the global secret
      - `type`: (string) (required) The permission type of the global secret. (enum: secret, config)
      - `createdAt`: (string) (required) The time the global secret was created. (format: date-time)
      - `updatedAt`: (string) (required) The time the global secret was last updated. (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -34,6 +34,25 @@ Required permission: Account > GlobalSecrets > Secrets > Read
 GET /v1/secrets
 
 GET /v1/teams/{teamId}/secrets
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/secrets?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/secrets?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

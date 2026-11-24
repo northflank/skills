@@ -20,9 +20,9 @@ Required permission: Project > Services > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `ports`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `ports`: [array of] (required) An array of ports of the service. {object}
      - `id`: (string) (required) The id used to identify the port across requests. (pattern: ^[a-z]-?[a-z0-9]+(-[a-z0-9]+)*$)
      - `name`: (string) (required) The name of the port used in the public url and UI. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
      - `internalPort`: (integer) (required) The port number.
@@ -31,32 +31,32 @@ Required permission: Project > Services > General > Read
      - `vpcAccessible`: (boolean) If true, the port is exposed on the cluster's private (VPC) load balancer.
      - `dns`: (string) DNS entry for this port.
      - `vpcDns`: (string) VPC DNS entry for this port.
-     - `domains`: [array of] {object}
+     - `domains`: [array of] (required) An array of domains that redirect to this port. {object}
          - `name`: (string) (required) The custom domain redirecting to this port.
-         - `certificate`: {object}
+         - `certificate`: {object} (required) Details about the TLS certificate generation for this domain.
            - `inProgress`: (boolean) Is the certificate in the process of being generated?
            - `expiryDate`: (string) The timestamp when the TLS certificate will expire. (format: date-time)
            - `refreshDate`: (string) The timestamp when a new TLS certificate will be generated. (format: date-time)
-     - `security`: {object}
-       - `credentials`: [array of] {object}
+     - `security`: {object} Details about security settings for this port.
+       - `credentials`: [array of] An array of credentials to access the service. {object}
            - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
            - `password`: (string) (required) The password to access the service with this username.
            - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-       - `policies`: [array of] {object}
-           - `addresses`: [array of] (string) An IP address used by this rule
+       - `policies`: [array of] An array of IP address policies. {object}
+           - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
            - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-       - `sso`: {object}
+       - `sso`: {object} Configure SSO access control for this port.
          - `organizationId`: (string) Organization ID of the work OS organization that should be validated.
-         - `directoryGroupIds`: [array of] (string)
+         - `directoryGroupIds`: [array of] List of directory groupIds, one of which the user has to be a member of. (string)
          - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
          - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
          - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
          - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
          - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
        - `verificationMode`: (string) Mode used to verify multiple security features like ip policies and SSO authentication (enum: or, and)
-       - `headers`: [array of] {object}
+       - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. {object}
            - `regexMode`: (boolean)
-           - `name`: (multiple options) (string) | (string) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
+           - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
            - `value`: (string) (required)
      - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
 
@@ -65,6 +65,25 @@ Required permission: Project > Services > General > Read
 GET /v1/projects/{projectId}/services/{serviceId}/ports
 
 GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/ports
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/ports"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/ports"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

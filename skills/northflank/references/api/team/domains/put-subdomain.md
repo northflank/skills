@@ -18,14 +18,14 @@ Required permission: Account > Networking > Subdomains > Update
 - `loadBalancer`: (string) Cluster load balancer the subdomain resolves on. Defaults to public, and cannot differ from the parent domain where that domain pins one (enum: public, vpc)
 - `certificateValidationMethod`: (string) How the subdomain's TLS certificate is validated and issued. Only applies where the subdomain manages its own certificate (enum: http, dcv, imported)
 - `certificate`: {object}
-  - `certificate`: {object}
+  - `certificate`: {object} Certificate material - required when `certificateValidationMethod` is set to `imported`
     - `privateKey`: (string) (required) Certificate private key.
     - `certificateChain`: (string) (required) Certificate chain. May consist of one or more certificates.
-- `options`: {object}
+- `options`: {object} Optional advanced configuration for the subdomain.
   - `tlsMode`: (string) Desired TLS mode for the subdomain. (enum: default, passthrough)
   - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
   - `autoVerify`: (boolean) The domain will be automatically verified on creation. Only configurable if the relevant feature flag is enabled for you account.
-  - `aliasDomains`: [array of] (string)
+  - `aliasDomains`: [array of] Alias domains which should be routable. Only configurable if the relevant feature flag is enabled for you account. (string)
 - `cdn`: {object}
   - `northflank`: {object}
     - `enabled`: (boolean)
@@ -54,7 +54,7 @@ Required permission: Account > Networking > Subdomains > Update
           - `name`: (string) (required) (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
           - `type`: (string) (required) (enum: init, recv, hash, hit, miss, pass, fetch, error, deliver, log, none)
           - `dynamic`: (string) (required) (enum: 0, 1)
-          - `priority`: (multiple options) (number) Execution priority for the VCL snippet. (format: float) | (number) Execution priority for the VCL snippet. (format: float)
+          - `priority`: (multiple options) Execution priority for the VCL snippet. (number) Execution priority for the VCL snippet. (format: float) | (number) Execution priority for the VCL snippet. (format: float)
           - `content`: (string) (required)
       - `cacheSettings`: [array of] {object}
           - `id`: (string)
@@ -66,18 +66,18 @@ Required permission: Account > Networking > Subdomains > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `recordType`: (string) (required) The record type to use for the DNS record to verify the subdomain - always CNAME for subdomains.
   - `name`: (string) (required) The subdomain.
   - `fullName`: (string) (required) The full domain name with subdomain
   - `content`: (string) (required) The content to set the DNS record to
   - `verified`: (boolean) (required) Whether the subdomain has been verified successfully and can be used.
-  - `options`: {object}
+  - `options`: {object} Optional advanced configuration for the subdomain.
     - `tlsMode`: (string) Desired TLS mode for the subdomain. (enum: default, passthrough)
     - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for the subdomain. Only applicable for non-wildcard subdomains. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
     - `autoVerify`: (boolean) The domain will be automatically verified on creation. Only configurable if the relevant feature flag is enabled for you account.
-    - `aliasDomains`: [array of] (string)
+    - `aliasDomains`: [array of] Alias domains which should be routable. Only configurable if the relevant feature flag is enabled for you account. (string)
   - `routingMode`: (string) The routing mode for the subdomain. (enum: paths, geoRouting, loadBalancerSubdomain)
 
 ### API reference
@@ -95,7 +95,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
   --data '{"name":"site","loadBalancer":"public","certificateValidationMethod":"dcv"}' \
-  https://api.northflank.com/v1/domains/{domain}/subdomains
+  "https://api.northflank.com/v1/domains/{domain}/subdomains"
 ```
 
 ```javascript
@@ -123,10 +123,10 @@ import requests
 
 url = "https://api.northflank.com/v1/domains/{domain}/subdomains"
 
-payload = {"name":"site","loadBalancer":"public","certificateValidationMethod":"dcv"}
+payload = "{\"name\":\"site\",\"loadBalancer\":\"public\",\"certificateValidationMethod\":\"dcv\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PUT", url, headers = headers, json = payload)
+response = requests.request("PUT", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -144,7 +144,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/domains/{domain}/subdomains"
 
-  var jsonStr = []byte(`{"name":"site","loadBalancer":"public","certificateValidationMethod":"dcv"}`)
+  var jsonStr = []byte("{\"name\":\"site\",\"loadBalancer\":\"public\",\"certificateValidationMethod\":\"dcv\"}")
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

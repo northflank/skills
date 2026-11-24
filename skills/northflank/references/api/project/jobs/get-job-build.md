@@ -15,11 +15,11 @@ Required permission: Project > Jobs > General > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) ID of the build.
   - `branch`: (string) Name of the branch the built commit belongs to.
-  - `pullRequestId`: (multiple options) (string) | (integer)
+  - `pullRequestId`: (multiple options) (nullable) ID of the pull request the commit belongs to. (string) | (integer)
   - `status`: (string) The status of the build. (enum: QUEUED, PENDING, UNSCHEDULABLE, STARTING, CLONING, BUILDING, UPLOADING, ABORTED, FAILURE, SUBMISSION_FAILURE, SUCCESS, CRASHED, IN_PROGRESS)
   - `sha`: (string) The sha of the built commit.
   - `registry`: {object}
@@ -27,7 +27,7 @@ Required permission: Project > Jobs > General > Update
   - `concluded`: (boolean) Whether the build has finished.
   - `createdAt`: (string) Timestamp of the build initiation.
   - `success`: (boolean) Whether the build was successful.
-  - `message`: (string) Description of the build status.
+  - `message`: (string) (nullable) Description of the build status.
   - `buildConcludedAt`: (number) Timestamp of the build concluding. (format: float)
 
 ### API reference
@@ -35,6 +35,25 @@ Required permission: Project > Jobs > General > Update
 GET /v1/projects/{projectId}/jobs/{jobId}/build/{buildId}
 
 GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/build/{buildId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build/{buildId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build/{buildId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

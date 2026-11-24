@@ -14,12 +14,12 @@ Required permission: Account > Git > General > Read
 - `projectBranch`: (string) Optional branch to check.
 - `vcsLinkId`: (string) If provided, only checks access via this specific linked account. (min length: 24) (max length: 24)
 - `accountLogin`: (string) If provided, only checks access via the linked account with this login.
-- `selfHostedVcsId`: (multiple options) (multiple options) (undefined)
+- `selfHostedVcsId`: (multiple options) The self-hosted provider document ID, internalId, or team/internalId. Required for self-hosted repositories unless vcsLinkId identifies the provider. (multiple options)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `publicRepo`: (boolean) (required) Whether the repository is publicly reachable without a linked account.
   - `accessible`: (boolean) (required) Whether the repository can be accessed — publicly or via a linked account.
   - `vcsLinkId`: (string) The linked account that can access the repository. Present when `reason` is `linked-account`.
@@ -41,7 +41,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"projectUrl":"https://github.com/northflank-examples/next-js-example","projectType":"github","projectBranch":"main","accountLogin":"example-user"}' \
-  https://api.northflank.com/v1/integrations/vcs/repo-access
+  "https://api.northflank.com/v1/integrations/vcs/repo-access"
 ```
 
 ```javascript
@@ -70,10 +70,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/vcs/repo-access"
 
-payload = {"projectUrl":"https://github.com/northflank-examples/next-js-example","projectType":"github","projectBranch":"main","accountLogin":"example-user"}
+payload = "{\"projectUrl\":\"https://github.com/northflank-examples/next-js-example\",\"projectType\":\"github\",\"projectBranch\":\"main\",\"accountLogin\":\"example-user\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -91,7 +91,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/vcs/repo-access"
 
-  var jsonStr = []byte(`{"projectUrl":"https://github.com/northflank-examples/next-js-example","projectType":"github","projectBranch":"main","accountLogin":"example-user"}`)
+  var jsonStr = []byte("{\"projectUrl\":\"https://github.com/northflank-examples/next-js-example\",\"projectType\":\"github\",\"projectBranch\":\"main\",\"accountLogin\":\"example-user\"}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

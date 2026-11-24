@@ -16,15 +16,15 @@ Required permission: Account > Networking > SubdomainPaths > Update
 **Request body:**
 
 {object}
-- `assignment`: {object}
+- `assignment`: {object} (required) Data about the subdomain path assignment.
   - `project`: (string) (required) The ID of the service to assign the subdomain path to. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `service`: (string) (required) The ID of the project the service belongs to. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `port`: (string) (required) The name of the port that will be assigned to the subdomain path.
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -41,7 +41,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"assignment":{"project":"default-project","service":"example-service","port":"p01"}}' \
-  https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/paths/{subdomainPath}/assign
+  "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/paths/{subdomainPath}/assign"
 ```
 
 ```javascript
@@ -71,10 +71,10 @@ import requests
 
 url = "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/paths/{subdomainPath}/assign"
 
-payload = {"assignment":{"project":"default-project","service":"example-service","port":"p01"}}
+payload = "{\"assignment\":{\"project\":\"default-project\",\"service\":\"example-service\",\"port\":\"p01\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -92,7 +92,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/paths/{subdomainPath}/assign"
 
-  var jsonStr = []byte(`{"assignment":{"project":"default-project","service":"example-service","port":"p01"}}`)
+  var jsonStr = []byte("{\"assignment\":{\"project\":\"default-project\",\"service\":\"example-service\",\"port\":\"p01\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

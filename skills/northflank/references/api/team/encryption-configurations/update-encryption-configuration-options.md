@@ -14,15 +14,15 @@ Required permission: Account > Admin > Encryption > Manage
 **Request body:**
 
 {object}
-- `options`: {object}
+- `options`: {object} (required) Replaces all overrides. Omitted values use platform defaults; use {} to reset all overrides.
   - `maxUses`: (integer) Maximum encryption uses per data key.
   - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
   - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds.
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) The name-derived ID of the encryption configuration.
   - `name`: (string) (required)
   - `description`: (string)
@@ -34,7 +34,7 @@ Required permission: Account > Admin > Encryption > Manage
      - `region`: (string) (required)
      - `keyId`: (string) (required)
      - `externalId`: (string) External ID used for cross-account role assumption.
-     - `options`: {object}
+     - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
        - `maxUses`: (integer) Maximum encryption uses per data key.
        - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
        - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds. | {object}
@@ -45,13 +45,13 @@ Required permission: Account > Admin > Encryption > Manage
      - `cryptoKey`: (string) (required)
      - `serviceAccountEmail`: (string) Northflank-generated identity to grant access to the KMS key.
      - `keyfileServiceAccountEmail`: (string) Service-account email from the supplied key file.
-     - `options`: {object}
+     - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
        - `maxUses`: (integer) Maximum encryption uses per data key.
        - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
        - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds. | {object}
      - `provider`: (string) (required) (enum: azure)
      - `keyId`: (string) (required)
-     - `options`: {object}
+     - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
        - `maxUses`: (integer) Maximum encryption uses per data key.
        - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
        - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds. | {object}
@@ -60,11 +60,11 @@ Required permission: Account > Admin > Encryption > Manage
      - `mountPath`: (string)
      - `namespace`: (string)
      - `keyName`: (string) (required)
-     - `options`: {object}
+     - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
        - `maxUses`: (integer) Maximum encryption uses per data key.
        - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
        - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds.
-  - `vault`: {object}
+  - `vault`: {object} Legacy Vault configuration.
     - `version`: (string) (required)
 
 ### API reference
@@ -82,7 +82,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
   --data '{"options":{}}' \
-  https://api.northflank.com/v1/encryption/configurations/{encryptionConfigurationId}/options
+  "https://api.northflank.com/v1/encryption/configurations/{encryptionConfigurationId}/options"
 ```
 
 ```javascript
@@ -108,10 +108,10 @@ import requests
 
 url = "https://api.northflank.com/v1/encryption/configurations/{encryptionConfigurationId}/options"
 
-payload = {"options":{}}
+payload = "{\"options\":{}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PUT", url, headers = headers, json = payload)
+response = requests.request("PUT", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -129,7 +129,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/encryption/configurations/{encryptionConfigurationId}/options"
 
-  var jsonStr = []byte(`{"options":{}}`)
+  var jsonStr = []byte("{\"options\":{}}")
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -155,7 +155,10 @@ func main() {
 ```json
 {
   "data": {
-    "id": "production-kms"
+    "id": "production-kms",
+    "name": "string",
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "active": false
   }
 }
 ```
@@ -202,7 +205,10 @@ Options:
 
 ```json
 {
-  "id": "production-kms"
+  "id": "production-kms",
+  "name": "string",
+  "createdAt": "1970-01-01T00:00:00.000Z",
+  "active": false
 }
 ```
 
@@ -230,7 +236,10 @@ await apiClient.update.encryption.configuration.options({
 ```json
 {
   "data": {
-    "id": "production-kms"
+    "id": "production-kms",
+    "name": "string",
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "active": false
   },
   "rawResponse": "...",
   "request": "...",

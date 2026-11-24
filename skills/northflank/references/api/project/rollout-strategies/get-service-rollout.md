@@ -14,100 +14,100 @@ Required permission: Project > Services > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `strategyId`: (string) (required) ID of the gradual rollout strategy this rollout was created from. Null if the strategy has since been deleted.
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `strategyId`: (string) (required) (nullable) ID of the gradual rollout strategy this rollout was created from. Null if the strategy has since been deleted.
   - `type`: (string) (required) Type of the gradual rollout strategy. (enum: canary)
   - `promoted`: (boolean) (required) Whether the canary has been promoted to stable. A promoted rollout serves all traffic from the canary deployment and can no longer be reconfigured.
   - `createdAt`: (string) (required) Time the rollout started. (format: date-time)
   - `updatedAt`: (string) (required) Time the rollout was last changed. (format: date-time)
-  - `options`: {object}
-    - `triggers`: {object}
-      - `releaseFromTemplate`: (boolean)
-      - `releaseFromReleaseFlow`: (boolean)
-      - `releaseFromCD`: (boolean)
-      - `releaseFromUI`: (boolean)
-      - `releaseFromApi`: (boolean)
-    - `blockDeploymentOnActiveRollout`: (boolean) Whether new deployments are blocked while this rollout is in progress.
-  - `details`: {object}
+  - `options`: {object} Options inherited from the gradual rollout strategy.
+    - `triggers`: {object} Conditions under which a new release automatically starts a gradual rollout.
+      - `releaseFromTemplate`: (boolean) (nullable)
+      - `releaseFromReleaseFlow`: (boolean) (nullable)
+      - `releaseFromCD`: (boolean) (nullable)
+      - `releaseFromUI`: (boolean) (nullable)
+      - `releaseFromApi`: (boolean) (nullable)
+    - `blockDeploymentOnActiveRollout`: (boolean) (nullable) Whether new deployments are blocked while this rollout is in progress.
+  - `details`: {object} (required) Traffic configuration of the rollout.
     - `canaryStrategy`: (string) (required) How traffic is split between the stable and canary deployments. (enum: percentage, header)
-    - `config`: (multiple options) {object}
+    - `config`: (multiple options) (required) Configuration for the active canary strategy. {object}
         - `canaryPercentage`: (integer) (required) Percentage of traffic to route to the canary deployment. Must sum to 100 with stablePercentage.
         - `stablePercentage`: (integer) (required) Percentage of traffic to route to the stable deployment. Must sum to 100 with canaryPercentage. | {object}
-        - `canaryHeader`: {object}
+        - `canaryHeader`: {object} (required) Header that routes traffic to the canary deployment.
           - `headerName`: (string) (required)
           - `headerValue`: (string) (required)
-        - `stableHeader`: {object}
+        - `stableHeader`: {object} (required) Header that routes traffic to the stable deployment.
           - `headerName`: (string) (required)
           - `headerValue`: (string) (required)
-  - `stableDeployment`: {object}
+  - `stableDeployment`: {object} (required) (nullable) The deployment currently serving stable traffic.
     - `id`: (string) (required) Identifier of the deployment. Use this as the rollback target.
-    - `name`: (string) Display name of the deployment. Null until the first pod of the deployment has been observed.
+    - `name`: (string) (nullable) Display name of the deployment. Null until the first pod of the deployment has been observed.
     - `createdAt`: (string) (required) Time the deployment was created. (format: date-time)
     - `active`: (boolean) Whether the deployment is currently serving traffic. During a gradual rollout both the stable and the canary deployment are active.
     - `releaseType`: (string) Current role of the deployment in the gradual rollout. This is mutable: promoting a canary deployment changes its release type to `stable`, so it does not record how the deployment was originally created. Absent for services that do not use a gradual rollout strategy. (enum: stable, canary)
-    - `image`: {object}
+    - `image`: {object} The image this deployment is running.
       - `imagePath`: (string) Full path of the deployed image.
       - `image`: (string) Name of the deployed image.
       - `tag`: (string) Tag of the deployed image.
       - `sha`: (string) Digest of the deployed image.
-    - `imageSelector`: {object}
+    - `imageSelector`: {object} The desired image selector.
       - `projectId`: (string) (required) (min length: 24) (max length: 24)
       - `name`: (string) (required)
       - `group`: (string)
       - `tag`: (string) (required)
-    - `importedImage`: {object}
+    - `importedImage`: {object} The concrete imported image selected for deployment.
       - `projectId`: (string) (required) (min length: 24) (max length: 24)
       - `imageId`: (string) (required) (min length: 24) (max length: 24)
-    - `commit`: {object}
+    - `commit`: {object} The source commit this deployment was built from, for git backed services.
       - `sha`: (string) Commit the deployed image was built from.
       - `message`: (string) Commit message.
       - `author`: (string) Login of the commit author.
-      - `date`: (multiple options) (string) | (string) (format: date-time)
-    - `instances`: (number) Number of instances the deployment was created with. (format: float)
-    - `reason`: {object}
+      - `date`: (multiple options) Time the commit was authored. (string) | (string) (format: date-time)
+    - `instances`: (number) (nullable) Number of instances the deployment was created with. (format: float)
+    - `reason`: {object} What triggered the deployment.
       - `id`: (string) Why the deployment was created.
-      - `user`: {object}
+      - `user`: {object} The user that caused the deployment, when it was user initiated.
         - `name`: (string) Name of the acting user.
         - `email`: (string) Email of the acting user.
-  - `canaryDeployment`: {object}
+  - `canaryDeployment`: {object} (required) (nullable) The deployment currently serving canary traffic.
     - `id`: (string) (required) Identifier of the deployment. Use this as the rollback target.
-    - `name`: (string) Display name of the deployment. Null until the first pod of the deployment has been observed.
+    - `name`: (string) (nullable) Display name of the deployment. Null until the first pod of the deployment has been observed.
     - `createdAt`: (string) (required) Time the deployment was created. (format: date-time)
     - `active`: (boolean) Whether the deployment is currently serving traffic. During a gradual rollout both the stable and the canary deployment are active.
     - `releaseType`: (string) Current role of the deployment in the gradual rollout. This is mutable: promoting a canary deployment changes its release type to `stable`, so it does not record how the deployment was originally created. Absent for services that do not use a gradual rollout strategy. (enum: stable, canary)
-    - `image`: {object}
+    - `image`: {object} The image this deployment is running.
       - `imagePath`: (string) Full path of the deployed image.
       - `image`: (string) Name of the deployed image.
       - `tag`: (string) Tag of the deployed image.
       - `sha`: (string) Digest of the deployed image.
-    - `imageSelector`: {object}
+    - `imageSelector`: {object} The desired image selector.
       - `projectId`: (string) (required) (min length: 24) (max length: 24)
       - `name`: (string) (required)
       - `group`: (string)
       - `tag`: (string) (required)
-    - `importedImage`: {object}
+    - `importedImage`: {object} The concrete imported image selected for deployment.
       - `projectId`: (string) (required) (min length: 24) (max length: 24)
       - `imageId`: (string) (required) (min length: 24) (max length: 24)
-    - `commit`: {object}
+    - `commit`: {object} The source commit this deployment was built from, for git backed services.
       - `sha`: (string) Commit the deployed image was built from.
       - `message`: (string) Commit message.
       - `author`: (string) Login of the commit author.
-      - `date`: (multiple options) (string) | (string) (format: date-time)
-    - `instances`: (number) Number of instances the deployment was created with. (format: float)
-    - `reason`: {object}
+      - `date`: (multiple options) Time the commit was authored. (string) | (string) (format: date-time)
+    - `instances`: (number) (nullable) Number of instances the deployment was created with. (format: float)
+    - `reason`: {object} What triggered the deployment.
       - `id`: (string) Why the deployment was created.
-      - `user`: {object}
+      - `user`: {object} The user that caused the deployment, when it was user initiated.
         - `name`: (string) Name of the acting user.
         - `email`: (string) Email of the acting user.
-  - `history`: [array of] {object}
-     - `config`: (multiple options) {object}
+  - `history`: [array of] (required) Previous traffic configurations of this rollout, oldest first. {object}
+     - `config`: (multiple options) (required) The traffic split or header configuration that was replaced. {object}
          - `canaryPercentage`: (integer) (required) Percentage of traffic to route to the canary deployment. Must sum to 100 with stablePercentage.
          - `stablePercentage`: (integer) (required) Percentage of traffic to route to the stable deployment. Must sum to 100 with canaryPercentage. | {object}
-         - `canaryHeader`: {object}
+         - `canaryHeader`: {object} (required) Header that routes traffic to the canary deployment.
            - `headerName`: (string) (required)
            - `headerValue`: (string) (required)
-         - `stableHeader`: {object}
+         - `stableHeader`: {object} (required) Header that routes traffic to the stable deployment.
            - `headerName`: (string) (required)
            - `headerValue`: (string) (required)
      - `updatedAt`: (string) (required) Time the split was applied. (format: date-time)
@@ -117,6 +117,25 @@ Required permission: Project > Services > General > Read
 GET /v1/projects/{projectId}/services/{serviceId}/rollout
 
 GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/rollout
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/rollout"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/rollout"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -152,7 +171,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/rollout
       "commit": {
         "sha": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
         "message": "fix: handle empty payload",
-        "author": "octocat"
+        "author": "octocat",
+        "date": "2024-01-15T10:30:00.000Z"
       },
       "instances": 2,
       "reason": {
@@ -178,7 +198,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/rollout
       "commit": {
         "sha": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
         "message": "fix: handle empty payload",
-        "author": "octocat"
+        "author": "octocat",
+        "date": "2024-01-15T10:30:00.000Z"
       },
       "instances": 2,
       "reason": {
@@ -255,7 +276,8 @@ Options:
     "commit": {
       "sha": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
       "message": "fix: handle empty payload",
-      "author": "octocat"
+      "author": "octocat",
+      "date": "2024-01-15T10:30:00.000Z"
     },
     "instances": 2,
     "reason": {
@@ -281,7 +303,8 @@ Options:
     "commit": {
       "sha": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
       "message": "fix: handle empty payload",
-      "author": "octocat"
+      "author": "octocat",
+      "date": "2024-01-15T10:30:00.000Z"
     },
     "instances": 2,
     "reason": {
@@ -353,7 +376,8 @@ await apiClient.get.service.rollout({
       "commit": {
         "sha": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
         "message": "fix: handle empty payload",
-        "author": "octocat"
+        "author": "octocat",
+        "date": "2024-01-15T10:30:00.000Z"
       },
       "instances": 2,
       "reason": {
@@ -379,7 +403,8 @@ await apiClient.get.service.rollout({
       "commit": {
         "sha": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
         "message": "fix: handle empty payload",
-        "author": "octocat"
+        "author": "octocat",
+        "date": "2024-01-15T10:30:00.000Z"
       },
       "instances": 2,
       "reason": {

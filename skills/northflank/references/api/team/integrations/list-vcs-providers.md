@@ -15,11 +15,11 @@ Required permission: Account > Git > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `vcsAccountLinks`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `vcsAccountLinks`: [array of] (required) The version control accounts linked to this Northflank account. {object} Details about the linked version control account.
      - `vcsService`: (string) (required) The type of version control provider the account is linked to. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
-     - `email`: (multiple options) (undefined) | (undefined)
+     - `email`: (multiple options) The email of the account linked with this provider.  |
      - `login`: (string) (required) The username of the account linked with this provider.
      - `vcsLinkId`: (string) (required) The ID of this linked version control account. Pass this value as `vcsLinkId` when creating a harness or service from this account.
      - `alias`: (string) A user-defined alias for the linked version control account, if set.
@@ -30,9 +30,9 @@ Required permission: Account > Git > General > Read
      - `entityName`: (string) The name of the team the self-hosted vcs belongs to. Only returned for self-hosted links.
      - `originTargetSlug`: (string) The Cursor Origin installation target slug.
      - `originRepoSelectionMode`: (string) Whether the Origin installation grants all or selected repositories. (enum: all, selected)
-     - `originScopes`: [array of] (string)
-     - `originMissingScopes`: [array of] (string)
-- `pagination`: {object}
+     - `originScopes`: [array of] The repository scopes granted to the Origin installation. (string)
+     - `originMissingScopes`: [array of] The Origin scopes required for full Northflank functionality but not granted. (string)
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -42,6 +42,25 @@ Required permission: Account > Git > General > Read
 GET /v1/integrations/vcs
 
 GET /v1/teams/{teamId}/integrations/vcs
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/integrations/vcs?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/integrations/vcs?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -53,6 +72,7 @@ GET /v1/teams/{teamId}/integrations/vcs
     "vcsAccountLinks": [
       {
         "vcsService": "self-hosted",
+        "email": "email@example.com",
         "login": "vcs-user",
         "vcsLinkId": "63ebb6ce2ccc6c7affdbf253",
         "alias": "my-github",
@@ -99,6 +119,7 @@ Options:
   "vcsAccountLinks": [
     {
       "vcsService": "self-hosted",
+      "email": "email@example.com",
       "login": "vcs-user",
       "vcsLinkId": "63ebb6ce2ccc6c7affdbf253",
       "alias": "my-github",
@@ -138,6 +159,7 @@ await apiClient.list.vcs({
     "vcsAccountLinks": [
       {
         "vcsService": "self-hosted",
+        "email": "email@example.com",
         "login": "vcs-user",
         "vcsLinkId": "63ebb6ce2ccc6c7affdbf253",
         "alias": "my-github",

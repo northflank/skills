@@ -13,8 +13,8 @@ Required permission: Account > Admin > Encryption > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `ok`: (boolean) (required)
   - `keyRef`: (string) KMS key reference, when available.
   - `error`: (string) A safe validation failure summary.
@@ -30,7 +30,11 @@ POST /v1/teams/{teamId}/encryption/configurations/{encryptionConfigurationId}/ve
 200 OK: Stored configuration verification result.
 
 ```json
-undefined
+{
+  "data": {
+    "ok": false
+  }
+}
 ```
 
 ### CLI reference
@@ -52,7 +56,9 @@ Options:
  Stored configuration verification result.
 
 ```json
-undefined
+{
+  "ok": false
+}
 ```
 
 ### JavaScript client reference
@@ -75,6 +81,9 @@ await apiClient.verify.encryption.configuration({
 
 ```json
 {
+  "data": {
+    "ok": false
+  },
   "rawResponse": "...",
   "request": "...",
   "error": "..."

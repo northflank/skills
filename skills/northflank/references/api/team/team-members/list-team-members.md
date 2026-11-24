@@ -20,18 +20,19 @@ Required permission: Account > Admin > Members > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `members`: [array of] {object}
-     - `id`: (string) (required) ID (username) of the team member. For users who are not finalized this ID may change on finalisation.
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `members`: [array of] (required) An array of team members. {object} A team member object.
+     - `id`: (string) (required) (nullable) ID (username) of the team member. For users who are not finalized this ID may change on finalisation.
      - `name`: (string) Display name from the member profile.
-     - `emails`: [array of] {object}
+     - `emails`: [array of] Email addresses of the member. {object}
          - `address`: (string) (required) (format: email)
          - `verified`: (boolean) (required)
      - `joinedAt`: (string) The time the member joined the team. (format: date-time)
      - `lastLoginTime`: (string) The time the member last logged in. (format: date-time)
      - `finalized`: (boolean) Whether the account has been fully set up by the user.
-- `pagination`: {object}
+     - `uid`: (string) (required) Permanent UID of the team member. (min length: 24) (max length: 24)
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -39,6 +40,25 @@ Required permission: Account > Admin > Members > Read
 ### API reference
 
 GET /v1/teams/{teamId}/members
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/teams/{teamId}/members?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/teams/{teamId}/members?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -58,7 +78,8 @@ GET /v1/teams/{teamId}/members
           }
         ],
         "joinedAt": "2021-01-20T11:19:53.175Z",
-        "lastLoginTime": "2021-01-20T11:19:53.175Z"
+        "lastLoginTime": "2021-01-20T11:19:53.175Z",
+        "uid": "68f0aa1b9c4e2d7f11a3b402"
       }
     ]
   },
@@ -106,7 +127,8 @@ Options:
         }
       ],
       "joinedAt": "2021-01-20T11:19:53.175Z",
-      "lastLoginTime": "2021-01-20T11:19:53.175Z"
+      "lastLoginTime": "2021-01-20T11:19:53.175Z",
+      "uid": "68f0aa1b9c4e2d7f11a3b402"
     }
   ]
 }
@@ -146,7 +168,8 @@ await apiClient.list.teamMembers({
           }
         ],
         "joinedAt": "2021-01-20T11:19:53.175Z",
-        "lastLoginTime": "2021-01-20T11:19:53.175Z"
+        "lastLoginTime": "2021-01-20T11:19:53.175Z",
+        "uid": "68f0aa1b9c4e2d7f11a3b402"
       }
     ]
   },
@@ -197,7 +220,8 @@ print(response.data)
         }
       ],
       "joinedAt": "2021-01-20T11:19:53.175Z",
-      "lastLoginTime": "2021-01-20T11:19:53.175Z"
+      "lastLoginTime": "2021-01-20T11:19:53.175Z",
+      "uid": "68f0aa1b9c4e2d7f11a3b402"
     }
   ]
 }

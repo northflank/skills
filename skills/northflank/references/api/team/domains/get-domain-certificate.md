@@ -2,9 +2,9 @@
 
 Source: https://northflank.com/docs/v1/api/team/domains/get-domain-certificate.md
 
-Retrieve certificate data for a domain to verify its contents.
+Retrieve wildcard certificate data, including its private key, for a domain.
 
-Required permission: Account > Networking > Domains > Read
+Required permission: Account > Networking > Domains > Read Certificate Private Key
 
 **Path parameters:**
 
@@ -13,8 +13,8 @@ Required permission: Account > Networking > Domains > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `certificateChain`: (string) (required) Certificate chain. May consist of one or more certificates.
   - `certificate`: (string) (required) Certificate extracted from the certificate chain.
   - `issuerCertificate`: (string) (required) Issuer certificate extracted from the certificate chain.
@@ -26,12 +26,38 @@ GET /v1/domains/{domain}/certificate
 
 GET /v1/teams/{teamId}/domains/{domain}/certificate
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/domains/{domain}/certificate"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/domains/{domain}/certificate"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: Details about the domain certificate.
 
 ```json
-undefined
+{
+  "data": {
+    "certificateChain": "string",
+    "certificate": "string",
+    "issuerCertificate": "string",
+    "privateKey": "string"
+  }
+}
 ```
 
 ### CLI reference
@@ -53,7 +79,12 @@ Options:
  Details about the domain certificate.
 
 ```json
-undefined
+{
+  "certificateChain": "string",
+  "certificate": "string",
+  "issuerCertificate": "string",
+  "privateKey": "string"
+}
 ```
 
 ### JavaScript client reference
@@ -76,6 +107,12 @@ await apiClient.get.domainCertificate({
 
 ```json
 {
+  "data": {
+    "certificateChain": "string",
+    "certificate": "string",
+    "issuerCertificate": "string",
+    "privateKey": "string"
+  },
   "rawResponse": "...",
   "request": "...",
   "error": "..."

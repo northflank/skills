@@ -15,17 +15,17 @@ Required permission: Account > Networking > Domains > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `domains`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `domains`: [array of] (required) A list of domains registered to this account. {object} Details about a domain.
      - `name`: (string) (required) The domain name.
      - `status`: (string) (required) The status of the domain verification. (enum: pending, verified)
      - `hostname`: (string) (required) The hostname to add to your domain's DNS records as a TXT record to verify the domain.
      - `token`: (string) (required) The token to add as the content of the TXT record to verify the domain.
-     - `options`: {object}
+     - `options`: {object} Domain-level options for wildcard domains.
        - `minTlsProtocolVersion`: (string) Minimum TLS protocol version configured at the domain level. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
        - `tlsMode`: (string) TLS mode configured at the domain level. (enum: default, passthrough)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -35,6 +35,25 @@ Required permission: Account > Networking > Domains > Read
 GET /v1/domains
 
 GET /v1/teams/{teamId}/domains
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/domains?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/domains?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

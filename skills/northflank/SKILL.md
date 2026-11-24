@@ -46,6 +46,8 @@ nf agent status --check --agent <agent>
 
 Target only the requested agents. Explain any replacement before applying setup. `--yes` accepts replacement of conflicting Northflank MCP entries after a private backup. Preserve modified skills and other MCP servers. Setup includes MCP at user scope by default. Use `--no-mcp --scope user` for skills or plugins only.
 
+If the user asks you to set up Northflank for this agent, follow the [agent setup prompt](references/guides/ai-agents.md#connect-your-agent-with-mcp-ask-your-agent-to-set-up-northflank) from the docs. It covers CLI installation, browser login, `nf agent setup`, and connection checks. Do not create or change cloud resources during setup. For setup options, troubleshooting, and `nf agent update` or `nf agent remove`, see [Connect your agent with MCP](references/guides/ai-agents.md#connect-your-agent-with-mcp).
+
 Ask the user to reconnect if the current agent session cannot load the connection. Then call `get_auth_context` to confirm the intended team. Saving configuration alone does not prove that the agent connected.
 
 For expired credentials, follow the bridge's login instructions to renew the same context and team. This updates the normal CLI session too. See [CLI setup and recovery](references/cli.md#coding-agent-setup), including setup inside a managed harness.
@@ -638,6 +640,7 @@ await apiClient.start.job.run({ parameters: { projectId: 'my-project', jobId: 'd
 
 | I want to... | Check here |
 |---|---|
+| Set up the Northflank CLI, skill, and MCP for a coding agent | `nf agent setup --agent <agent>`; `references/guides/ai-agents.md#connect-your-agent-with-mcp` |
 | Deploy a service from a pre-built image | MCP `deploy_app`; `apiClient.create.service.deployment` / `northflank create service deployment` |
 | Build and deploy a service from a Git repo | MCP `deploy_app`; `apiClient.create.service.combined` / `northflank create service combined`; `references/guides/build.md` |
 | Run a one-off command or shell session in a container | `apiClient.exec.execServiceCommand` / `northflank exec service`; `references/api/execute-command.md` |

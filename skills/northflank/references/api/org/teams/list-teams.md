@@ -15,15 +15,15 @@ Required permission: Organisation > Team > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `teams`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `teams`: [array of] (required) An array of teams. {object} A team object.
      - `id`: (string) (required) ID of the team. (pattern: ^[A-Za-z0-9-]+$)
      - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
      - `name`: (string) (required) Display name of the team.
      - `description`: (string) Description of the team.
      - `createdAt`: (string) (required) The time the team was created. (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -31,6 +31,25 @@ Required permission: Organisation > Team > General > Read
 ### API reference
 
 GET /v1/teams
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/teams?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/teams?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

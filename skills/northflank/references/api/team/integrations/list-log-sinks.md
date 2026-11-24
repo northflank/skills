@@ -15,14 +15,14 @@ Required permission: Account > Observability > LogSinks > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `logSinks`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `logSinks`: [array of] (required) An array of log sinks added to this account. {object} A log sink object.
      - `name`: (string) (required) Name of the log sink.
      - `id`: (string) (required) Identifier for the Log Sink
      - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
      - `restricted`: (boolean) (required) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-     - `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+     - `projects`: [array of] (required) If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
      - `status`: (string) (required) Current status of the log sink (enum: paused, running, failing, creating)
      - `options`: {object}
        - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -32,7 +32,7 @@ Required permission: Account > Observability > LogSinks > Read
      - `sinkType`: (string) (required) The type of the log sink. (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
      - `createdAt`: (string) (required) Timestamp of when the log sink was created. (format: date-time)
      - `updatedAt`: (string) (required) Timestamp of when the log sink was last updated. (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -42,6 +42,25 @@ Required permission: Account > Observability > LogSinks > Read
 GET /v1/integrations/log-sinks
 
 GET /v1/teams/{teamId}/integrations/log-sinks
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/integrations/log-sinks?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/integrations/log-sinks?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -67,7 +86,8 @@ GET /v1/teams/{teamId}/integrations/log-sinks
         },
         "sinkType": "http",
         "createdAt": "2022-06-14 15:10:42.842Z",
-        "updatedAt": "2022-06-14 15:10:42.842Z"
+        "updatedAt": "2022-06-14 15:10:42.842Z",
+        "status": "paused"
       }
     ]
   },
@@ -119,7 +139,8 @@ Options:
       },
       "sinkType": "http",
       "createdAt": "2022-06-14 15:10:42.842Z",
-      "updatedAt": "2022-06-14 15:10:42.842Z"
+      "updatedAt": "2022-06-14 15:10:42.842Z",
+      "status": "paused"
     }
   ]
 }
@@ -164,7 +185,8 @@ await apiClient.list.logSinks({
         },
         "sinkType": "http",
         "createdAt": "2022-06-14 15:10:42.842Z",
-        "updatedAt": "2022-06-14 15:10:42.842Z"
+        "updatedAt": "2022-06-14 15:10:42.842Z",
+        "status": "paused"
       }
     ]
   },

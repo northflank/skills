@@ -20,8 +20,8 @@ Required permission: Project > PreviewBlueprints > General > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `expiryTime`: (string) (required) The time the preview will expire. (format: date-time)
 
 ### API reference
@@ -39,7 +39,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{}' \
-  https://api.northflank.com/v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}/previews/{previewId}/reset
+  "https://api.northflank.com/v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}/previews/{previewId}/reset"
 ```
 
 ```javascript
@@ -63,10 +63,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}/previews/{previewId}/reset"
 
-payload = {}
+payload = "{}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -84,7 +84,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/preview-blueprints/{previewBlueprintId}/previews/{previewId}/reset"
 
-  var jsonStr = []byte(`{}`)
+  var jsonStr = []byte("{}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -108,7 +108,11 @@ func main() {
 200 OK: Response indicating the updated expiry for the preview environment.
 
 ```json
-undefined
+{
+  "data": {
+    "expiryTime": "1970-01-01T00:00:00.000Z"
+  }
+}
 ```
 
 ### CLI reference
@@ -142,7 +146,9 @@ Options:
  Response indicating the updated expiry for the preview environment.
 
 ```json
-undefined
+{
+  "expiryTime": "1970-01-01T00:00:00.000Z"
+}
 ```
 
 ### JavaScript client reference
@@ -168,6 +174,9 @@ await apiClient.reset.blueprintTemplatePreview({
 
 ```json
 {
+  "data": {
+    "expiryTime": "1970-01-01T00:00:00.000Z"
+  },
   "rawResponse": "...",
   "request": "...",
   "error": "..."

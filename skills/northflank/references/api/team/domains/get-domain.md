@@ -13,28 +13,28 @@ Required permission: Account > Networking > Domains > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `name`: (string) (required) The domain name.
   - `status`: (string) (required) The status of the domain verification. (enum: pending, verified)
   - `hostname`: (string) The hostname to add to your domain's DNS records as a TXT record to verify the domain.
   - `token`: (string) The token to add as the content of the TXT record to verify the domain.
-  - `redirect`: {object}
+  - `redirect`: {object} Configuration regarding the domain redirect set up.
     - `mode`: (string) (required) Domain redirect mode.
     - `target`: {object}
       - `record`: (string) Expected CNAME target of the wildcard redirect.
   - `loadBalancer`: (string) Load balancer all subdomains of this domain route through. Only applies to wildcard-redirect domains. `vpc` requires a self-hosted cluster with the private load balancer enabled. Fixed at creation. (enum: public, vpc)
-  - `certificates`: {object}
+  - `certificates`: {object} Configuration regarding the domain certificate set up.
     - `mode`: (string) (required) Domain certificate mode.
     - `dcvRecord`: (string) DCV CNAME record used to provision wildcard certificates.
     - `dcvTarget`: {object}
       - `record`: (string) Expected CNAME target of the dcvRecord.
-    - `status`: {object}
+    - `status`: {object} Certificate status for wildcard domains.
       - `expiryDate`: (string) Expiry date of the current certificate. (format: date-time)
-  - `options`: {object}
+  - `options`: {object} Domain-level options for wildcard domains.
     - `minTlsProtocolVersion`: (string) Minimum TLS protocol version configured at the domain level. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
     - `tlsMode`: (string) TLS mode configured at the domain level. (enum: default, passthrough)
-  - `subdomains`: [array of] {object}
+  - `subdomains`: [array of] (required) A list of subdomains added to this domain. {object} Details about a subdomain.
      - `name`: (string) (required) The subdomain added, or -default for the empty subdomain.
      - `fullName`: (string) (required) The full domain including the subdomain.
 
@@ -43,6 +43,25 @@ Required permission: Account > Networking > Domains > Read
 GET /v1/domains/{domain}
 
 GET /v1/teams/{teamId}/domains/{domain}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/domains/{domain}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/domains/{domain}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

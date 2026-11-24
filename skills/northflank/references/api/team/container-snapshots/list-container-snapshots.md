@@ -19,20 +19,20 @@ Required permission: Account > Platform > ContainerSnapshots > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `containerSnapshots`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `containerSnapshots`: [array of] (required) {object}
      - `id`: (string) (required) (format: uuid)
      - `trigger`: (string) (required) (enum: manual, containerTermination)
      - `state`: (string) (required) (enum: scheduled, accepted, running, succeeded, failed, cancelled)
-     - `source`: {object}
+     - `source`: {object} (required)
        - `projectId`: (string) (required)
-       - `nfObject`: {object}
+       - `nfObject`: {object} (required)
          - `id`: (string) (required)
          - `type`: (string) (required) (enum: job, service, harness, addon, volume, opentofu-job, llm-model-deployment, external-addon)
-     - `target`: {object}
+     - `target`: {object} (required)
        - `podName`: (string) (required)
-     - `compatibility`: {object}
+     - `compatibility`: {object} (required)
        - `runtime`: (string) (required) (enum: kata)
        - `architecture`: (string) (required) (enum: x86, arm)
        - `baseImageDigest`: (string) (pattern: ^sha256:[0-9a-f]{64}$)
@@ -51,7 +51,7 @@ Required permission: Account > Platform > ContainerSnapshots > Read
      - `completedAt`: (string) (format: date-time)
      - `createdAt`: (string) (required) (format: date-time)
      - `updatedAt`: (string) (required) (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -62,6 +62,25 @@ GET /v1/container-snapshots
 
 GET /v1/teams/{teamId}/container-snapshots
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/container-snapshots?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/container-snapshots?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: A list of container snapshots.
@@ -71,6 +90,9 @@ GET /v1/teams/{teamId}/container-snapshots
   "pagination": {
     "hasNextPage": false,
     "count": 1
+  },
+  "data": {
+    "containerSnapshots": []
   }
 }
 ```
@@ -106,7 +128,9 @@ Options:
  A list of container snapshots.
 
 ```json
-undefined
+{
+  "containerSnapshots": []
+}
 ```
 
 ### JavaScript client reference
@@ -133,6 +157,9 @@ await apiClient.list.containerSnapshots({
   "pagination": {
     "hasNextPage": false,
     "count": 1
+  },
+  "data": {
+    "containerSnapshots": []
   },
   "rawResponse": "...",
   "request": "...",

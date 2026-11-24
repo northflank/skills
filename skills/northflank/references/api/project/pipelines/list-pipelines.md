@@ -20,15 +20,15 @@ Required permission: Project > Pipelines > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `pipelines`: [array of] {object}
-     - `name`: (multiple options) (string) The name of the pipeline. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the name of the pipeline. (pattern: .*\${.*}.*)
-     - `description`: (multiple options) (string) A description of the pipeline. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the pipeline. (pattern: .*\${.*}.*)
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `pipelines`: [array of] (required) An array of pipelines in this project. {object} A pipeline.
+     - `name`: (multiple options) (required) The name of the pipeline. (string) The name of the pipeline. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the name of the pipeline. (pattern: .*\${.*}.*)
+     - `description`: (multiple options) A description of the pipeline. (string) A description of the pipeline. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the pipeline. (pattern: .*\${.*}.*)
      - `id`: (string) (required) Identifier for the pipeline
      - `createdAt`: (string) time of creation (format: date-time)
      - `updatedAt`: (string) time of update (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -38,6 +38,25 @@ Required permission: Project > Pipelines > General > Read
 GET /v1/projects/{projectId}/pipelines
 
 GET /v1/teams/{teamId}/projects/{projectId}/pipelines
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/pipelines?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/pipelines?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

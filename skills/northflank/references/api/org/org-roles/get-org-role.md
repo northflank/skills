@@ -13,12 +13,12 @@ Required permission: Organisation > Admin > Roles > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) ID of the role. (pattern: ^[A-Za-z0-9-]+$)
   - `name`: (string) (required) Display name of the role.
   - `description`: (string) Description of the role.
-  - `restrictions`: {object}
+  - `restrictions`: {object} (required)
     - `enabled`: (boolean) (required)
     - `teams`: [array of] {object}
         - `teamId`: (string) (required) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
@@ -26,17 +26,36 @@ Required permission: Organisation > Admin > Roles > Read
           - `enabled`: (boolean) (required)
           - `projects`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
           - `restrictionMode`: (string) (enum: in, notIn)
-  - `directoryGroups`: [array of] (string) The ID of the linked directory group.
+  - `directoryGroups`: [array of] An array of linked directory groups. Users belonging to any of these linked directory groups will automatically be a member of this role. (string) The ID of the linked directory group.
   - `createdAt`: (string) Creation time. (format: date-time)
   - `updatedAt`: (string) Last updated. (format: date-time)
-  - `permissions`: {object}
-    - `teamScope`: [array of] (string)
-    - `projectScope`: [array of] (string)
-    - `orgScope`: [array of] (string)
+  - `permissions`: {object} (required)
+    - `teamScope`: [array of] (required) Team-level permissions. (string)
+    - `projectScope`: [array of] (required) Project-level permissions. (string)
+    - `orgScope`: [array of] (required) Org-level permissions. (string)
 
 ### API reference
 
 GET /v1/org-roles/{roleId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/org-roles/{roleId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/org-roles/{roleId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -49,7 +68,15 @@ GET /v1/org-roles/{roleId}
     "name": "Developer",
     "description": "Role for developers.",
     "createdAt": "2021-01-20T11:19:53.175Z",
-    "updatedAt": "2021-01-20T11:19:53.175Z"
+    "updatedAt": "2021-01-20T11:19:53.175Z",
+    "restrictions": {
+      "enabled": false
+    },
+    "permissions": {
+      "teamScope": [],
+      "projectScope": [],
+      "orgScope": []
+    }
   }
 }
 ```
@@ -78,7 +105,15 @@ Options:
   "name": "Developer",
   "description": "Role for developers.",
   "createdAt": "2021-01-20T11:19:53.175Z",
-  "updatedAt": "2021-01-20T11:19:53.175Z"
+  "updatedAt": "2021-01-20T11:19:53.175Z",
+  "restrictions": {
+    "enabled": false
+  },
+  "permissions": {
+    "teamScope": [],
+    "projectScope": [],
+    "orgScope": []
+  }
 }
 ```
 
@@ -105,7 +140,15 @@ await apiClient.get.orgRole({
     "name": "Developer",
     "description": "Role for developers.",
     "createdAt": "2021-01-20T11:19:53.175Z",
-    "updatedAt": "2021-01-20T11:19:53.175Z"
+    "updatedAt": "2021-01-20T11:19:53.175Z",
+    "restrictions": {
+      "enabled": false
+    },
+    "permissions": {
+      "teamScope": [],
+      "projectScope": [],
+      "orgScope": []
+    }
   },
   "rawResponse": "...",
   "request": "...",

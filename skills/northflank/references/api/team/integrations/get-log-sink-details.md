@@ -13,13 +13,13 @@ Required permission: Account > Observability > LogSinks > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `name`: (string) (required) Name of the log sink.
   - `id`: (string) (required) Identifier for the Log Sink
   - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
   - `restricted`: (boolean) (required) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-  - `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+  - `projects`: [array of] (required) If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
   - `status`: (string) (required) Current status of the log sink (enum: paused, running, failing, creating)
   - `options`: {object}
     - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -29,64 +29,64 @@ Required permission: Account > Observability > LogSinks > Read
   - `sinkType`: (string) (required) The type of the log sink. (enum: loki, datadog_logs, papertrail, http, aws_s3, logdna, coralogix, betterStack, honeycomb, logzio, solarWinds, axiom, newRelic, sentry)
   - `createdAt`: (string) (required) Timestamp of when the log sink was created. (format: date-time)
   - `updatedAt`: (string) (required) Timestamp of when the log sink was last updated. (format: date-time)
-  - `sinkData`: (multiple options) {object}
+  - `sinkData`: (multiple options) Data about the log sink. {object} Details about the Loki log sink.
      - `endpoint`: (string) (required) The endpoint of the Loki log sink.
-     - `encoding`: {object}
+     - `encoding`: {object} Encoding options
        - `codec`: (string) (required) Codec to encode logs in (enum: text, json)
-     - `auth`: {object}
+     - `auth`: {object} Object containing authentication data for the log sink.
        - `strategy`: (string) The authentication strategy. (enum: basic)
        - `user`: (string) The username for the log sink.
-       - `password`: (string) The password for the log sink. | {object}
+       - `password`: (string) The password for the log sink. | {object} Details about the Datadog log sink.
      - `default_api_key`: (string) (required) The Datadog API key.
-     - `region`: (string) (required) The Datadog region. (enum: eu, us, us3, us5) | (multiple options) {object}
+     - `region`: (string) (required) The Datadog region. (enum: eu, us, us3, us5) | (multiple options) Papertrail Sink Schema. {object} Authenticate with a host/port
       - `authenticationStrategy`: (string) (required) The authentication strategy. (enum: port)
       - `host`: (string) (required) The host for the Papertrail log destination.
-      - `port`: (number) (required) The port for the Papertrail log destination. (format: float) | {object}
+      - `port`: (number) (required) The port for the Papertrail log destination. (format: float) | {object} Authenticate with a token.
       - `authenticationStrategy`: (string) (required) The authentication strategy. (enum: token)
       - `uri`: (string) (required) The uri for the Papertrail log destination.
-      - `token`: (string) (required) The HTTP Token for the Papertrail log destination. | {object}
+      - `token`: (string) (required) The HTTP Token for the Papertrail log destination. | {object} Details about the AWS S3 log sink.
      - `endpoint`: (string) (required) Endpoint for the AWS S3 or compatible API bucket.
      - `region`: (string) (required) Region of the S3 bucket. (enum: eu-west-1, eu-west-2, eu-west-3, eu-central-1, eu-south-1, eu-north-1, us-west-1, us-west-2, us-east-1, us-east2)
-     - `auth`: {object}
+     - `auth`: {object} Authentication object.
        - `accessKeyId`: (string) (required) Access key id for the bucket.
        - `secretAccessKey`: (string) (required) Secret access key for the bucket.
      - `bucket`: (string) (required) Name of the S3 Bucket.
-     - `compression`: (string) (required) Log file compression method. (enum: gzip, none) | {object}
+     - `compression`: (string) (required) Log file compression method. (enum: gzip, none) | {object} Details about the HTTP log sink.
      - `uri`: (string) (required) Uri to send logs to.
-     - `encoding`: {object}
+     - `encoding`: {object} (required) Encoding options
        - `codec`: (string) (required) Codec to encode logs in (enum: text, json)
      - `batch`: {object}
        - `maxEvents`: (number) The max number of events in a batch before sending (format: float)
        - `maxBytes`: (number) The max size of a batch in bytes before sending (format: float)
-     - `auth`: (multiple options) {object}
-         - `strategy`: (string) (required) No authentication strategy (enum: none) | {object}
+     - `auth`: (multiple options) (required) Auth information. {object} No authentication strategy
+         - `strategy`: (string) (required) No authentication strategy (enum: none) | {object} Authenticate with a basic http strategy.
          - `strategy`: (string) (required) Basic HTTP authentication strategy. (enum: basic)
          - `user`: (string) Username for basic http authentication.
-         - `password`: (string) (required) Password for basic http authentication. | {object}
+         - `password`: (string) (required) Password for basic http authentication. | {object} Authenticate with a bearer token strategy.
          - `strategy`: (string) (required) Bearer token authentication strategy. (enum: bearer)
-         - `token`: (string) Token for bearer token authentication.
+         - `token`: (string) (required) Token for bearer token authentication.
      - `framing`: {object}
-       - `method`: (string) (enum: none, newline, length) | {object}
-     - `api_key`: (string) (required) Ingestion Key | {object}
+       - `method`: (string) (enum: none, newline, length) | {object} Details about the LogDNA log sink.
+     - `api_key`: (string) (required) Ingestion Key | {object} Details about the Better Stack log sink.
      - `token`: (string) (required) Better Stack Source Token
-     - `uri`: (string) (required) Better stack ingestion host | {object}
+     - `uri`: (string) (required) Better stack ingestion host | {object} Details about the Honeycomb log sink.
      - `api_key`: (string) (required) Honeycomb API Key
-     - `dataset`: (string) (required) Name of the dataset | {object}
+     - `dataset`: (string) (required) Name of the dataset | {object} Details about the Logz.io log sink.
      - `region`: (string) (required) Your Logzio region code (enum: eu, uk, us, ca, au, nl, wa)
-     - `token`: (string) (required) The Log Shipping Token of the account you want to ship to | {object}
+     - `token`: (string) (required) The Log Shipping Token of the account you want to ship to | {object} Details about the Solar Winds log sink.
      - `api_key`: (string) (required) Solar Winds API Key
      - `encoding`: {object}
        - `codec`: (string) (required) Codec to encode logs in (enum: text, json)
-     - `endpointType`: (string) (required) Solar Winds endpoint type (enum: unitary, bulk) | {object}
+     - `endpointType`: (string) (required) Solar Winds endpoint type (enum: unitary, bulk) | {object} Details about the Axiom log sink.
      - `dataset`: (string) (required) Name of the data
      - `token`: (string) (required) Axiom API token
      - `tokenType`: (string) Deprecated token type. (enum: personal, api)
      - `orgId`: (string) Deprecated Axiom organisation ID.
      - `region`: (string) Axiom edge deployment domain, without a scheme or path. (pattern: ^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.aws\.edge\.axiom\.co$)
-     - `url`: (string) Custom Axiom endpoint. A URL with a path is used as-is. | {object}
+     - `url`: (string) Custom Axiom endpoint. A URL with a path is used as-is. | {object} Details about the New Relic log sink.
      - `accountId`: (string) (required) New Relic Account ID
      - `licenseKey`: (string) (required) New Relic License Key
-     - `region`: (string) (required) (enum: eu, us) | {object}
+     - `region`: (string) (required) (enum: eu, us) | {object} Details about the Sentry log sink.
      - `endpoint`: (string) (required) The complete OTLP logs endpoint from your Sentry Client Keys configuration. (pattern: ^https:\/\/[\w.-]+\.sentry\.io\/)
      - `publicKey`: (string) (required) The public key from your Sentry OTLP DSN (Client Keys (DSN) > OpenTelemetry).
 
@@ -95,6 +95,25 @@ Required permission: Account > Observability > LogSinks > Read
 GET /v1/integrations/log-sinks/{logSinkId}
 
 GET /v1/teams/{teamId}/integrations/log-sinks/{logSinkId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/integrations/log-sinks/{logSinkId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/integrations/log-sinks/{logSinkId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -129,7 +148,8 @@ GET /v1/teams/{teamId}/integrations/log-sinks/{logSinkId}
         "user": "admin",
         "password": "password1234"
       }
-    }
+    },
+    "status": "paused"
   }
 }
 ```
@@ -180,7 +200,8 @@ Options:
       "user": "admin",
       "password": "password1234"
     }
-  }
+  },
+  "status": "paused"
 }
 ```
 
@@ -231,7 +252,8 @@ await apiClient.get.logSink({
         "user": "admin",
         "password": "password1234"
       }
-    }
+    },
+    "status": "paused"
   },
   "rawResponse": "...",
   "request": "...",

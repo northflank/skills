@@ -20,9 +20,9 @@ Required permission: Account > Admin > Roles > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `roles`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `roles`: [array of] (required) An array of team roles. {object} A team role object.
      - `id`: (string) (required) ID of the role. (pattern: ^[A-Za-z0-9-]+$)
      - `name`: (string) (required) Display name of the role.
      - `description`: (string) Description of the role.
@@ -32,7 +32,7 @@ Required permission: Account > Admin > Roles > Read
        - `restrictionMode`: (string) (enum: in, notIn)
      - `createdAt`: (string) Creation time. (format: date-time)
      - `updatedAt`: (string) Last updated. (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -40,6 +40,25 @@ Required permission: Account > Admin > Roles > Read
 ### API reference
 
 GET /v1/teams/{teamId}/roles
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/teams/{teamId}/roles?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/teams/{teamId}/roles?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

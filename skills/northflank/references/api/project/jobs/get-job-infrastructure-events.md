@@ -21,20 +21,20 @@ Required permission: Account > Admin > InfrastructureAuditEvents > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `events`: [array of] {object}
-     - `reason`: (string)
-     - `message`: (string)
-     - `level`: (string)
+     - `reason`: (string) (nullable)
+     - `message`: (string) (nullable)
+     - `level`: (string) (nullable)
      - `count`: (number) (format: float)
-     - `firstTimestamp`: (string)
-     - `lastTimestamp`: (string)
-     - `resourceType`: (string)
-     - `group`: (string)
-     - `scope`: (string)
-     - `podName`: (string)
-     - `nodeName`: (string)
+     - `firstTimestamp`: (string) (nullable)
+     - `lastTimestamp`: (string) (nullable)
+     - `resourceType`: (string) (nullable)
+     - `group`: (string) (nullable)
+     - `scope`: (string) (nullable)
+     - `podName`: (string) (nullable)
+     - `nodeName`: (string) (nullable)
      - `deploymentId`: (string)
      - `buildId`: (string)
   - `hasMore`: (boolean)
@@ -47,12 +47,33 @@ GET /v1/projects/{projectId}/jobs/{jobId}/health/events
 
 GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/health/events
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/health/events"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/health/events"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: Up to 100 recorded infrastructure events.
 
 ```json
-undefined
+{
+  "data": {}
+}
 ```
 
 ### CLI reference
@@ -82,7 +103,7 @@ Options:
  Up to 100 recorded infrastructure events.
 
 ```json
-undefined
+{}
 ```
 
 ### JavaScript client reference
@@ -106,6 +127,7 @@ await apiClient.get.job.health.events({
 
 ```json
 {
+  "data": {},
   "rawResponse": "...",
   "request": "...",
   "error": "..."

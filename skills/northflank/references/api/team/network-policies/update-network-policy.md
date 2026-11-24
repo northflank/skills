@@ -28,21 +28,21 @@ Required permission: Account > Networking > NetworkPolicies > Update
       - `matchCondition`: (string) (enum: or, and)
   - `egress`: {object}
     - `denyAll`: (boolean)
-    - `allowTo`: [array of] (string) (min length: 1)
-    - `allowToTags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-    - `allowToProjects`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `allowTo`: (multiple options) External destinations that egress traffic is allowed to: IP addresses, CIDR ranges, or hostnames. A hostname allows TCP port 443, a single TCP port with `hostname:port`, or all TCP ports with `hostname:*`. [array of] (nullable) Must be empty or null, as destinations cannot be assigned when all traffic is denied  (string) (min length: 1)
+    - `allowToTags`: (multiple options) Tags of workloads that egress traffic is allowed to [array of] (nullable) Must be empty or null, as tags cannot be assigned when all traffic is denied  (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `allowToProjects`: (multiple options) Projects that egress traffic is allowed to [array of] (nullable) Must be empty or null, as projects cannot be assigned when all traffic is denied  (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `ingress`: {object}
     - `denyAll`: (boolean)
-    - `allowFromTags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-    - `allowFromProjects`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-  - `loadBalancerIngress`: {object}
-    - `targets`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `allowFromTags`: (multiple options) Tags of workloads that ingress traffic is allowed from [array of] (nullable) Must be empty or null, as tags cannot be assigned when all traffic is denied  (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `allowFromProjects`: (multiple options) Projects that ingress traffic is allowed from [array of] (nullable) Must be empty or null, as projects cannot be assigned when all traffic is denied  (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `loadBalancerIngress`: {object} (nullable) Controls client ingress to selected load balancers.
+    - `targets`: [array of] (required) Load balancer internal IDs this ingress rule applies to. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `mode`: (string) (required) Whether the listed source ranges are allowed or denied. (enum: allowList, denyList)
-    - `cidrs`: [array of] (string)
+    - `cidrs`: [array of] (required) Source IP addresses and CIDR ranges. (string)
   - `egressSecretInjection`: [array of] {object}
      - `name`: (string) (required) (pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$) (max length: 63)
      - `header`: (string) (required) (pattern: ^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$) (max length: 256)
-     - `hosts`: [array of] (string) (max length: 253)
+     - `hosts`: [array of] (required) (string) (max length: 253)
      - `value`: (string) Omit or provide an empty value to preserve the existing secret value.
 
 ### API reference
@@ -60,7 +60,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
   --data '{"name":"restrict-api-ingress","description":"Restrict ingress to the api service."}' \
-  https://api.northflank.com/v1/network-policies/{networkPolicyId}
+  "https://api.northflank.com/v1/network-policies/{networkPolicyId}"
 ```
 
 ```javascript
@@ -87,10 +87,10 @@ import requests
 
 url = "https://api.northflank.com/v1/network-policies/{networkPolicyId}"
 
-payload = {"name":"restrict-api-ingress","description":"Restrict ingress to the api service."}
+payload = "{\"name\":\"restrict-api-ingress\",\"description\":\"Restrict ingress to the api service.\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PATCH", url, headers = headers, json = payload)
+response = requests.request("PATCH", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -108,7 +108,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/network-policies/{networkPolicyId}"
 
-  var jsonStr = []byte(`{"name":"restrict-api-ingress","description":"Restrict ingress to the api service."}`)
+  var jsonStr = []byte("{\"name\":\"restrict-api-ingress\",\"description\":\"Restrict ingress to the api service.\"}")
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

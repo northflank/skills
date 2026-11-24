@@ -20,26 +20,26 @@ Required permission: Project > Secrets > SecretGroups > List
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `secrets`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `secrets`: [array of] (required) An array of secret groups {object} A secret group object
      - `id`: (string) (required) Identifier for the secret group
      - `projectId`: (string) (required) ID of the project that the secret group belongs to
      - `name`: (string) (required) Secret group name
-     - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+     - `tags`: [array of] (required) An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `description`: (string) A short description of the secret group
      - `type`: (string) (required) The permission type of the secret group. (enum: secret, config)
      - `secretType`: (string) (required) The type of the secret group (enum: environment-arguments, environment, arguments)
      - `priority`: (integer) (required) The priority with which different secret groups will be merged
-     - `restrictions`: {object}
+     - `restrictions`: {object} (required) Restriction settings of the secret
        - `restricted`: (boolean) Whether the secret is restricted to specific resources, tags, or environments. If this is `true`, resources listed in `nfObjects`, with a tag listed in `tags`, or in an environment listed in `stageIds` will have access to these secrets. Otherwise, all resources in the project will be able to access it.
-       - `nfObjects`: [array of] {object}
+       - `nfObjects`: [array of] List of Northflank services & jobs the secret is restricted to {object}
            - `id`: (string) (required) ID of the entity the secret is restricted to. (pattern: ^[A-Za-z0-9-]+$)
            - `type`: (string) (required) Type of the entity the secret is restricted to. (enum: service, job)
-       - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+       - `tags`: [array of] List of tags the secret is restricted to. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
        - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
-       - `stageIds`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `pagination`: {object}
+       - `stageIds`: [array of] IDs of the environments the secret is restricted to. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -49,6 +49,25 @@ Required permission: Project > Secrets > SecretGroups > List
 GET /v1/projects/{projectId}/secrets
 
 GET /v1/teams/{teamId}/projects/{projectId}/secrets
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/secrets?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/secrets?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -75,7 +94,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/secrets
             }
           ],
           "tagMatchCondition": "or"
-        }
+        },
+        "tags": []
       }
     ]
   },
@@ -130,7 +150,8 @@ Options:
           }
         ],
         "tagMatchCondition": "or"
-      }
+      },
+      "tags": []
     }
   ]
 }
@@ -179,7 +200,8 @@ await apiClient.list.secrets({
             }
           ],
           "tagMatchCondition": "or"
-        }
+        },
+        "tags": []
       }
     ]
   },

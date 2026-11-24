@@ -20,8 +20,8 @@ Required permission: Project > Images > General > Import
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `registryUrl`: (string) (required)
   - `repository`: (string) (required)
   - `imageId`: (string) (required) (min length: 24) (max length: 24)
@@ -43,7 +43,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"string","tag":"string"}' \
-  https://api.northflank.com/v1/projects/{projectId}/images/upload-credentials
+  "https://api.northflank.com/v1/projects/{projectId}/images/upload-credentials"
 ```
 
 ```javascript
@@ -70,10 +70,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/images/upload-credentials"
 
-payload = {"name":"string","tag":"string"}
+payload = "{\"name\":\"string\",\"tag\":\"string\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -91,7 +91,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/images/upload-credentials"
 
-  var jsonStr = []byte(`{"name":"string","tag":"string"}`)
+  var jsonStr = []byte("{\"name\":\"string\",\"tag\":\"string\"}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -115,7 +115,15 @@ func main() {
 200 OK: Scoped direct-upload credentials.
 
 ```json
-undefined
+{
+  "data": {
+    "registryUrl": "string",
+    "repository": "string",
+    "imageId": "stringaaaaaaaaaaaaaaaaaa",
+    "token": "string",
+    "expiresAt": "1970-01-01T00:00:00.000Z"
+  }
+}
 ```
 
 ### CLI reference
@@ -148,7 +156,13 @@ Options:
  Scoped direct-upload credentials.
 
 ```json
-undefined
+{
+  "registryUrl": "string",
+  "repository": "string",
+  "imageId": "stringaaaaaaaaaaaaaaaaaa",
+  "token": "string",
+  "expiresAt": "1970-01-01T00:00:00.000Z"
+}
 ```
 
 ### JavaScript client reference
@@ -175,6 +189,13 @@ await apiClient.create.image.uploadCredentials({
 
 ```json
 {
+  "data": {
+    "registryUrl": "string",
+    "repository": "string",
+    "imageId": "stringaaaaaaaaaaaaaaaaaa",
+    "token": "string",
+    "expiresAt": "1970-01-01T00:00:00.000Z"
+  },
   "rawResponse": "...",
   "request": "...",
   "error": "..."

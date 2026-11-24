@@ -16,17 +16,17 @@ Required permission: Project > AiModels > General > Create
 {object}
 - `name`: (string) (required) The name of the AI model. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `description`: (string) A description of the AI model. (pattern: ^[\s\S]*$) (max length: 1024)
-- `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+- `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `ports`: [array of] {object}
    - `name`: (string) (required) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8)
    - `internalPort`: (integer) (required) The port number.
    - `public`: (boolean) If true, the port will be exposed publicly.
-   - `domains`: [array of] (string) A domain to redirect to this port.
+   - `domains`: [array of] An array of domains to redirect to this port. Each domain must first be verified and registered to your account. (string) A domain to redirect to this port.
    - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
    - `protocol`: (string) (required) The protocol to use for the port. (enum: HTTP, HTTP/2, TCP, UDP)
-- `spec`: {object}
+- `spec`: {object} (required)
   - `type`: (string) (required) Type of model spec - custom for user-defined configuration (enum: custom)
-  - `configuration`: {object}
+  - `configuration`: {object} (required) LLM model configuration including engine, architecture, and compute settings
     - `name`: (string)
     - `engine`: (string) (enum: vllm)
     - `revision`: (string)
@@ -41,7 +41,7 @@ Required permission: Project > AiModels > General > Create
         - `accessMode`: (string) (enum: ReadWriteMany)
         - `storageClass`: (string) The type of the storage. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
         - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
-        - `shmSize`: (integer)
+        - `shmSize`: (integer) (nullable)
     - `architecture`: {object}
       - `type`: (string) (enum: aggregated)
       - `workerConfig`: {object}
@@ -51,7 +51,7 @@ Required permission: Project > AiModels > General > Create
           - `pipelineParallelism`: (integer)
           - `expertParallelism`: (integer)
         - `sequenceLengthConfig`: {object}
-          - `maxModelLength`: (multiple options) (integer) A fixed maximum context length, in tokens | (string) `auto` to derive the maximum context length from the model's config (enum: auto)
+          - `maxModelLength`: (multiple options) The maximum model context length (input and output tokens), or `auto` to derive it from the model's config (integer) A fixed maximum context length, in tokens | (string) `auto` to derive the maximum context length from the model's config (enum: auto)
           - `maxInputLength`: (integer)
           - `maxOutputLength`: (integer)
         - `batchingConfig`: {object}
@@ -82,7 +82,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"deepseek-v3-deployment","description":"A deployment for DeepSeek V3 model","spec":{"configuration":{"nodeConfiguration":{"storage":{"storageClass":"nvme","storageSize":6144}}},"type":"custom"}}' \
-  https://api.northflank.com/v1/projects/{projectId}/llm-model-deployments
+  "https://api.northflank.com/v1/projects/{projectId}/llm-model-deployments"
 ```
 
 ```javascript
@@ -120,10 +120,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/llm-model-deployments"
 
-payload = {"name":"deepseek-v3-deployment","description":"A deployment for DeepSeek V3 model","spec":{"configuration":{"nodeConfiguration":{"storage":{"storageClass":"nvme","storageSize":6144}}},"type":"custom"}}
+payload = "{\"name\":\"deepseek-v3-deployment\",\"description\":\"A deployment for DeepSeek V3 model\",\"spec\":{\"configuration\":{\"nodeConfiguration\":{\"storage\":{\"storageClass\":\"nvme\",\"storageSize\":6144}}},\"type\":\"custom\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -141,7 +141,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/llm-model-deployments"
 
-  var jsonStr = []byte(`{"name":"deepseek-v3-deployment","description":"A deployment for DeepSeek V3 model","spec":{"configuration":{"nodeConfiguration":{"storage":{"storageClass":"nvme","storageSize":6144}}},"type":"custom"}}`)
+  var jsonStr = []byte("{\"name\":\"deepseek-v3-deployment\",\"description\":\"A deployment for DeepSeek V3 model\",\"spec\":{\"configuration\":{\"nodeConfiguration\":{\"storage\":{\"storageClass\":\"nvme\",\"storageSize\":6144}}},\"type\":\"custom\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

@@ -14,17 +14,17 @@ Required permission: Project > Addons > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `version`: (string) (required) The version of the addon running.
-  - `upgradeTo`: [array of] {object}
+  - `upgradeTo`: [array of] (required) Available versions that the addon can be upgraded to. {object}
      - `version`: (string) (required) The version of the addon to upgrade to.
      - `type`: (string) (required) Whether the version is a major or minor version. (enum: major, minor, patch)
   - `lifecycleStatus`: (string) (required) The support status of the current addon version. (enum: active, deprecated, discontinued)
   - `discontinuedBy`: (string) The date that the current addon version will be discontinued.
-  - `upgradeHistory`: [array of] {object}
+  - `upgradeHistory`: [array of] (required) Data about the upgrade history of this addon. {object} Details about a previous upgrade.
      - `upgradeId`: (string) (required) The unique identifier of the addon upgrade.
-     - `status`: {object}
+     - `status`: {object} (required) Details about the upgrade status.
        - `status`: (string) (required) The status of the addon upgrade. (enum: scheduled, in-progress, completed, aborting, aborted, failed, not-supported)
        - `message`: (string) Details about why the upgrade failed.
      - `createdAt`: (string) (required) The time the upgrade was initiated. (format: date-time)
@@ -38,6 +38,25 @@ Required permission: Project > Addons > General > Read
 GET /v1/projects/{projectId}/addons/{addonId}/version
 
 GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}/version
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/version"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/version"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

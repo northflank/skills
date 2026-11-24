@@ -15,8 +15,8 @@ Required permission: Project > PipelinesV2 > Previews > Resume
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 

@@ -21,9 +21,9 @@ Required permission: Project > Jobs > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `runs`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `runs`: [array of] (required) An array of job run objects. {object}
      - `id`: (string) (required) The ID of the job run
      - `active`: (integer) (required) Whether the run is currently in progress (enum: 0, 1)
      - `backoffLimit`: (integer) (required) The number of attempts to retry this job run before it is marked as failed.
@@ -35,7 +35,7 @@ Required permission: Project > Jobs > General > Read
      - `succeeded`: (integer) (required) Whether this job run completed successfully (enum: 0, 1)
      - `startedAt`: (string) (required) The timestamp when the job run started.
      - `concludedAt`: (string) (required) The timestamp when the job run concluded.
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -45,6 +45,25 @@ Required permission: Project > Jobs > General > Read
 GET /v1/projects/{projectId}/jobs/{jobId}/runs
 
 GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/runs
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/runs?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/runs?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

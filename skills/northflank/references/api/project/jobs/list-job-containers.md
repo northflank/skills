@@ -22,9 +22,9 @@ Required permission: Project > Jobs > Deployment > View Observability
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `containers`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `containers`: [array of] {object} Data about a container.
      - `name`: (string) (required) The name of the container.
      - `createdAt`: (integer) (required) The timestamp the container was created.
      - `status`: (string) (required) The current status of the container. (enum: TASK_RUNNING, TASK_STARTING, TASK_STAGING, TASK_KILLING, TASK_KILLED, TASK_FAILED, TASK_FINISHED)
@@ -32,10 +32,10 @@ Required permission: Project > Jobs > Deployment > View Observability
      - `nodePoolUserId`: (string) BYOC only: the user facing ID of the node pool that the container was scheduled to
      - `nodePoolProviderId`: (string) BYOC only: the provider facing ID of the node pool that the container was scheduled to
      - `host`: (string) BYOC only: the host address of the node the container was scheduled to
-     - `ipAddresses`: [array of] (string)
+     - `ipAddresses`: [array of] BYOC only: the IP addresses mapping to the container (string)
      - `updatedAt`: (integer) (required) The timestamp the container was last updated.
   - `runId`: (string) (required) The id of the associated job run.
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -45,6 +45,25 @@ Required permission: Project > Jobs > Deployment > View Observability
 GET /v1/projects/{projectId}/jobs/{jobId}/containers
 
 GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/containers
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/containers?per_page=50&page=1&runId=00000676-9be8-41dd-b0f7-ba7df935cf27"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/containers?per_page=50&page=1&runId=00000676-9be8-41dd-b0f7-ba7df935cf27"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

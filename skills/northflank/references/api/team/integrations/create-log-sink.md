@@ -8,15 +8,15 @@ Required permission: Account > Observability > LogSinks > Create
 
 **Request body:**
 
-{object}
+{object} Create a log sink using Loki
 - `name`: (string) (required) Name of the log sink.
 - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
-- `restrictions`: {object}
-  - `tags`: {object}
+- `projects`: [array of] If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `restrictions`: {object} Configuration of restrictions.
+  - `tags`: {object} Configuration of tag restriction settings.
     - `enabled`: (boolean) Whether restriction by tag should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 - `options`: {object}
   - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -24,26 +24,26 @@ Required permission: Account > Observability > LogSinks > Create
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `sinkType`: (string) (required) The type of the log sink. (enum: loki)
-- `sinkData`: {object}
+- `sinkData`: {object} (required) Details about the Loki log sink.
   - `endpoint`: (string) (required) The endpoint of the Loki log sink.
-  - `encoding`: {object}
+  - `encoding`: {object} Encoding options
     - `codec`: (string) (required) Codec to encode logs in (enum: text, json)
-  - `auth`: {object}
+  - `auth`: {object} Object containing authentication data for the log sink.
     - `strategy`: (string) The authentication strategy. (enum: basic)
     - `user`: (string) The username for the log sink.
     - `password`: (string) The password for the log sink.
 
 OR
 
-{object}
+{object} Create a log sink using Datadog
 - `name`: (string) (required) Name of the log sink.
 - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
-- `restrictions`: {object}
-  - `tags`: {object}
+- `projects`: [array of] If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `restrictions`: {object} Configuration of restrictions.
+  - `tags`: {object} Configuration of tag restriction settings.
     - `enabled`: (boolean) Whether restriction by tag should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 - `options`: {object}
   - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -51,21 +51,21 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `sinkType`: (string) (required) The type of the log sink. (enum: datadog_logs)
-- `sinkData`: {object}
+- `sinkData`: {object} (required) Details about the Datadog log sink.
   - `default_api_key`: (string) (required) The Datadog API key.
   - `region`: (string) (required) The Datadog region. (enum: eu, us, us3, us5)
 
 OR
 
-{object}
+{object} Create a log sink using Papertrail
 - `name`: (string) (required) Name of the log sink.
 - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
-- `restrictions`: {object}
-  - `tags`: {object}
+- `projects`: [array of] If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `restrictions`: {object} Configuration of restrictions.
+  - `tags`: {object} Configuration of tag restriction settings.
     - `enabled`: (boolean) Whether restriction by tag should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 - `options`: {object}
   - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -73,25 +73,25 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `sinkType`: (string) (required) The type of the log sink. (enum: papertrail)
-- `sinkData`: (multiple options) {object}
+- `sinkData`: (multiple options) (required) Papertrail Sink Schema. {object} Authenticate with a host/port
    - `authenticationStrategy`: (string) (required) The authentication strategy. (enum: port)
    - `host`: (string) (required) The host for the Papertrail log destination.
-   - `port`: (number) (required) The port for the Papertrail log destination. (format: float) | {object}
+   - `port`: (number) (required) The port for the Papertrail log destination. (format: float) | {object} Authenticate with a token.
    - `authenticationStrategy`: (string) (required) The authentication strategy. (enum: token)
    - `uri`: (string) (required) The uri for the Papertrail log destination.
    - `token`: (string) (required) The HTTP Token for the Papertrail log destination.
 
 OR
 
-{object}
+{object} Create a log sink using AWS S3
 - `name`: (string) (required) Name of the log sink.
 - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
-- `restrictions`: {object}
-  - `tags`: {object}
+- `projects`: [array of] If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `restrictions`: {object} Configuration of restrictions.
+  - `tags`: {object} Configuration of tag restriction settings.
     - `enabled`: (boolean) Whether restriction by tag should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 - `options`: {object}
   - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -99,10 +99,10 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `sinkType`: (string) (required) The type of the log sink. (enum: aws_s3)
-- `sinkData`: {object}
+- `sinkData`: {object} (required) Details about the AWS S3 log sink.
   - `endpoint`: (string) (required) Endpoint for the AWS S3 or compatible API bucket.
   - `region`: (string) (required) Region of the S3 bucket. (enum: eu-west-1, eu-west-2, eu-west-3, eu-central-1, eu-south-1, eu-north-1, us-west-1, us-west-2, us-east-1, us-east2)
-  - `auth`: {object}
+  - `auth`: {object} Authentication object.
     - `accessKeyId`: (string) (required) Access key id for the bucket.
     - `secretAccessKey`: (string) (required) Secret access key for the bucket.
   - `bucket`: (string) (required) Name of the S3 Bucket.
@@ -110,15 +110,15 @@ OR
 
 OR
 
-{object}
+{object} Create a log sink using HTTP
 - `name`: (string) (required) Name of the log sink.
 - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
-- `restrictions`: {object}
-  - `tags`: {object}
+- `projects`: [array of] If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `restrictions`: {object} Configuration of restrictions.
+  - `tags`: {object} Configuration of tag restriction settings.
     - `enabled`: (boolean) Whether restriction by tag should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 - `options`: {object}
   - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -126,34 +126,34 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `sinkType`: (string) (required) The type of the log sink. (enum: http)
-- `sinkData`: {object}
+- `sinkData`: {object} (required) Details about the HTTP log sink.
   - `uri`: (string) (required) Uri to send logs to.
-  - `encoding`: {object}
+  - `encoding`: {object} (required) Encoding options
     - `codec`: (string) (required) Codec to encode logs in (enum: text, json)
   - `batch`: {object}
     - `maxEvents`: (number) The max number of events in a batch before sending (format: float)
     - `maxBytes`: (number) The max size of a batch in bytes before sending (format: float)
-  - `auth`: (multiple options) {object}
-     - `strategy`: (string) (required) No authentication strategy (enum: none) | {object}
+  - `auth`: (multiple options) (required) Auth information. {object} No authentication strategy
+     - `strategy`: (string) (required) No authentication strategy (enum: none) | {object} Authenticate with a basic http strategy.
      - `strategy`: (string) (required) Basic HTTP authentication strategy. (enum: basic)
      - `user`: (string) Username for basic http authentication.
-     - `password`: (string) (required) Password for basic http authentication. | {object}
+     - `password`: (string) (required) Password for basic http authentication. | {object} Authenticate with a bearer token strategy.
      - `strategy`: (string) (required) Bearer token authentication strategy. (enum: bearer)
-     - `token`: (string) Token for bearer token authentication.
+     - `token`: (string) (required) Token for bearer token authentication.
   - `framing`: {object}
     - `method`: (string) (enum: none, newline, length)
 
 OR
 
-{object}
+{object} Create a log sink using LogDNA
 - `name`: (string) (required) Name of the log sink.
 - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
-- `restrictions`: {object}
-  - `tags`: {object}
+- `projects`: [array of] If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `restrictions`: {object} Configuration of restrictions.
+  - `tags`: {object} Configuration of tag restriction settings.
     - `enabled`: (boolean) Whether restriction by tag should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 - `options`: {object}
   - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -161,20 +161,20 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `sinkType`: (string) (required) The type of the log sink. (enum: logdna)
-- `sinkData`: {object}
+- `sinkData`: {object} (required) Details about the LogDNA log sink.
   - `api_key`: (string) (required) Ingestion Key
 
 OR
 
-{object}
+{object} Create a log sink using Better Stack
 - `name`: (string) (required) Name of the log sink.
 - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
-- `restrictions`: {object}
-  - `tags`: {object}
+- `projects`: [array of] If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `restrictions`: {object} Configuration of restrictions.
+  - `tags`: {object} Configuration of tag restriction settings.
     - `enabled`: (boolean) Whether restriction by tag should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 - `options`: {object}
   - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -182,21 +182,21 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `sinkType`: (string) (required) The type of the log sink. (enum: betterStack)
-- `sinkData`: {object}
+- `sinkData`: {object} (required) Details about the Better Stack log sink.
   - `token`: (string) (required) Better Stack Source Token
   - `uri`: (string) (required) Better stack ingestion host
 
 OR
 
-{object}
+{object} Create a log sink using Honeycomb
 - `name`: (string) (required) Name of the log sink.
 - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
-- `restrictions`: {object}
-  - `tags`: {object}
+- `projects`: [array of] If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `restrictions`: {object} Configuration of restrictions.
+  - `tags`: {object} Configuration of tag restriction settings.
     - `enabled`: (boolean) Whether restriction by tag should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 - `options`: {object}
   - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -204,21 +204,21 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `sinkType`: (string) (required) The type of the log sink. (enum: honeycomb)
-- `sinkData`: {object}
+- `sinkData`: {object} (required) Details about the Honeycomb log sink.
   - `api_key`: (string) (required) Honeycomb API Key
   - `dataset`: (string) (required) Name of the dataset
 
 OR
 
-{object}
+{object} Create a log sink using Logz.io
 - `name`: (string) (required) Name of the log sink.
 - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
-- `restrictions`: {object}
-  - `tags`: {object}
+- `projects`: [array of] If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `restrictions`: {object} Configuration of restrictions.
+  - `tags`: {object} Configuration of tag restriction settings.
     - `enabled`: (boolean) Whether restriction by tag should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 - `options`: {object}
   - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -226,21 +226,21 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `sinkType`: (string) (required) The type of the log sink. (enum: logzio)
-- `sinkData`: {object}
+- `sinkData`: {object} (required) Details about the Logz.io log sink.
   - `region`: (string) (required) Your Logzio region code (enum: eu, uk, us, ca, au, nl, wa)
   - `token`: (string) (required) The Log Shipping Token of the account you want to ship to
 
 OR
 
-{object}
+{object} Create a log sink using Solar Winds
 - `name`: (string) (required) Name of the log sink.
 - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
-- `restrictions`: {object}
-  - `tags`: {object}
+- `projects`: [array of] If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `restrictions`: {object} Configuration of restrictions.
+  - `tags`: {object} Configuration of tag restriction settings.
     - `enabled`: (boolean) Whether restriction by tag should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 - `options`: {object}
   - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -248,7 +248,7 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `sinkType`: (string) (required) The type of the log sink. (enum: solarWinds)
-- `sinkData`: {object}
+- `sinkData`: {object} (required) Details about the Solar Winds log sink.
   - `api_key`: (string) (required) Solar Winds API Key
   - `encoding`: {object}
     - `codec`: (string) (required) Codec to encode logs in (enum: text, json)
@@ -256,15 +256,15 @@ OR
 
 OR
 
-{object}
+{object} Create a log sink using Axiom
 - `name`: (string) (required) Name of the log sink.
 - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
-- `restrictions`: {object}
-  - `tags`: {object}
+- `projects`: [array of] If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `restrictions`: {object} Configuration of restrictions.
+  - `tags`: {object} Configuration of tag restriction settings.
     - `enabled`: (boolean) Whether restriction by tag should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 - `options`: {object}
   - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -272,7 +272,7 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `sinkType`: (string) (required) The type of the log sink. (enum: axiom)
-- `sinkData`: {object}
+- `sinkData`: {object} (required) Details about the Axiom log sink.
   - `dataset`: (string) (required) Name of the data
   - `token`: (string) (required) Axiom API token
   - `tokenType`: (string) Deprecated token type. (enum: personal, api)
@@ -282,15 +282,15 @@ OR
 
 OR
 
-{object}
+{object} Create a log sink using New Relic
 - `name`: (string) (required) Name of the log sink.
 - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
-- `restrictions`: {object}
-  - `tags`: {object}
+- `projects`: [array of] If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `restrictions`: {object} Configuration of restrictions.
+  - `tags`: {object} Configuration of tag restriction settings.
     - `enabled`: (boolean) Whether restriction by tag should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 - `options`: {object}
   - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -298,22 +298,22 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `sinkType`: (string) (required) The type of the log sink. (enum: newRelic)
-- `sinkData`: {object}
+- `sinkData`: {object} (required) Details about the New Relic log sink.
   - `accountId`: (string) (required) New Relic Account ID
   - `licenseKey`: (string) (required) New Relic License Key
   - `region`: (string) (required) (enum: eu, us)
 
 OR
 
-{object}
+{object} Create a log sink using Sentry
 - `name`: (string) (required) Name of the log sink.
 - `description`: (string) Description of the log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `restricted`: (boolean) If `true`, only logs from the projects in `projects` will be sent to the log sink.
-- `projects`: [array of] (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
-- `restrictions`: {object}
-  - `tags`: {object}
+- `projects`: [array of] If `restricted` is `true`, only logs from these projects will be sent to the log sink. (string) The ID of a project. (pattern: ^[A-Za-z0-9-]+$)
+- `restrictions`: {object} Configuration of restrictions.
+  - `tags`: {object} Configuration of tag restriction settings.
     - `enabled`: (boolean) Whether restriction by tag should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 - `options`: {object}
   - `useCustomLabels`: (boolean) If `true`, we will do additional parsing on your JSON formatted log lines and your extract custom labels
@@ -321,14 +321,14 @@ OR
   - `forwardIngressLogs`: (boolean) Forward ingress logs from your workloads
   - `forwardMeshLogs`: (boolean) Forward mesh logs from your workloads
 - `sinkType`: (string) (required) The type of the log sink. (enum: sentry)
-- `sinkData`: {object}
+- `sinkData`: {object} (required) Details about the Sentry log sink.
   - `endpoint`: (string) (required) The complete OTLP logs endpoint from your Sentry Client Keys configuration. (pattern: ^https:\/\/[\w.-]+\.sentry\.io\/)
   - `publicKey`: (string) (required) The public key from your Sentry OTLP DSN (Client Keys (DSN) > OpenTelemetry).
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) The ID of the new log sink.
 
 ### API reference
@@ -348,7 +348,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"loki","sinkData":{"endpoint":"https://logs.example.com","encoding":{"codec":"json"},"auth":{"strategy":"basic","user":"admin","password":"password1234"}}}' \
-  https://api.northflank.com/v1/integrations/log-sinks
+  "https://api.northflank.com/v1/integrations/log-sinks"
 ```
 
 ```javascript
@@ -403,10 +403,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks"
 
-payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"loki","sinkData":{"endpoint":"https://logs.example.com","encoding":{"codec":"json"},"auth":{"strategy":"basic","user":"admin","password":"password1234"}}}
+payload = "{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"loki\",\"sinkData\":{\"endpoint\":\"https://logs.example.com\",\"encoding\":{\"codec\":\"json\"},\"auth\":{\"strategy\":\"basic\",\"user\":\"admin\",\"password\":\"password1234\"}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -424,7 +424,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
-  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"loki","sinkData":{"endpoint":"https://logs.example.com","encoding":{"codec":"json"},"auth":{"strategy":"basic","user":"admin","password":"password1234"}}}`)
+  var jsonStr = []byte("{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"loki\",\"sinkData\":{\"endpoint\":\"https://logs.example.com\",\"encoding\":{\"codec\":\"json\"},\"auth\":{\"strategy\":\"basic\",\"user\":\"admin\",\"password\":\"password1234\"}}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -452,7 +452,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"datadog_logs","sinkData":{"default_api_key":"abcdef12345678900000000000000000","region":"eu"}}' \
-  https://api.northflank.com/v1/integrations/log-sinks
+  "https://api.northflank.com/v1/integrations/log-sinks"
 ```
 
 ```javascript
@@ -500,10 +500,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks"
 
-payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"datadog_logs","sinkData":{"default_api_key":"abcdef12345678900000000000000000","region":"eu"}}
+payload = "{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"datadog_logs\",\"sinkData\":{\"default_api_key\":\"abcdef12345678900000000000000000\",\"region\":\"eu\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -521,7 +521,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
-  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"datadog_logs","sinkData":{"default_api_key":"abcdef12345678900000000000000000","region":"eu"}}`)
+  var jsonStr = []byte("{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"datadog_logs\",\"sinkData\":{\"default_api_key\":\"abcdef12345678900000000000000000\",\"region\":\"eu\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -549,7 +549,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"papertrail","sinkData":{"authenticationStrategy":"port","host":"logs1.papertrailapp.com:","port":8000}}' \
-  https://api.northflank.com/v1/integrations/log-sinks
+  "https://api.northflank.com/v1/integrations/log-sinks"
 ```
 
 ```javascript
@@ -598,10 +598,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks"
 
-payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"papertrail","sinkData":{"authenticationStrategy":"port","host":"logs1.papertrailapp.com:","port":8000}}
+payload = "{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"papertrail\",\"sinkData\":{\"authenticationStrategy\":\"port\",\"host\":\"logs1.papertrailapp.com:\",\"port\":8000}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -619,7 +619,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
-  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"papertrail","sinkData":{"authenticationStrategy":"port","host":"logs1.papertrailapp.com:","port":8000}}`)
+  var jsonStr = []byte("{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"papertrail\",\"sinkData\":{\"authenticationStrategy\":\"port\",\"host\":\"logs1.papertrailapp.com:\",\"port\":8000}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -647,7 +647,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"aws_s3","sinkData":{"endpoint":"my.bucket.com","region":"eu-west-2","auth":{"accessKeyId":"PMSACIHNUIASDBWQDS","secretAccessKey":"HA1PLMNOEAEYUHAJQMSDUJQS"},"bucket":"northflank-logs","compression":"gzip"}}' \
-  https://api.northflank.com/v1/integrations/log-sinks
+  "https://api.northflank.com/v1/integrations/log-sinks"
 ```
 
 ```javascript
@@ -701,10 +701,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks"
 
-payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"aws_s3","sinkData":{"endpoint":"my.bucket.com","region":"eu-west-2","auth":{"accessKeyId":"PMSACIHNUIASDBWQDS","secretAccessKey":"HA1PLMNOEAEYUHAJQMSDUJQS"},"bucket":"northflank-logs","compression":"gzip"}}
+payload = "{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"aws_s3\",\"sinkData\":{\"endpoint\":\"my.bucket.com\",\"region\":\"eu-west-2\",\"auth\":{\"accessKeyId\":\"PMSACIHNUIASDBWQDS\",\"secretAccessKey\":\"HA1PLMNOEAEYUHAJQMSDUJQS\"},\"bucket\":\"northflank-logs\",\"compression\":\"gzip\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -722,7 +722,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
-  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"aws_s3","sinkData":{"endpoint":"my.bucket.com","region":"eu-west-2","auth":{"accessKeyId":"PMSACIHNUIASDBWQDS","secretAccessKey":"HA1PLMNOEAEYUHAJQMSDUJQS"},"bucket":"northflank-logs","compression":"gzip"}}`)
+  var jsonStr = []byte("{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"aws_s3\",\"sinkData\":{\"endpoint\":\"my.bucket.com\",\"region\":\"eu-west-2\",\"auth\":{\"accessKeyId\":\"PMSACIHNUIASDBWQDS\",\"secretAccessKey\":\"HA1PLMNOEAEYUHAJQMSDUJQS\"},\"bucket\":\"northflank-logs\",\"compression\":\"gzip\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -750,7 +750,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"http","sinkData":{"uri":"my.log-collector.com","encoding":{"codec":"json"},"batch":{"maxEvents":"10","maxBytes":"1e+7"},"auth":{"strategy":"none"}}}' \
-  https://api.northflank.com/v1/integrations/log-sinks
+  "https://api.northflank.com/v1/integrations/log-sinks"
 ```
 
 ```javascript
@@ -807,10 +807,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks"
 
-payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"http","sinkData":{"uri":"my.log-collector.com","encoding":{"codec":"json"},"batch":{"maxEvents":"10","maxBytes":"1e+7"},"auth":{"strategy":"none"}}}
+payload = "{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"http\",\"sinkData\":{\"uri\":\"my.log-collector.com\",\"encoding\":{\"codec\":\"json\"},\"batch\":{\"maxEvents\":\"10\",\"maxBytes\":\"1e+7\"},\"auth\":{\"strategy\":\"none\"}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -828,7 +828,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
-  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"http","sinkData":{"uri":"my.log-collector.com","encoding":{"codec":"json"},"batch":{"maxEvents":"10","maxBytes":"1e+7"},"auth":{"strategy":"none"}}}`)
+  var jsonStr = []byte("{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"http\",\"sinkData\":{\"uri\":\"my.log-collector.com\",\"encoding\":{\"codec\":\"json\"},\"batch\":{\"maxEvents\":\"10\",\"maxBytes\":\"1e+7\"},\"auth\":{\"strategy\":\"none\"}}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -856,7 +856,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"logdna","sinkData":{"api_key":"b1dd3feb585asd1a3e9edpo9kmn5e590hg9"}}' \
-  https://api.northflank.com/v1/integrations/log-sinks
+  "https://api.northflank.com/v1/integrations/log-sinks"
 ```
 
 ```javascript
@@ -903,10 +903,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks"
 
-payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"logdna","sinkData":{"api_key":"b1dd3feb585asd1a3e9edpo9kmn5e590hg9"}}
+payload = "{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"logdna\",\"sinkData\":{\"api_key\":\"b1dd3feb585asd1a3e9edpo9kmn5e590hg9\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -924,7 +924,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
-  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"logdna","sinkData":{"api_key":"b1dd3feb585asd1a3e9edpo9kmn5e590hg9"}}`)
+  var jsonStr = []byte("{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"logdna\",\"sinkData\":{\"api_key\":\"b1dd3feb585asd1a3e9edpo9kmn5e590hg9\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -952,7 +952,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"betterStack","sinkData":{"token":"vhnqrLygVQ5GnSQUTZamKvAq","uri":"abc123.eu-nbg-2.betterstackdata.com"}}' \
-  https://api.northflank.com/v1/integrations/log-sinks
+  "https://api.northflank.com/v1/integrations/log-sinks"
 ```
 
 ```javascript
@@ -1000,10 +1000,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks"
 
-payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"betterStack","sinkData":{"token":"vhnqrLygVQ5GnSQUTZamKvAq","uri":"abc123.eu-nbg-2.betterstackdata.com"}}
+payload = "{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"betterStack\",\"sinkData\":{\"token\":\"vhnqrLygVQ5GnSQUTZamKvAq\",\"uri\":\"abc123.eu-nbg-2.betterstackdata.com\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -1021,7 +1021,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
-  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"betterStack","sinkData":{"token":"vhnqrLygVQ5GnSQUTZamKvAq","uri":"abc123.eu-nbg-2.betterstackdata.com"}}`)
+  var jsonStr = []byte("{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"betterStack\",\"sinkData\":{\"token\":\"vhnqrLygVQ5GnSQUTZamKvAq\",\"uri\":\"abc123.eu-nbg-2.betterstackdata.com\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -1049,7 +1049,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"honeycomb","sinkData":{"api_key":"b1dd3feb585asd1a3e9","dataset":"staging-logs"}}' \
-  https://api.northflank.com/v1/integrations/log-sinks
+  "https://api.northflank.com/v1/integrations/log-sinks"
 ```
 
 ```javascript
@@ -1097,10 +1097,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks"
 
-payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"honeycomb","sinkData":{"api_key":"b1dd3feb585asd1a3e9","dataset":"staging-logs"}}
+payload = "{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"honeycomb\",\"sinkData\":{\"api_key\":\"b1dd3feb585asd1a3e9\",\"dataset\":\"staging-logs\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -1118,7 +1118,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
-  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"honeycomb","sinkData":{"api_key":"b1dd3feb585asd1a3e9","dataset":"staging-logs"}}`)
+  var jsonStr = []byte("{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"honeycomb\",\"sinkData\":{\"api_key\":\"b1dd3feb585asd1a3e9\",\"dataset\":\"staging-logs\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -1146,7 +1146,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"logzio","sinkData":{"region":"eu","token":"sNFijNFgNFoNFrMsNFbNFObNFcgNFqoa"}}' \
-  https://api.northflank.com/v1/integrations/log-sinks
+  "https://api.northflank.com/v1/integrations/log-sinks"
 ```
 
 ```javascript
@@ -1194,10 +1194,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks"
 
-payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"logzio","sinkData":{"region":"eu","token":"sNFijNFgNFoNFrMsNFbNFObNFcgNFqoa"}}
+payload = "{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"logzio\",\"sinkData\":{\"region\":\"eu\",\"token\":\"sNFijNFgNFoNFrMsNFbNFObNFcgNFqoa\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -1215,7 +1215,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
-  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"logzio","sinkData":{"region":"eu","token":"sNFijNFgNFoNFrMsNFbNFObNFcgNFqoa"}}`)
+  var jsonStr = []byte("{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"logzio\",\"sinkData\":{\"region\":\"eu\",\"token\":\"sNFijNFgNFoNFrMsNFbNFObNFcgNFqoa\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -1243,7 +1243,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"solarWinds","sinkData":{"api_key":"Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc","encoding":{"codec":"json"},"endpointType":"unitary"}}' \
-  https://api.northflank.com/v1/integrations/log-sinks
+  "https://api.northflank.com/v1/integrations/log-sinks"
 ```
 
 ```javascript
@@ -1294,10 +1294,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks"
 
-payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"solarWinds","sinkData":{"api_key":"Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc","encoding":{"codec":"json"},"endpointType":"unitary"}}
+payload = "{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"solarWinds\",\"sinkData\":{\"api_key\":\"Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc\",\"encoding\":{\"codec\":\"json\"},\"endpointType\":\"unitary\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -1315,7 +1315,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
-  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"solarWinds","sinkData":{"api_key":"Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc","encoding":{"codec":"json"},"endpointType":"unitary"}}`)
+  var jsonStr = []byte("{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"solarWinds\",\"sinkData\":{\"api_key\":\"Tr8BIEmYx1fuM3_XRMwU3xXEFnD20p9NFkRIu1COrDqMCM4g86qWZgVdgs1Y7mzWtFMI0Zc\",\"encoding\":{\"codec\":\"json\"},\"endpointType\":\"unitary\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -1343,7 +1343,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"axiom","sinkData":{"dataset":"staging","token":"b1dd3feb585asd1a3e9edpo9kmn5e590hg9","tokenType":"api","region":"eu-central-1.aws.edge.axiom.co"}}' \
-  https://api.northflank.com/v1/integrations/log-sinks
+  "https://api.northflank.com/v1/integrations/log-sinks"
 ```
 
 ```javascript
@@ -1393,10 +1393,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks"
 
-payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"axiom","sinkData":{"dataset":"staging","token":"b1dd3feb585asd1a3e9edpo9kmn5e590hg9","tokenType":"api","region":"eu-central-1.aws.edge.axiom.co"}}
+payload = "{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"axiom\",\"sinkData\":{\"dataset\":\"staging\",\"token\":\"b1dd3feb585asd1a3e9edpo9kmn5e590hg9\",\"tokenType\":\"api\",\"region\":\"eu-central-1.aws.edge.axiom.co\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -1414,7 +1414,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
-  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"axiom","sinkData":{"dataset":"staging","token":"b1dd3feb585asd1a3e9edpo9kmn5e590hg9","tokenType":"api","region":"eu-central-1.aws.edge.axiom.co"}}`)
+  var jsonStr = []byte("{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"axiom\",\"sinkData\":{\"dataset\":\"staging\",\"token\":\"b1dd3feb585asd1a3e9edpo9kmn5e590hg9\",\"tokenType\":\"api\",\"region\":\"eu-central-1.aws.edge.axiom.co\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -1442,7 +1442,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"newRelic","sinkData":{"accountId":"b1dd3feb585asd1a3e9","licenseKey":"b1dd3feb585asd1a3e9","region":"eu"}}' \
-  https://api.northflank.com/v1/integrations/log-sinks
+  "https://api.northflank.com/v1/integrations/log-sinks"
 ```
 
 ```javascript
@@ -1491,10 +1491,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks"
 
-payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"newRelic","sinkData":{"accountId":"b1dd3feb585asd1a3e9","licenseKey":"b1dd3feb585asd1a3e9","region":"eu"}}
+payload = "{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"newRelic\",\"sinkData\":{\"accountId\":\"b1dd3feb585asd1a3e9\",\"licenseKey\":\"b1dd3feb585asd1a3e9\",\"region\":\"eu\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -1512,7 +1512,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
-  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"newRelic","sinkData":{"accountId":"b1dd3feb585asd1a3e9","licenseKey":"b1dd3feb585asd1a3e9","region":"eu"}}`)
+  var jsonStr = []byte("{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"newRelic\",\"sinkData\":{\"accountId\":\"b1dd3feb585asd1a3e9\",\"licenseKey\":\"b1dd3feb585asd1a3e9\",\"region\":\"eu\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -1540,7 +1540,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"sentry","sinkData":{"endpoint":"https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs","publicKey":"5cac0d8cb9414d5c80eb8467f55d5352"}}' \
-  https://api.northflank.com/v1/integrations/log-sinks
+  "https://api.northflank.com/v1/integrations/log-sinks"
 ```
 
 ```javascript
@@ -1588,10 +1588,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/log-sinks"
 
-payload = {"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"sentry","sinkData":{"endpoint":"https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs","publicKey":"5cac0d8cb9414d5c80eb8467f55d5352"}}
+payload = "{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"sentry\",\"sinkData\":{\"endpoint\":\"https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs\",\"publicKey\":\"5cac0d8cb9414d5c80eb8467f55d5352\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -1609,7 +1609,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/log-sinks"
 
-  var jsonStr = []byte(`{"name":"example-log-sink","description":"This is an example log sink.","restricted":true,"projects":["default-project"],"restrictions":{"tags":{"enabled":false,"matchCondition":"or"}},"options":{"useCustomLabels":true,"forwardCdnLogs":true,"forwardIngressLogs":true,"forwardMeshLogs":true},"sinkType":"sentry","sinkData":{"endpoint":"https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs","publicKey":"5cac0d8cb9414d5c80eb8467f55d5352"}}`)
+  var jsonStr = []byte("{\"name\":\"example-log-sink\",\"description\":\"This is an example log sink.\",\"restricted\":true,\"projects\":[\"default-project\"],\"restrictions\":{\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}},\"options\":{\"useCustomLabels\":true,\"forwardCdnLogs\":true,\"forwardIngressLogs\":true,\"forwardMeshLogs\":true},\"sinkType\":\"sentry\",\"sinkData\":{\"endpoint\":\"https://o459080.ingest.de.sentry.io/api/5523749/integration/otlp/v1/logs\",\"publicKey\":\"5cac0d8cb9414d5c80eb8467f55d5352\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

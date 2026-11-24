@@ -13,20 +13,20 @@ Required permission: Account > Platform > GradualRollouts > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) Identifier for the gradual rollout strategy
   - `name`: (string) (required) Name of the gradual rollout strategy
   - `type`: (string) (required) Type of the gradual rollout strategy (enum: canary)
   - `options`: {object}
     - `triggers`: {object}
-      - `releaseFromTemplate`: (boolean)
-      - `releaseFromReleaseFlow`: (boolean)
-      - `releaseFromCD`: (boolean)
-      - `releaseFromUI`: (boolean)
-      - `releaseFromApi`: (boolean)
-    - `blockDeploymentOnActiveRollout`: (boolean)
-  - `details`: {object}
+      - `releaseFromTemplate`: (boolean) (nullable)
+      - `releaseFromReleaseFlow`: (boolean) (nullable)
+      - `releaseFromCD`: (boolean) (nullable)
+      - `releaseFromUI`: (boolean) (nullable)
+      - `releaseFromApi`: (boolean) (nullable)
+    - `blockDeploymentOnActiveRollout`: (boolean) (nullable)
+  - `details`: {object} (required)
     - `canaryStrategy`: (string) (required) (enum: percentage, header)
     - `config`: (multiple options) {object}
         - `canaryPercentage`: (integer) (required)
@@ -44,6 +44,25 @@ GET /v1/gradual-rollout-strategies/{gradualRolloutStrategyId}
 
 GET /v1/teams/{teamId}/gradual-rollout-strategies/{gradualRolloutStrategyId}
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/gradual-rollout-strategies/{gradualRolloutStrategyId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/gradual-rollout-strategies/{gradualRolloutStrategyId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: Details about the gradual rollout strategy.
@@ -53,7 +72,10 @@ GET /v1/teams/{teamId}/gradual-rollout-strategies/{gradualRolloutStrategyId}
   "data": {
     "id": "example-identifier",
     "name": "example-name",
-    "type": "canary"
+    "type": "canary",
+    "details": {
+      "canaryStrategy": "percentage"
+    }
   }
 }
 ```
@@ -80,7 +102,10 @@ Options:
 {
   "id": "example-identifier",
   "name": "example-name",
-  "type": "canary"
+  "type": "canary",
+  "details": {
+    "canaryStrategy": "percentage"
+  }
 }
 ```
 
@@ -107,7 +132,10 @@ await apiClient.get.gradualRolloutStrategy({
   "data": {
     "id": "example-identifier",
     "name": "example-name",
-    "type": "canary"
+    "type": "canary",
+    "details": {
+      "canaryStrategy": "percentage"
+    }
   },
   "rawResponse": "...",
   "request": "...",

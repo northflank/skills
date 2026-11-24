@@ -11,7 +11,7 @@ Generated from the application pages listed in `https://northflank.com/docs/llms
 - [Cloud Harness](cloud-harness.md) — 2 pages
 - [Cloud Integrations](cloud-integrations.md) — 4 pages
 - [Collaborate](collaborate.md) — 5 pages
-- [Databases And Persistence](databases-and-persistence.md) — 29 pages
+- [Databases And Persistence](databases-and-persistence.md) — 30 pages
 - [Domains](domains.md) — 12 pages
 - [Getting Started](getting-started.md) — 7 pages
 - [GPU Workloads](gpu-workloads.md) — 4 pages

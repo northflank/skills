@@ -20,26 +20,45 @@ Required permission: Project > Jobs > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `healthChecks`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `healthChecks`: [array of] (required) An array of health checks. {object}
      - `protocol`: (string) (required) The protocol to access the health check with. (enum: HTTP, CMD, TCP)
      - `type`: (string) (required) The type of health check. (enum: livenessProbe, readinessProbe)
-     - `path`: (string) The path of the health check endpoint.
-     - `cmd`: (undefined) The command to run for the health check.
-     - `httpPort`: (undefined) HTTP port number for the health check endpoint.
-     - `tcpSocketPort`: (undefined) TCP port number for the health check endpoint.
+     - `path`: (string) (nullable) The path of the health check endpoint.
+     - `cmd`: The command to run for the health check.
+     - `httpPort`: HTTP port number for the health check endpoint.
+     - `tcpSocketPort`: TCP port number for the health check endpoint.
      - `initialDelaySeconds`: (integer) (required) Initial delay, in seconds, before the health check is first run.
      - `periodSeconds`: (integer) (required) The time between each check, in seconds.
      - `timeoutSeconds`: (integer) (required) The time to wait for a response before marking the health check as a failure.
      - `failureThreshold`: (integer) (required) The maximum number of allowed failures.
-     - `successThreshold`: (undefined) The number of successes required to mark the health check as a success.
+     - `successThreshold`: The number of successes required to mark the health check as a success.
 
 ### API reference
 
 GET /v1/projects/{projectId}/jobs/{jobId}/health-checks
 
 GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/health-checks
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/health-checks"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/health-checks"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

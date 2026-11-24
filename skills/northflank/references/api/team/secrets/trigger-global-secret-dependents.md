@@ -18,15 +18,15 @@ Required permission: Account > Templates > General > Run
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `batchId`: (string) (required) (max length: 128)
   - `accepted`: (integer) (required)
   - `succeeded`: (integer) (required)
   - `failed`: (integer) (required)
   - `skipped`: (integer) (required)
   - `deduplicated`: (integer) (required)
-  - `items`: [array of] {object}
+  - `items`: [array of] (required) {object}
      - `templateInternalId`: (string) (required) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `status`: (string) (required) (enum: succeeded, failed, skipped, deduplicated)
      - `templateRunId`: (string)
@@ -42,7 +42,17 @@ POST /v1/teams/{teamId}/secrets/{secretId}/trigger-dependents
 200 OK: The result of triggering the configured dependent templates.
 
 ```json
-undefined
+{
+  "data": {
+    "batchId": "string",
+    "accepted": 0,
+    "succeeded": 0,
+    "failed": 0,
+    "skipped": 0,
+    "deduplicated": 0,
+    "items": []
+  }
+}
 ```
 
 ### CLI reference
@@ -66,7 +76,15 @@ Options:
  The result of triggering the configured dependent templates.
 
 ```json
-undefined
+{
+  "batchId": "string",
+  "accepted": 0,
+  "succeeded": 0,
+  "failed": 0,
+  "skipped": 0,
+  "deduplicated": 0,
+  "items": []
+}
 ```
 
 ### JavaScript client reference
@@ -89,6 +107,15 @@ await apiClient.trigger.globalSecret.dependents({
 
 ```json
 {
+  "data": {
+    "batchId": "string",
+    "accepted": 0,
+    "succeeded": 0,
+    "failed": 0,
+    "skipped": 0,
+    "deduplicated": 0,
+    "items": []
+  },
   "rawResponse": "...",
   "request": "...",
   "error": "..."

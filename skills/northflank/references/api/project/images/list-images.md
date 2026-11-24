@@ -22,13 +22,13 @@ Required permission: Project > Images > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `images`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `images`: [array of] (required) {object}
      - `id`: (string) (required) (min length: 24) (max length: 24)
      - `name`: (string) (required)
      - `tag`: (string) (required)
-     - `source`: (multiple options) {object}
+     - `source`: (multiple options) (required) {object}
          - `type`: (string) (required) (enum: build)
          - `buildId`: (string) (required) (min length: 24) (max length: 24)
          - `nfObjectId`: (string) (required) (min length: 24) (max length: 24)
@@ -51,7 +51,7 @@ Required permission: Project > Images > General > Read
        - `repo`: (string) (required)
        - `branch`: (string) (required)
        - `commit`: (string) (required)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -62,6 +62,25 @@ GET /v1/projects/{projectId}/images
 
 GET /v1/teams/{teamId}/projects/{projectId}/images
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/images?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/images?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: Images belonging to the project.
@@ -71,6 +90,9 @@ GET /v1/teams/{teamId}/projects/{projectId}/images
   "pagination": {
     "hasNextPage": false,
     "count": 1
+  },
+  "data": {
+    "images": []
   }
 }
 ```
@@ -104,7 +126,9 @@ Options:
  Images belonging to the project.
 
 ```json
-undefined
+{
+  "images": []
+}
 ```
 
 ### JavaScript client reference
@@ -134,6 +158,9 @@ await apiClient.list.images({
   "pagination": {
     "hasNextPage": false,
     "count": 1
+  },
+  "data": {
+    "images": []
   },
   "rawResponse": "...",
   "request": "...",

@@ -22,24 +22,23 @@ Required permission: Account > Templates > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `templateRuns`: [array of] {object}
-     - `name`: (string) (required) Name of the template. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-     - `description`: (string) Description of the template. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-     - `apiVersion`: (string) (required) The version of the Northflank API to run the template against. (enum: v1.2)
-     - `options`: {object}
-       - `autorun`: (boolean) If true, the template will run automatically whenever a change is made to it.
-       - `concurrencyPolicy`: (string) Defines the concurrency behaviour of the template with respect to parallel runs. (enum: allow, queue, forbid, latest, replace)
-     - `id`: (string) (required) Identifier for the template run
-     - `templateId`: (string) (required) Identifier for the template
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `templateRuns`: [array of] (required) An array of template run objects. {object}
+     - `id`: (string) (required) Identifier of the run.
+     - `name`: (string) Optional name of the run.
+     - `description`: (string) Optional description of the run.
+     - `apiVersion`: (string) Template API version.
+     - `templateId`: (string) Identifier of the template, when available.
+     - `environmentId`: (string) Identifier of the preview environment, when available.
      - `status`: (string) (required) Status of the template run (enum: pending, running, success, failure, aborted, aborting, queued, unknown, skipped, waiting, retrying, async_wait, approval_wait)
-     - `startedAt`: (string) Timestamp the run started at. (format: date-time)
-     - `concluded`: (boolean) (required) Whether the run has concluded (aborted, success, failed)
-     - `concludedAt`: (string) Timestamp the run concluded at. (format: date-time)
-     - `createdAt`: (string) (required) Timestamp the run was created at. (format: date-time)
-     - `updatedAt`: (string) (required) Timestamp the run was last updated at. (format: date-time)
-- `pagination`: {object}
+     - `concluded`: (boolean) (required) Whether execution has concluded.
+     - `startedAt`: (string) When execution started. (format: date-time)
+     - `concludedAt`: (string) When execution concluded. (format: date-time)
+     - `createdAt`: (string) (required) When the run was created. (format: date-time)
+     - `updatedAt`: (string) (required) When the run was last updated. (format: date-time)
+     - `detailsHidden`: (boolean) (required) Run details include available public results. Sensitive inputs and results are omitted.
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -50,6 +49,25 @@ GET /v1/templates/{templateId}/runs
 
 GET /v1/teams/{teamId}/templates/{templateId}/runs
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/templates/{templateId}/runs?per_page=50&page=1&status=success"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/templates/{templateId}/runs?per_page=50&page=1&status=success"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: A list of template runs.
@@ -59,21 +77,16 @@ GET /v1/teams/{teamId}/templates/{templateId}/runs
   "data": {
     "templateRuns": [
       {
-        "name": "Example Template",
-        "description": "This is a sample template.",
-        "apiVersion": "v1.2",
-        "options": {
-          "autorun": false,
-          "concurrencyPolicy": "allow"
-        },
-        "id": "3dd592f6-ce63-45ee-acf8-13dc5ec5235c",
-        "templateId": "example-template",
+        "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
+        "name": "Production deployment",
+        "description": "Deploy the latest release.",
         "status": "success",
-        "startedAt": "2021-01-01 12:01:00.000Z",
         "concluded": true,
-        "concludedAt": "2021-01-01 12:10:00.000Z",
-        "createdAt": "2021-01-01 12:00:00.000Z",
-        "updatedAt": "2021-01-01 12:00:00.000Z"
+        "startedAt": "2026-01-01T12:00:00.000Z",
+        "concludedAt": "2026-01-01T12:01:00.000Z",
+        "createdAt": "2026-01-01T12:00:00.000Z",
+        "updatedAt": "2026-01-01T12:01:00.000Z",
+        "detailsHidden": false
       }
     ]
   },
@@ -116,21 +129,16 @@ Options:
 {
   "templateRuns": [
     {
-      "name": "Example Template",
-      "description": "This is a sample template.",
-      "apiVersion": "v1.2",
-      "options": {
-        "autorun": false,
-        "concurrencyPolicy": "allow"
-      },
-      "id": "3dd592f6-ce63-45ee-acf8-13dc5ec5235c",
-      "templateId": "example-template",
+      "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
+      "name": "Production deployment",
+      "description": "Deploy the latest release.",
       "status": "success",
-      "startedAt": "2021-01-01 12:01:00.000Z",
       "concluded": true,
-      "concludedAt": "2021-01-01 12:10:00.000Z",
-      "createdAt": "2021-01-01 12:00:00.000Z",
-      "updatedAt": "2021-01-01 12:00:00.000Z"
+      "startedAt": "2026-01-01T12:00:00.000Z",
+      "concludedAt": "2026-01-01T12:01:00.000Z",
+      "createdAt": "2026-01-01T12:00:00.000Z",
+      "updatedAt": "2026-01-01T12:01:00.000Z",
+      "detailsHidden": false
     }
   ]
 }
@@ -164,21 +172,16 @@ await apiClient.list.templateRuns({
   "data": {
     "templateRuns": [
       {
-        "name": "Example Template",
-        "description": "This is a sample template.",
-        "apiVersion": "v1.2",
-        "options": {
-          "autorun": false,
-          "concurrencyPolicy": "allow"
-        },
-        "id": "3dd592f6-ce63-45ee-acf8-13dc5ec5235c",
-        "templateId": "example-template",
+        "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
+        "name": "Production deployment",
+        "description": "Deploy the latest release.",
         "status": "success",
-        "startedAt": "2021-01-01 12:01:00.000Z",
         "concluded": true,
-        "concludedAt": "2021-01-01 12:10:00.000Z",
-        "createdAt": "2021-01-01 12:00:00.000Z",
-        "updatedAt": "2021-01-01 12:00:00.000Z"
+        "startedAt": "2026-01-01T12:00:00.000Z",
+        "concludedAt": "2026-01-01T12:01:00.000Z",
+        "createdAt": "2026-01-01T12:00:00.000Z",
+        "updatedAt": "2026-01-01T12:01:00.000Z",
+        "detailsHidden": false
       }
     ]
   },
@@ -223,21 +226,16 @@ print(response.data)
 {
   "templateRuns": [
     {
-      "name": "Example Template",
-      "description": "This is a sample template.",
-      "apiVersion": "v1.2",
-      "options": {
-        "autorun": false,
-        "concurrencyPolicy": "allow"
-      },
-      "id": "3dd592f6-ce63-45ee-acf8-13dc5ec5235c",
-      "templateId": "example-template",
+      "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
+      "name": "Production deployment",
+      "description": "Deploy the latest release.",
       "status": "success",
-      "startedAt": "2021-01-01 12:01:00.000Z",
       "concluded": true,
-      "concludedAt": "2021-01-01 12:10:00.000Z",
-      "createdAt": "2021-01-01 12:00:00.000Z",
-      "updatedAt": "2021-01-01 12:00:00.000Z"
+      "startedAt": "2026-01-01T12:00:00.000Z",
+      "concludedAt": "2026-01-01T12:01:00.000Z",
+      "createdAt": "2026-01-01T12:00:00.000Z",
+      "updatedAt": "2026-01-01T12:01:00.000Z",
+      "detailsHidden": false
     }
   ]
 }

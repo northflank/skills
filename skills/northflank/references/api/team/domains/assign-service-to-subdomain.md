@@ -21,8 +21,8 @@ Required permission: Account > Networking > Subdomains > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -39,7 +39,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"serviceId":"example-service","projectId":"default-project","portName":"p01"}' \
-  https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/assign
+  "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/assign"
 ```
 
 ```javascript
@@ -67,10 +67,10 @@ import requests
 
 url = "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/assign"
 
-payload = {"serviceId":"example-service","projectId":"default-project","portName":"p01"}
+payload = "{\"serviceId\":\"example-service\",\"projectId\":\"default-project\",\"portName\":\"p01\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -88,7 +88,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/assign"
 
-  var jsonStr = []byte(`{"serviceId":"example-service","projectId":"default-project","portName":"p01"}`)
+  var jsonStr = []byte("{\"serviceId\":\"example-service\",\"projectId\":\"default-project\",\"portName\":\"p01\"}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

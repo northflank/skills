@@ -18,12 +18,12 @@ Lists supported cloud provider node types
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `providers`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `providers`: [array of] (required) An array of supported cloud provider node types {object} A provider node type object
      - `id`: (string) (required) The ID of the node type
      - `name`: (string) (required) The name of the node type
-     - `resources`: {object}
+     - `resources`: {object} (required) An listing the resources of this node type
        - `vcpu`: (integer) Number of vCPU of this node type
        - `memory`: (integer) Amount of memory capacity in GB of this node type
      - `family`: (string) (required) Family of the node type
@@ -33,6 +33,25 @@ Lists supported cloud provider node types
 ### API reference
 
 GET /v1/cloud-providers/node-types
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/cloud-providers/node-types?per_page=50&page=1&provider=gcp&region=europe-west-1&family=N&maxGenerationAge=0&hasGpu=true"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/cloud-providers/node-types?per_page=50&page=1&provider=gcp&region=europe-west-1&family=N&maxGenerationAge=0&hasGpu=true"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

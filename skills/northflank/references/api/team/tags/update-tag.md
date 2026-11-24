@@ -20,30 +20,30 @@ Required permission: Account > Platform > Tags > Update
 - `nodeAffinities`: [array of] {object}
    - `preference`: (boolean)
    - `weight`: (number) The node affinity weight. Required when `preference` is `true`. (format: float)
-   - `matchExpressions`: [array of] {object}
+   - `matchExpressions`: [array of] (required) {object}
       - `key`: (string) (required)
       - `operator`: (string) (required) (enum: In, NotIn)
-      - `values`: [array of] (string)
+      - `values`: [array of] (required) (string)
 - `sandboxing`: {object}
-  - `builds`: {object}
+  - `builds`: {object} Build sandboxing runtime configurations
     - `enabled`: (boolean) (required) Enables runtime scheduling constraints for builds
-    - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for builds (enum: none, gvisor, kata-clh, kata-qemu)
-  - `services`: {object}
+    - `runtimeClass`: (multiple options) Defines which runtime scheduling constraints apply for builds (string) Defines which runtime scheduling constraints apply for builds (enum: none, gvisor, kata-clh, kata-qemu)
+  - `services`: {object} Service sandboxing runtime configurations
     - `enabled`: (boolean) (required) Enables runtime scheduling constraints for services
-    - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for services (enum: none, gvisor, kata-clh, kata-qemu)
-  - `addons`: {object}
+    - `runtimeClass`: (multiple options) Defines which runtime scheduling constraints apply for services (string) Defines which runtime scheduling constraints apply for services (enum: none, gvisor, kata-clh, kata-qemu)
+  - `addons`: {object} Addon sandboxing runtime configurations
     - `enabled`: (boolean) (required) Enables runtime scheduling constraints for addons
-    - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for addons (enum: none, gvisor, kata-clh, kata-qemu)
-  - `jobs`: {object}
+    - `runtimeClass`: (multiple options) Defines which runtime scheduling constraints apply for addons (string) Defines which runtime scheduling constraints apply for addons (enum: none, gvisor, kata-clh, kata-qemu)
+  - `jobs`: {object} Job secure runtime configurations
     - `enabled`: (boolean) (required) Enables runtime scheduling constraints for jobs
-    - `runtimeClass`: (multiple options) (string) Defines which runtime scheduling constraints apply for jobs (enum: none, gvisor, kata-clh, kata-qemu)
+    - `runtimeClass`: (multiple options) Defines which runtime scheduling constraints apply for jobs (string) Defines which runtime scheduling constraints apply for jobs (enum: none, gvisor, kata-clh, kata-qemu)
 - `color`: (string) (pattern: ^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$)
 - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -60,7 +60,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
   --data '{"useAsInfrastructureLabel":false,"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A"}' \
-  https://api.northflank.com/v1/tags/{resourceTagId}
+  "https://api.northflank.com/v1/tags/{resourceTagId}"
 ```
 
 ```javascript
@@ -107,10 +107,10 @@ import requests
 
 url = "https://api.northflank.com/v1/tags/{resourceTagId}"
 
-payload = {"useAsInfrastructureLabel":false,"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A"}
+payload = "{\"useAsInfrastructureLabel\":false,\"useSpotNodes\":false,\"useOnDemandNodes\":false,\"sandboxing\":{\"builds\":{\"enabled\":false,\"runtimeClass\":\"gvisor\"},\"services\":{\"enabled\":false,\"runtimeClass\":\"gvisor\"},\"addons\":{\"enabled\":false,\"runtimeClass\":\"gvisor\"},\"jobs\":{\"enabled\":false,\"runtimeClass\":\"gvisor\"}},\"color\":\"#57637A\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PATCH", url, headers = headers, json = payload)
+response = requests.request("PATCH", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -128,7 +128,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/tags/{resourceTagId}"
 
-  var jsonStr = []byte(`{"useAsInfrastructureLabel":false,"useSpotNodes":false,"useOnDemandNodes":false,"sandboxing":{"builds":{"enabled":false,"runtimeClass":"gvisor"},"services":{"enabled":false,"runtimeClass":"gvisor"},"addons":{"enabled":false,"runtimeClass":"gvisor"},"jobs":{"enabled":false,"runtimeClass":"gvisor"}},"color":"#57637A"}`)
+  var jsonStr = []byte("{\"useAsInfrastructureLabel\":false,\"useSpotNodes\":false,\"useOnDemandNodes\":false,\"sandboxing\":{\"builds\":{\"enabled\":false,\"runtimeClass\":\"gvisor\"},\"services\":{\"enabled\":false,\"runtimeClass\":\"gvisor\"},\"addons\":{\"enabled\":false,\"runtimeClass\":\"gvisor\"},\"jobs\":{\"enabled\":false,\"runtimeClass\":\"gvisor\"}},\"color\":\"#57637A\"}")
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

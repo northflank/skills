@@ -16,18 +16,18 @@ Required permission: Account > Admin > Roles > Manage
 {object}
 - `name`: (string) (required) The name of the role. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `description`: (string) A description of the role. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-- `permissions`: {object}
-  - `teamScope`: [array of] (string)
-  - `projectScope`: [array of] (string)
-- `restrictions`: {object}
+- `permissions`: {object} Permissions granted by this role.
+  - `teamScope`: [array of] Team-level RBAC permission strings. (string)
+  - `projectScope`: [array of] Project-level RBAC permission strings. (string)
+- `restrictions`: {object} Project access restrictions for this role.
   - `enabled`: (boolean) (required)
   - `projects`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `restrictionMode`: (string) (enum: in, notIn)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) ID of the role. (pattern: ^[A-Za-z0-9-]+$)
   - `name`: (string) (required) Display name of the role.
   - `description`: (string) Description of the role.
@@ -37,9 +37,9 @@ Required permission: Account > Admin > Roles > Manage
     - `restrictionMode`: (string) (enum: in, notIn)
   - `createdAt`: (string) Creation time. (format: date-time)
   - `updatedAt`: (string) Last updated. (format: date-time)
-  - `permissions`: {object}
-    - `teamScope`: [array of] (string)
-    - `projectScope`: [array of] (string)
+  - `permissions`: {object} (required)
+    - `teamScope`: [array of] (required) Team-level permissions. (string)
+    - `projectScope`: [array of] (required) Project-level permissions. (string)
 
 ### API reference
 
@@ -54,7 +54,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
   --data '{"name":"Developer","description":"Role for developers."}' \
-  https://api.northflank.com/v1/teams/{teamId}/roles
+  "https://api.northflank.com/v1/teams/{teamId}/roles"
 ```
 
 ```javascript
@@ -81,10 +81,10 @@ import requests
 
 url = "https://api.northflank.com/v1/teams/{teamId}/roles"
 
-payload = {"name":"Developer","description":"Role for developers."}
+payload = "{\"name\":\"Developer\",\"description\":\"Role for developers.\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PUT", url, headers = headers, json = payload)
+response = requests.request("PUT", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -102,7 +102,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/teams/{teamId}/roles"
 
-  var jsonStr = []byte(`{"name":"Developer","description":"Role for developers."}`)
+  var jsonStr = []byte("{\"name\":\"Developer\",\"description\":\"Role for developers.\"}")
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -132,7 +132,11 @@ func main() {
     "name": "Developer",
     "description": "Role for developers.",
     "createdAt": "2021-01-20T11:19:53.175Z",
-    "updatedAt": "2021-01-20T11:19:53.175Z"
+    "updatedAt": "2021-01-20T11:19:53.175Z",
+    "permissions": {
+      "teamScope": [],
+      "projectScope": []
+    }
   }
 }
 ```
@@ -172,7 +176,11 @@ Options:
   "name": "Developer",
   "description": "Role for developers.",
   "createdAt": "2021-01-20T11:19:53.175Z",
-  "updatedAt": "2021-01-20T11:19:53.175Z"
+  "updatedAt": "2021-01-20T11:19:53.175Z",
+  "permissions": {
+    "teamScope": [],
+    "projectScope": []
+  }
 }
 ```
 
@@ -203,7 +211,11 @@ await apiClient.put.teamRole({
     "name": "Developer",
     "description": "Role for developers.",
     "createdAt": "2021-01-20T11:19:53.175Z",
-    "updatedAt": "2021-01-20T11:19:53.175Z"
+    "updatedAt": "2021-01-20T11:19:53.175Z",
+    "permissions": {
+      "teamScope": [],
+      "projectScope": []
+    }
   },
   "rawResponse": "...",
   "request": "...",

@@ -20,19 +20,19 @@ Required permission: Account > Platform > ContainerSnapshots > Create
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) (format: uuid)
   - `trigger`: (string) (required) (enum: manual, containerTermination)
   - `state`: (string) (required) (enum: scheduled, accepted, running, succeeded, failed, cancelled)
-  - `source`: {object}
+  - `source`: {object} (required)
     - `projectId`: (string) (required)
-    - `nfObject`: {object}
+    - `nfObject`: {object} (required)
       - `id`: (string) (required)
       - `type`: (string) (required) (enum: job, service, harness, addon, volume, opentofu-job, llm-model-deployment, external-addon)
-  - `target`: {object}
+  - `target`: {object} (required)
     - `podName`: (string) (required)
-  - `compatibility`: {object}
+  - `compatibility`: {object} (required)
     - `runtime`: (string) (required) (enum: kata)
     - `architecture`: (string) (required) (enum: x86, arm)
     - `baseImageDigest`: (string) (pattern: ^sha256:[0-9a-f]{64}$)
@@ -67,7 +67,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"__depth":1}' \
-  https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/snapshots
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/snapshots"
 ```
 
 ```javascript
@@ -93,10 +93,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/snapshots"
 
-payload = {"__depth":1}
+payload = "{\"__depth\":1}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -114,7 +114,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/snapshots"
 
-  var jsonStr = []byte(`{"__depth":1}`)
+  var jsonStr = []byte("{\"__depth\":1}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -138,7 +138,31 @@ func main() {
 202 Accepted: The scheduled container snapshot.
 
 ```json
-undefined
+{
+  "data": {
+    "id": "00000000-0000-4000-8000-000000000000",
+    "trigger": "manual",
+    "state": "scheduled",
+    "source": {
+      "projectId": "string",
+      "nfObject": {
+        "id": "string",
+        "type": "job"
+      }
+    },
+    "target": {
+      "podName": "string"
+    },
+    "compatibility": {
+      "runtime": "kata",
+      "architecture": "x86"
+    },
+    "inUse": false,
+    "lastTransitionTime": "1970-01-01T00:00:00.000Z",
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "updatedAt": "1970-01-01T00:00:00.000Z"
+  }
+}
 ```
 
 #### Example Response
@@ -176,7 +200,29 @@ Options:
  The scheduled container snapshot.
 
 ```json
-undefined
+{
+  "id": "00000000-0000-4000-8000-000000000000",
+  "trigger": "manual",
+  "state": "scheduled",
+  "source": {
+    "projectId": "string",
+    "nfObject": {
+      "id": "string",
+      "type": "job"
+    }
+  },
+  "target": {
+    "podName": "string"
+  },
+  "compatibility": {
+    "runtime": "kata",
+    "architecture": "x86"
+  },
+  "inUse": false,
+  "lastTransitionTime": "1970-01-01T00:00:00.000Z",
+  "createdAt": "1970-01-01T00:00:00.000Z",
+  "updatedAt": "1970-01-01T00:00:00.000Z"
+}
 ```
 
 ### JavaScript client reference
@@ -203,6 +249,29 @@ await apiClient.create.containerSnapshot({
 
 ```json
 {
+  "data": {
+    "id": "00000000-0000-4000-8000-000000000000",
+    "trigger": "manual",
+    "state": "scheduled",
+    "source": {
+      "projectId": "string",
+      "nfObject": {
+        "id": "string",
+        "type": "job"
+      }
+    },
+    "target": {
+      "podName": "string"
+    },
+    "compatibility": {
+      "runtime": "kata",
+      "architecture": "x86"
+    },
+    "inUse": false,
+    "lastTransitionTime": "1970-01-01T00:00:00.000Z",
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "updatedAt": "1970-01-01T00:00:00.000Z"
+  },
   "rawResponse": "...",
   "request": "...",
   "error": "..."

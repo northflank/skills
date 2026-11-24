@@ -14,16 +14,35 @@ Required permission: Project > Addons > General > Read Spec
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `secrets`: {object}
-  - `envs`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `secrets`: {object} (required) An object containing secrets for connecting to the addon. Secrets are dependent on the addon type.
+  - `envs`: {object} (required) An object containing data such as connection strings. Dependent on the addon type.
 
 ### API reference
 
 GET /v1/projects/{projectId}/addons/{addonId}/credentials
 
 GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}/credentials
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/credentials"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/credentials"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

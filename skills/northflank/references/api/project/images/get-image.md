@@ -14,12 +14,12 @@ Required permission: Project > Images > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) (min length: 24) (max length: 24)
   - `name`: (string) (required)
   - `tag`: (string) (required)
-  - `source`: (multiple options) {object}
+  - `source`: (multiple options) (required) {object}
      - `type`: (string) (required) (enum: build)
      - `buildId`: (string) (required) (min length: 24) (max length: 24)
      - `nfObjectId`: (string) (required) (min length: 24) (max length: 24)
@@ -49,12 +49,47 @@ GET /v1/projects/{projectId}/images/{imageId}
 
 GET /v1/teams/{teamId}/projects/{projectId}/images/{imageId}
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/images/{imageId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/images/{imageId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: Details about the image version.
 
 ```json
-undefined
+{
+  "data": {
+    "id": "stringaaaaaaaaaaaaaaaaaa",
+    "name": "string",
+    "tag": "string",
+    "source": {
+      "type": "build",
+      "buildId": "stringaaaaaaaaaaaaaaaaaa",
+      "nfObjectId": "stringaaaaaaaaaaaaaaaaaa",
+      "nfObjectType": "service",
+      "branch": "string"
+    },
+    "ready": false,
+    "status": "AWAITING_UPLOAD",
+    "createdAt": "1970-01-01T00:00:00.000Z"
+  }
+}
 ```
 
 ### CLI reference
@@ -78,7 +113,21 @@ Options:
  Details about the image version.
 
 ```json
-undefined
+{
+  "id": "stringaaaaaaaaaaaaaaaaaa",
+  "name": "string",
+  "tag": "string",
+  "source": {
+    "type": "build",
+    "buildId": "stringaaaaaaaaaaaaaaaaaa",
+    "nfObjectId": "stringaaaaaaaaaaaaaaaaaa",
+    "nfObjectType": "service",
+    "branch": "string"
+  },
+  "ready": false,
+  "status": "AWAITING_UPLOAD",
+  "createdAt": "1970-01-01T00:00:00.000Z"
+}
 ```
 
 ### JavaScript client reference
@@ -102,6 +151,21 @@ await apiClient.get.image({
 
 ```json
 {
+  "data": {
+    "id": "stringaaaaaaaaaaaaaaaaaa",
+    "name": "string",
+    "tag": "string",
+    "source": {
+      "type": "build",
+      "buildId": "stringaaaaaaaaaaaaaaaaaa",
+      "nfObjectId": "stringaaaaaaaaaaaaaaaaaa",
+      "nfObjectType": "service",
+      "branch": "string"
+    },
+    "ready": false,
+    "status": "AWAITING_UPLOAD",
+    "createdAt": "1970-01-01T00:00:00.000Z"
+  },
   "rawResponse": "...",
   "request": "...",
   "error": "..."

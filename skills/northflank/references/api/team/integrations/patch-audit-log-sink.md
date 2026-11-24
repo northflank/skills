@@ -13,9 +13,9 @@ Required permission: Account > Admin > AuditLogSinks > Update
 
 **Request body:**
 
-{object}
+{object} Patch an audit log sink
 - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-- `sinkData`: {object}
+- `sinkData`: {object} AWS S3 sinkData (PATCH variant — all fields optional).
   - `endpoint`: (string)
   - `region`: (string)
   - `bucket`: (string)
@@ -28,8 +28,8 @@ Required permission: Account > Admin > AuditLogSinks > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) Identifier for the audit log sink.
   - `name`: (string) (required) Name of the audit log sink.
   - `description`: (string) Description of the audit log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
@@ -38,13 +38,13 @@ Required permission: Account > Admin > AuditLogSinks > Update
   - `status`: (string) (required) Current status of the audit log sink. (enum: paused, running, failing, creating)
   - `createdAt`: (string) (required) Timestamp of when the audit log sink was created. (format: date-time)
   - `updatedAt`: (string) (required) Timestamp of when the audit log sink was last updated. (format: date-time)
-  - `sinkData`: {object}
+  - `sinkData`: {object} (required) Configuration of the destination. Secrets are omitted.
     - `endpoint`: (string) (required)
     - `region`: (string) (required)
     - `bucket`: (string) (required)
     - `pathPrefix`: (string)
     - `compression`: (string) (required) (enum: gzip, none)
-    - `auth`: {object}
+    - `auth`: {object} (required) Authentication object (secret omitted).
       - `accessKeyId`: (string) (required)
 
 ### API reference
@@ -62,7 +62,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
   --data '{}' \
-  https://api.northflank.com/v1/integrations/audit-log-sinks/{sinkId}
+  "https://api.northflank.com/v1/integrations/audit-log-sinks/{sinkId}"
 ```
 
 ```javascript
@@ -86,10 +86,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/audit-log-sinks/{sinkId}"
 
-payload = {}
+payload = "{}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PATCH", url, headers = headers, json = payload)
+response = requests.request("PATCH", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -107,7 +107,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/audit-log-sinks/{sinkId}"
 
-  var jsonStr = []byte(`{}`)
+  var jsonStr = []byte("{}")
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -139,7 +139,17 @@ func main() {
     "sinkType": "aws_s3",
     "includeSpec": false,
     "createdAt": "2026-05-11T12:00:00.000Z",
-    "updatedAt": "2026-05-11T12:00:00.000Z"
+    "updatedAt": "2026-05-11T12:00:00.000Z",
+    "status": "paused",
+    "sinkData": {
+      "endpoint": "string",
+      "region": "string",
+      "bucket": "string",
+      "compression": "gzip",
+      "auth": {
+        "accessKeyId": "string"
+      }
+    }
   }
 }
 ```
@@ -178,7 +188,17 @@ Options:
   "sinkType": "aws_s3",
   "includeSpec": false,
   "createdAt": "2026-05-11T12:00:00.000Z",
-  "updatedAt": "2026-05-11T12:00:00.000Z"
+  "updatedAt": "2026-05-11T12:00:00.000Z",
+  "status": "paused",
+  "sinkData": {
+    "endpoint": "string",
+    "region": "string",
+    "bucket": "string",
+    "compression": "gzip",
+    "auth": {
+      "accessKeyId": "string"
+    }
+  }
 }
 ```
 
@@ -210,7 +230,17 @@ await apiClient.patch.auditLogSink({
     "sinkType": "aws_s3",
     "includeSpec": false,
     "createdAt": "2026-05-11T12:00:00.000Z",
-    "updatedAt": "2026-05-11T12:00:00.000Z"
+    "updatedAt": "2026-05-11T12:00:00.000Z",
+    "status": "paused",
+    "sinkData": {
+      "endpoint": "string",
+      "region": "string",
+      "bucket": "string",
+      "compression": "gzip",
+      "auth": {
+        "accessKeyId": "string"
+      }
+    }
   },
   "rawResponse": "...",
   "request": "...",

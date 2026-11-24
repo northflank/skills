@@ -23,18 +23,18 @@ Required permission: Account > Git > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `branches`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `branches`: [array of] A list of branches for this repository. {object} Details about a branch.
      - `name`: (string) (required) Name of the branch.
      - `id`: (string) (required)
-     - `commit`: {object}
+     - `commit`: {object} (required) Details about the most recent commit on the branch.
        - `sha`: (string) (required) SHA identifier of the commit.
-       - `author`: {object}
+       - `author`: {object} (required) Details about the commit author.
          - `login`: (string) (required) The login of the commit author.
        - `message`: (string) Commit message of the commit.
        - `date`: (string) Timestamp of the commit. (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -44,6 +44,25 @@ Required permission: Account > Git > General > Read
 GET /v1/integrations/vcs/repos/{vcsService}/{repositoryOwner}/{repositoryName}/branches
 
 GET /v1/teams/{teamId}/integrations/vcs/repos/{vcsService}/{repositoryOwner}/{repositoryName}/branches
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/integrations/vcs/repos/{vcsService}/{repositoryOwner}/{repositoryName}/branches?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/integrations/vcs/repos/{vcsService}/{repositoryOwner}/{repositoryName}/branches?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

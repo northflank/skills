@@ -15,35 +15,35 @@ Update a project secret
 {object}
 - `description`: (string) A description of the secret. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `priority`: (integer) The priority with which different secrets will be merged.
-- `restrictions`: {object}
+- `restrictions`: {object} Restriction settings of the secret
   - `restricted`: (boolean) Whether the secret is restricted to specific resources, tags, or environments. If this is `true`, resources listed in `nfObjects`, with a tag listed in `tags`, or in an environment listed in `stageIds` will have access to these secrets. Otherwise, all resources in the project will be able to access it.
-  - `nfObjects`: [array of] {object}
+  - `nfObjects`: [array of] List of Northflank services & jobs the secret is restricted to {object}
      - `id`: (string) (required) ID of the entity the secret is restricted to. (pattern: ^[A-Za-z0-9-]+$)
      - `type`: (string) (required) Type of the entity the secret is restricted to. (enum: service, job)
-  - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `tags`: [array of] List of tags the secret is restricted to. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `tagMatchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
-  - `stageIds`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `addonDependencies`: [array of] {object}
+  - `stageIds`: [array of] IDs of the environments the secret is restricted to. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+- `addonDependencies`: [array of] An array of addons to link to this secret group. If provided, this will overwrite any existing linked addons. {object} An object containing data about the addon to link.
    - `addonId`: (string) (required) The id of the addon to link. (pattern: ^[A-Za-z0-9-]+$)
-   - `keys`: [array of] {object}
+   - `keys`: [array of] (required) An array of objects containing details about the keys to link to this secret group. {object} Details about the key to link to this secret group.
       - `keyName`: (string) (required) The name of the key to link. (pattern: [a-zA-Z]+)
-      - `aliases`: [array of] (string) The name of the alias. Keys may only contain letters, numbers, hyphens, forward slashes and dots. (pattern: ^[a-zA-Z0-9_./-]*$)
-- `externalAddonDependencies`: [array of] {object}
+      - `aliases`: [array of] An array of aliases for the key. (string) The name of the alias. Keys may only contain letters, numbers, hyphens, forward slashes and dots. (pattern: ^[a-zA-Z0-9_./-]*$)
+- `externalAddonDependencies`: [array of] An array of external addons to link to this secret group. If provided, this will overwrite any existing linked external addons. {object} An object containing data about the external addon to link.
    - `addonId`: (string) (required) The id of the external addon to link. (pattern: ^[A-Za-z0-9-]+$)
-   - `keys`: [array of] {object}
+   - `keys`: [array of] (required) An array of objects containing details about the keys to link to this secret group. {object} Details about the key to link to this secret group.
       - `keyName`: (string) (required) The name of the key to link. (pattern: [a-zA-Z]+)
-      - `aliases`: [array of] (string) The name of the alias. Keys may only contain letters, numbers, hyphens, forward slashes and dots. (pattern: ^[a-zA-Z0-9_./-]*$)
+      - `aliases`: [array of] An array of aliases for the key. (string) The name of the alias. Keys may only contain letters, numbers, hyphens, forward slashes and dots. (pattern: ^[a-zA-Z0-9_./-]*$)
 - `type`: (string) The permission type of the secret group. (enum: secret, config)
 - `secretType`: (string) The type of the created secret group (enum: environment-arguments, environment, arguments)
 - `secrets`: {object}
-  - `variables`: {object}
-  - `files`: {object}
-  - `dockerSecretMounts`: {object}
+  - `variables`: {object} Secret variables as JSON object, encrypted at rest. Keys may only contain letters, numbers, hyphens, forward slashes and dots.
+  - `files`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+  - `dockerSecretMounts`: {object} Docker secret mount contents as JSON object, encrypted at rest. Must be a valid Docker secret mount identifier
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -60,7 +60,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"description":"A description","priority":10,"restrictions":{"restricted":true,"nfObjects":[{"id":"example-service","type":"service"}],"tagMatchCondition":"or"},"addonDependencies":[{"addonId":"example-addon","keys":[{"keyName":"USERNAME","aliases":["MONGO_USERNAME"]}]}],"externalAddonDependencies":[{"addonId":"example-addon","keys":[{"keyName":"USERNAME","aliases":["MONGO_USERNAME"]}]}],"type":"secret","secretType":"environment","secrets":{"variables":{"NODE_ENV":"production","MONGO_DB":"some_connection_string"},"files":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}}' \
-  https://api.northflank.com/v1/projects/{projectId}/secrets/{secretId}
+  "https://api.northflank.com/v1/projects/{projectId}/secrets/{secretId}"
 ```
 
 ```javascript
@@ -143,10 +143,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/secrets/{secretId}"
 
-payload = {"description":"A description","priority":10,"restrictions":{"restricted":true,"nfObjects":[{"id":"example-service","type":"service"}],"tagMatchCondition":"or"},"addonDependencies":[{"addonId":"example-addon","keys":[{"keyName":"USERNAME","aliases":["MONGO_USERNAME"]}]}],"externalAddonDependencies":[{"addonId":"example-addon","keys":[{"keyName":"USERNAME","aliases":["MONGO_USERNAME"]}]}],"type":"secret","secretType":"environment","secrets":{"variables":{"NODE_ENV":"production","MONGO_DB":"some_connection_string"},"files":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}}
+payload = "{\"description\":\"A description\",\"priority\":10,\"restrictions\":{\"restricted\":true,\"nfObjects\":[{\"id\":\"example-service\",\"type\":\"service\"}],\"tagMatchCondition\":\"or\"},\"addonDependencies\":[{\"addonId\":\"example-addon\",\"keys\":[{\"keyName\":\"USERNAME\",\"aliases\":[\"MONGO_USERNAME\"]}]}],\"externalAddonDependencies\":[{\"addonId\":\"example-addon\",\"keys\":[{\"keyName\":\"USERNAME\",\"aliases\":[\"MONGO_USERNAME\"]}]}],\"type\":\"secret\",\"secretType\":\"environment\",\"secrets\":{\"variables\":{\"NODE_ENV\":\"production\",\"MONGO_DB\":\"some_connection_string\"},\"files\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"dockerSecretMounts\":{\"example-secret-mount_1\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -164,7 +164,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/secrets/{secretId}"
 
-  var jsonStr = []byte(`{"description":"A description","priority":10,"restrictions":{"restricted":true,"nfObjects":[{"id":"example-service","type":"service"}],"tagMatchCondition":"or"},"addonDependencies":[{"addonId":"example-addon","keys":[{"keyName":"USERNAME","aliases":["MONGO_USERNAME"]}]}],"externalAddonDependencies":[{"addonId":"example-addon","keys":[{"keyName":"USERNAME","aliases":["MONGO_USERNAME"]}]}],"type":"secret","secretType":"environment","secrets":{"variables":{"NODE_ENV":"production","MONGO_DB":"some_connection_string"},"files":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}}`)
+  var jsonStr = []byte("{\"description\":\"A description\",\"priority\":10,\"restrictions\":{\"restricted\":true,\"nfObjects\":[{\"id\":\"example-service\",\"type\":\"service\"}],\"tagMatchCondition\":\"or\"},\"addonDependencies\":[{\"addonId\":\"example-addon\",\"keys\":[{\"keyName\":\"USERNAME\",\"aliases\":[\"MONGO_USERNAME\"]}]}],\"externalAddonDependencies\":[{\"addonId\":\"example-addon\",\"keys\":[{\"keyName\":\"USERNAME\",\"aliases\":[\"MONGO_USERNAME\"]}]}],\"type\":\"secret\",\"secretType\":\"environment\",\"secrets\":{\"variables\":{\"NODE_ENV\":\"production\",\"MONGO_DB\":\"some_connection_string\"},\"files\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"dockerSecretMounts\":{\"example-secret-mount_1\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}}}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

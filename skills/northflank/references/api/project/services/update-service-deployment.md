@@ -20,50 +20,50 @@ Required permission: Project > Services > General > Update
 
 **Request body:**
 
-{object}
-- `external`: {object}
+{object} An external deployment
+- `external`: {object} (required)
   - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
   - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
-- `docker`: {object}
+- `docker`: {object} Allows for customization of docker runtime
   - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
   - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
   - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
 
 OR
 
-{object}
-- `internal`: {object}
-  - `id`: (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
+{object} An internal deployment
+- `internal`: {object} (required)
+  - `id`: (multiple options) ID of the build service to deploy (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
   - `branch`: (string) Branch to deploy
-  - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
+  - `buildSHA`: (multiple options) Commit SHA to deploy, or 'latest' to deploy the most recent commit (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
   - `buildId`: (string) ID of the build that should be deployed
-- `buildpack`: {object}
+- `buildpack`: {object} Allows for customization of buildpack runtime
   - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
   - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
   - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
   - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
-- `docker`: {object}
+- `docker`: {object} Allows for customization of docker runtime
   - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
   - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
   - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
 
 OR
 
-{object}
-- `buildpack`: {object}
+{object} Don't modify the deployment
+- `buildpack`: {object} Allows for customization of buildpack runtime
   - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
   - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
   - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
   - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
-- `docker`: {object}
+- `docker`: {object} Allows for customization of docker runtime
   - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
   - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
   - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -82,7 +82,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"docker":{"configType":"default"}}' \
-  https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/deployment
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/deployment"
 ```
 
 ```javascript
@@ -114,10 +114,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/deployment"
 
-payload = {"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"docker":{"configType":"default"}}
+payload = "{\"external\":{\"imagePath\":\"nginx:latest\",\"credentials\":\"example-credentials\"},\"docker\":{\"configType\":\"default\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -135,7 +135,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/deployment"
 
-  var jsonStr = []byte(`{"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"docker":{"configType":"default"}}`)
+  var jsonStr = []byte("{\"external\":{\"imagePath\":\"nginx:latest\",\"credentials\":\"example-credentials\"},\"docker\":{\"configType\":\"default\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -163,7 +163,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"docker":{"configType":"default"}}' \
-  https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/deployment
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/deployment"
 ```
 
 ```javascript
@@ -197,10 +197,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/deployment"
 
-payload = {"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"docker":{"configType":"default"}}
+payload = "{\"internal\":{\"id\":\"example-build-service\",\"branch\":\"master\",\"buildSHA\":\"latest\",\"buildId\":\"premium-guide-6393\"},\"docker\":{\"configType\":\"default\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -218,7 +218,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/deployment"
 
-  var jsonStr = []byte(`{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"docker":{"configType":"default"}}`)
+  var jsonStr = []byte("{\"internal\":{\"id\":\"example-build-service\",\"branch\":\"master\",\"buildSHA\":\"latest\",\"buildId\":\"premium-guide-6393\"},\"docker\":{\"configType\":\"default\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -246,7 +246,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"docker":{"configType":"default"}}' \
-  https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/deployment
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/deployment"
 ```
 
 ```javascript
@@ -274,10 +274,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/deployment"
 
-payload = {"docker":{"configType":"default"}}
+payload = "{\"docker\":{\"configType\":\"default\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -295,7 +295,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/deployment"
 
-  var jsonStr = []byte(`{"docker":{"configType":"default"}}`)
+  var jsonStr = []byte("{\"docker\":{\"configType\":\"default\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

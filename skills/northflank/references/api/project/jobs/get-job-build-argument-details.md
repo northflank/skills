@@ -20,28 +20,28 @@ Required permission: Project > Secrets > Jobs > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `buildArguments`: {object}
-    - `MY_VARIABLE_NAME`: {object}
-      - `value`: (undefined) (required) The value of the secret.
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `buildArguments`: {object} (required) Details about all the secrets accessible by the service.
+    - `MY_VARIABLE_NAME`: {object} A stored secret and details about it and its value. This can have the name of any saved secret.
+      - `value`: (required) The value of the secret.
       - `inheritedFrom`: (string) The ID of the secret group the secret is inherited from, if applicable.
       - `addonId`: (string) The ID of the addon the secret is inherited from, if applicable.
       - `priority`: (integer) The priority of the secret group the secret is inherited from, if applicable.
-      - `overriding`: [array of] {object}
-          - `value`: (undefined) (required) The value of the secret.
+      - `overriding`: [array of] (required) An array containing data about other places the secret has been inherited from, but that are not being used as a secret with the same key exists with a higher priority. {object} Data about an overridden secret.
+          - `value`: (required) The value of the secret.
           - `inheritedFrom`: (string) (required) The ID of the secret group the secret is inherited from.
           - `addonId`: (string) The ID of the addon the secret is inherited from, if applicable.
           - `priority`: (integer) (required) The priority of the secret group the secret is inherited from.
-  - `buildFiles`: {object}
-    - `/dir/fileName`: {object}
-      - `value`: {object}
+  - `buildFiles`: {object} (required) Details about all the secrets accessible by the service.
+    - `/dir/fileName`: {object} A stored secret and details about it and its value. This can have the name of any saved secret.
+      - `value`: {object} (required) The value of the secret.
         - `data`: (string) base64 encoded string of the file contents
         - `encoding`: (string) Original encoding of the file
       - `inheritedFrom`: (string) The ID of the secret group the secret is inherited from, if applicable.
       - `priority`: (integer) The priority of the secret group the secret is inherited from, if applicable.
-      - `overriding`: [array of] {object}
-          - `value`: (undefined) (required) The value of the secret.
+      - `overriding`: [array of] (required) An array containing data about other places the file has been inherited from, but that are not being used as a secret with the same file path exists with a higher priority. {object} Data about an overridden secret.
+          - `value`: (required) The value of the secret.
           - `inheritedFrom`: (string) (required) The ID of the secret group the secret is inherited from.
           - `priority`: (integer) (required) The priority of the secret group the secret is inherited from.
 
@@ -50,6 +50,25 @@ Required permission: Project > Secrets > Jobs > Read
 GET /v1/projects/{projectId}/jobs/{jobId}/build-arguments/details
 
 GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/build-arguments/details
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build-arguments/details"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build-arguments/details"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -77,8 +96,10 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/build-arguments/details
     "buildFiles": {
       "/dir/fileName": {
         "value": {
-          "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
-          "encoding": "utf-8"
+          "/dir/fileName": {
+            "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+            "encoding": "utf-8"
+          }
         },
         "inheritedFrom": "example-secret",
         "priority": 10,
@@ -136,8 +157,10 @@ Options:
   "buildFiles": {
     "/dir/fileName": {
       "value": {
-        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
-        "encoding": "utf-8"
+        "/dir/fileName": {
+          "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+          "encoding": "utf-8"
+        }
       },
       "inheritedFrom": "example-secret",
       "priority": 10,
@@ -194,8 +217,10 @@ await apiClient.get.job.buildArgumentDetails({
     "buildFiles": {
       "/dir/fileName": {
         "value": {
-          "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
-          "encoding": "utf-8"
+          "/dir/fileName": {
+            "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
+            "encoding": "utf-8"
+          }
         },
         "inheritedFrom": "example-secret",
         "priority": 10,
@@ -264,9 +289,7 @@ print(response.data)
         "/dir/fileName": {
           "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
           "encoding": "utf-8"
-        },
-        "data": "VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=",
-        "encoding": "utf-8"
+        }
       },
       "inheritedFrom": "example-secret",
       "priority": 10,

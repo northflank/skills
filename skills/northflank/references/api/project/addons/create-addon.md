@@ -13,17 +13,19 @@ Required permission: Project > Addons > General > Create
 
 **Request body:**
 
-(multiple options) {object}
+(multiple options) The provisioner type of the addon {object} Native Northflank addons
  - `name`: (string) (required) The name of the addon. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
  - `description`: (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
  - `projectId`: (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$)
  - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
- - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+ - `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
  - `type`: (string) (required) The identifier for the type of addon. Addon types can be found at the Get Addon Types endpoint.
  - `infrastructure`: {object}
    - `architecture`: (string) (enum: x86, arm)
+ - `podDisruptionBudget`: {object} Requests voluntary-disruption protection for supported BYOC MongoDB and Patroni PostgreSQL addons on Kubernetes 1.31 or newer. Protection is derived from the live database StatefulSet and requires at least three replicas. MySQL HA protection is mandatory.
+   - `enabled`: (boolean) (required)
  - `version`: (string) (required) The version of the addon type to use. If set to `latest`, the addon will be created with the most recent addon version. If set to a major version appended with `-latest`, e.g. `14-latest` or `14.5-latest`, the addon will be created with the most recent minor/patch version belonging to that major version.
- - `billing`: {object}
+ - `billing`: {object} (required)
    - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
    - `storageClass`: (string) The type of storage. Only configurable if the relevant feature flag is enabled for you account (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
    - `storage`: (integer) The size of the addon storage, in megabytes. Required for addon types that support persistent storage; omit for stateless addon types.
@@ -31,27 +33,28 @@ Required permission: Project > Addons > General > Create
    - `zonalRedundancy`: {object}
      - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: required, disabled)
      - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
-   - `diskAutoscaling`: {object}
+   - `diskAutoscaling`: {object} Automatic disk scaling configuration.
      - `enabled`: (boolean) (required) Enable automatic disk scaling when usage exceeds the configured threshold.
      - `thresholdPercent`: (number) Disk usage percentage that triggers a resize. Defaults to 90. (format: float) (enum: 75, 90)
      - `maxSizeMib`: (integer) Maximum disk size in mebibytes. When set, autoscaling will not expand storage beyond this value. Must be greater than the current storage size.
- - `source`: (multiple options) {object}
+ - `source`: (multiple options) Fork source backup for the addon {object} Optional object containing data about an existing addon to fork. If provided, the addon will be created from that existing addon backup.
     - `projectId`: (string) ID of the project of the source addon. Only required if not the same as target addon (pattern: ^[A-Za-z0-9-]+$)
     - `addonId`: (string) (required) ID of the addon to fork. (pattern: ^[A-Za-z0-9-]+$)
     - `backupId`: (string) (required) ID of a backup belonging to that addon to use for the fork. (pattern: ^[A-Za-z0-9-]+$)
-    - `backupType`: (string) Type of backup to select when backupId is `latest`. Defaults to `snapshot`. (enum: snapshot, global) | {object}
+    - `backupType`: (string) Type of backup to select when backupId is `latest`. Defaults to `snapshot`. (enum: snapshot, global) | {object} Optional object containing the reference to a backup addressed by its UUID
     - `backupUid`: (string) (required) Uid of the backup (format: uuid)
  - `tlsEnabled`: (boolean) Enables access to the addon via TLS (if supported by the addon type).
  - `externalAccessEnabled`: (boolean) Enables external access to the addon via TLS (if supported by the addon type).
  - `vpcAccessible`: (boolean) Exposes the addon on the cluster's private (VPC) load balancer. Mutually exclusive with `externalAccessEnabled`.
- - `ipPolicies`: [array of] {object}
-    - `addresses`: [array of] (string) An IP address used by this rule
+ - `ipPolicies`: [array of] An array of IP address policies. {object}
+    - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
     - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
  - `typeSpecificSettings`: {object}
    - `redisMaxMemoryPolicy`: (string) Redis only: Key eviction policy at memory pressure. (enum: noeviction, allkeys-lru, allkeys-lfu, volatile-lru, volatile-lfu, allkeys-random, volatile-random, volatile-ttl, volatile-lrm, allkeys-lrm)
    - `redisSentinelEnabled`: (boolean) Redis only: Deploy Redis with Sentinel high availability. Default: false
    - `postgresqlWalLevel`: (string) PostgreSQL only: Configure wal_level setting. (enum: replica, logical)
    - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode (additional extensions and event trigger creation support). Cannot be changed after creation.
+   - `postgresqlEdbRelease`: (string) EDB mode only: Release channel. Defaults to stable. Changing release can restart the addon. Switching from beta or nightly to another channel may be incompatible. (enum: stable, beta, nightly)
    - `postgresqlEdbMode`: (boolean) PostgreSQL only: Enable EDB mode (EDB extension set: edb_stat_monitor, query_advisor, edb_pg_tuner, aidb, pgaa and others). Requires PostgreSQL 18 or newer. Cannot be changed after creation.
    - `postgresqlConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of postgres instance.
    - `postgresqlConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of connection pooler replicas in case connection pooler is enabled.
@@ -65,36 +68,36 @@ Required permission: Project > Addons > General > Create
  - `customCredentials`: {object}
    - `dbName`: (string) Custom database name. Not supported for all addon types.
  - `backupSchedules`: [array of] {object}
-    - `scheduling`: {object}
+    - `scheduling`: {object} (required) Schedule for the backup.
       - `interval`: (string) (required) The interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (enum: hourly, daily, weekly)
-      - `minute`: [array of] (integer) A minute when the backup should be performed.
-      - `hour`: [array of] (integer) An hour when the backup should be performed, in 24 hour format.
-      - `day`: [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday.
+      - `minute`: [array of] (required) An array of minutes when the backup should be performed. (integer) A minute when the backup should be performed.
+      - `hour`: [array of] An array of hours in 24 hour format when the backup should be performed. At these hours, a backup will be performed at each of the minutes provided in the `minute` field. Required for `daily` and `weekly` intervals and unavailable for `hourly` intervals. (integer) An hour when the backup should be performed, in 24 hour format.
+      - `day`: [array of] An array of days of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday. On these days, a backup will be performed at each of the minutes provided in the `minute` field whenever it is an hour from the `hour` field. Required for `weekly` intervals and unavailable for `hourly` and `daily` intervals. (integer) A day of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday.
     - `backupType`: (string) (required) The type of the backup to be performed. (enum: dump, snapshot)
     - `customDestinationId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-    - `additionalDestinations`: [array of] {object}
+    - `additionalDestinations`: [array of] List of destinations for which a backup should be created of this backup. Only applicable for snapshot backups. {object}
         - `destinationId`: (string) (required) Additional custom back up destination that should be used to store the snapshot. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
         - `retentionTime`: (integer) Retention time of the additional back up in days.
         - `type`: (string) (required) The type of backup destination to use (enum: custom)
     - `compressionType`: (string) The compression algorithm of the backup. Only applicable for dump backups. Defaults to `gz`. (enum: gz, zstd)
     - `retentionTime`: (integer) (required) The time the backup is retained for, in days.
- - `metadata`: {object}
-   - `labels`: {object}
-   - `annotations`: {object} | {object}
+ - `metadata`: {object} Allow setting custom labels and annotations for workloads.
+   - `labels`: {object} Specify custom labels for the workload.
+   - `annotations`: {object} Specify custom annotations for the workload as string or object. | {object} Northflank bring your own addon with templating engine
  - `name`: (string) (required) The name of the addon. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
  - `description`: (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
  - `projectId`: (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$)
  - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
- - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+ - `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
  - `type`: (string) (required) The identifier for the type of addon. Addon types can be found at the Get Addon Types endpoint.
  - `infrastructure`: {object}
    - `architecture`: (string) (enum: x86, arm)
- - `templateValues`: {object} | {object}
+ - `templateValues`: {object} The template values to be passed to the templating engine. | {object} Northflank managed bucket addon
  - `name`: (string) (required) The name of the addon. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
  - `description`: (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
  - `projectId`: (string) ID of parent project (pattern: ^[A-Za-z0-9-]+$)
  - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
- - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+ - `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
  - `type`: (string) (required) The identifier for the type of addon. Addon types can be found at the Get Addon Types endpoint.
  - `infrastructure`: {object}
    - `architecture`: (string) (enum: x86, arm)
@@ -102,17 +105,19 @@ Required permission: Project > Addons > General > Create
 
 **Response body:**
 
-{object}
-- `data`: (multiple options) {object}
+{object} Response object.
+- `data`: (multiple options) (required) Result data. {object} Native Northflank addons
    - `name`: (string) (required) The name of the addon. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
    - `description`: (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
    - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+   - `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
    - `type`: (string) (required) The identifier for the type of addon. Addon types can be found at the Get Addon Types endpoint.
    - `infrastructure`: {object}
      - `architecture`: (string) (enum: x86, arm)
+   - `podDisruptionBudget`: {object} Requests voluntary-disruption protection for supported BYOC MongoDB and Patroni PostgreSQL addons on Kubernetes 1.31 or newer. Protection is derived from the live database StatefulSet and requires at least three replicas. MySQL HA protection is mandatory.
+     - `enabled`: (boolean) (required)
    - `version`: (string) (required) The version of the addon type to use. If set to `latest`, the addon will be created with the most recent addon version. If set to a major version appended with `-latest`, e.g. `14-latest` or `14.5-latest`, the addon will be created with the most recent minor/patch version belonging to that major version.
-   - `billing`: {object}
+   - `billing`: {object} (required)
      - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `storageClass`: (string) The type of storage. Only configurable if the relevant feature flag is enabled for you account (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
      - `storage`: (integer) The size of the addon storage, in megabytes. Required for addon types that support persistent storage; omit for stateless addon types.
@@ -120,27 +125,28 @@ Required permission: Project > Addons > General > Create
      - `zonalRedundancy`: {object}
        - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: required, disabled)
        - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
-     - `diskAutoscaling`: {object}
+     - `diskAutoscaling`: {object} Automatic disk scaling configuration.
        - `enabled`: (boolean) (required) Enable automatic disk scaling when usage exceeds the configured threshold.
        - `thresholdPercent`: (number) Disk usage percentage that triggers a resize. Defaults to 90. (format: float) (enum: 75, 90)
        - `maxSizeMib`: (integer) Maximum disk size in mebibytes. When set, autoscaling will not expand storage beyond this value. Must be greater than the current storage size.
-   - `source`: (multiple options) {object}
+   - `source`: (multiple options) Fork source backup for the addon {object} Optional object containing data about an existing addon to fork. If provided, the addon will be created from that existing addon backup.
       - `projectId`: (string) ID of the project of the source addon. Only required if not the same as target addon (pattern: ^[A-Za-z0-9-]+$)
       - `addonId`: (string) (required) ID of the addon to fork. (pattern: ^[A-Za-z0-9-]+$)
       - `backupId`: (string) (required) ID of a backup belonging to that addon to use for the fork. (pattern: ^[A-Za-z0-9-]+$)
-      - `backupType`: (string) Type of backup to select when backupId is `latest`. Defaults to `snapshot`. (enum: snapshot, global) | {object}
+      - `backupType`: (string) Type of backup to select when backupId is `latest`. Defaults to `snapshot`. (enum: snapshot, global) | {object} Optional object containing the reference to a backup addressed by its UUID
       - `backupUid`: (string) (required) Uid of the backup (format: uuid)
    - `tlsEnabled`: (boolean) Enables access to the addon via TLS (if supported by the addon type).
    - `externalAccessEnabled`: (boolean) Enables external access to the addon via TLS (if supported by the addon type).
    - `vpcAccessible`: (boolean) Exposes the addon on the cluster's private (VPC) load balancer. Mutually exclusive with `externalAccessEnabled`.
-   - `ipPolicies`: [array of] {object}
-      - `addresses`: [array of] (string) An IP address used by this rule
+   - `ipPolicies`: [array of] An array of IP address policies. {object}
+      - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
       - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
    - `typeSpecificSettings`: {object}
      - `redisMaxMemoryPolicy`: (string) Redis only: Key eviction policy at memory pressure. (enum: noeviction, allkeys-lru, allkeys-lfu, volatile-lru, volatile-lfu, allkeys-random, volatile-random, volatile-ttl, volatile-lrm, allkeys-lrm)
      - `redisSentinelEnabled`: (boolean) Redis only: Deploy Redis with Sentinel high availability. Default: false
      - `postgresqlWalLevel`: (string) PostgreSQL only: Configure wal_level setting. (enum: replica, logical)
      - `postgresqlSupabaseMode`: (boolean) PostgreSQL only: Enable Supabase mode (additional extensions and event trigger creation support). Cannot be changed after creation.
+     - `postgresqlEdbRelease`: (string) EDB mode only: Release channel. Defaults to stable. Changing release can restart the addon. Switching from beta or nightly to another channel may be incompatible. (enum: stable, beta, nightly)
      - `postgresqlEdbMode`: (boolean) PostgreSQL only: Enable EDB mode (EDB extension set: edb_stat_monitor, query_advisor, edb_pg_tuner, aidb, pgaa and others). Requires PostgreSQL 18 or newer. Cannot be changed after creation.
      - `postgresqlConnectionPoolerEnabled`: (boolean) PostgreSQL only: Run connection pooler in front of postgres instance.
      - `postgresqlConnectionPoolerReplicas`: (integer) PostgreSQL only: Number of connection pooler replicas in case connection pooler is enabled.
@@ -154,54 +160,54 @@ Required permission: Project > Addons > General > Create
    - `customCredentials`: {object}
      - `dbName`: (string) Custom database name. Not supported for all addon types.
    - `backupSchedules`: [array of] {object}
-      - `scheduling`: {object}
+      - `scheduling`: {object} (required) Schedule for the backup.
         - `interval`: (string) (required) The interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (enum: hourly, daily, weekly)
-        - `minute`: [array of] (integer) A minute when the backup should be performed.
-        - `hour`: [array of] (integer) An hour when the backup should be performed, in 24 hour format.
-        - `day`: [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday.
+        - `minute`: [array of] (required) An array of minutes when the backup should be performed. (integer) A minute when the backup should be performed.
+        - `hour`: [array of] An array of hours in 24 hour format when the backup should be performed. At these hours, a backup will be performed at each of the minutes provided in the `minute` field. Required for `daily` and `weekly` intervals and unavailable for `hourly` intervals. (integer) An hour when the backup should be performed, in 24 hour format.
+        - `day`: [array of] An array of days of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday. On these days, a backup will be performed at each of the minutes provided in the `minute` field whenever it is an hour from the `hour` field. Required for `weekly` intervals and unavailable for `hourly` and `daily` intervals. (integer) A day of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday.
       - `backupType`: (string) (required) The type of the backup to be performed. (enum: dump, snapshot)
       - `customDestinationId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-      - `additionalDestinations`: [array of] {object}
+      - `additionalDestinations`: [array of] List of destinations for which a backup should be created of this backup. Only applicable for snapshot backups. {object}
           - `destinationId`: (string) (required) Additional custom back up destination that should be used to store the snapshot. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
           - `retentionTime`: (integer) Retention time of the additional back up in days.
           - `type`: (string) (required) The type of backup destination to use (enum: custom)
       - `compressionType`: (string) The compression algorithm of the backup. Only applicable for dump backups. Defaults to `gz`. (enum: gz, zstd)
       - `retentionTime`: (integer) (required) The time the backup is retained for, in days.
-   - `metadata`: {object}
-     - `labels`: {object}
-     - `annotations`: {object}
+   - `metadata`: {object} Allow setting custom labels and annotations for workloads.
+     - `labels`: {object} Specify custom labels for the workload.
+     - `annotations`: {object} Specify custom annotations for the workload as string or object.
    - `id`: (string) (required) Identifier for the addon.
    - `appId`: (string) (required) Full identifier used for deployment
    - `status`: (string) (required) The current state of the addon. (enum: preDeployment, triggerAllocation, allocating, postDeployment, running, paused, scaling, upgrading, resetting, backup, restore, failed, error, errorAllocating, deleting, deleted)
-   - `cluster`: {object}
+   - `cluster`: {object} (required) Cluster information
      - `id`: (string) (required) The id of the cluster associated with this project.
      - `name`: (string) (required) The name of the cluster associated with this project.
      - `namespace`: (string) Namespace this resource is located within on the cluster.
-     - `loadBalancers`: [array of] (string)
+     - `loadBalancers`: [array of] Load balancer DNS for the cluster. (string)
    - `createdAt`: (string) time of creation (format: date-time)
-   - `updatedAt`: (string) time of update (format: date-time) | {object}
+   - `updatedAt`: (string) time of update (format: date-time) | {object} Northflank bring your own addon with templating engine
    - `name`: (string) (required) The name of the addon. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
    - `description`: (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
    - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+   - `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
    - `type`: (string) (required) The identifier for the type of addon. Addon types can be found at the Get Addon Types endpoint.
    - `infrastructure`: {object}
      - `architecture`: (string) (enum: x86, arm)
-   - `templateValues`: {object}
+   - `templateValues`: {object} The template values to be passed to the templating engine.
    - `id`: (string) (required) Identifier for the addon.
    - `appId`: (string) (required) Full identifier used for deployment
    - `status`: (string) (required) The current state of the addon. (enum: preDeployment, triggerAllocation, allocating, postDeployment, running, paused, scaling, upgrading, resetting, backup, restore, failed, error, errorAllocating, deleting, deleted)
-   - `cluster`: {object}
+   - `cluster`: {object} (required) Cluster information
      - `id`: (string) (required) The id of the cluster associated with this project.
      - `name`: (string) (required) The name of the cluster associated with this project.
      - `namespace`: (string) Namespace this resource is located within on the cluster.
-     - `loadBalancers`: [array of] (string)
+     - `loadBalancers`: [array of] Load balancer DNS for the cluster. (string)
    - `createdAt`: (string) time of creation (format: date-time)
-   - `updatedAt`: (string) time of update (format: date-time) | {object}
+   - `updatedAt`: (string) time of update (format: date-time) | {object} Northflank managed bucket addon
    - `name`: (string) (required) The name of the addon. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
    - `description`: (string) A description of the addon. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
    - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-   - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+   - `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
    - `type`: (string) (required) The identifier for the type of addon. Addon types can be found at the Get Addon Types endpoint.
    - `infrastructure`: {object}
      - `architecture`: (string) (enum: x86, arm)
@@ -209,11 +215,11 @@ Required permission: Project > Addons > General > Create
    - `id`: (string) (required) Identifier for the addon.
    - `appId`: (string) (required) Full identifier used for deployment
    - `status`: (string) (required) The current state of the addon. (enum: preDeployment, triggerAllocation, allocating, postDeployment, running, paused, scaling, upgrading, resetting, backup, restore, failed, error, errorAllocating, deleting, deleted)
-   - `cluster`: {object}
+   - `cluster`: {object} (required) Cluster information
      - `id`: (string) (required) The id of the cluster associated with this project.
      - `name`: (string) (required) The name of the cluster associated with this project.
      - `namespace`: (string) Namespace this resource is located within on the cluster.
-     - `loadBalancers`: [array of] (string)
+     - `loadBalancers`: [array of] Load balancer DNS for the cluster. (string)
    - `createdAt`: (string) time of creation (format: date-time)
    - `updatedAt`: (string) time of update (format: date-time)
 
@@ -232,7 +238,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"Example Addon","description":"An addon description","projectId":"example-project","type":"postgresql","version":"latest","billing":{"deploymentPlan":"nf-compute-20","storageClass":"nvme","storage":6144,"replicas":1},"source":{"projectId":"existing-project","addonId":"existing-addon","backupId":"existing-backup","backupType":"snapshot"},"ipPolicies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"backupType":"snapshot","additionalDestinations":[{"destinationId":"example-backup-destination","retentionTime":7,"type":"custom"}],"compressionType":"gz","retentionTime":7}]}' \
-  https://api.northflank.com/v1/projects/{projectId}/addons
+  "https://api.northflank.com/v1/projects/{projectId}/addons"
 ```
 
 ```javascript
@@ -308,10 +314,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/addons"
 
-payload = {"name":"Example Addon","description":"An addon description","projectId":"example-project","type":"postgresql","version":"latest","billing":{"deploymentPlan":"nf-compute-20","storageClass":"nvme","storage":6144,"replicas":1},"source":{"projectId":"existing-project","addonId":"existing-addon","backupId":"existing-backup","backupType":"snapshot"},"ipPolicies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"backupType":"snapshot","additionalDestinations":[{"destinationId":"example-backup-destination","retentionTime":7,"type":"custom"}],"compressionType":"gz","retentionTime":7}]}
+payload = "{\"name\":\"Example Addon\",\"description\":\"An addon description\",\"projectId\":\"example-project\",\"type\":\"postgresql\",\"version\":\"latest\",\"billing\":{\"deploymentPlan\":\"nf-compute-20\",\"storageClass\":\"nvme\",\"storage\":6144,\"replicas\":1},\"source\":{\"projectId\":\"existing-project\",\"addonId\":\"existing-addon\",\"backupId\":\"existing-backup\",\"backupType\":\"snapshot\"},\"ipPolicies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"backupSchedules\":[{\"scheduling\":{\"interval\":\"weekly\",\"minute\":[30],\"hour\":[18],\"day\":[4]},\"backupType\":\"snapshot\",\"additionalDestinations\":[{\"destinationId\":\"example-backup-destination\",\"retentionTime\":7,\"type\":\"custom\"}],\"compressionType\":\"gz\",\"retentionTime\":7}]}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -329,7 +335,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/addons"
 
-  var jsonStr = []byte(`{"name":"Example Addon","description":"An addon description","projectId":"example-project","type":"postgresql","version":"latest","billing":{"deploymentPlan":"nf-compute-20","storageClass":"nvme","storage":6144,"replicas":1},"source":{"projectId":"existing-project","addonId":"existing-addon","backupId":"existing-backup","backupType":"snapshot"},"ipPolicies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"backupType":"snapshot","additionalDestinations":[{"destinationId":"example-backup-destination","retentionTime":7,"type":"custom"}],"compressionType":"gz","retentionTime":7}]}`)
+  var jsonStr = []byte("{\"name\":\"Example Addon\",\"description\":\"An addon description\",\"projectId\":\"example-project\",\"type\":\"postgresql\",\"version\":\"latest\",\"billing\":{\"deploymentPlan\":\"nf-compute-20\",\"storageClass\":\"nvme\",\"storage\":6144,\"replicas\":1},\"source\":{\"projectId\":\"existing-project\",\"addonId\":\"existing-addon\",\"backupId\":\"existing-backup\",\"backupType\":\"snapshot\"},\"ipPolicies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"backupSchedules\":[{\"scheduling\":{\"interval\":\"weekly\",\"minute\":[30],\"hour\":[18],\"day\":[4]},\"backupType\":\"snapshot\",\"additionalDestinations\":[{\"destinationId\":\"example-backup-destination\",\"retentionTime\":7,\"type\":\"custom\"}],\"compressionType\":\"gz\",\"retentionTime\":7}]}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -428,7 +434,7 @@ OR
     "name": "Example Addon",
     "description": "An addon description",
     "type": "postgresql",
-    "templateValues": "{\"replicas\": 2}",
+    "templateValues": {},
     "id": "example-addon",
     "appId": "/example-user/default-project/example-addon",
     "status": "running",
@@ -619,7 +625,7 @@ OR
   "name": "Example Addon",
   "description": "An addon description",
   "type": "postgresql",
-  "templateValues": "{\"replicas\": 2}",
+  "templateValues": {},
   "id": "example-addon",
   "appId": "/example-user/default-project/example-addon",
   "status": "running",
@@ -806,7 +812,7 @@ OR
     "name": "Example Addon",
     "description": "An addon description",
     "type": "postgresql",
-    "templateValues": "{\"replicas\": 2}",
+    "templateValues": {},
     "id": "example-addon",
     "appId": "/example-user/default-project/example-addon",
     "status": "running",

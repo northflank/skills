@@ -21,9 +21,9 @@ Required permission: Account > Cloud > Clusters > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `nodes`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `nodes`: [array of] (required) An array of nodes. {object} A node object.
      - `nodeId`: (string) The id of the node.
      - `nodeName`: (string) The name of the node.
      - `nodePool`: (string) The node pool the node is a part of.
@@ -32,7 +32,7 @@ Required permission: Account > Cloud > Clusters > Read
      - `region`: (string) The region the node is running in.
      - `instanceType`: (string) The type of the node.
      - `createdAt`: (string) (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -42,6 +42,25 @@ Required permission: Account > Cloud > Clusters > Read
 GET /v1/cloud-providers/clusters/{clusterId}/nodes
 
 GET /v1/teams/{teamId}/cloud-providers/clusters/{clusterId}/nodes
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/cloud-providers/clusters/{clusterId}/nodes?per_page=50&page=1&status=RUNNING"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/cloud-providers/clusters/{clusterId}/nodes?per_page=50&page=1&status=RUNNING"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

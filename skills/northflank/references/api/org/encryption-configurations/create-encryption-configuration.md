@@ -11,8 +11,8 @@ Required permission: Account > Admin > Encryption > Create
 {object}
 - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-- `envelope`: (multiple options) {object}
-   - `provider`: (undefined) (required) (enum: gcp)
+- `envelope`: (multiple options) (required) {object}
+   - `provider`: (required) (enum: gcp)
    - `projectId`: (string) (required) (pattern: ^[a-z][a-z0-9-]{4,28}[a-z0-9]$)
    - `location`: (string) (required) (pattern: ^[a-z0-9-]+$) (max length: 63)
    - `keyRing`: (string) (required) (pattern: ^[A-Za-z0-9_-]+$) (max length: 63)
@@ -23,10 +23,10 @@ Required permission: Account > Admin > Encryption > Create
      - `maxUses`: (integer)
      - `maxAgeMs`: (integer)
      - `cacheTtlSeconds`: (integer) | {object}
-   - `provider`: (undefined) (required) (enum: aws)
+   - `provider`: (required) (enum: aws)
    - `region`: (string) (required)
    - `keyId`: (string) (required)
-   - `credentials`: {object}
+   - `credentials`: {object} (required)
      - `accessKey`: (string)
      - `secretKey`: (string)
      - `roleArn`: (string)
@@ -35,9 +35,9 @@ Required permission: Account > Admin > Encryption > Create
      - `maxUses`: (integer)
      - `maxAgeMs`: (integer)
      - `cacheTtlSeconds`: (integer) | {object}
-   - `provider`: (undefined) (required) (enum: azure)
+   - `provider`: (required) (enum: azure)
    - `keyId`: (string) (required) (pattern: ^[^?#@\s\\%]+$) (max length: 2048)
-   - `credentials`: {object}
+   - `credentials`: {object} (required)
      - `tenantId`: (string) (required)
      - `clientId`: (string) (required)
      - `secret`: (string) (required)
@@ -45,12 +45,12 @@ Required permission: Account > Admin > Encryption > Create
      - `maxUses`: (integer)
      - `maxAgeMs`: (integer)
      - `cacheTtlSeconds`: (integer) | {object}
-   - `provider`: (undefined) (required) (enum: vault-transit)
+   - `provider`: (required) (enum: vault-transit)
    - `address`: (string) (required) (pattern: ^[^?#@\s\\%]+$) (max length: 2048)
    - `mountPath`: (string) (pattern: ^[A-Za-z0-9_.-]+(\/[A-Za-z0-9_.-]+)*$) (max length: 256)
    - `namespace`: (string) (pattern: ^[A-Za-z0-9_.-]+(\/[A-Za-z0-9_.-]+)*$) (max length: 256)
    - `keyName`: (string) (required) (pattern: ^(?!\.+$)[A-Za-z0-9_.-]+$) (max length: 256)
-   - `credentials`: {object}
+   - `credentials`: {object} (required)
      - `token`: (string) (required) (max length: 4096)
    - `options`: {object}
      - `maxUses`: (integer)
@@ -59,8 +59,8 @@ Required permission: Account > Admin > Encryption > Create
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) The name-derived ID of the encryption configuration.
   - `name`: (string) (required)
   - `description`: (string)
@@ -72,7 +72,7 @@ Required permission: Account > Admin > Encryption > Create
      - `region`: (string) (required)
      - `keyId`: (string) (required)
      - `externalId`: (string) External ID used for cross-account role assumption.
-     - `options`: {object}
+     - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
        - `maxUses`: (integer) Maximum encryption uses per data key.
        - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
        - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds. | {object}
@@ -83,13 +83,13 @@ Required permission: Account > Admin > Encryption > Create
      - `cryptoKey`: (string) (required)
      - `serviceAccountEmail`: (string) Northflank-generated identity to grant access to the KMS key.
      - `keyfileServiceAccountEmail`: (string) Service-account email from the supplied key file.
-     - `options`: {object}
+     - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
        - `maxUses`: (integer) Maximum encryption uses per data key.
        - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
        - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds. | {object}
      - `provider`: (string) (required) (enum: azure)
      - `keyId`: (string) (required)
-     - `options`: {object}
+     - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
        - `maxUses`: (integer) Maximum encryption uses per data key.
        - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
        - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds. | {object}
@@ -98,11 +98,11 @@ Required permission: Account > Admin > Encryption > Create
      - `mountPath`: (string)
      - `namespace`: (string)
      - `keyName`: (string) (required)
-     - `options`: {object}
+     - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
        - `maxUses`: (integer) Maximum encryption uses per data key.
        - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
        - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds.
-  - `vault`: {object}
+  - `vault`: {object} Legacy Vault configuration.
     - `version`: (string) (required)
 
 ### API reference
@@ -120,7 +120,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"string","envelope":{"provider":"gcp","projectId":"string","location":"string","keyRing":"string","cryptoKey":"string"}}' \
-  https://api.northflank.com/v1/encryption/configurations
+  "https://api.northflank.com/v1/encryption/configurations"
 ```
 
 ```javascript
@@ -153,10 +153,10 @@ import requests
 
 url = "https://api.northflank.com/v1/encryption/configurations"
 
-payload = {"name":"string","envelope":{"provider":"gcp","projectId":"string","location":"string","keyRing":"string","cryptoKey":"string"}}
+payload = "{\"name\":\"string\",\"envelope\":{\"provider\":\"gcp\",\"projectId\":\"string\",\"location\":\"string\",\"keyRing\":\"string\",\"cryptoKey\":\"string\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -174,7 +174,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/encryption/configurations"
 
-  var jsonStr = []byte(`{"name":"string","envelope":{"provider":"gcp","projectId":"string","location":"string","keyRing":"string","cryptoKey":"string"}}`)
+  var jsonStr = []byte("{\"name\":\"string\",\"envelope\":{\"provider\":\"gcp\",\"projectId\":\"string\",\"location\":\"string\",\"keyRing\":\"string\",\"cryptoKey\":\"string\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -200,7 +200,10 @@ func main() {
 ```json
 {
   "data": {
-    "id": "production-kms"
+    "id": "production-kms",
+    "name": "string",
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "active": false
   }
 }
 ```
@@ -248,7 +251,10 @@ Options:
 
 ```json
 {
-  "id": "production-kms"
+  "id": "production-kms",
+  "name": "string",
+  "createdAt": "1970-01-01T00:00:00.000Z",
+  "active": false
 }
 ```
 
@@ -280,7 +286,10 @@ await apiClient.create.encryption.configuration({
 ```json
 {
   "data": {
-    "id": "production-kms"
+    "id": "production-kms",
+    "name": "string",
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "active": false
   },
   "rawResponse": "...",
   "request": "...",

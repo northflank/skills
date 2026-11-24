@@ -15,9 +15,9 @@ Required permission: Account > Admin > Encryption > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `encryptionConfigurations`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `encryptionConfigurations`: [array of] (required) {object}
      - `id`: (string) (required) The name-derived ID of the encryption configuration.
      - `name`: (string) (required)
      - `description`: (string)
@@ -29,7 +29,7 @@ Required permission: Account > Admin > Encryption > Read
          - `region`: (string) (required)
          - `keyId`: (string) (required)
          - `externalId`: (string) External ID used for cross-account role assumption.
-         - `options`: {object}
+         - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
            - `maxUses`: (integer) Maximum encryption uses per data key.
            - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
            - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds. | {object}
@@ -40,13 +40,13 @@ Required permission: Account > Admin > Encryption > Read
          - `cryptoKey`: (string) (required)
          - `serviceAccountEmail`: (string) Northflank-generated identity to grant access to the KMS key.
          - `keyfileServiceAccountEmail`: (string) Service-account email from the supplied key file.
-         - `options`: {object}
+         - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
            - `maxUses`: (integer) Maximum encryption uses per data key.
            - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
            - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds. | {object}
          - `provider`: (string) (required) (enum: azure)
          - `keyId`: (string) (required)
-         - `options`: {object}
+         - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
            - `maxUses`: (integer) Maximum encryption uses per data key.
            - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
            - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds. | {object}
@@ -55,14 +55,14 @@ Required permission: Account > Admin > Encryption > Read
          - `mountPath`: (string)
          - `namespace`: (string)
          - `keyName`: (string) (required)
-         - `options`: {object}
+         - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
            - `maxUses`: (integer) Maximum encryption uses per data key.
            - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
            - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds.
-     - `vault`: {object}
+     - `vault`: {object} Legacy Vault configuration.
        - `version`: (string) (required)
   - `encryptionMode`: (string) (required) Encryption used for new writes: legacy Northflank default, Northflank-managed envelope, or a customer-managed configuration. Customer-managed includes envelope KMS and legacy Vault configurations; legacy Vault data cannot be migrated through DEK migration. (enum: default, northflank-envelope, customer-managed)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -73,6 +73,25 @@ GET /v1/encryption/configurations
 
 GET /v1/teams/{teamId}/encryption/configurations
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/encryption/configurations?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/encryption/configurations?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: Encryption configurations.
@@ -82,9 +101,13 @@ GET /v1/teams/{teamId}/encryption/configurations
   "data": {
     "encryptionConfigurations": [
       {
-        "id": "production-kms"
+        "id": "production-kms",
+        "name": "string",
+        "createdAt": "1970-01-01T00:00:00.000Z",
+        "active": false
       }
-    ]
+    ],
+    "encryptionMode": "default"
   },
   "pagination": {
     "hasNextPage": false,
@@ -119,9 +142,13 @@ Options:
 {
   "encryptionConfigurations": [
     {
-      "id": "production-kms"
+      "id": "production-kms",
+      "name": "string",
+      "createdAt": "1970-01-01T00:00:00.000Z",
+      "active": false
     }
-  ]
+  ],
+  "encryptionMode": "default"
 }
 ```
 
@@ -149,9 +176,13 @@ await apiClient.list.encryption.configurations({
   "data": {
     "encryptionConfigurations": [
       {
-        "id": "production-kms"
+        "id": "production-kms",
+        "name": "string",
+        "createdAt": "1970-01-01T00:00:00.000Z",
+        "active": false
       }
-    ]
+    ],
+    "encryptionMode": "default"
   },
   "pagination": {
     "hasNextPage": false,

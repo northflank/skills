@@ -8,9 +8,9 @@ Required permission: Organisation > Admin > Roles > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `directoryGroups`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `directoryGroups`: [array of] (required) An array of org directory groups. {object} An org directory group object.
      - `id`: (string) (required) ID of the directory group.
      - `name`: (string) (required) Display name of the directory group.
      - `idpId`: (string) (required) ID of the linked group from the Identity Provider (IdP).
@@ -21,6 +21,25 @@ Required permission: Organisation > Admin > Roles > Read
 
 GET /v1/directory-groups
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/directory-groups"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/directory-groups"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: A list of directory groups for the org.
@@ -30,7 +49,11 @@ GET /v1/directory-groups
   "data": {
     "directoryGroups": [
       {
-        "id": "directory_group_1234567890ABCDEFGHIJKLMNOP"
+        "id": "directory_group_1234567890ABCDEFGHIJKLMNOP",
+        "name": "string",
+        "idpId": "string",
+        "createdAt": "1970-01-01T00:00:00.000Z",
+        "updatedAt": "1970-01-01T00:00:00.000Z"
       }
     ]
   }
@@ -57,7 +80,11 @@ Options:
 {
   "directoryGroups": [
     {
-      "id": "directory_group_1234567890ABCDEFGHIJKLMNOP"
+      "id": "directory_group_1234567890ABCDEFGHIJKLMNOP",
+      "name": "string",
+      "idpId": "string",
+      "createdAt": "1970-01-01T00:00:00.000Z",
+      "updatedAt": "1970-01-01T00:00:00.000Z"
     }
   ]
 }
@@ -80,7 +107,11 @@ await apiClient.get.orgDirectoryGroups({});
   "data": {
     "directoryGroups": [
       {
-        "id": "directory_group_1234567890ABCDEFGHIJKLMNOP"
+        "id": "directory_group_1234567890ABCDEFGHIJKLMNOP",
+        "name": "string",
+        "idpId": "string",
+        "createdAt": "1970-01-01T00:00:00.000Z",
+        "updatedAt": "1970-01-01T00:00:00.000Z"
       }
     ]
   },

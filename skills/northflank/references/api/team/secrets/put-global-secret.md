@@ -18,7 +18,7 @@ Required permission: Account > GlobalSecrets > Secrets > Create
 - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `secrets`: {object}
-  - `values`: {object}
+  - `values`: {object} (required)
   - `files`: {object}
 - `type`: (string) (required) The permission type of the global secret. (enum: secret, config)
 - `gitops`: {object}
@@ -31,16 +31,16 @@ Required permission: Account > GlobalSecrets > Secrets > Create
   - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
 - `dependents`: {object}
   - `templates`: {object}
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] Templates to run, referenced by internalId. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
   - `secrets`: {object}
-    - `values`: {object}
+    - `values`: {object} (required)
     - `files`: {object}
   - `type`: (string) (required) The permission type of the global secret. (enum: secret, config)
   - `gitops`: {object}
@@ -53,7 +53,7 @@ Required permission: Account > GlobalSecrets > Secrets > Create
     - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
   - `dependents`: {object}
     - `templates`: {object}
-      - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+      - `items`: [array of] Templates to run, referenced by internalId. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `id`: (string) (required) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `createdAt`: (string) time of creation (format: date-time)
   - `updatedAt`: (string) time of update (format: date-time)
@@ -64,7 +64,7 @@ Required permission: Account > GlobalSecrets > Secrets > Create
     - `failed`: (integer) (required)
     - `skipped`: (integer) (required)
     - `deduplicated`: (integer) (required)
-    - `items`: [array of] {object}
+    - `items`: [array of] (required) {object}
         - `templateInternalId`: (string) (required) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
         - `status`: (string) (required) (enum: succeeded, failed, skipped, deduplicated)
         - `templateRunId`: (string)
@@ -84,7 +84,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
   --data '{"type":"secret","gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"name":"string"}' \
-  https://api.northflank.com/v1/secrets
+  "https://api.northflank.com/v1/secrets"
 ```
 
 ```javascript
@@ -118,10 +118,10 @@ import requests
 
 url = "https://api.northflank.com/v1/secrets"
 
-payload = {"type":"secret","gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"name":"string"}
+payload = "{\"type\":\"secret\",\"gitops\":{\"vcsService\":\"github\",\"accountLogin\":\"github-user\",\"repoUrl\":\"https://github.com/northflank-examples/remix-postgres-redis-demo\",\"branch\":\"main\",\"filePath\":\"/Dockerfile\"},\"name\":\"string\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PUT", url, headers = headers, json = payload)
+response = requests.request("PUT", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -139,7 +139,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/secrets"
 
-  var jsonStr = []byte(`{"type":"secret","gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"name":"string"}`)
+  var jsonStr = []byte("{\"type\":\"secret\",\"gitops\":{\"vcsService\":\"github\",\"accountLogin\":\"github-user\",\"repoUrl\":\"https://github.com/northflank-examples/remix-postgres-redis-demo\",\"branch\":\"main\",\"filePath\":\"/Dockerfile\"},\"name\":\"string\"}")
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -172,7 +172,9 @@ func main() {
       "repoUrl": "https://github.com/northflank-examples/remix-postgres-redis-demo",
       "branch": "main",
       "filePath": "/Dockerfile"
-    }
+    },
+    "name": "string",
+    "id": "string"
   }
 }
 ```
@@ -224,7 +226,9 @@ Options:
     "repoUrl": "https://github.com/northflank-examples/remix-postgres-redis-demo",
     "branch": "main",
     "filePath": "/Dockerfile"
-  }
+  },
+  "name": "string",
+  "id": "string"
 }
 ```
 
@@ -267,7 +271,9 @@ await apiClient.put.globalSecret({
       "repoUrl": "https://github.com/northflank-examples/remix-postgres-redis-demo",
       "branch": "main",
       "filePath": "/Dockerfile"
-    }
+    },
+    "name": "string",
+    "id": "string"
   },
   "rawResponse": "...",
   "request": "...",

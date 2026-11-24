@@ -13,8 +13,8 @@ Required permission: Account > Cloud > WorkloadIdentities > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `status`: (string) (required) The current installation status of the identity provider on the cloud account. (enum: installed, missing-ids, missing-remote, id-mismatch, permission-denied)
 
 ### API reference
@@ -23,12 +23,35 @@ GET /v1/cloud-providers/integrations/{integrationId}/workload-identity-provider
 
 GET /v1/teams/{teamId}/cloud-providers/integrations/{integrationId}/workload-identity-provider
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/cloud-providers/integrations/{integrationId}/workload-identity-provider"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/cloud-providers/integrations/{integrationId}/workload-identity-provider"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: The current installation status of the identity provider.
 
 ```json
-undefined
+{
+  "data": {
+    "status": "installed"
+  }
+}
 ```
 
 ### CLI reference

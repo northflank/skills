@@ -13,8 +13,8 @@ Required permission: Organisation > Team > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) ID of the team. (pattern: ^[A-Za-z0-9-]+$)
   - `uid`: (string) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
   - `name`: (string) (required) Display name of the team.
@@ -25,6 +25,25 @@ Required permission: Organisation > Team > General > Read
 ### API reference
 
 GET /v1/teams/{teamId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/teams/{teamId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/teams/{teamId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

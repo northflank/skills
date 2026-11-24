@@ -8,16 +8,16 @@ Required permission: Organisation > Admin > Billing > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `currency`: (string) The currency code.
-  - `total`: {object}
+  - `total`: {object} The spendable credit total. Broken down by source below.
     - `available`: (number) Credit available to spend now, across both sources. A Stripe balance the customer owes does not reduce this — it surfaces as an unpaid invoice instead. (format: float)
     - `pending`: (number) Credit granted but not yet available. Only credit grants have a pending state. (format: float)
-  - `grants`: {object}
+  - `grants`: {object} Credit from Stripe credit grants, which is what a credit purchase produces.
     - `available`: (number) Credit-grant balance available to spend now. (format: float)
     - `pending`: (number) Credit granted but not yet available. (format: float)
-  - `customerBalance`: {object}
+  - `customerBalance`: {object} Credit from a balance adjustment held against the Stripe customer.
     - `amount`: (number) A balance adjustment applied directly against the customer, e.g. a manually issued credit. Positive is credit in the customer's favour; negative is an amount owed. Only the credit direction counts toward `total.available`. (format: float)
   - `lastSyncedAt`: (string) When the credit balance was last synchronized with Stripe. (format: date-time)
 
@@ -26,6 +26,25 @@ Required permission: Organisation > Admin > Billing > Read
 GET /v1/billing/credit-balance
 
 GET /v1/teams/{teamId}/billing/credit-balance
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/billing/credit-balance"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/billing/credit-balance"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

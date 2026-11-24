@@ -17,7 +17,7 @@ Required permission: Project > Addons > Deployment > View Observability
 **Query parameters:**
 
 {object}
-- `containerName`: (multiple options) [array of] (string) (min length: 3) (max length: 64) | (string) (min length: 3) (max length: 64)
+- `containerName`: (multiple options) Limits logs to specific container(s). Multiple containers can be selected by specifying the query parameter repeatedly. [array of] (string) (min length: 3) (max length: 64) | (string) (min length: 3) (max length: 64)
 - `queryType`: (string) `range` selects a log range and returns immediately. (enum: range)
 - `startTime`: (string) Fetch logs generated after this timestamp. (format: date-time)
 - `endTime`: (string) Fetch logs generated before this timestamp. (format: date-time)
@@ -31,10 +31,10 @@ Required permission: Project > Addons > Deployment > View Observability
 
 **Response body:**
 
-{object}
-- `data`: [array of] {object}
+{object} Response object.
+- `data`: [array of] (required) Result data. {object}
    - `containerId`: (string) (required)
-   - `log`: (undefined) (required)
+   - `log`: (required)
    - `ts`: (string) (required) (format: date-time)
 
 ### API reference
@@ -42,6 +42,25 @@ Required permission: Project > Addons > Deployment > View Observability
 GET /v1/projects/{projectId}/addons/{addonId}/backups/{backupId}/restores/{restoreId}/logs
 
 GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}/backups/{backupId}/restores/{restoreId}/logs
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/backups/{backupId}/restores/{restoreId}/logs?containerName=my-container-67d6d748c5-kgvwh&queryType=range&startTime=2023-02-16T14%3A00%3A00.000Z&endTime=2023-02-16T15%3A00%3A00.000Z&duration=600&lineLimit=250&direction=backward&textIncludes=myvalue&textNotIncludes=myvalue&regexIncludes=my.*value&regexNotIncludes=my.*value"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/backups/{backupId}/restores/{restoreId}/logs?containerName=my-container-67d6d748c5-kgvwh&queryType=range&startTime=2023-02-16T14%3A00%3A00.000Z&endTime=2023-02-16T15%3A00%3A00.000Z&duration=600&lineLimit=250&direction=backward&textIncludes=myvalue&textNotIncludes=myvalue&regexIncludes=my.*value&regexNotIncludes=my.*value"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -52,7 +71,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}/backups/{backupId}/
   "data": [
     {
       "log": "stdout F This is a log line",
-      "ts": "2023-03-21T15:01:17.310Z"
+      "ts": "2023-03-21T15:01:17.310Z",
+      "containerId": "string"
     }
   ]
 }
@@ -108,7 +128,8 @@ Options:
 [
   {
     "log": "stdout F This is a log line",
-    "ts": "2023-03-21T15:01:17.310Z"
+    "ts": "2023-03-21T15:01:17.310Z",
+    "containerId": "string"
   }
 ]
 ```
@@ -128,7 +149,7 @@ await apiClient.get.addon.restore.logs({
     "restoreId": "example-restore"
   },
   options: {
-    "containerName": [],
+    "containerName": "my-container-67d6d748c5-kgvwh",
     "queryType": "range",
     "startTime": "2023-02-16T14:00:00.000Z",
     "endTime": "2023-02-16T15:00:00.000Z",
@@ -152,7 +173,8 @@ await apiClient.get.addon.restore.logs({
   "data": [
     {
       "log": "stdout F This is a log line",
-      "ts": "2023-03-21T15:01:17.310Z"
+      "ts": "2023-03-21T15:01:17.310Z",
+      "containerId": "string"
     }
   ],
   "rawResponse": "...",

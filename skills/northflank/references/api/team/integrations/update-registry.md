@@ -17,19 +17,19 @@ Required permission: Account > Cloud > Registries > Update
 - `credentials`: {object}
   - `username`: (string) Username for the docker registry. Required when `integrationId` is provided.
   - `password`: (string) Password for the docker registry. Required when `integrationId` is provided.
-  - `scope`: {object}
+  - `scope`: {object} (required)
     - `pull`: (boolean) Whether the credentials can pull images.
     - `push`: (boolean) Whether the credentials can push images.
 - `restrictions`: {object}
   - `restricted`: (boolean) (required) Whether access to this credential is restricted.
-  - `projects`: [array of] (string)
+  - `projects`: [array of] List of projects that have access to this credential. (string)
 - `updatedAt`: (string) time of update (format: date-time)
 - `createdAt`: (string) time of creation (format: date-time)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -46,7 +46,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
   --data '{}' \
-  https://api.northflank.com/v1/integrations/registries/{credentialId}
+  "https://api.northflank.com/v1/integrations/registries/{credentialId}"
 ```
 
 ```javascript
@@ -70,10 +70,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/registries/{credentialId}"
 
-payload = {}
+payload = "{}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PATCH", url, headers = headers, json = payload)
+response = requests.request("PATCH", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -91,7 +91,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/registries/{credentialId}"
 
-  var jsonStr = []byte(`{}`)
+  var jsonStr = []byte("{}")
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

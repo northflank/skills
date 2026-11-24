@@ -13,19 +13,19 @@ Required permission: Account > Platform > ContainerSnapshots > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) (format: uuid)
   - `trigger`: (string) (required) (enum: manual, containerTermination)
   - `state`: (string) (required) (enum: scheduled, accepted, running, succeeded, failed, cancelled)
-  - `source`: {object}
+  - `source`: {object} (required)
     - `projectId`: (string) (required)
-    - `nfObject`: {object}
+    - `nfObject`: {object} (required)
       - `id`: (string) (required)
       - `type`: (string) (required) (enum: job, service, harness, addon, volume, opentofu-job, llm-model-deployment, external-addon)
-  - `target`: {object}
+  - `target`: {object} (required)
     - `podName`: (string) (required)
-  - `compatibility`: {object}
+  - `compatibility`: {object} (required)
     - `runtime`: (string) (required) (enum: kata)
     - `architecture`: (string) (required) (enum: x86, arm)
     - `baseImageDigest`: (string) (pattern: ^sha256:[0-9a-f]{64}$)
@@ -51,12 +51,55 @@ GET /v1/container-snapshots/{snapshotId}
 
 GET /v1/teams/{teamId}/container-snapshots/{snapshotId}
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/container-snapshots/{snapshotId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/container-snapshots/{snapshotId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: Container snapshot details.
 
 ```json
-undefined
+{
+  "data": {
+    "id": "00000000-0000-4000-8000-000000000000",
+    "trigger": "manual",
+    "state": "scheduled",
+    "source": {
+      "projectId": "string",
+      "nfObject": {
+        "id": "string",
+        "type": "job"
+      }
+    },
+    "target": {
+      "podName": "string"
+    },
+    "compatibility": {
+      "runtime": "kata",
+      "architecture": "x86"
+    },
+    "inUse": false,
+    "lastTransitionTime": "1970-01-01T00:00:00.000Z",
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "updatedAt": "1970-01-01T00:00:00.000Z"
+  }
+}
 ```
 
 ### CLI reference
@@ -78,7 +121,29 @@ Options:
  Container snapshot details.
 
 ```json
-undefined
+{
+  "id": "00000000-0000-4000-8000-000000000000",
+  "trigger": "manual",
+  "state": "scheduled",
+  "source": {
+    "projectId": "string",
+    "nfObject": {
+      "id": "string",
+      "type": "job"
+    }
+  },
+  "target": {
+    "podName": "string"
+  },
+  "compatibility": {
+    "runtime": "kata",
+    "architecture": "x86"
+  },
+  "inUse": false,
+  "lastTransitionTime": "1970-01-01T00:00:00.000Z",
+  "createdAt": "1970-01-01T00:00:00.000Z",
+  "updatedAt": "1970-01-01T00:00:00.000Z"
+}
 ```
 
 ### JavaScript client reference
@@ -101,6 +166,29 @@ await apiClient.get.containerSnapshot({
 
 ```json
 {
+  "data": {
+    "id": "00000000-0000-4000-8000-000000000000",
+    "trigger": "manual",
+    "state": "scheduled",
+    "source": {
+      "projectId": "string",
+      "nfObject": {
+        "id": "string",
+        "type": "job"
+      }
+    },
+    "target": {
+      "podName": "string"
+    },
+    "compatibility": {
+      "runtime": "kata",
+      "architecture": "x86"
+    },
+    "inUse": false,
+    "lastTransitionTime": "1970-01-01T00:00:00.000Z",
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "updatedAt": "1970-01-01T00:00:00.000Z"
+  },
   "rawResponse": "...",
   "request": "...",
   "error": "..."

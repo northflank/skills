@@ -15,25 +15,25 @@ Required permission: Account > Platform > BackupDestinations > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `backupDestinations`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `backupDestinations`: [array of] (required) List of backup destinations. {object}
      - `name`: (string) (required) The name of the backup destination. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
      - `type`: (string) (required) Type of the backup destination. (enum: s3)
      - `usage`: (string) (required) The backup workload that can use this destination. (enum: globalBackups, containerSnapshots)
      - `prefix`: (string) (required) A prefix path to add to the bucket objects if not writing to / (pattern: ^([a-zA-Z0-9-_]+)\/$)
-     - `credentials`: {object}
+     - `credentials`: {object} (required) Credentials used for the backup destination.
        - `authMode`: (string) Whether the destination authenticates with static AWS credentials or a workload identity. (enum: staticCreds, workloadIdentity)
-       - `workloadIdentityId`: (multiple options) (string) ID of the workload identity used to authenticate with the S3 destination. | (string) ID of the workload identity used to authenticate with the S3 destination.
-       - `accessKey`: (multiple options) (string) Access key used to authenticate with the S3 destination.
-       - `secretKey`: (multiple options) (string) Secret key used to authenticate with the S3 destination.
+       - `workloadIdentityId`: (multiple options) ID of the workload identity used to authenticate with the S3 destination. (string) ID of the workload identity used to authenticate with the S3 destination. | (string) ID of the workload identity used to authenticate with the S3 destination.
+       - `accessKey`: (multiple options) Access key used to authenticate with the S3 destination. (string) Access key used to authenticate with the S3 destination.
+       - `secretKey`: (multiple options) Secret key used to authenticate with the S3 destination. (string) Secret key used to authenticate with the S3 destination.
        - `bucketName`: (string) (required)
        - `region`: (string) (required)
        - `endpoint`: (string) (required) S3 destination including region, fe s3.us-west-2.amazonaws.com
        - `enableObjectLock`: (boolean) Enable S3 Object Lock (WORM) for this destination. Immutable after creation. Bucket must have Object Lock enabled.
        - `objectLockRetentionDays`: (integer) Retention period in days for object-locked blobs. Required if enableObjectLock is true. Immutable after creation.
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -44,6 +44,25 @@ GET /v1/backup-destinations
 
 GET /v1/teams/{teamId}/backup-destinations
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/backup-destinations?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/backup-destinations?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: A list of backup destination saved to this account.
@@ -53,7 +72,15 @@ GET /v1/teams/{teamId}/backup-destinations
   "data": {
     "backupDestinations": [
       {
-        "name": "Example Backup Destination"
+        "name": "Example Backup Destination",
+        "type": "s3",
+        "usage": "globalBackups",
+        "prefix": "example/",
+        "credentials": {
+          "bucketName": "string",
+          "region": "string",
+          "endpoint": "string"
+        }
       }
     ]
   },
@@ -90,7 +117,15 @@ Options:
 {
   "backupDestinations": [
     {
-      "name": "Example Backup Destination"
+      "name": "Example Backup Destination",
+      "type": "s3",
+      "usage": "globalBackups",
+      "prefix": "example/",
+      "credentials": {
+        "bucketName": "string",
+        "region": "string",
+        "endpoint": "string"
+      }
     }
   ]
 }
@@ -120,7 +155,15 @@ await apiClient.list.backupDestinations({
   "data": {
     "backupDestinations": [
       {
-        "name": "Example Backup Destination"
+        "name": "Example Backup Destination",
+        "type": "s3",
+        "usage": "globalBackups",
+        "prefix": "example/",
+        "credentials": {
+          "bucketName": "string",
+          "region": "string",
+          "endpoint": "string"
+        }
       }
     ]
   },

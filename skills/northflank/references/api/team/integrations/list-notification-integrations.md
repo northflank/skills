@@ -15,19 +15,19 @@ Required permission: Account > Observability > Notifications > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `notificationIntegrations`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `notificationIntegrations`: [array of] (required) An array of notification integrations on the account. {object}
      - `name`: (string) (required) The name of the notification integration. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
      - `id`: (string) (required) The ID of the notification integration.
-     - `type`: (string) (required) The provider to send webhooks to. `RAW_WEBHOOK` allows you to send webhooks to a url of your choice, or you can choose a specific provider. (enum: RAW_WEBHOOK, SLACK, DISCORD, TEAMS, TEAMS_WORKFLOWS)
+     - `type`: (string) (required) The provider to send webhooks to. `RAW_WEBHOOK` allows you to send webhooks to a url of your choice, or you can choose a specific provider. (enum: RAW_WEBHOOK, SLACK, DISCORD, TEAMS, GOOGLE_CHAT, TEAMS_WORKFLOWS)
      - `webhook`: (string) (required) The URL where webhooks will be sent.
-     - `status`: {object}
+     - `status`: {object} Information on the current webhook status.
        - `disabled`: (boolean) Is the webhook currently disabled?
        - `reason`: (boolean) Why the webhook was disabled.
      - `createdAt`: (string) (required) Creation date (format: date-time)
      - `updatedAt`: (string) (required) Last update date (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -37,6 +37,25 @@ Required permission: Account > Observability > Notifications > Read
 GET /v1/integrations/notifications
 
 GET /v1/teams/{teamId}/integrations/notifications
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/integrations/notifications?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/integrations/notifications?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

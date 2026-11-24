@@ -24,19 +24,23 @@ Required permission: Project > Pipelines > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `runs`: [array of] {object}
-     - `id`: (string) (required) ID of the release flow run
-     - `name`: (string) Optional name for the release flow run
-     - `description`: (string) Optional description for the release flow run
+     - `id`: (string) (required) Identifier of the run.
+     - `name`: (string) Optional name of the run.
+     - `description`: (string) Optional description of the run.
+     - `apiVersion`: (string) Template API version.
+     - `templateId`: (string) Identifier of the template, when available.
+     - `environmentId`: (string) Identifier of the preview environment, when available.
      - `status`: (string) (required) Status of the template run (enum: pending, running, success, failure, aborted, aborting, queued, unknown, skipped, waiting, retrying, async_wait, approval_wait)
-     - `startedAt`: (string) Timestamp the run started at. (format: date-time)
-     - `concluded`: (boolean) (required) Whether the run has concluded (aborted, success, failed)
-     - `concludedAt`: (string) Timestamp the run concluded at. (format: date-time)
-     - `createdAt`: (string) (required) Timestamp the run was created at. (format: date-time)
-     - `updatedAt`: (string) (required) Timestamp the run was last updated at. (format: date-time)
-- `pagination`: {object}
+     - `concluded`: (boolean) (required) Whether execution has concluded.
+     - `startedAt`: (string) When execution started. (format: date-time)
+     - `concludedAt`: (string) When execution concluded. (format: date-time)
+     - `createdAt`: (string) (required) When the run was created. (format: date-time)
+     - `updatedAt`: (string) (required) When the run was last updated. (format: date-time)
+     - `detailsHidden`: (boolean) (required) Run details include available public results. Sensitive inputs and results are omitted.
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -46,6 +50,25 @@ Required permission: Project > Pipelines > General > Read
 GET /v1/projects/{projectId}/pipelines/{pipelineId}/release-flows/{stage}/runs
 
 GET /v1/teams/{teamId}/projects/{projectId}/pipelines/{pipelineId}/release-flows/{stage}/runs
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/pipelines/{pipelineId}/release-flows/{stage}/runs?per_page=50&page=1&status=success"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/pipelines/{pipelineId}/release-flows/{stage}/runs?per_page=50&page=1&status=success"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -57,14 +80,15 @@ GET /v1/teams/{teamId}/projects/{projectId}/pipelines/{pipelineId}/release-flows
     "runs": [
       {
         "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
-        "name": "Example run",
-        "description": "This is an example description",
+        "name": "Production deployment",
+        "description": "Deploy the latest release.",
         "status": "success",
-        "startedAt": "2021-01-01 12:01:00.000Z",
         "concluded": true,
-        "concludedAt": "2021-01-01 12:10:00.000Z",
-        "createdAt": "2021-01-01 12:00:00.000Z",
-        "updatedAt": "2021-01-01 12:00:00.000Z"
+        "startedAt": "2026-01-01T12:00:00.000Z",
+        "concludedAt": "2026-01-01T12:01:00.000Z",
+        "createdAt": "2026-01-01T12:00:00.000Z",
+        "updatedAt": "2026-01-01T12:01:00.000Z",
+        "detailsHidden": false
       }
     ]
   },
@@ -112,14 +136,15 @@ Options:
   "runs": [
     {
       "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
-      "name": "Example run",
-      "description": "This is an example description",
+      "name": "Production deployment",
+      "description": "Deploy the latest release.",
       "status": "success",
-      "startedAt": "2021-01-01 12:01:00.000Z",
       "concluded": true,
-      "concludedAt": "2021-01-01 12:10:00.000Z",
-      "createdAt": "2021-01-01 12:00:00.000Z",
-      "updatedAt": "2021-01-01 12:00:00.000Z"
+      "startedAt": "2026-01-01T12:00:00.000Z",
+      "concludedAt": "2026-01-01T12:01:00.000Z",
+      "createdAt": "2026-01-01T12:00:00.000Z",
+      "updatedAt": "2026-01-01T12:01:00.000Z",
+      "detailsHidden": false
     }
   ]
 }
@@ -156,14 +181,15 @@ await apiClient.list.releaseFlowRuns({
     "runs": [
       {
         "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
-        "name": "Example run",
-        "description": "This is an example description",
+        "name": "Production deployment",
+        "description": "Deploy the latest release.",
         "status": "success",
-        "startedAt": "2021-01-01 12:01:00.000Z",
         "concluded": true,
-        "concludedAt": "2021-01-01 12:10:00.000Z",
-        "createdAt": "2021-01-01 12:00:00.000Z",
-        "updatedAt": "2021-01-01 12:00:00.000Z"
+        "startedAt": "2026-01-01T12:00:00.000Z",
+        "concludedAt": "2026-01-01T12:01:00.000Z",
+        "createdAt": "2026-01-01T12:00:00.000Z",
+        "updatedAt": "2026-01-01T12:01:00.000Z",
+        "detailsHidden": false
       }
     ]
   },
@@ -211,14 +237,15 @@ print(response.data)
   "runs": [
     {
       "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
-      "name": "Example run",
-      "description": "This is an example description",
+      "name": "Production deployment",
+      "description": "Deploy the latest release.",
       "status": "success",
-      "startedAt": "2021-01-01 12:01:00.000Z",
       "concluded": true,
-      "concludedAt": "2021-01-01 12:10:00.000Z",
-      "createdAt": "2021-01-01 12:00:00.000Z",
-      "updatedAt": "2021-01-01 12:00:00.000Z"
+      "startedAt": "2026-01-01T12:00:00.000Z",
+      "concludedAt": "2026-01-01T12:01:00.000Z",
+      "createdAt": "2026-01-01T12:00:00.000Z",
+      "updatedAt": "2026-01-01T12:01:00.000Z",
+      "detailsHidden": false
     }
   ]
 }

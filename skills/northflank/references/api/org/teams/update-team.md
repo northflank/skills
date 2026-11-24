@@ -18,8 +18,8 @@ Required permission: Organisation > Team > General > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) ID of the team. (pattern: ^[A-Za-z0-9-]+$)
   - `uid`: (string) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
   - `name`: (string) (required) Display name of the team.
@@ -40,7 +40,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
   --data '{"description":"This is my team."}' \
-  https://api.northflank.com/v1/teams/{teamId}
+  "https://api.northflank.com/v1/teams/{teamId}"
 ```
 
 ```javascript
@@ -66,10 +66,10 @@ import requests
 
 url = "https://api.northflank.com/v1/teams/{teamId}"
 
-payload = {"description":"This is my team."}
+payload = "{\"description\":\"This is my team.\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PATCH", url, headers = headers, json = payload)
+response = requests.request("PATCH", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -87,7 +87,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/teams/{teamId}"
 
-  var jsonStr = []byte(`{"description":"This is my team."}`)
+  var jsonStr = []byte("{\"description\":\"This is my team.\"}")
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

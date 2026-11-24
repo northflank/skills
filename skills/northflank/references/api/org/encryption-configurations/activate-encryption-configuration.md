@@ -13,8 +13,8 @@ Required permission: Account > Admin > Encryption > Manage
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) The name-derived ID of the encryption configuration.
   - `name`: (string) (required)
   - `description`: (string)
@@ -26,7 +26,7 @@ Required permission: Account > Admin > Encryption > Manage
      - `region`: (string) (required)
      - `keyId`: (string) (required)
      - `externalId`: (string) External ID used for cross-account role assumption.
-     - `options`: {object}
+     - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
        - `maxUses`: (integer) Maximum encryption uses per data key.
        - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
        - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds. | {object}
@@ -37,13 +37,13 @@ Required permission: Account > Admin > Encryption > Manage
      - `cryptoKey`: (string) (required)
      - `serviceAccountEmail`: (string) Northflank-generated identity to grant access to the KMS key.
      - `keyfileServiceAccountEmail`: (string) Service-account email from the supplied key file.
-     - `options`: {object}
+     - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
        - `maxUses`: (integer) Maximum encryption uses per data key.
        - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
        - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds. | {object}
      - `provider`: (string) (required) (enum: azure)
      - `keyId`: (string) (required)
-     - `options`: {object}
+     - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
        - `maxUses`: (integer) Maximum encryption uses per data key.
        - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
        - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds. | {object}
@@ -52,11 +52,11 @@ Required permission: Account > Admin > Encryption > Manage
      - `mountPath`: (string)
      - `namespace`: (string)
      - `keyName`: (string) (required)
-     - `options`: {object}
+     - `options`: {object} Data-key rotation and cache overrides, subject to platform-configured bounds.
        - `maxUses`: (integer) Maximum encryption uses per data key.
        - `maxAgeMs`: (integer) Maximum data-key lifetime in milliseconds.
        - `cacheTtlSeconds`: (integer) Decrypted data-key cache TTL in seconds.
-  - `vault`: {object}
+  - `vault`: {object} Legacy Vault configuration.
     - `version`: (string) (required)
 
 ### API reference
@@ -72,7 +72,10 @@ POST /v1/teams/{teamId}/encryption/configurations/{encryptionConfigurationId}/ac
 ```json
 {
   "data": {
-    "id": "production-kms"
+    "id": "production-kms",
+    "name": "string",
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "active": false
   }
 }
 ```
@@ -109,7 +112,10 @@ Options:
 
 ```json
 {
-  "id": "production-kms"
+  "id": "production-kms",
+  "name": "string",
+  "createdAt": "1970-01-01T00:00:00.000Z",
+  "active": false
 }
 ```
 
@@ -134,7 +140,10 @@ await apiClient.activate.encryption.configuration({
 ```json
 {
   "data": {
-    "id": "production-kms"
+    "id": "production-kms",
+    "name": "string",
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "active": false
   },
   "rawResponse": "...",
   "request": "...",

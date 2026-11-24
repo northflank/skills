@@ -15,23 +15,23 @@ Required permission: Project > Volumes > General > Update
 **Request body:**
 
 {object}
-- `mounts`: [array of] {object}
+- `mounts`: [array of] Array of mounts, containerMountPaths must be unique {object}
    - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
    - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
 - `spec`: {object}
   - `storageSize`: (integer) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
 - `backupSchedules`: [array of] {object}
-   - `scheduling`: {object}
+   - `scheduling`: {object} (required) Schedule for the backup.
      - `interval`: (string) (required) The interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (enum: hourly, daily, weekly)
-     - `minute`: [array of] (integer) A minute when the backup should be performed.
-     - `hour`: [array of] (integer) An hour when the backup should be performed, in 24 hour format.
-     - `day`: [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday.
+     - `minute`: [array of] (required) An array of minutes when the backup should be performed. (integer) A minute when the backup should be performed.
+     - `hour`: [array of] An array of hours in 24 hour format when the backup should be performed. At these hours, a backup will be performed at each of the minutes provided in the `minute` field. Required for `daily` and `weekly` intervals and unavailable for `hourly` intervals. (integer) An hour when the backup should be performed, in 24 hour format.
+     - `day`: [array of] An array of days of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday. On these days, a backup will be performed at each of the minutes provided in the `minute` field whenever it is an hour from the `hour` field. Required for `weekly` intervals and unavailable for `hourly` and `daily` intervals. (integer) A day of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday.
    - `retentionTime`: (integer) (required) The time the backup is retained for, in days.
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -48,7 +48,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageSize":6144},"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"retentionTime":7}]}' \
-  https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}
+  "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}"
 ```
 
 ```javascript
@@ -99,10 +99,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}"
 
-payload = {"mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageSize":6144},"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"retentionTime":7}]}
+payload = "{\"mounts\":[{\"volumeMountPath\":\"\",\"containerMountPath\":\"/container\"}],\"spec\":{\"storageSize\":6144},\"backupSchedules\":[{\"scheduling\":{\"interval\":\"weekly\",\"minute\":[30],\"hour\":[18],\"day\":[4]},\"retentionTime\":7}]}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -120,7 +120,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}"
 
-  var jsonStr = []byte(`{"mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageSize":6144},"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"retentionTime":7}]}`)
+  var jsonStr = []byte("{\"mounts\":[{\"volumeMountPath\":\"\",\"containerMountPath\":\"/container\"}],\"spec\":{\"storageSize\":6144},\"backupSchedules\":[{\"scheduling\":{\"interval\":\"weekly\",\"minute\":[30],\"hour\":[18],\"day\":[4]},\"retentionTime\":7}]}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

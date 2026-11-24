@@ -13,8 +13,8 @@ Required permission: Organisation > Admin > Roles > Manage
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 

@@ -15,9 +15,9 @@ Required permission: Account > Admin > AuditLogSinks > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `auditLogSinks`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `auditLogSinks`: [array of] (required) An array of audit log sinks defined for this entity. {object} An audit log sink object.
      - `id`: (string) (required) Identifier for the audit log sink.
      - `name`: (string) (required) Name of the audit log sink.
      - `description`: (string) Description of the audit log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
@@ -26,7 +26,7 @@ Required permission: Account > Admin > AuditLogSinks > Read
      - `status`: (string) (required) Current status of the audit log sink. (enum: paused, running, failing, creating)
      - `createdAt`: (string) (required) Timestamp of when the audit log sink was created. (format: date-time)
      - `updatedAt`: (string) (required) Timestamp of when the audit log sink was last updated. (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -36,6 +36,25 @@ Required permission: Account > Admin > AuditLogSinks > Read
 GET /v1/integrations/audit-log-sinks
 
 GET /v1/teams/{teamId}/integrations/audit-log-sinks
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/integrations/audit-log-sinks?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/integrations/audit-log-sinks?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -52,7 +71,8 @@ GET /v1/teams/{teamId}/integrations/audit-log-sinks
         "sinkType": "aws_s3",
         "includeSpec": false,
         "createdAt": "2026-05-11T12:00:00.000Z",
-        "updatedAt": "2026-05-11T12:00:00.000Z"
+        "updatedAt": "2026-05-11T12:00:00.000Z",
+        "status": "paused"
       }
     ]
   },
@@ -95,7 +115,8 @@ Options:
       "sinkType": "aws_s3",
       "includeSpec": false,
       "createdAt": "2026-05-11T12:00:00.000Z",
-      "updatedAt": "2026-05-11T12:00:00.000Z"
+      "updatedAt": "2026-05-11T12:00:00.000Z",
+      "status": "paused"
     }
   ]
 }
@@ -131,7 +152,8 @@ await apiClient.list.auditLogSinks({
         "sinkType": "aws_s3",
         "includeSpec": false,
         "createdAt": "2026-05-11T12:00:00.000Z",
-        "updatedAt": "2026-05-11T12:00:00.000Z"
+        "updatedAt": "2026-05-11T12:00:00.000Z",
+        "status": "paused"
       }
     ]
   },

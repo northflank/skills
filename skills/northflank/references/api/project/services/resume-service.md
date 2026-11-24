@@ -22,8 +22,8 @@ Required permission: Project > Services > General > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -40,7 +40,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"instances":1,"disabledCI":false,"disabledCD":false,"enableAutoscaling":true}' \
-  https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/resume
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/resume"
 ```
 
 ```javascript
@@ -69,10 +69,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/resume"
 
-payload = {"instances":1,"disabledCI":false,"disabledCD":false,"enableAutoscaling":true}
+payload = "{\"instances\":1,\"disabledCI\":false,\"disabledCD\":false,\"enableAutoscaling\":true}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -90,7 +90,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/resume"
 
-  var jsonStr = []byte(`{"instances":1,"disabledCI":false,"disabledCD":false,"enableAutoscaling":true}`)
+  var jsonStr = []byte("{\"instances\":1,\"disabledCI\":false,\"disabledCD\":false,\"enableAutoscaling\":true}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

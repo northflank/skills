@@ -21,27 +21,27 @@ Required permission: Project > Addons > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `backups`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `backups`: [array of] (required) A list of backups for the given addon. {object} Data about a backup.
      - `id`: (string) (required) The identifier for the backup.
      - `name`: (string) (required) The name of the backup.
      - `uid`: (string) (required) The unique id of the backup.
      - `status`: (string) (required) The current status of the backup. (enum: scheduled, in-progress, completed, aborting, aborted, failed, not-supported)
      - `createdAt`: (string) (required) The time the backup was initiated.
      - `completedAt`: (string) (required) The time the backup was completed.
-     - `config`: {object}
-       - `source`: {object}
+     - `config`: {object} (required) Data about the backup configuration.
+       - `source`: {object} Data about the source of the backup.
          - `type`: (string) The type of backup. (enum: fileUpload, liveInstance, snapshot, externalDump, sameAddon)
        - `size`: (string) (required) The size of the backup, in bytes
        - `compressionType`: (string) The compression algorithm of the backup. Only applicable for dump backups. Defaults to `gz`. (enum: gz, zstd)
-       - `additionalDestinations`: [array of] {object}
+       - `additionalDestinations`: [array of] List of destinations for which a backup should be created of this backup. Only applicable for snapshot backups. {object}
            - `destinationId`: (string) (required) Additional custom back up destination that should be used to store the snapshot. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
            - `retentionTime`: (integer) Retention time of the additional back up in days.
            - `type`: (string) (required) The type of backup destination to use (enum: custom)
        - `addonVersion`: (string) The version of the addon at the time of the backup. If the backup type is `snapshot`, the addon will be restored to this version when the backup is restored.
      - `customDestinationId`: (string) Custom backup destination in which the dump back up should be stored. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -51,6 +51,25 @@ Required permission: Project > Addons > General > Read
 GET /v1/projects/{projectId}/addons/{addonId}/backups
 
 GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}/backups
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/backups?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/backups?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

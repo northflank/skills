@@ -15,14 +15,14 @@ Required permission: Project > Addons > General > Update
 **Request body:**
 
 {object}
-- `ipPolicies`: [array of] {object}
+- `ipPolicies`: [array of] (required) An array of IP policy rules. {object} Data about an IP policy rule.
    - `address`: (string) (required) An IP address used by this rule.
    - `action`: (string) The action for this rule. (enum: ALLOW, DENY)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -39,7 +39,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"ipPolicies":[{"address":"127.0.0.1","action":"ALLOW"}]}' \
-  https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/security
+  "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/security"
 ```
 
 ```javascript
@@ -70,10 +70,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/security"
 
-payload = {"ipPolicies":[{"address":"127.0.0.1","action":"ALLOW"}]}
+payload = "{\"ipPolicies\":[{\"address\":\"127.0.0.1\",\"action\":\"ALLOW\"}]}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -91,7 +91,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/security"
 
-  var jsonStr = []byte(`{"ipPolicies":[{"address":"127.0.0.1","action":"ALLOW"}]}`)
+  var jsonStr = []byte("{\"ipPolicies\":[{\"address\":\"127.0.0.1\",\"action\":\"ALLOW\"}]}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

@@ -21,22 +21,22 @@ Required permission: Project > Volumes > Backups > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `schedules`: [array of] {object}
      - `id`: (string) (required) ID of the schedule.
      - `backupType`: (string) (required) The type of backup being performed. (enum: dump, snapshot)
      - `backupCompressionType`: (string) The compression algorithm of the backup. Only applicable for dump backups. Defaults to `gz`. (enum: gz, zstd)
-     - `additionalDestinations`: [array of] {object}
+     - `additionalDestinations`: [array of] List of destinations for which a backup should be created of this backup. Only applicable for snapshot backups. {object}
          - `destinationId`: (string) (required) Additional custom back up destination that should be used to store the snapshot. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
          - `retentionTime`: (integer) Retention time of the additional back up in days.
          - `type`: (string) (required) The type of backup destination to use (enum: custom)
      - `customDestinationId`: (string) Custom backup destination in which the dump back up should be stored. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-     - `scheduling`: {object}
+     - `scheduling`: {object} (required) Information about the scheduling for the backup schedule.
        - `interval`: (string) (required) The interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (enum: hourly, daily, weekly)
-       - `minute`: [array of] (integer) A minute when the backup should be performed.
-       - `hour`: [array of] (integer) An hour when the backup should be performed, in 24 hour format.
-       - `day`: [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday.
+       - `minute`: [array of] (required) An array of minutes when the backup should be performed. (integer) A minute when the backup should be performed.
+       - `hour`: [array of] An array of hours in 24 hour format when the backup should be performed. At these hours, a backup will be performed at each of the minutes provided in the `minute` field. Required for `daily` and `weekly` intervals and unavailable for `hourly` intervals. (integer) An hour when the backup should be performed, in 24 hour format.
+       - `day`: [array of] An array of days of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday. On these days, a backup will be performed at each of the minutes provided in the `minute` field whenever it is an hour from the `hour` field. Required for `weekly` intervals and unavailable for `hourly` and `daily` intervals. (integer) A day of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday.
      - `retentionTime`: (integer) (required) The time the backup is retained for, in days.
      - `createdAt`: (string) (required) The timestamp the backup schedule was created. (format: date-time)
      - `updatedAt`: (string) (required) The timestamp the backup schedule was last updated. (format: date-time)
@@ -46,6 +46,25 @@ Required permission: Project > Volumes > Backups > Read
 GET /v1/projects/{projectId}/volumes/{volumeId}/backup-schedules
 
 GET /v1/teams/{teamId}/projects/{projectId}/volumes/{volumeId}/backup-schedules
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}/backup-schedules?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}/backup-schedules?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

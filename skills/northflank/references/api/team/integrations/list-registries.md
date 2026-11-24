@@ -15,11 +15,11 @@ Required permission: Account > Cloud > Registries > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `credentials`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `credentials`: [array of] (required) An array of registry credential information. {object}
      - `id`: (string) (required) ID of the docker credentials (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
-     - `registryCredentialRefresh`: {object}
+     - `registryCredentialRefresh`: {object} (required)
        - `status`: (string) (required) (enum: healthy, retrying, suspended)
        - `failureCount`: (integer) (required)
        - `retryDelay`: (integer) (required) Delay in milliseconds before the next refresh attempt.
@@ -40,12 +40,12 @@ Required permission: Account > Cloud > Registries > Read
        - `resourceGroup`: (string) The resource group of the Azure docker registry.
      - `integrationId`: (string) Integration to use for this registry. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
      - `credentials`: {object}
-       - `scope`: {object}
+       - `scope`: {object} (required)
          - `pull`: (boolean) Whether the credentials can pull images.
          - `push`: (boolean) Whether the credentials can push images.
      - `updatedAt`: (string) time of update (format: date-time)
      - `createdAt`: (string) time of creation (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -55,6 +55,25 @@ Required permission: Account > Cloud > Registries > Read
 GET /v1/integrations/registries
 
 GET /v1/teams/{teamId}/integrations/registries
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/integrations/registries?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/integrations/registries?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -66,7 +85,13 @@ GET /v1/teams/{teamId}/integrations/registries
     "credentials": [
       {
         "id": "example-credentials",
-        "name": "Example Docker Credentials"
+        "name": "Example Docker Credentials",
+        "registryCredentialRefresh": {
+          "status": "healthy",
+          "failureCount": 0,
+          "retryDelay": 0
+        },
+        "provider": "acr"
       }
     ]
   },
@@ -104,7 +129,13 @@ Options:
   "credentials": [
     {
       "id": "example-credentials",
-      "name": "Example Docker Credentials"
+      "name": "Example Docker Credentials",
+      "registryCredentialRefresh": {
+        "status": "healthy",
+        "failureCount": 0,
+        "retryDelay": 0
+      },
+      "provider": "acr"
     }
   ]
 }
@@ -135,7 +166,13 @@ await apiClient.list.registryCredentials({
     "credentials": [
       {
         "id": "example-credentials",
-        "name": "Example Docker Credentials"
+        "name": "Example Docker Credentials",
+        "registryCredentialRefresh": {
+          "status": "healthy",
+          "failureCount": 0,
+          "retryDelay": 0
+        },
+        "provider": "acr"
       }
     ]
   },

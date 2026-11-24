@@ -19,8 +19,8 @@ Required permission: Project > Services > General > Delete
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 

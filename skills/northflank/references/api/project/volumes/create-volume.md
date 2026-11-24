@@ -16,55 +16,55 @@ Required permission: Project > Volumes > General > Create
 {object}
 - `name`: (string) (required) The name of the volume. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
 - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `mounts`: [array of] {object}
+- `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+- `mounts`: [array of] (required) Array of mounts, containerMountPaths must be unique {object}
    - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
    - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
-- `spec`: {object}
-  - `accessMode`: (string) (required) Access mode of the volume. Only `ReadWriteOnce` is generally available. (enum: ReadWriteOnce, ReadWriteMany)
-  - `storageClassName`: (string) The type of the storage.
+- `spec`: {object} (required) Example storage schema
+  - `accessMode`: (string) (required) Access mode of the volume. `ReadWriteOnce` volumes attach to one workload at a time. `ReadWriteMany` volumes can attach to multiple workloads and are required for GPU workloads on Northflank-managed clusters. (enum: ReadWriteOnce, ReadWriteMany)
+  - `storageClassName`: (string) The storage class of the volume. Defaults to `nvme` for `ReadWriteOnce` volumes and `nf-multi-rw` for `ReadWriteMany` volumes. Available storage classes depend on the region.
   - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
 - `source`: {object}
   - `type`: (string) (required) (enum: volume, backup)
   - `sourceId`: (string) (required) Reference to the source object. For a volume source: "<volumeId>". For a backup source, prefer the backup UUID. Legacy "<volumeId>/<backupId>" and "<projectId>/<volumeId>/<backupId>" references remain supported.
-- `owningObject`: {object}
+- `owningObject`: {object} DEPRECATED: The object to attach this volume to.
   - `id`: (string) (required) The id of object to attach this volume to. (pattern: ^[A-Za-z0-9-]+$)
   - `type`: (string) (required) The type of the object to attach this volume to. (enum: service, job)
-- `attachedObjects`: [array of] {object}
+- `attachedObjects`: [array of] Array of objects this volume is attached to. {object} The object to attach this volume to.
    - `id`: (string) (required) The id of object to attach this volume to. (pattern: ^[A-Za-z0-9-]+$)
    - `type`: (string) (required) The type of the object to attach this volume to. (enum: service, job)
-- `backupSchedules`: [array of] {object}
-   - `scheduling`: {object}
+- `backupSchedules`: [array of] Backup schedules for the volume. Snapshot-only. {object}
+   - `scheduling`: {object} (required) Schedule for the backup.
      - `interval`: (string) (required) The interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (enum: hourly, daily, weekly)
-     - `minute`: [array of] (integer) A minute when the backup should be performed.
-     - `hour`: [array of] (integer) An hour when the backup should be performed, in 24 hour format.
-     - `day`: [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday.
+     - `minute`: [array of] (required) An array of minutes when the backup should be performed. (integer) A minute when the backup should be performed.
+     - `hour`: [array of] An array of hours in 24 hour format when the backup should be performed. At these hours, a backup will be performed at each of the minutes provided in the `minute` field. Required for `daily` and `weekly` intervals and unavailable for `hourly` intervals. (integer) An hour when the backup should be performed, in 24 hour format.
+     - `day`: [array of] An array of days of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday. On these days, a backup will be performed at each of the minutes provided in the `minute` field whenever it is an hour from the `hour` field. Required for `weekly` intervals and unavailable for `hourly` and `daily` intervals. (integer) A day of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday.
    - `retentionTime`: (integer) (required) The time the backup is retained for, in days.
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) Identifier for the volume
   - `uid`: (string) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
   - `name`: (string) (required) Volume name
-  - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-  - `spec`: {object}
-    - `accessMode`: (string) (required) Access mode of the volume. Only `ReadWriteOnce` is generally available. (enum: ReadWriteOnce, ReadWriteMany)
-    - `storageClassName`: (string) The type of the storage.
+  - `tags`: [array of] (required) An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `spec`: {object} (required) Example storage schema
+    - `accessMode`: (string) (required) Access mode of the volume. `ReadWriteOnce` volumes attach to one workload at a time. `ReadWriteMany` volumes can attach to multiple workloads and are required for GPU workloads on Northflank-managed clusters. (enum: ReadWriteOnce, ReadWriteMany)
+    - `storageClassName`: (string) The storage class of the volume. Defaults to `nvme` for `ReadWriteOnce` volumes and `nf-multi-rw` for `ReadWriteMany` volumes. Available storage classes depend on the region.
     - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
-  - `attachedObjects`: [array of] {object}
+  - `attachedObjects`: [array of] List of objects this volume is attached to. {object} The object to attach this volume to.
      - `id`: (string) (required) The id of object to attach this volume to. (pattern: ^[A-Za-z0-9-]+$)
      - `type`: (string) (required) The type of the object to attach this volume to. (enum: service, job)
   - `backupSchedules`: [array of] {object}
-     - `scheduling`: {object}
+     - `scheduling`: {object} (required) Schedule for the backup.
        - `interval`: (string) (required) The interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (enum: hourly, daily, weekly)
-       - `minute`: [array of] (integer) A minute when the backup should be performed.
-       - `hour`: [array of] (integer) An hour when the backup should be performed, in 24 hour format.
-       - `day`: [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday.
+       - `minute`: [array of] (required) An array of minutes when the backup should be performed. (integer) A minute when the backup should be performed.
+       - `hour`: [array of] An array of hours in 24 hour format when the backup should be performed. At these hours, a backup will be performed at each of the minutes provided in the `minute` field. Required for `daily` and `weekly` intervals and unavailable for `hourly` intervals. (integer) An hour when the backup should be performed, in 24 hour format.
+       - `day`: [array of] An array of days of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday. On these days, a backup will be performed at each of the minutes provided in the `minute` field whenever it is an hour from the `hour` field. Required for `weekly` intervals and unavailable for `hourly` and `daily` intervals. (integer) A day of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday.
      - `retentionTime`: (integer) (required) The time the backup is retained for, in days.
   - `status`: (string) (required) Status the volume is in on the cluster
-  - `migration`: {object}
+  - `migration`: {object} Clone migration phase, separate from the volume binding status.
     - `status`: (string) (required) (enum: PENDING, SNAPSHOTTING, RESTORING, RELOCATING, ATTACHING, COMPLETED, FAILED)
   - `createdAt`: (string) (required) The timestamp the volume was created at (format: date-time)
   - `updatedAt`: (string) (required) The timestamp the volume was last updated at (format: date-time)
@@ -84,7 +84,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"nvme","storageSize":6144,"accessMode":"ReadWriteOnce"},"source":{"sourceId":"6d542e24-5d9f-4ecf-80a5-e80724b9133e","type":"volume"},"attachedObjects":[{"id":"example-service","type":"service"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"retentionTime":7}]}' \
-  https://api.northflank.com/v1/projects/{projectId}/volumes
+  "https://api.northflank.com/v1/projects/{projectId}/volumes"
 ```
 
 ```javascript
@@ -148,10 +148,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/volumes"
 
-payload = {"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"nvme","storageSize":6144,"accessMode":"ReadWriteOnce"},"source":{"sourceId":"6d542e24-5d9f-4ecf-80a5-e80724b9133e","type":"volume"},"attachedObjects":[{"id":"example-service","type":"service"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"retentionTime":7}]}
+payload = "{\"name\":\"Example Volume\",\"mounts\":[{\"volumeMountPath\":\"\",\"containerMountPath\":\"/container\"}],\"spec\":{\"storageClassName\":\"nvme\",\"storageSize\":6144,\"accessMode\":\"ReadWriteOnce\"},\"source\":{\"sourceId\":\"6d542e24-5d9f-4ecf-80a5-e80724b9133e\",\"type\":\"volume\"},\"attachedObjects\":[{\"id\":\"example-service\",\"type\":\"service\"}],\"backupSchedules\":[{\"scheduling\":{\"interval\":\"weekly\",\"minute\":[30],\"hour\":[18],\"day\":[4]},\"retentionTime\":7}]}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -169,7 +169,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/volumes"
 
-  var jsonStr = []byte(`{"name":"Example Volume","mounts":[{"volumeMountPath":"","containerMountPath":"/container"}],"spec":{"storageClassName":"nvme","storageSize":6144,"accessMode":"ReadWriteOnce"},"source":{"sourceId":"6d542e24-5d9f-4ecf-80a5-e80724b9133e","type":"volume"},"attachedObjects":[{"id":"example-service","type":"service"}],"backupSchedules":[{"scheduling":{"interval":"weekly","minute":[30],"hour":[18],"day":[4]},"retentionTime":7}]}`)
+  var jsonStr = []byte("{\"name\":\"Example Volume\",\"mounts\":[{\"volumeMountPath\":\"\",\"containerMountPath\":\"/container\"}],\"spec\":{\"storageClassName\":\"nvme\",\"storageSize\":6144,\"accessMode\":\"ReadWriteOnce\"},\"source\":{\"sourceId\":\"6d542e24-5d9f-4ecf-80a5-e80724b9133e\",\"type\":\"volume\"},\"attachedObjects\":[{\"id\":\"example-service\",\"type\":\"service\"}],\"backupSchedules\":[{\"scheduling\":{\"interval\":\"weekly\",\"minute\":[30],\"hour\":[18],\"day\":[4]},\"retentionTime\":7}]}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -200,7 +200,8 @@ func main() {
     "name": "Example Volume",
     "spec": {
       "storageClassName": "nvme",
-      "storageSize": 6144
+      "storageSize": 6144,
+      "accessMode": "ReadWriteOnce"
     },
     "attachedObjects": [
       {
@@ -227,7 +228,8 @@ func main() {
     ],
     "status": "BOUND",
     "createdAt": "2021-01-01 12:00:00.000Z",
-    "updatedAt": "2021-01-01 12:00:00.000Z"
+    "updatedAt": "2021-01-01 12:00:00.000Z",
+    "tags": []
   }
 }
 ```
@@ -309,7 +311,8 @@ Options:
   "name": "Example Volume",
   "spec": {
     "storageClassName": "nvme",
-    "storageSize": 6144
+    "storageSize": 6144,
+    "accessMode": "ReadWriteOnce"
   },
   "attachedObjects": [
     {
@@ -336,7 +339,8 @@ Options:
   ],
   "status": "BOUND",
   "createdAt": "2021-01-01 12:00:00.000Z",
-  "updatedAt": "2021-01-01 12:00:00.000Z"
+  "updatedAt": "2021-01-01 12:00:00.000Z",
+  "tags": []
 }
 ```
 
@@ -407,7 +411,8 @@ await apiClient.create.volume({
     "name": "Example Volume",
     "spec": {
       "storageClassName": "nvme",
-      "storageSize": 6144
+      "storageSize": 6144,
+      "accessMode": "ReadWriteOnce"
     },
     "attachedObjects": [
       {
@@ -434,7 +439,8 @@ await apiClient.create.volume({
     ],
     "status": "BOUND",
     "createdAt": "2021-01-01 12:00:00.000Z",
-    "updatedAt": "2021-01-01 12:00:00.000Z"
+    "updatedAt": "2021-01-01 12:00:00.000Z",
+    "tags": []
   },
   "rawResponse": "...",
   "request": "...",

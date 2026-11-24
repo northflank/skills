@@ -2,7 +2,7 @@
 
 Source: https://northflank.com/docs/v1/api/project/addons/finalise-addon-secret-rotation.md
 
-Finalises an in-progress secret rotation for the given addon. The old credentials are permanently removed.
+Finalises an in-progress secret rotation for the given addon. The old credentials are permanently removed. MySQL user-facing finalisation disconnects sessions for the rotated users; full finalisation restarts the addon. RabbitMQ finalisation removes old accounts and attempts to close their sessions, but some sessions can remain open. It does not pause the addon again, including after full rotation. Redis and MinIO complete rotation automatically and do not support this endpoint.
 
 Required permission: Project > Addons > General > Update
 
@@ -14,8 +14,8 @@ Required permission: Project > Addons > General > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 

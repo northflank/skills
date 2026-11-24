@@ -16,17 +16,19 @@ Required permission: Account > Cloud > Integrations > Update
 {object}
 - `description`: (string) The description of the integration. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `features`: [array of] (string) The type of provider integration. (enum: byoc, byoc-static-egress, byoc-custom-launch-templates, byoc-custom-vpc, byoc-logs, cloudfront, route53, registry-pull, registry-push, opentofu, workload-identity, workload-identity-managed)
-- `restrictions`: {object}
+- `restrictions`: {object} BYOC restrictions configuration for controlling team access
   - `enabled`: (boolean) (required) Enable or disable BYOC restrictions for this entity
-  - `teams`: [array of] {object}
+  - `teams`: [array of] List of teams that have access to this BYOC cluster {object}
      - `teamId`: (string) (required) The ID of the team that has access to this BYOC cluster (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 45)
-- `credentials`: {object}
+- `credentials`: {object} Cloud provider credential input, required fields dependent on which provider is chosen.
   - `keyfileJson`: (string) Contents of a GCP key file.
   - `accessKey`: (string) AWS access key.
   - `secretKey`: (string) AWS secret key.
   - `roleArn`: (string) AWS IAM role ARN.
   - `externalId`: (string) AWS shared secret (external id).
   - `apiKey`: (string) API key.
+  - `adminApiKey`: (string) OpenAI or Anthropic Admin API key.
+  - `authToken`: (string) Anthropic OAuth bearer token.
   - `email`: (string) Email address for Cloudflare global API key. (format: email)
   - `tenantId`: (string) Directory (tenant) ID
   - `clientId`: (string) Application (client) ID
@@ -53,28 +55,28 @@ Required permission: Account > Cloud > Integrations > Update
   - `serviceTokenId`: (string) PlanetScale Service Token ID
   - `serviceToken`: (string) PlanetScale Service Token
 - `aws`: {object}
+  - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
   - `permissionVersions`: {object}
     - `byoc`: (integer) Selected BYOC policy version. (enum: 1, 2, 3)
   - `permissionCheckLevel`: (string) (enum: enabled, disabled, ignore-implicit-deny-by-organization)
-  - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) ID of the integration (pattern: ^[A-Za-z0-9-]+$)
   - `name`: (string) (required) The name of the cloud provider integration. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `description`: (string) The description of the integration. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, aws-eusc, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, byok)
+  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, aws-eusc, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, openai, anthropic, byok)
   - `features`: [array of] (string) The type of provider integration. (enum: byoc, byoc-static-egress, byoc-custom-launch-templates, byoc-custom-vpc, byoc-logs, cloudfront, route53, registry-pull, registry-push, opentofu, workload-identity, workload-identity-managed)
-  - `restrictions`: {object}
+  - `restrictions`: {object} BYOC restrictions configuration for controlling team access
     - `enabled`: (boolean) (required) Enable or disable BYOC restrictions for this entity
-    - `teams`: [array of] {object}
+    - `teams`: [array of] List of teams that have access to this BYOC cluster {object}
         - `teamId`: (string) (required) The ID of the team that has access to this BYOC cluster
   - `byok`: {object}
     - `connectionMode`: (string) Whether Kubernetes API access is direct or through a Northflank connector. (enum: direct, connector)
-    - `requireVerification`: (multiple options) (boolean)
-  - `credentials`: {object}
+    - `requireVerification`: (multiple options) Require explicit confirmation of the connector cluster before allowing access. (boolean)
+  - `credentials`: {object} (required) Nonsecret provider connection details. BYOK kubeconfig is write-only.
     - `accessKey`: (string) AWS access key.
     - `roleArn`: (string) AWS IAM role ARN.
     - `externalId`: (string) AWS shared secret (external id).
@@ -94,19 +96,19 @@ Required permission: Account > Cloud > Integrations > Update
     - `applicationKeyId`: (string) Backblaze Application Key ID
     - `host`: (string) Akamai Host
     - `serviceTokenId`: (string) PlanetScale Service Token ID
-    - `kubeconfig`: (string) Kubeconfig
-  - `aws`: {object}
+  - `aws`: {object} AWS specific data. Required when `provider` is `aws` or `aws-eusc`.
     - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
     - `permissionVersions`: {object}
       - `byoc`: (integer) Selected BYOC policy version. (enum: 1, 2, 3)
     - `permissionCheckLevel`: (string) (enum: enabled, disabled, ignore-implicit-deny-by-organization)
-  - `gcp`: {object}
+    - `accountId`: (string) Verified AWS account ID for this integration. (pattern: ^\d{12}$)
+  - `gcp`: {object} GCP specific data. Required when `provider` is `gcp`.
     - `projectId`: (string) (required) GCP Project ID
     - `authenticationMode`: (string) The provider authentication mode to use for this integration. (enum: accessKey, crossAccountRole)
     - `serviceAccountEmail`: (string) Service account email that will be used for cross account access.
-  - `cloudflare`: {object}
+  - `cloudflare`: {object} Cloudflare specific data. Required when `provider` is `cloudflare`.
     - `credentialType`: (string) The type of api key (enum: apiToken, originCAKey, globalApiKey)
-  - `registryCredentialRefresh`: {object}
+  - `registryCredentialRefresh`: {object} (required) Status of automatic registry credential token refreshes for this integration.
     - `status`: (string) (required) (enum: healthy, degraded, suspended)
     - `affectedCredentialCount`: (integer) (required)
     - `updatedAt`: (string) (format: date-time)
@@ -136,7 +138,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
   --data '{"description":"This is a new cloud provider integration.","features":["byoc"],"aws":{"authenticationMode":"accessKey"}}' \
-  https://api.northflank.com/v1/cloud-providers/integrations/{integrationId}
+  "https://api.northflank.com/v1/cloud-providers/integrations/{integrationId}"
 ```
 
 ```javascript
@@ -168,10 +170,10 @@ import requests
 
 url = "https://api.northflank.com/v1/cloud-providers/integrations/{integrationId}"
 
-payload = {"description":"This is a new cloud provider integration.","features":["byoc"],"aws":{"authenticationMode":"accessKey"}}
+payload = "{\"description\":\"This is a new cloud provider integration.\",\"features\":[\"byoc\"],\"aws\":{\"authenticationMode\":\"accessKey\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PATCH", url, headers = headers, json = payload)
+response = requests.request("PATCH", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -189,7 +191,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/cloud-providers/integrations/{integrationId}"
 
-  var jsonStr = []byte(`{"description":"This is a new cloud provider integration.","features":["byoc"],"aws":{"authenticationMode":"accessKey"}}`)
+  var jsonStr = []byte("{\"description\":\"This is a new cloud provider integration.\",\"features\":[\"byoc\"],\"aws\":{\"authenticationMode\":\"accessKey\"}}")
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -226,12 +228,18 @@ func main() {
       "authenticationMode": "accessKey"
     },
     "gcp": {
-      "authenticationMode": "accessKey"
+      "authenticationMode": "accessKey",
+      "projectId": "string"
     },
     "cloudflare": {
       "credentialType": "apiToken"
     },
-    "createdAt": "2021-01-20T11:19:53.175Z"
+    "createdAt": "2021-01-20T11:19:53.175Z",
+    "credentials": {},
+    "registryCredentialRefresh": {
+      "status": "healthy",
+      "affectedCredentialCount": 0
+    }
   }
 }
 ```
@@ -283,12 +291,18 @@ Options:
     "authenticationMode": "accessKey"
   },
   "gcp": {
-    "authenticationMode": "accessKey"
+    "authenticationMode": "accessKey",
+    "projectId": "string"
   },
   "cloudflare": {
     "credentialType": "apiToken"
   },
-  "createdAt": "2021-01-20T11:19:53.175Z"
+  "createdAt": "2021-01-20T11:19:53.175Z",
+  "credentials": {},
+  "registryCredentialRefresh": {
+    "status": "healthy",
+    "affectedCredentialCount": 0
+  }
 }
 ```
 
@@ -333,12 +347,18 @@ await apiClient.patch.cloud.integration({
       "authenticationMode": "accessKey"
     },
     "gcp": {
-      "authenticationMode": "accessKey"
+      "authenticationMode": "accessKey",
+      "projectId": "string"
     },
     "cloudflare": {
       "credentialType": "apiToken"
     },
-    "createdAt": "2021-01-20T11:19:53.175Z"
+    "createdAt": "2021-01-20T11:19:53.175Z",
+    "credentials": {},
+    "registryCredentialRefresh": {
+      "status": "healthy",
+      "affectedCredentialCount": 0
+    }
   },
   "rawResponse": "...",
   "request": "...",

@@ -14,18 +14,37 @@ Lists supported cloud provider regions
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `providers`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `providers`: [array of] (required) An array of supported cloud provider regions {object} A provider region object
      - `id`: (string) (required) The ID of the region
      - `name`: (string) (required) The name of the region
-     - `availabilityZones`: [array of] {object}
+     - `availabilityZones`: [array of] (required) The availability zones belonging to this region {object}
          - `id`: (string) (required) The id of the availability zone
          - `name`: (string) (required) The name of the availability zone
 
 ### API reference
 
 GET /v1/cloud-providers/regions
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/cloud-providers/regions?per_page=50&page=1&provider=gcp"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/cloud-providers/regions?per_page=50&page=1&provider=gcp"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
