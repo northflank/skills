@@ -14,14 +14,14 @@ Required permission: Account > Networking > Domains > Update
 **Request body:**
 
 {object}
-- `options`: {object}
+- `options`: {object} (required) Domain options to update.
   - `minTlsProtocolVersion`: (string) Minimum TLS protocol version for all subdomains under this wildcard domain. (enum: TLSV1_1, TLSV1_2, TLSV1_3)
   - `tlsMode`: (string) TLS mode for all subdomains under this wildcard domain. (enum: default, passthrough)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -38,7 +38,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
   --data '{"options":{}}' \
-  https://api.northflank.com/v1/domains/{domain}
+  "https://api.northflank.com/v1/domains/{domain}"
 ```
 
 ```javascript
@@ -64,10 +64,10 @@ import requests
 
 url = "https://api.northflank.com/v1/domains/{domain}"
 
-payload = {"options":{}}
+payload = "{\"options\":{}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PATCH", url, headers = headers, json = payload)
+response = requests.request("PATCH", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -85,7 +85,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/domains/{domain}"
 
-  var jsonStr = []byte(`{"options":{}}`)
+  var jsonStr = []byte("{\"options\":{}}")
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

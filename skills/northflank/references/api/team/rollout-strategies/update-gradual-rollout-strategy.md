@@ -13,45 +13,45 @@ Required permission: Account > Platform > GradualRollouts > Update
 
 **Request body:**
 
-{object}
+{object} Gradual rollout strategy specification
 - `name`: (string) Display name for the gradual rollout strategy
 - `type`: (string) Type of the gradual rollout strategy (enum: canary)
 - `options`: {object}
-  - `triggers`: {object}
-    - `releaseFromTemplate`: (boolean) Automatically trigger the rollout strategy when a release is initiated from a template
-    - `releaseFromReleaseFlow`: (boolean) Automatically trigger the rollout strategy when a release is initiated from a release flow
-    - `releaseFromCD`: (boolean) Automatically trigger the rollout strategy when a release is initiated from a CD pipeline
-    - `releaseFromUI`: (boolean) Automatically trigger the rollout strategy when a release is initiated from the UI
-    - `releaseFromApi`: (boolean) Automatically trigger the rollout strategy when a release is initiated via the API
-  - `blockDeploymentOnActiveRollout`: (boolean) When enabled, new deployments are blocked while a rollout is in progress
-- `details`: (multiple options) {object}
+  - `triggers`: {object} Conditions under which a new release will automatically initiate as a gradual rollout
+    - `releaseFromTemplate`: (boolean) (nullable) Automatically trigger the rollout strategy when a release is initiated from a template
+    - `releaseFromReleaseFlow`: (boolean) (nullable) Automatically trigger the rollout strategy when a release is initiated from a release flow
+    - `releaseFromCD`: (boolean) (nullable) Automatically trigger the rollout strategy when a release is initiated from a CD pipeline
+    - `releaseFromUI`: (boolean) (nullable) Automatically trigger the rollout strategy when a release is initiated from the UI
+    - `releaseFromApi`: (boolean) (nullable) Automatically trigger the rollout strategy when a release is initiated via the API
+  - `blockDeploymentOnActiveRollout`: (boolean) (nullable) When enabled, new deployments are blocked while a rollout is in progress
+- `details`: (multiple options) (required) Strategy-specific configuration details {object} Strategy-specific configuration details
    - `canaryStrategy`: (string) (required) Strategy used to split traffic between stable and canary deployments (enum: percentage, header)
-   - `config`: (multiple options) {object}
+   - `config`: (multiple options) (required) Configuration for the selected canary strategy {object} Configuration for the selected canary strategy
       - `canaryPercentage`: (integer) (required) Percentage of traffic to route to the canary deployment
-      - `stablePercentage`: (integer) (required) Percentage of traffic to route to the stable deployment | {object}
-      - `canaryHeader`: {object}
+      - `stablePercentage`: (integer) (required) Percentage of traffic to route to the stable deployment | {object} Configuration for the selected canary strategy
+      - `canaryHeader`: {object} (required) Header configuration that will route traffic to the canary deployment
         - `headerName`: (string) (required) HTTP header name used to identify requests that should be routed to the target deployment (min length: 1)
         - `headerValue`: (string) (required) HTTP header value that routes matching requests to the target deployment (min length: 1)
-      - `stableHeader`: {object}
+      - `stableHeader`: {object} (required) Header configuration that will route traffic to the stable deployment
         - `headerName`: (string) (required) HTTP header name used to identify requests that should be routed to the target deployment (min length: 1)
         - `headerValue`: (string) (required) HTTP header value that routes matching requests to the target deployment (min length: 1)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) Identifier for the gradual rollout strategy
   - `name`: (string) (required) Name of the gradual rollout strategy
   - `type`: (string) (required) Type of the gradual rollout strategy (enum: canary)
   - `options`: {object}
     - `triggers`: {object}
-      - `releaseFromTemplate`: (boolean)
-      - `releaseFromReleaseFlow`: (boolean)
-      - `releaseFromCD`: (boolean)
-      - `releaseFromUI`: (boolean)
-      - `releaseFromApi`: (boolean)
-    - `blockDeploymentOnActiveRollout`: (boolean)
-  - `details`: {object}
+      - `releaseFromTemplate`: (boolean) (nullable)
+      - `releaseFromReleaseFlow`: (boolean) (nullable)
+      - `releaseFromCD`: (boolean) (nullable)
+      - `releaseFromUI`: (boolean) (nullable)
+      - `releaseFromApi`: (boolean) (nullable)
+    - `blockDeploymentOnActiveRollout`: (boolean) (nullable)
+  - `details`: {object} (required)
     - `canaryStrategy`: (string) (required) (enum: percentage, header)
     - `config`: (multiple options) {object}
         - `canaryPercentage`: (integer) (required)
@@ -78,7 +78,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
   --data '{"name":"my-canary-rollout","type":"canary","options":{"triggers":{"releaseFromTemplate":true,"releaseFromReleaseFlow":true,"releaseFromCD":true,"releaseFromUI":true,"releaseFromApi":true},"blockDeploymentOnActiveRollout":true},"details":{"canaryStrategy":"percentage","config":{"canaryPercentage":20,"stablePercentage":80}}}' \
-  https://api.northflank.com/v1/gradual-rollout-strategies/{gradualRolloutStrategyId}
+  "https://api.northflank.com/v1/gradual-rollout-strategies/{gradualRolloutStrategyId}"
 ```
 
 ```javascript
@@ -122,10 +122,10 @@ import requests
 
 url = "https://api.northflank.com/v1/gradual-rollout-strategies/{gradualRolloutStrategyId}"
 
-payload = {"name":"my-canary-rollout","type":"canary","options":{"triggers":{"releaseFromTemplate":true,"releaseFromReleaseFlow":true,"releaseFromCD":true,"releaseFromUI":true,"releaseFromApi":true},"blockDeploymentOnActiveRollout":true},"details":{"canaryStrategy":"percentage","config":{"canaryPercentage":20,"stablePercentage":80}}}
+payload = "{\"name\":\"my-canary-rollout\",\"type\":\"canary\",\"options\":{\"triggers\":{\"releaseFromTemplate\":true,\"releaseFromReleaseFlow\":true,\"releaseFromCD\":true,\"releaseFromUI\":true,\"releaseFromApi\":true},\"blockDeploymentOnActiveRollout\":true},\"details\":{\"canaryStrategy\":\"percentage\",\"config\":{\"canaryPercentage\":20,\"stablePercentage\":80}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PATCH", url, headers = headers, json = payload)
+response = requests.request("PATCH", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -143,7 +143,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/gradual-rollout-strategies/{gradualRolloutStrategyId}"
 
-  var jsonStr = []byte(`{"name":"my-canary-rollout","type":"canary","options":{"triggers":{"releaseFromTemplate":true,"releaseFromReleaseFlow":true,"releaseFromCD":true,"releaseFromUI":true,"releaseFromApi":true},"blockDeploymentOnActiveRollout":true},"details":{"canaryStrategy":"percentage","config":{"canaryPercentage":20,"stablePercentage":80}}}`)
+  var jsonStr = []byte("{\"name\":\"my-canary-rollout\",\"type\":\"canary\",\"options\":{\"triggers\":{\"releaseFromTemplate\":true,\"releaseFromReleaseFlow\":true,\"releaseFromCD\":true,\"releaseFromUI\":true,\"releaseFromApi\":true},\"blockDeploymentOnActiveRollout\":true},\"details\":{\"canaryStrategy\":\"percentage\",\"config\":{\"canaryPercentage\":20,\"stablePercentage\":80}}}")
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -171,7 +171,10 @@ func main() {
   "data": {
     "id": "example-identifier",
     "name": "example-name",
-    "type": "canary"
+    "type": "canary",
+    "details": {
+      "canaryStrategy": "percentage"
+    }
   }
 }
 ```
@@ -226,7 +229,10 @@ Options:
 {
   "id": "example-identifier",
   "name": "example-name",
-  "type": "canary"
+  "type": "canary",
+  "details": {
+    "canaryStrategy": "percentage"
+  }
 }
 ```
 
@@ -274,7 +280,10 @@ await apiClient.patch.gradualRolloutStrategy({
   "data": {
     "id": "example-identifier",
     "name": "example-name",
-    "type": "canary"
+    "type": "canary",
+    "details": {
+      "canaryStrategy": "percentage"
+    }
   },
   "rawResponse": "...",
   "request": "...",

@@ -4,7 +4,7 @@ Source: https://northflank.com/docs/v1/api/team/integrations/get-registry.md
 
 Views a set of registry credential data.
 
-Required permission: Account > Cloud > Registries > Read
+Required permission: Account > Cloud > Registries > Read Encrypted
 
 **Path parameters:**
 
@@ -13,10 +13,10 @@ Required permission: Account > Cloud > Registries > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) ID of the docker credentials (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
-  - `registryCredentialRefresh`: {object}
+  - `registryCredentialRefresh`: {object} (required)
     - `status`: (string) (required) (enum: healthy, retrying, suspended)
     - `failureCount`: (integer) (required)
     - `retryDelay`: (integer) (required) Delay in milliseconds before the next refresh attempt.
@@ -39,12 +39,12 @@ Required permission: Account > Cloud > Registries > Read
   - `credentials`: {object}
     - `username`: (string) Username for the docker registry. Required when `integrationId` is provided.
     - `password`: (string) Password for the docker registry. Required when `integrationId` is provided.
-    - `scope`: {object}
+    - `scope`: {object} (required)
       - `pull`: (boolean) Whether the credentials can pull images.
       - `push`: (boolean) Whether the credentials can push images.
   - `restrictions`: {object}
     - `restricted`: (boolean) (required) Whether access to this credential is restricted.
-    - `projects`: [array of] (string)
+    - `projects`: [array of] List of projects that have access to this credential. (string)
   - `updatedAt`: (string) time of update (format: date-time)
   - `createdAt`: (string) time of creation (format: date-time)
 
@@ -54,6 +54,25 @@ GET /v1/integrations/registries/{credentialId}
 
 GET /v1/teams/{teamId}/integrations/registries/{credentialId}
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/integrations/registries/{credentialId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/integrations/registries/{credentialId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: Data about the registry credentials.
@@ -62,7 +81,13 @@ GET /v1/teams/{teamId}/integrations/registries/{credentialId}
 {
   "data": {
     "id": "example-credentials",
-    "name": "Example Docker Credentials"
+    "name": "Example Docker Credentials",
+    "registryCredentialRefresh": {
+      "status": "healthy",
+      "failureCount": 0,
+      "retryDelay": 0
+    },
+    "provider": "acr"
   }
 }
 ```
@@ -88,7 +113,13 @@ Options:
 ```json
 {
   "id": "example-credentials",
-  "name": "Example Docker Credentials"
+  "name": "Example Docker Credentials",
+  "registryCredentialRefresh": {
+    "status": "healthy",
+    "failureCount": 0,
+    "retryDelay": 0
+  },
+  "provider": "acr"
 }
 ```
 
@@ -114,7 +145,13 @@ await apiClient.get.registryCredentials({
 {
   "data": {
     "id": "example-credentials",
-    "name": "Example Docker Credentials"
+    "name": "Example Docker Credentials",
+    "registryCredentialRefresh": {
+      "status": "healthy",
+      "failureCount": 0,
+      "retryDelay": 0
+    },
+    "provider": "acr"
   },
   "rawResponse": "...",
   "request": "...",

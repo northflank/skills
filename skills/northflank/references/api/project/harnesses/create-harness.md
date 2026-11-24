@@ -19,8 +19,8 @@ Required permission: Project > Harnesses > General > Create
 - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `private`: (boolean) Only the creator can connect to this harness. Set at creation only.
 - `apiAccess`: (string) Use the team-approved Northflank API identity, or disable API access. (enum: team-default, disabled)
-- `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `billing`: {object}
+- `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+- `billing`: {object} (required)
   - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `gpu`: {object}
     - `enabled`: (boolean) Whether GPUs are enabled for this workload.
@@ -28,7 +28,7 @@ Required permission: Project > Harnesses > General > Create
       - `gpuType`: (string) (required) The type of GPU to use.
       - `gpuCount`: (integer) The number of GPUs to allocate.
       - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-- `deployment`: {object}
+- `deployment`: {object} (required)
   - `gpu`: {object}
     - `enabled`: (boolean) Whether GPUs are enabled for this workload.
     - `configuration`: {object}
@@ -37,14 +37,14 @@ Required permission: Project > Harnesses > General > Create
       - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
   - `imageSource`: (string) Container image source. Managed uses the Northflank harness image, internal uses a Northflank build service, and external uses a registry image. (enum: managed, internal, external)
   - `internal`: {object}
-    - `id`: (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
+    - `id`: (multiple options) ID of the build service to deploy (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
     - `branch`: (string) Branch to deploy
-    - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
+    - `buildSHA`: (multiple options) Commit SHA to deploy, or 'latest' to deploy the most recent commit (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
     - `buildId`: (string) ID of the build that should be deployed
   - `external`: {object}
     - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
     - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
-  - `storage`: {object}
+  - `storage`: {object} Runtime storage settings. Ephemeral storage defaults to 10240 MiB.
     - `ephemeralStorage`: {object}
       - `storageSize`: (integer) Ephemeral storage per container in MB
   - `persistentWorkspace`: (boolean) Use a persistent workspace volume. Defaults to true on creation. Prefers ReadWriteMany, falling back to ReadWriteOnce. When false, files are lost on container restart, redeployment or stop. Cannot be changed after creation.
@@ -55,101 +55,101 @@ Required permission: Project > Harnesses > General > Create
    - `public`: (boolean) If true, the port will be exposed publicly.
    - `vpcAccessible`: (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer.
    - `security`: {object}
-     - `credentials`: [array of] {object}
+     - `credentials`: [array of] An array of credentials to access the service. {object}
          - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
          - `password`: (string) (required) The password to access the service with this username.
          - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-     - `ip`: [array of] {object}
-         - `addresses`: [array of] (string) An IP address used by this rule
+     - `ip`: [array of] An array of IP address policies. {object}
+         - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
          - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-     - `policies`: [array of] {object}
-         - `addresses`: [array of] (string) An IP address used by this rule
+     - `policies`: [array of] An array of IP address policies. {object}
+         - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
          - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-     - `sso`: {object}
+     - `sso`: {object} Configure port authentication via SSO
        - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-       - `directoryGroupIds`: [array of] (string)
+       - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
        - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
        - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
        - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
        - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
        - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-     - `headers`: [array of] (multiple options) {object}
+     - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
            - `regexMode`: (boolean)
            - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-           - `value`: (string) (required) | {object}
+           - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
            - `regexMode`: (boolean)
-           - `name`: (string) (required)
+           - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
            - `value`: (string) (required)
      - `verificationMode`: (string) Mode used to verify multiple security features like ip policies and SSO authentication (enum: or, and)
      - `securePathConfiguration`: {object}
        - `enabled`: (boolean) Enable security policies on a path-level style
        - `skipSecurityPoliciesForInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip all security policies
        - `rules`: [array of] {object}
-           - `paths`: [array of] (multiple options) {object}
+           - `paths`: [array of] (required) Array of path objects which represent the paths and their priority for which the security policies will be enforced (multiple options) Data about how the path should be handled. {object} Route when the path starts with the provided prefix.
                  - `path`: (string) (required) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
                  - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: prefix)
-                 - `priority`: (integer) (required) | {object}
+                 - `priority`: (integer) (required) | {object} Route when the path is an exact match.
                  - `path`: (string) (required) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
                  - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: exact)
-                 - `priority`: (integer) (required) | {object}
+                 - `priority`: (integer) (required) | {object} Route when the path matches the provided regex.
                  - `path`: (string) (required)
                  - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: regex)
                  - `priority`: (integer) (required)
            - `accessMode`: (string) (required) Specify the way the path rule will behave when processing policies. This enables an allow-list/deny-list approach for access control on each path (enum: protected, unprotected)
            - `securityPolicies`: {object}
              - `orPolicies`: {object}
-               - `credentials`: [array of] {object}
+               - `credentials`: [array of] An array of credentials to access the service. {object}
                    - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
                    - `password`: (string) (required) The password to access the service with this username.
                    - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-               - `ip`: [array of] {object}
-                   - `addresses`: [array of] (string) An IP address used by this rule
+               - `ip`: [array of] An array of IP address policies. {object}
+                   - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                    - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-               - `policies`: [array of] {object}
-                   - `addresses`: [array of] (string) An IP address used by this rule
+               - `policies`: [array of] An array of IP address policies. {object}
+                   - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                    - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-               - `sso`: {object}
+               - `sso`: {object} Configure port authentication via SSO
                  - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-                 - `directoryGroupIds`: [array of] (string)
+                 - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
                  - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                  - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                  - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
                  - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                  - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-               - `headers`: [array of] (multiple options) {object}
+               - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
                      - `regexMode`: (boolean)
                      - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-                     - `value`: (string) (required) | {object}
+                     - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
                      - `regexMode`: (boolean)
-                     - `name`: (string) (required)
+                     - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
                      - `value`: (string) (required)
              - `requiredPolicies`: {object}
-               - `credentials`: [array of] {object}
+               - `credentials`: [array of] An array of credentials to access the service. {object}
                    - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
                    - `password`: (string) (required) The password to access the service with this username.
                    - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-               - `ip`: [array of] {object}
-                   - `addresses`: [array of] (string) An IP address used by this rule
+               - `ip`: [array of] An array of IP address policies. {object}
+                   - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                    - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-               - `policies`: [array of] {object}
-                   - `addresses`: [array of] (string) An IP address used by this rule
+               - `policies`: [array of] An array of IP address policies. {object}
+                   - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                    - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-               - `sso`: {object}
+               - `sso`: {object} Configure port authentication via SSO
                  - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-                 - `directoryGroupIds`: [array of] (string)
+                 - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
                  - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                  - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                  - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
                  - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                  - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-               - `headers`: [array of] (multiple options) {object}
+               - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
                      - `regexMode`: (boolean)
                      - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-                     - `value`: (string) (required) | {object}
+                     - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
                      - `regexMode`: (boolean)
-                     - `name`: (string) (required)
+                     - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
                      - `value`: (string) (required)
-   - `domains`: [array of] (string) A domain to redirect to this port.
+   - `domains`: [array of] An array of domains to redirect to this port. Each domain must first be verified and registered to your account. (string) A domain to redirect to this port.
    - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
    - `advancedOptions`: {object}
      - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
@@ -162,8 +162,8 @@ Required permission: Project > Harnesses > General > Create
   - `vcsLinkId`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24)
   - `projectBranch`: (string) (required) The name of the branch to pre-pull for the harness environment.
   - `publicRepo`: (boolean) Whether the linked repository is public.
-- `additionalRepositories`: [array of] {object}
-   - `source`: {object}
+- `additionalRepositories`: [array of] Additional repositories to clone into the harness workspace. {object}
+   - `source`: {object} (required) Repository and branch to clone alongside the primary repository.
      - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
      - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
      - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
@@ -173,7 +173,7 @@ Required permission: Project > Harnesses > General > Create
      - `publicRepo`: (boolean) Whether the linked repository is public.
    - `directory`: (string) (required) Folder to clone the repository into, relative to /home/harness. (pattern: ^(?!\.{1,2}$)[A-Za-z0-9._-]+$) (max length: 237)
 - `branchData`: {object}
-  - `source`: {object}
+  - `source`: {object} (required) Existing linked repository and base branch for the new branch.
     - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
     - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
     - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
@@ -192,25 +192,25 @@ Required permission: Project > Harnesses > General > Create
   - `context`: (string) Namespace/owner the repository is created under (gitlab/bitbucket).
   - `folder`: (string) Project/folder the repository is created under (bitbucket).
   - `description`: (string) Description for the new repository. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-- `harness`: {object}
+- `harness`: {object} (required)
   - `type`: (string) (required) The harness environment type to run. (enum: codex, claude, pi, omp, devin, opencode, cursor, none)
   - `authMode`: (string) How Codex, Claude and Cursor authenticate. Pi, OMP, Devin CLI and OpenCode require `account`; agentless harnesses omit this field. When omitted for Codex, Claude or Cursor, `apiKey` is inferred if an apiKey is provided. (enum: apiKey, account)
-  - `apiKey`: (multiple options) (undefined) API key used by the harness environment. | (undefined) API key used by the harness environment.
+  - `apiKey`: (multiple options) API key used by the harness environment. API key used by the harness environment. | API key used by the harness environment.
   - `cloneDirectory`: (string) Absolute path the repo is cloned into in the harness container. Must be /home/harness or a directory inside it. This workspace is persisted only when deployment.persistentWorkspace is enabled. Defaults to /home/harness. Can only be set when creating the harness. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
-- `runtimeEnvironment`: {object}
-- `runtimeFiles`: {object}
+- `runtimeEnvironment`: {object} An object containing the runtime environment to set for the harness
+- `runtimeFiles`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `name`: (string) (required) The name of the harness. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
   - `description`: (string) A description of the harness. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
   - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `private`: (boolean) Only the creator can connect to this harness. Set at creation only.
   - `apiAccess`: (string) Use the team-approved Northflank API identity, or disable API access. (enum: team-default, disabled)
-  - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-  - `billing`: {object}
+  - `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `billing`: {object} (required)
     - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `gpu`: {object}
       - `enabled`: (boolean) Whether GPUs are enabled for this workload.
@@ -224,105 +224,105 @@ Required permission: Project > Harnesses > General > Create
      - `public`: (boolean) If true, the port will be exposed publicly.
      - `vpcAccessible`: (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer.
      - `security`: {object}
-       - `credentials`: [array of] {object}
+       - `credentials`: [array of] An array of credentials to access the service. {object}
            - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
            - `password`: (string) (required) The password to access the service with this username.
            - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-       - `ip`: [array of] {object}
-           - `addresses`: [array of] (string) An IP address used by this rule
+       - `ip`: [array of] An array of IP address policies. {object}
+           - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
            - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-       - `policies`: [array of] {object}
-           - `addresses`: [array of] (string) An IP address used by this rule
+       - `policies`: [array of] An array of IP address policies. {object}
+           - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
            - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-       - `sso`: {object}
+       - `sso`: {object} Configure port authentication via SSO
          - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-         - `directoryGroupIds`: [array of] (string)
+         - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
          - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
          - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
          - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
          - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
          - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-       - `headers`: [array of] (multiple options) {object}
+       - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
              - `regexMode`: (boolean)
              - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-             - `value`: (string) (required) | {object}
+             - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
              - `regexMode`: (boolean)
-             - `name`: (string) (required)
+             - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
              - `value`: (string) (required)
        - `verificationMode`: (string) Mode used to verify multiple security features like ip policies and SSO authentication (enum: or, and)
        - `securePathConfiguration`: {object}
          - `enabled`: (boolean) Enable security policies on a path-level style
          - `skipSecurityPoliciesForInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip all security policies
          - `rules`: [array of] {object}
-             - `paths`: [array of] (multiple options) {object}
+             - `paths`: [array of] (required) Array of path objects which represent the paths and their priority for which the security policies will be enforced (multiple options) Data about how the path should be handled. {object} Route when the path starts with the provided prefix.
                    - `path`: (string) (required) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
                    - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: prefix)
-                   - `priority`: (integer) (required) | {object}
+                   - `priority`: (integer) (required) | {object} Route when the path is an exact match.
                    - `path`: (string) (required) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
                    - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: exact)
-                   - `priority`: (integer) (required) | {object}
+                   - `priority`: (integer) (required) | {object} Route when the path matches the provided regex.
                    - `path`: (string) (required)
                    - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: regex)
                    - `priority`: (integer) (required)
              - `accessMode`: (string) (required) Specify the way the path rule will behave when processing policies. This enables an allow-list/deny-list approach for access control on each path (enum: protected, unprotected)
              - `securityPolicies`: {object}
                - `orPolicies`: {object}
-                 - `credentials`: [array of] {object}
+                 - `credentials`: [array of] An array of credentials to access the service. {object}
                      - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
                      - `password`: (string) (required) The password to access the service with this username.
                      - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-                 - `ip`: [array of] {object}
-                     - `addresses`: [array of] (string) An IP address used by this rule
+                 - `ip`: [array of] An array of IP address policies. {object}
+                     - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-                 - `policies`: [array of] {object}
-                     - `addresses`: [array of] (string) An IP address used by this rule
+                 - `policies`: [array of] An array of IP address policies. {object}
+                     - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-                 - `sso`: {object}
+                 - `sso`: {object} Configure port authentication via SSO
                    - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-                   - `directoryGroupIds`: [array of] (string)
+                   - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
                    - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                    - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                    - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
                    - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                    - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-                 - `headers`: [array of] (multiple options) {object}
+                 - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
                        - `regexMode`: (boolean)
                        - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-                       - `value`: (string) (required) | {object}
+                       - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
                        - `regexMode`: (boolean)
-                       - `name`: (string) (required)
+                       - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
                        - `value`: (string) (required)
                - `requiredPolicies`: {object}
-                 - `credentials`: [array of] {object}
+                 - `credentials`: [array of] An array of credentials to access the service. {object}
                      - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
                      - `password`: (string) (required) The password to access the service with this username.
                      - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-                 - `ip`: [array of] {object}
-                     - `addresses`: [array of] (string) An IP address used by this rule
+                 - `ip`: [array of] An array of IP address policies. {object}
+                     - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-                 - `policies`: [array of] {object}
-                     - `addresses`: [array of] (string) An IP address used by this rule
+                 - `policies`: [array of] An array of IP address policies. {object}
+                     - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-                 - `sso`: {object}
+                 - `sso`: {object} Configure port authentication via SSO
                    - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-                   - `directoryGroupIds`: [array of] (string)
+                   - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
                    - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                    - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                    - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
                    - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                    - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-                 - `headers`: [array of] (multiple options) {object}
+                 - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
                        - `regexMode`: (boolean)
                        - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-                       - `value`: (string) (required) | {object}
+                       - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
                        - `regexMode`: (boolean)
-                       - `name`: (string) (required)
+                       - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
                        - `value`: (string) (required)
-     - `domains`: [array of] (string) A domain to redirect to this port.
+     - `domains`: [array of] An array of domains to redirect to this port. Each domain must first be verified and registered to your account. (string) A domain to redirect to this port.
      - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
      - `advancedOptions`: {object}
        - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
-     - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+     - `protocol`: (multiple options) (required) The protocol to use for the port. (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
   - `source`: {object}
     - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
     - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
@@ -331,8 +331,8 @@ Required permission: Project > Harnesses > General > Create
     - `vcsLinkId`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24)
     - `projectBranch`: (string) (required) The name of the branch to pre-pull for the harness environment.
     - `publicRepo`: (boolean) Whether the linked repository is public.
-  - `additionalRepositories`: [array of] {object}
-     - `source`: {object}
+  - `additionalRepositories`: [array of] Additional repositories to clone into the harness workspace. {object}
+     - `source`: {object} (required) Repository and branch to clone alongside the primary repository.
        - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
        - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
        - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use.
@@ -351,9 +351,9 @@ Required permission: Project > Harnesses > General > Create
     - `context`: (string) Namespace/owner the repository is created under (gitlab/bitbucket).
     - `folder`: (string) Project/folder the repository is created under (bitbucket).
     - `description`: (string) Description for the new repository. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-  - `runtimeEnvironment`: {object}
-  - `runtimeFiles`: {object}
-  - `deployment`: {object}
+  - `runtimeEnvironment`: {object} An object containing the runtime environment to set for the harness
+  - `runtimeFiles`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+  - `deployment`: {object} (required)
     - `gpu`: {object}
       - `enabled`: (boolean) Whether GPUs are enabled for this workload.
       - `configuration`: {object}
@@ -362,19 +362,19 @@ Required permission: Project > Harnesses > General > Create
         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
     - `imageSource`: (string) Container image source. Managed uses the Northflank harness image, internal uses a Northflank build service, and external uses a registry image. (enum: managed, internal, external)
     - `internal`: {object}
-      - `id`: (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
+      - `id`: (multiple options) ID of the build service to deploy (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
       - `branch`: (string) Branch to deploy
-      - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
+      - `buildSHA`: (multiple options) Commit SHA to deploy, or 'latest' to deploy the most recent commit (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
       - `buildId`: (string) ID of the build that should be deployed
     - `external`: {object}
       - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
       - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
-    - `storage`: {object}
+    - `storage`: {object} Runtime storage settings. Ephemeral storage defaults to 10240 MiB.
       - `ephemeralStorage`: {object}
         - `storageSize`: (integer) Ephemeral storage per container in MB
     - `persistentWorkspace`: (boolean) Use a persistent workspace volume. Defaults to true on creation. Prefers ReadWriteMany, falling back to ReadWriteOnce. When false, files are lost on container restart, redeployment or stop. Cannot be changed after creation.
     - `workspaceSize`: (integer) Size of the persistent workspace volume in MiB. Only available with persistence enabled. Can only be grown after creation; shrinking is rejected because Kubernetes does not support shrinking persistent volume claims.
-  - `harness`: {object}
+  - `harness`: {object} (required)
     - `type`: (string) (required) The harness environment type to run. (enum: codex, claude, pi, omp, devin, opencode, cursor, none)
     - `authMode`: (string) How the harness authenticates: `apiKey` (a provider key is stored) or `account` (interactive/account login, no key). (enum: apiKey, account)
     - `apiKey`: (string) Masked API key used by the harness environment. Absent for `account` harnesses.
@@ -382,16 +382,16 @@ Required permission: Project > Harnesses > General > Create
   - `id`: (string) (required) Identifier for the harness
   - `uid`: (string) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
   - `appId`: (string) (required) Full identifier used for harness deployment
-  - `cluster`: {object}
+  - `cluster`: {object} (required) Cluster information
     - `id`: (string) (required) The id of the cluster associated with this project.
     - `name`: (string) (required) The name of the cluster associated with this project.
     - `namespace`: (string) Namespace this resource is located within on the cluster.
-    - `loadBalancers`: [array of] (string)
+    - `loadBalancers`: [array of] Load balancer DNS for the cluster. (string)
   - `createdAt`: (string) time of creation (format: date-time)
   - `updatedAt`: (string) time of update (format: date-time)
   - `harnessPaused`: (boolean) Is the harness paused?
-  - `status`: {object}
-    - `deployment`: {object}
+  - `status`: {object} (required) Details about the current harness status.
+    - `deployment`: {object} Details about the current deployment status.
       - `status`: (string) (required) The current status of the deployment. (enum: PENDING, IN_PROGRESS, COMPLETED, FAILED)
       - `reason`: (string) (required) The reason the current deployment was started. (enum: SCALING, DEPLOYING)
       - `lastTransitionTime`: (string) The timestamp of when the deployment reached this status. (format: date-time)
@@ -411,7 +411,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"Example Harness","description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"persistentWorkspace":true,"workspaceSize":10240},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"branchData":{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"name":"harness/my-task"},"repositoryData":{"name":"my-harness-repo","projectType":"bitbucket","vcsLinkId":"stringaaaaaaaaaaaaaaaaaa"},"harness":{"type":"claude","authMode":"apiKey","cloneDirectory":"/home/harness/repo"},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}' \
-  https://api.northflank.com/v1/projects/{projectId}/harnesses
+  "https://api.northflank.com/v1/projects/{projectId}/harnesses"
 ```
 
 ```javascript
@@ -630,10 +630,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/harnesses"
 
-payload = {"name":"Example Harness","description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"persistentWorkspace":true,"workspaceSize":10240},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"branchData":{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"name":"harness/my-task"},"repositoryData":{"name":"my-harness-repo","projectType":"bitbucket","vcsLinkId":"stringaaaaaaaaaaaaaaaaaa"},"harness":{"type":"claude","authMode":"apiKey","cloneDirectory":"/home/harness/repo"},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}
+payload = "{\"name\":\"Example Harness\",\"description\":\"A harness description\",\"billing\":{\"deploymentPlan\":\"nf-compute-20\"},\"deployment\":{\"internal\":{\"id\":\"example-build-service\",\"branch\":\"master\",\"buildSHA\":\"latest\",\"buildId\":\"premium-guide-6393\"},\"external\":{\"imagePath\":\"nginx:latest\",\"credentials\":\"example-credentials\"},\"storage\":{\"ephemeralStorage\":{\"storageSize\":1024}},\"persistentWorkspace\":true,\"workspaceSize\":10240},\"ports\":[{\"name\":\"p01\",\"internalPort\":8080,\"public\":true,\"vpcAccessible\":false,\"security\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}],\"securePathConfiguration\":{\"rules\":[{\"paths\":[{\"routingMode\":\"prefix\",\"priority\":80,\"path\":\"/path\"}],\"accessMode\":\"protected\",\"securityPolicies\":{\"orPolicies\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}]},\"requiredPolicies\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}]}}}]}},\"domains\":[\"app.example.com\"],\"protocol\":\"HTTP\"}],\"source\":{\"projectUrl\":\"https://github.com/example/project\",\"projectType\":\"github\",\"accountLogin\":\"github-user\",\"projectBranch\":\"master\"},\"additionalRepositories\":[{\"source\":{\"projectUrl\":\"https://github.com/example/project\",\"projectType\":\"github\",\"accountLogin\":\"github-user\",\"projectBranch\":\"master\"},\"directory\":\"payments-api\"}],\"branchData\":{\"source\":{\"projectUrl\":\"https://github.com/example/project\",\"projectType\":\"github\",\"accountLogin\":\"github-user\",\"projectBranch\":\"master\"},\"name\":\"harness/my-task\"},\"repositoryData\":{\"name\":\"my-harness-repo\",\"projectType\":\"bitbucket\",\"vcsLinkId\":\"stringaaaaaaaaaaaaaaaaaa\"},\"harness\":{\"type\":\"claude\",\"authMode\":\"apiKey\",\"cloneDirectory\":\"/home/harness/repo\"},\"runtimeEnvironment\":{\"VARIABLE_1\":\"abcdef\",\"VARIABLE_2\":\"12345\"},\"runtimeFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -651,7 +651,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/harnesses"
 
-  var jsonStr = []byte(`{"name":"Example Harness","description":"A harness description","billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"},"external":{"imagePath":"nginx:latest","credentials":"example-credentials"},"storage":{"ephemeralStorage":{"storageSize":1024}},"persistentWorkspace":true,"workspaceSize":10240},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"additionalRepositories":[{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"directory":"payments-api"}],"branchData":{"source":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"name":"harness/my-task"},"repositoryData":{"name":"my-harness-repo","projectType":"bitbucket","vcsLinkId":"stringaaaaaaaaaaaaaaaaaa"},"harness":{"type":"claude","authMode":"apiKey","cloneDirectory":"/home/harness/repo"},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}}}`)
+  var jsonStr = []byte("{\"name\":\"Example Harness\",\"description\":\"A harness description\",\"billing\":{\"deploymentPlan\":\"nf-compute-20\"},\"deployment\":{\"internal\":{\"id\":\"example-build-service\",\"branch\":\"master\",\"buildSHA\":\"latest\",\"buildId\":\"premium-guide-6393\"},\"external\":{\"imagePath\":\"nginx:latest\",\"credentials\":\"example-credentials\"},\"storage\":{\"ephemeralStorage\":{\"storageSize\":1024}},\"persistentWorkspace\":true,\"workspaceSize\":10240},\"ports\":[{\"name\":\"p01\",\"internalPort\":8080,\"public\":true,\"vpcAccessible\":false,\"security\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}],\"securePathConfiguration\":{\"rules\":[{\"paths\":[{\"routingMode\":\"prefix\",\"priority\":80,\"path\":\"/path\"}],\"accessMode\":\"protected\",\"securityPolicies\":{\"orPolicies\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}]},\"requiredPolicies\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}]}}}]}},\"domains\":[\"app.example.com\"],\"protocol\":\"HTTP\"}],\"source\":{\"projectUrl\":\"https://github.com/example/project\",\"projectType\":\"github\",\"accountLogin\":\"github-user\",\"projectBranch\":\"master\"},\"additionalRepositories\":[{\"source\":{\"projectUrl\":\"https://github.com/example/project\",\"projectType\":\"github\",\"accountLogin\":\"github-user\",\"projectBranch\":\"master\"},\"directory\":\"payments-api\"}],\"branchData\":{\"source\":{\"projectUrl\":\"https://github.com/example/project\",\"projectType\":\"github\",\"accountLogin\":\"github-user\",\"projectBranch\":\"master\"},\"name\":\"harness/my-task\"},\"repositoryData\":{\"name\":\"my-harness-repo\",\"projectType\":\"bitbucket\",\"vcsLinkId\":\"stringaaaaaaaaaaaaaaaaaa\"},\"harness\":{\"type\":\"claude\",\"authMode\":\"apiKey\",\"cloneDirectory\":\"/home/harness/repo\"},\"runtimeEnvironment\":{\"VARIABLE_1\":\"abcdef\",\"VARIABLE_2\":\"12345\"},\"runtimeFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -725,7 +725,8 @@ func main() {
                 "paths": [
                   {
                     "routingMode": "prefix",
-                    "priority": 80
+                    "priority": 80,
+                    "path": "/path"
                   }
                 ],
                 "accessMode": "protected",
@@ -801,7 +802,8 @@ func main() {
         },
         "domains": [
           "app.example.com"
-        ]
+        ],
+        "protocol": "HTTP"
       }
     ],
     "source": {
@@ -822,7 +824,9 @@ func main() {
       }
     ],
     "repositoryData": {
-      "name": "my-harness-repo"
+      "name": "my-harness-repo",
+      "projectType": "bitbucket",
+      "vcsLinkId": "stringaaaaaaaaaaaaaaaaaa"
     },
     "runtimeEnvironment": {
       "VARIABLE_1": "abcdef",
@@ -838,6 +842,7 @@ func main() {
       "internal": {
         "id": "example-build-service",
         "branch": "master",
+        "buildSHA": "latest",
         "buildId": "premium-guide-6393"
       },
       "external": {
@@ -1154,7 +1159,8 @@ Options:
               "paths": [
                 {
                   "routingMode": "prefix",
-                  "priority": 80
+                  "priority": 80,
+                  "path": "/path"
                 }
               ],
               "accessMode": "protected",
@@ -1230,7 +1236,8 @@ Options:
       },
       "domains": [
         "app.example.com"
-      ]
+      ],
+      "protocol": "HTTP"
     }
   ],
   "source": {
@@ -1251,7 +1258,9 @@ Options:
     }
   ],
   "repositoryData": {
-    "name": "my-harness-repo"
+    "name": "my-harness-repo",
+    "projectType": "bitbucket",
+    "vcsLinkId": "stringaaaaaaaaaaaaaaaaaa"
   },
   "runtimeEnvironment": {
     "VARIABLE_1": "abcdef",
@@ -1267,6 +1276,7 @@ Options:
     "internal": {
       "id": "example-build-service",
       "branch": "master",
+      "buildSHA": "latest",
       "buildId": "premium-guide-6393"
     },
     "external": {
@@ -1572,7 +1582,8 @@ await apiClient.create.harness({
                 "paths": [
                   {
                     "routingMode": "prefix",
-                    "priority": 80
+                    "priority": 80,
+                    "path": "/path"
                   }
                 ],
                 "accessMode": "protected",
@@ -1648,7 +1659,8 @@ await apiClient.create.harness({
         },
         "domains": [
           "app.example.com"
-        ]
+        ],
+        "protocol": "HTTP"
       }
     ],
     "source": {
@@ -1669,7 +1681,9 @@ await apiClient.create.harness({
       }
     ],
     "repositoryData": {
-      "name": "my-harness-repo"
+      "name": "my-harness-repo",
+      "projectType": "bitbucket",
+      "vcsLinkId": "stringaaaaaaaaaaaaaaaaaa"
     },
     "runtimeEnvironment": {
       "VARIABLE_1": "abcdef",
@@ -1685,6 +1699,7 @@ await apiClient.create.harness({
       "internal": {
         "id": "example-build-service",
         "branch": "master",
+        "buildSHA": "latest",
         "buildId": "premium-guide-6393"
       },
       "external": {

@@ -15,8 +15,8 @@ Required permission: Organisation > Admin > Billing > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `invoices`: [array of] {object}
      - `id`: (string) Identifier for the invoice.
      - `period`: {object}
@@ -26,10 +26,10 @@ Required permission: Organisation > Admin > Billing > Read
      - `status`: (string) The invoice payment status, as reported by Stripe. `open` is finalized and awaiting payment — including while a payment is in flight or awaiting authentication — `uncollectible` has been written off, and `void` has been cancelled. `payment_failed` is only reported for invoices with no Stripe status to defer to. (enum: draft, open, payment_failed, paid, uncollectible, void)
      - `total`: (number) The total cost of the invoice, including tax. Omitted for a team-scoped caller. (format: float)
      - `subTotal`: (number) The subtotal before tax and discounts. Omitted for a team-scoped caller. (format: float)
-     - `scope`: {object}
+     - `scope`: {object} Present when the response is narrowed to the caller's own entity.
        - `entityType`: (string) The entity the response is limited to. (enum: team)
        - `entityId`: (string) Identifier of that entity.
-     - `paas`: {object}
+     - `paas`: {object} The PaaS price and usage totals for the period. Customer-level, except for a team-scoped caller, where it is that team's own slice — PaaS is the one category with a per-team tier, so it is reported rather than withheld. Drill into it per project and resource on the invoice detail endpoint.
        - `price`: {object}
          - `total`: (number) The total PaaS price, rounded to 2 decimal places. (format: float)
          - `cpu`: (number) The CPU usage price. (format: float)
@@ -42,37 +42,37 @@ Required permission: Organisation > Admin > Billing > Read
          - `storageGiBHours`: (number) Storage GiB-hours consumed. (format: float)
          - `gpuSpotHours`: (number) Spot GPU hours consumed. (format: float)
          - `gpuOnDemandHours`: (number) On-demand GPU hours consumed. (format: float)
-         - `build`: {object}
+         - `build`: {object} The share of the usage attributable to builds.
            - `vcpuHours`: (number) (format: float)
            - `memoryGiBHours`: (number) (format: float)
            - `duration`: (number) Seconds attributable to builds. (format: float)
-         - `run`: {object}
+         - `run`: {object} The share of the usage attributable to running workloads.
            - `vcpuHours`: (number) (format: float)
            - `memoryGiBHours`: (number) (format: float)
            - `duration`: (number) Seconds attributable to running workloads. (format: float)
-     - `byoc`: {object}
-       - `price`: {object}
+     - `byoc`: {object} The customer-level BYOC price and usage totals for the period. Omitted for a team-scoped caller: BYOC is aggregated to the customer and has no per-team tier.
+       - `price`: {object} The customer-level BYOC price total. Always reflects the full customer total, regardless of drill-down filters.
          - `total`: (number) The total BYOC price, rounded to 2 decimal places. (format: float)
          - `vcpu`: (number) The vCPU usage price. (format: float)
          - `memory`: (number) The memory usage price. (format: float)
          - `gpuMemory`: (number) The GPU memory usage price. (format: float)
          - `cluster`: (number) The cluster usage price. (format: float)
-       - `usage`: {object}
+       - `usage`: {object} Customer-level BYOC usage hours.
          - `vcpuHours`: (number) vCPU hours consumed. (format: float)
          - `memoryGiBHours`: (number) Memory GiB-hours consumed. (format: float)
          - `clusterHours`: (number) Cluster hours consumed. (format: float)
          - `gpuMemoryGiBHours`: (number) GPU memory GiB-hours consumed. (format: float)
-     - `egressIp`: {object}
+     - `egressIp`: {object} Egress IP spend for the period. Omitted for a team-scoped caller.
        - `price`: {object}
          - `total`: (number) The total price, rounded to 2 decimal places. (format: float)
        - `usage`: {object}
          - `hours`: (number) Hours consumed. (format: float)
-     - `loadBalancer`: {object}
+     - `loadBalancer`: {object} Load balancer spend for the period. Omitted for a team-scoped caller.
        - `price`: {object}
          - `total`: (number) The total price, rounded to 2 decimal places. (format: float)
        - `usage`: {object}
          - `hours`: (number) Hours consumed. (format: float)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -82,6 +82,25 @@ Required permission: Organisation > Admin > Billing > Read
 GET /v1/billing/invoices
 
 GET /v1/teams/{teamId}/billing/invoices
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/billing/invoices?perPage=50&removeLegacyFields=true"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/billing/invoices?perPage=50&removeLegacyFields=true"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

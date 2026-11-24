@@ -16,7 +16,7 @@ Required permission: Account > Networking > Subdomains > Update
 
 {object}
 - `provider`: (string) (required) Provider for which a CDN on the subdomain should be enabled.
-- `options`: (multiple options) {object}
+- `options`: (multiple options) CDN configuration options for the selected provider. {object} Configuration options for the Northflank CDN.
    - `service`: {object}
      - `forceTlsEnableHsts`: (boolean)
      - `hstsDuration`: (number) HSTS duration. Required when `forceTlsEnableHsts` is `true`. (format: float)
@@ -41,7 +41,7 @@ Required permission: Account > Networking > Subdomains > Update
       - `name`: (string) (required) (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
       - `type`: (string) (required) (enum: init, recv, hash, hit, miss, pass, fetch, error, deliver, log, none)
       - `dynamic`: (string) (required) (enum: 0, 1)
-      - `priority`: (multiple options) (number) Execution priority for the VCL snippet. (format: float)
+      - `priority`: (multiple options) Execution priority for the VCL snippet. (number) Execution priority for the VCL snippet. (format: float)
       - `content`: (string) (required)
    - `cacheSettings`: [array of] {object}
       - `id`: (string)
@@ -53,8 +53,8 @@ Required permission: Account > Networking > Subdomains > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -71,7 +71,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"provider":"northflank"}' \
-  https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/cdn/enable
+  "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/cdn/enable"
 ```
 
 ```javascript
@@ -97,10 +97,10 @@ import requests
 
 url = "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/cdn/enable"
 
-payload = {"provider":"northflank"}
+payload = "{\"provider\":\"northflank\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -118,7 +118,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/cdn/enable"
 
-  var jsonStr = []byte(`{"provider":"northflank"}`)
+  var jsonStr = []byte("{\"provider\":\"northflank\"}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

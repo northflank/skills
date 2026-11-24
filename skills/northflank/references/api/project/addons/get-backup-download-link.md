@@ -15,8 +15,8 @@ Required permission: Project > Addons > General > Read Spec
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `downloadLink`: (string) (required) The url to download the backup from.
 
 ### API reference
@@ -24,6 +24,25 @@ Required permission: Project > Addons > General > Read Spec
 GET /v1/projects/{projectId}/addons/{addonId}/backups/{backupId}/download-link
 
 GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}/backups/{backupId}/download-link
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/backups/{backupId}/download-link"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/backups/{backupId}/download-link"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

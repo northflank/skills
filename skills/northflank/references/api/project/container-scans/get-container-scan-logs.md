@@ -28,10 +28,10 @@ Required permission: Project > Projects > Security > View Container Scan Reports
 
 **Response body:**
 
-{object}
-- `data`: [array of] {object}
+{object} Response object.
+- `data`: [array of] (required) Result data. {object}
    - `containerId`: (string) (required)
-   - `log`: (undefined) (required)
+   - `log`: (required)
    - `ts`: (string) (required) (format: date-time)
 
 ### API reference
@@ -39,6 +39,25 @@ Required permission: Project > Projects > Security > View Container Scan Reports
 GET /v1/projects/{projectId}/container-scans/{containerScanId}/logs
 
 GET /v1/teams/{teamId}/projects/{projectId}/container-scans/{containerScanId}/logs
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/container-scans/{containerScanId}/logs?queryType=range&startTime=2023-02-16T14%3A00%3A00.000Z&endTime=2023-02-16T15%3A00%3A00.000Z&duration=600&lineLimit=250&direction=backward&textIncludes=myvalue&textNotIncludes=myvalue&regexIncludes=my.*value&regexNotIncludes=my.*value"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/container-scans/{containerScanId}/logs?queryType=range&startTime=2023-02-16T14%3A00%3A00.000Z&endTime=2023-02-16T15%3A00%3A00.000Z&duration=600&lineLimit=250&direction=backward&textIncludes=myvalue&textNotIncludes=myvalue&regexIncludes=my.*value&regexNotIncludes=my.*value"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -49,7 +68,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/container-scans/{containerScanId}/lo
   "data": [
     {
       "log": "stdout F This is a log line",
-      "ts": "2023-03-21T15:01:17.310Z"
+      "ts": "2023-03-21T15:01:17.310Z",
+      "containerId": "string"
     }
   ]
 }

@@ -27,15 +27,15 @@ Required permission: Organisation > Admin > Billing > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) Identifier for the invoice.
-  - `period`: {object}
+  - `period`: {object} (required)
     - `start`: (number) The start of the billing period, as a Unix timestamp. (format: float)
     - `end`: (number) The end of the billing period, as a Unix timestamp. (format: float)
   - `currency`: (string) The currency code.
   - `status`: (string) The invoice payment status, as reported by Stripe. `open` is finalized and awaiting payment — including while a payment is in flight or awaiting authentication — `uncollectible` has been written off, and `void` has been cancelled. `payment_failed` is only reported for invoices with no Stripe status to defer to. (enum: draft, open, payment_failed, paid, uncollectible, void)
-  - `scope`: {object}
+  - `scope`: {object} Present when the response is narrowed to the caller's own entity.
     - `entityType`: (string) The entity the response is limited to. (enum: team)
     - `entityId`: (string) Identifier of that entity.
   - `paas`: {object}
@@ -51,18 +51,18 @@ Required permission: Organisation > Admin > Billing > Read
       - `storageGiBHours`: (number) Storage GiB-hours consumed. (format: float)
       - `gpuSpotHours`: (number) Spot GPU hours consumed. (format: float)
       - `gpuOnDemandHours`: (number) On-demand GPU hours consumed. (format: float)
-      - `build`: {object}
+      - `build`: {object} The share of the usage attributable to builds.
         - `vcpuHours`: (number) (format: float)
         - `memoryGiBHours`: (number) (format: float)
         - `duration`: (number) Seconds attributable to builds. (format: float)
-      - `run`: {object}
+      - `run`: {object} The share of the usage attributable to running workloads.
         - `vcpuHours`: (number) (format: float)
         - `memoryGiBHours`: (number) (format: float)
         - `duration`: (number) Seconds attributable to running workloads. (format: float)
-    - `teams`: [array of] {object}
+    - `teams`: [array of] (required) An array of teams with price and usage totals. Projects are included when a teamId, projectId or resourceType filter is applied. Resources are included when a projectId or resourceType filter is applied. Depth and the paged unit follow the active filters alone, never the number of teams, so an unfiltered response is always teams-only. The paged unit is reported as `pagination.unit`; page through it with that level's page parameters (e.g. `teamsPage`/`teamsPerPage`) until `pagination.hasNextPage` is false. {object}
         - `id`: (string) Identifier for the team.
         - `name`: (string) The name of the team.
-        - `price`: {object}
+        - `price`: {object} The team's PaaS price. When a projectId or resourceType filter is applied, this reflects only the filtered slice (e.g. one project, or selected resource types across the team).
           - `total`: (number) The total PaaS price, rounded to 2 decimal places. (format: float)
           - `cpu`: (number) The CPU usage price. (format: float)
           - `memory`: (number) The memory usage price. (format: float)
@@ -74,18 +74,18 @@ Required permission: Organisation > Admin > Billing > Read
           - `storageGiBHours`: (number) Storage GiB-hours consumed. (format: float)
           - `gpuSpotHours`: (number) Spot GPU hours consumed. (format: float)
           - `gpuOnDemandHours`: (number) On-demand GPU hours consumed. (format: float)
-          - `build`: {object}
+          - `build`: {object} The share of the usage attributable to builds.
             - `vcpuHours`: (number) (format: float)
             - `memoryGiBHours`: (number) (format: float)
             - `duration`: (number) Seconds attributable to builds. (format: float)
-          - `run`: {object}
+          - `run`: {object} The share of the usage attributable to running workloads.
             - `vcpuHours`: (number) (format: float)
             - `memoryGiBHours`: (number) (format: float)
             - `duration`: (number) Seconds attributable to running workloads. (format: float)
-        - `projects`: [array of] {object}
+        - `projects`: [array of] An array of projects for this team. Present when a teamId, projectId or resourceType filter is applied, or when a usage-list request uses breakdown=true. {object}
             - `id`: (string) Identifier for the project.
             - `name`: (string) The name of the project.
-            - `price`: {object}
+            - `price`: {object} The project's PaaS price. When a resourceType filter is applied, this reflects only the selected resource type or types' spend within the project.
               - `total`: (number) The total PaaS price, rounded to 2 decimal places. (format: float)
               - `cpu`: (number) The CPU usage price. (format: float)
               - `memory`: (number) The memory usage price. (format: float)
@@ -97,15 +97,15 @@ Required permission: Organisation > Admin > Billing > Read
               - `storageGiBHours`: (number) Storage GiB-hours consumed. (format: float)
               - `gpuSpotHours`: (number) Spot GPU hours consumed. (format: float)
               - `gpuOnDemandHours`: (number) On-demand GPU hours consumed. (format: float)
-              - `build`: {object}
+              - `build`: {object} The share of the usage attributable to builds.
                 - `vcpuHours`: (number) (format: float)
                 - `memoryGiBHours`: (number) (format: float)
                 - `duration`: (number) Seconds attributable to builds. (format: float)
-              - `run`: {object}
+              - `run`: {object} The share of the usage attributable to running workloads.
                 - `vcpuHours`: (number) (format: float)
                 - `memoryGiBHours`: (number) (format: float)
                 - `duration`: (number) Seconds attributable to running workloads. (format: float)
-            - `resources`: [array of] {object}
+            - `resources`: [array of] Resources grouped by type. Present when a projectId or resourceType filter is applied, or when a usage-list request uses breakdown=true. {object}
                 - `resourceType`: (string) The type of the resource (service, job, harness, addon, volume, etc.).
                 - `price`: {object}
                   - `total`: (number) The total PaaS price, rounded to 2 decimal places. (format: float)
@@ -119,15 +119,15 @@ Required permission: Organisation > Admin > Billing > Read
                   - `storageGiBHours`: (number) Storage GiB-hours consumed. (format: float)
                   - `gpuSpotHours`: (number) Spot GPU hours consumed. (format: float)
                   - `gpuOnDemandHours`: (number) On-demand GPU hours consumed. (format: float)
-                  - `build`: {object}
+                  - `build`: {object} The share of the usage attributable to builds.
                     - `vcpuHours`: (number) (format: float)
                     - `memoryGiBHours`: (number) (format: float)
                     - `duration`: (number) Seconds attributable to builds. (format: float)
-                  - `run`: {object}
+                  - `run`: {object} The share of the usage attributable to running workloads.
                     - `vcpuHours`: (number) (format: float)
                     - `memoryGiBHours`: (number) (format: float)
                     - `duration`: (number) Seconds attributable to running workloads. (format: float)
-                - `items`: [array of] {object}
+                - `items`: [array of] The resources of this type. {object}
                     - `id`: (string) Identifier for the resource.
                     - `name`: (string) The name of the resource.
                     - `price`: {object}
@@ -142,52 +142,52 @@ Required permission: Organisation > Admin > Billing > Read
                       - `storageGiBHours`: (number) Storage GiB-hours consumed. (format: float)
                       - `gpuSpotHours`: (number) Spot GPU hours consumed. (format: float)
                       - `gpuOnDemandHours`: (number) On-demand GPU hours consumed. (format: float)
-                      - `build`: {object}
+                      - `build`: {object} The share of the usage attributable to builds.
                         - `vcpuHours`: (number) (format: float)
                         - `memoryGiBHours`: (number) (format: float)
                         - `duration`: (number) Seconds attributable to builds. (format: float)
-                      - `run`: {object}
+                      - `run`: {object} The share of the usage attributable to running workloads.
                         - `vcpuHours`: (number) (format: float)
                         - `memoryGiBHours`: (number) (format: float)
                         - `duration`: (number) Seconds attributable to running workloads. (format: float)
                     - `duration`: (number) Seconds the resource was billed for. (format: float)
   - `byoc`: {object}
-    - `price`: {object}
+    - `price`: {object} The customer-level BYOC price total. Always reflects the full customer total, regardless of drill-down filters.
       - `total`: (number) The total BYOC price, rounded to 2 decimal places. (format: float)
       - `vcpu`: (number) The vCPU usage price. (format: float)
       - `memory`: (number) The memory usage price. (format: float)
       - `gpuMemory`: (number) The GPU memory usage price. (format: float)
       - `cluster`: (number) The cluster usage price. (format: float)
-    - `usage`: {object}
+    - `usage`: {object} Customer-level BYOC usage hours.
       - `vcpuHours`: (number) vCPU hours consumed. (format: float)
       - `memoryGiBHours`: (number) Memory GiB-hours consumed. (format: float)
       - `clusterHours`: (number) Cluster hours consumed. (format: float)
       - `gpuMemoryGiBHours`: (number) GPU memory GiB-hours consumed. (format: float)
-    - `clusters`: [array of] {object}
+    - `clusters`: [array of] Cluster-level BYOC usage and allocated spend. Present on invoice and hourly usage detail responses. {object}
         - `id`: (string) Identifier for the cluster.
         - `name`: (string) The cluster name.
-        - `price`: {object}
+        - `price`: {object} Allocated BYOC spend for this cluster. The customer-level rate is apportioned by each resource component’s share of the customer total, so this is a reporting allocation rather than an independently billed cluster price. Its total is not rounded so all cluster totals remain reconcilable with the customer total.
           - `vcpu`: (number) The vCPU usage price. (format: float)
           - `memory`: (number) The memory usage price. (format: float)
           - `gpuMemory`: (number) The GPU memory usage price. (format: float)
           - `cluster`: (number) The cluster usage price. (format: float)
           - `total`: (number) The allocated cluster BYOC price. Kept unrounded so cluster totals reconcile with the customer BYOC total. (format: float)
-        - `usage`: {object}
+        - `usage`: {object} BYOC resource-hours consumed by this cluster.
           - `vcpuHours`: (number) vCPU hours consumed. (format: float)
           - `memoryGiBHours`: (number) Memory GiB-hours consumed. (format: float)
           - `clusterHours`: (number) Cluster hours consumed. (format: float)
           - `gpuMemoryGiBHours`: (number) GPU memory GiB-hours consumed. (format: float)
-  - `egressIp`: {object}
+  - `egressIp`: {object} Egress IP spend for the period.
     - `price`: {object}
       - `total`: (number) The total price, rounded to 2 decimal places. (format: float)
     - `usage`: {object}
       - `hours`: (number) Hours consumed. (format: float)
-  - `loadBalancer`: {object}
+  - `loadBalancer`: {object} Load balancer spend for the period.
     - `price`: {object}
       - `total`: (number) The total price, rounded to 2 decimal places. (format: float)
     - `usage`: {object}
       - `hours`: (number) Hours consumed. (format: float)
-  - `lineItems`: [array of] {object}
+  - `lineItems`: [array of] The billed lines of the invoice — metered PaaS and BYOC usage, plus the charges the spend categories cannot express: support, enterprise feature sets, infrastructure commitments, BYOC plan fees, log sinks, and any one-off charge. Egress IP and load balancer lines are omitted, being fully reported by their own categories. {object}
      - `title`: (string) What the line is for.
      - `base`: (number) The charge before proration. Present only when a proration applies. (format: float)
      - `proration`: (number) The prorated adjustment, negative for unused time. Present only when a proration applies. (format: float)
@@ -199,7 +199,7 @@ Required permission: Organisation > Admin > Billing > Read
     - `percent`: (number) The tax percentage. (format: float)
     - `amount`: (number) The tax amount. (format: float)
   - `total`: (number) The total cost of the invoice, including tax. (format: float)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -210,6 +210,25 @@ Required permission: Organisation > Admin > Billing > Read
 GET /v1/billing/invoices/{invoiceId}
 
 GET /v1/teams/{teamId}/billing/invoices/{invoiceId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/billing/invoices/{invoiceId}?removeLegacyFields=true&teamsPage=1&teamsPerPage=50&projectsPage=1&projectsPerPage=50&resourcesPage=1&resourcesPerPage=50"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/billing/invoices/{invoiceId}?removeLegacyFields=true&teamsPage=1&teamsPerPage=50&projectsPage=1&projectsPerPage=50&resourcesPage=1&resourcesPerPage=50"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -257,7 +276,9 @@ GET /v1/teams/{teamId}/billing/invoices/{invoiceId}
       {
         "title": "Infrastructure Commitment"
       }
-    ]
+    ],
+    "id": "string",
+    "period": {}
   },
   "pagination": {
     "hasNextPage": false,
@@ -346,7 +367,9 @@ Options:
     {
       "title": "Infrastructure Commitment"
     }
-  ]
+  ],
+  "id": "string",
+  "period": {}
 }
 ```
 
@@ -419,7 +442,9 @@ await apiClient.get.invoice({
       {
         "title": "Infrastructure Commitment"
       }
-    ]
+    ],
+    "id": "string",
+    "period": {}
   },
   "pagination": {
     "hasNextPage": false,

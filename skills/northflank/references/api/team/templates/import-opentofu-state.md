@@ -22,9 +22,9 @@ Required permission: Account > Templates > General > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `resourceDefinitions`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `resourceDefinitions`: {object} Resource definitions copied from the source OpenTofu node.
 
 ### API reference
 
@@ -41,7 +41,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"sourceTemplateId":"source-template","sourceStateKey":"source-state","targetStateKey":"target-state"}' \
-  https://api.northflank.com/v1/templates/{templateId}/opentofu/import-state
+  "https://api.northflank.com/v1/templates/{templateId}/opentofu/import-state"
 ```
 
 ```javascript
@@ -69,10 +69,10 @@ import requests
 
 url = "https://api.northflank.com/v1/templates/{templateId}/opentofu/import-state"
 
-payload = {"sourceTemplateId":"source-template","sourceStateKey":"source-state","targetStateKey":"target-state"}
+payload = "{\"sourceTemplateId\":\"source-template\",\"sourceStateKey\":\"source-state\",\"targetStateKey\":\"target-state\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -90,7 +90,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/templates/{templateId}/opentofu/import-state"
 
-  var jsonStr = []byte(`{"sourceTemplateId":"source-template","sourceStateKey":"source-state","targetStateKey":"target-state"}`)
+  var jsonStr = []byte("{\"sourceTemplateId\":\"source-template\",\"sourceStateKey\":\"source-state\",\"targetStateKey\":\"target-state\"}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -114,7 +114,9 @@ func main() {
 200 OK: The imported OpenTofu resource definitions.
 
 ```json
-undefined
+{
+  "data": {}
+}
 ```
 
 ### CLI reference
@@ -148,7 +150,7 @@ Options:
  The imported OpenTofu resource definitions.
 
 ```json
-undefined
+{}
 ```
 
 ### JavaScript client reference
@@ -176,6 +178,7 @@ await apiClient.import.template.state({
 
 ```json
 {
+  "data": {},
   "rawResponse": "...",
   "request": "...",
   "error": "..."

@@ -21,7 +21,7 @@ Required permission: Project > Jobs > General > Update
 **Request body:**
 
 {object}
-- `healthChecks`: [array of] {object}
+- `healthChecks`: [array of] (required) An array of health checks. {object} A health check object.
    - `protocol`: (string) (required) The protocol to access the health check with. (enum: HTTP, CMD, TCP)
    - `type`: (string) (required) The type of health check. (enum: livenessProbe, readinessProbe, startupProbe)
    - `path`: (string) The path of the health check endpoint. Required when protocol is HTTP. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]*((\?([a-zA-Z0-9-._]+(=[a-zA-Z0-9-._]+)?)*)(&([a-zA-Z0-9-._]+(=[a-zA-Z0-9-._]+)?)*)*)?$)
@@ -35,8 +35,8 @@ Required permission: Project > Jobs > General > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -53,7 +53,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}]}' \
-  https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/health-checks
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/health-checks"
 ```
 
 ```javascript
@@ -91,10 +91,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/health-checks"
 
-payload = {"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}]}
+payload = "{\"healthChecks\":[{\"protocol\":\"HTTP\",\"type\":\"readinessProbe\",\"path\":\"/health-check\",\"port\":8080,\"initialDelaySeconds\":10,\"periodSeconds\":60,\"timeoutSeconds\":1,\"failureThreshold\":3,\"successThreshold\":1}]}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -112,7 +112,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/health-checks"
 
-  var jsonStr = []byte(`{"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}]}`)
+  var jsonStr = []byte("{\"healthChecks\":[{\"protocol\":\"HTTP\",\"type\":\"readinessProbe\",\"path\":\"/health-check\",\"port\":8080,\"initialDelaySeconds\":10,\"periodSeconds\":60,\"timeoutSeconds\":1,\"failureThreshold\":3,\"successThreshold\":1}]}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

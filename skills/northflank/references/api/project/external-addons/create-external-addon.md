@@ -13,9 +13,9 @@ Required permission: Project > ExternalAddons > General > Create
 
 **Request body:**
 
-{object}
+{object} Request body for creating an external addon
 - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-- `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+- `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `environmentId`: (string)
 - `spec`: {object}
   - `resourceType`: (string) (required) (enum: s3, rds, cloudSql, memorystore)
@@ -35,22 +35,31 @@ Required permission: Project > ExternalAddons > General > Create
     - `backblaze`: {object}
       - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
     - `azure`: {object}
+      - `features`: {object}
+      - `resource_provider_registrations`: (string) (enum: none)
       - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
     - `akamai`: {object}
       - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
     - `planetscale`: {object}
       - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
-  - `config`: {object}
+    - `openai`: {object}
+      - `organization`: (string) OpenAI organization ID.
+      - `project`: (string) OpenAI project ID.
+      - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
+    - `anthropic`: {object}
+      - `workspace_id`: (string) Workspace for an API key not scoped to one workspace. Omit for workspace-scoped keys. (pattern: ^wrkspc_[0-9A-Za-z]+$)
+      - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
+  - `config`: {object} (required)
   - `outputs`: {object}
   - `workloadIdentityId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-  - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `environmentId`: (string)
   - `spec`: {object}
     - `resourceType`: (string) (required) (enum: s3, rds, cloudSql, memorystore)
@@ -70,12 +79,21 @@ Required permission: Project > ExternalAddons > General > Create
       - `backblaze`: {object}
         - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
       - `azure`: {object}
+        - `features`: {object}
+        - `resource_provider_registrations`: (string) (enum: none)
         - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
       - `akamai`: {object}
         - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
       - `planetscale`: {object}
         - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
-    - `config`: {object}
+      - `openai`: {object}
+        - `organization`: (string) OpenAI organization ID.
+        - `project`: (string) OpenAI project ID.
+        - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
+      - `anthropic`: {object}
+        - `workspace_id`: (string) Workspace for an API key not scoped to one workspace. Omit for workspace-scoped keys. (pattern: ^wrkspc_[0-9A-Za-z]+$)
+        - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
+    - `config`: {object} (required)
     - `outputs`: {object}
     - `workloadIdentityId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -95,7 +113,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"spec":{"provider":{"aws":{"region":"eu-west-1","integrationId":"string"},"google":{"region":"us-central1","zone":"us-central1-c","project":"string","integrationId":"string"}},"resourceType":"s3","config":{}},"name":"string"}' \
-  https://api.northflank.com/v1/projects/{projectId}/external-addons
+  "https://api.northflank.com/v1/projects/{projectId}/external-addons"
 ```
 
 ```javascript
@@ -137,10 +155,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/external-addons"
 
-payload = {"spec":{"provider":{"aws":{"region":"eu-west-1","integrationId":"string"},"google":{"region":"us-central1","zone":"us-central1-c","project":"string","integrationId":"string"}},"resourceType":"s3","config":{}},"name":"string"}
+payload = "{\"spec\":{\"provider\":{\"aws\":{\"region\":\"eu-west-1\",\"integrationId\":\"string\"},\"google\":{\"region\":\"us-central1\",\"zone\":\"us-central1-c\",\"project\":\"string\",\"integrationId\":\"string\"}},\"resourceType\":\"s3\",\"config\":{}},\"name\":\"string\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -158,7 +176,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/external-addons"
 
-  var jsonStr = []byte(`{"spec":{"provider":{"aws":{"region":"eu-west-1","integrationId":"string"},"google":{"region":"us-central1","zone":"us-central1-c","project":"string","integrationId":"string"}},"resourceType":"s3","config":{}},"name":"string"}`)
+  var jsonStr = []byte("{\"spec\":{\"provider\":{\"aws\":{\"region\":\"eu-west-1\",\"integrationId\":\"string\"},\"google\":{\"region\":\"us-central1\",\"zone\":\"us-central1-c\",\"project\":\"string\",\"integrationId\":\"string\"}},\"resourceType\":\"s3\",\"config\":{}},\"name\":\"string\"}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -187,14 +205,20 @@ func main() {
     "spec": {
       "provider": {
         "aws": {
-          "region": "eu-west-1"
+          "region": "eu-west-1",
+          "integrationId": "string"
         },
         "google": {
           "region": "us-central1",
-          "zone": "us-central1-c"
+          "zone": "us-central1-c",
+          "project": "string",
+          "integrationId": "string"
         }
-      }
-    }
+      },
+      "resourceType": "s3",
+      "config": {}
+    },
+    "name": "string"
   }
 }
 ```
@@ -248,14 +272,20 @@ Options:
   "spec": {
     "provider": {
       "aws": {
-        "region": "eu-west-1"
+        "region": "eu-west-1",
+        "integrationId": "string"
       },
       "google": {
         "region": "us-central1",
-        "zone": "us-central1-c"
+        "zone": "us-central1-c",
+        "project": "string",
+        "integrationId": "string"
       }
-    }
-  }
+    },
+    "resourceType": "s3",
+    "config": {}
+  },
+  "name": "string"
 }
 ```
 
@@ -302,14 +332,20 @@ await apiClient.create.externalAddon({
     "spec": {
       "provider": {
         "aws": {
-          "region": "eu-west-1"
+          "region": "eu-west-1",
+          "integrationId": "string"
         },
         "google": {
           "region": "us-central1",
-          "zone": "us-central1-c"
+          "zone": "us-central1-c",
+          "project": "string",
+          "integrationId": "string"
         }
-      }
-    }
+      },
+      "resourceType": "s3",
+      "config": {}
+    },
+    "name": "string"
   },
   "rawResponse": "...",
   "request": "...",

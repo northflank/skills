@@ -14,27 +14,27 @@ Required permission: Project > Services > General > Update
 
 **Request body:**
 
-(multiple options) {object}
+(multiple options) Build type {object} Build from bundle
  - `bundleUrl`: (string) (required) URL of the bundle to be built
  - `branch`: (string)
  - `sha`: (string)
- - `overrides`: {object}
-   - `buildArguments`: {object}
-   - `buildFiles`: {object}
-   - `dockerSecretMounts`: {object}
-   - `docker`: {object}
+ - `overrides`: {object} An optional object that may specify several different overrides on the build level.
+   - `buildArguments`: {object} Build arguments that will be set on this build only. In case of conflicts these values take precedence.
+   - `buildFiles`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+   - `dockerSecretMounts`: {object} Docker secret mount contents as JSON object, encrypted at rest. Must be a valid Docker secret mount identifier
+   - `docker`: {object} Overrides for docker build settings.
      - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
      - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
      - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: ^[a-zA-Z0-9-_]+$)
-     - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references. (min length: 1) | {object}
+     - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references. (min length: 1) | {object} Build from git repository
  - `sha`: (string) Commit sha to build. If not provided, builds the most recent relevant commit. (min length: 40) (max length: 40)
  - `branch`: (string) Branch to build from. If `sha` is not provided, the latest commit of this branch will be built. Only supported by build services. Build services require either `branch` or `pullRequestId` field, but cannot be provided with both.
- - `pullRequestId`: (multiple options) (string) ID of a pull request to build from. If `sha` is not provided, the latest commit of this pull request will be built. Only supported by build services. Build services require either `branch` or `pullRequestId` field, but cannot be provided with both. (pattern: ^[0-9]+$) | (integer) ID of a pull request to build from. If `sha` is not provided, the latest commit of this pull request will be built. Only supported by build services. Build services require either `branch` or `pullRequestId` field, but cannot be provided with both.
- - `overrides`: {object}
-   - `buildArguments`: {object}
-   - `buildFiles`: {object}
-   - `dockerSecretMounts`: {object}
-   - `docker`: {object}
+ - `pullRequestId`: (multiple options) ID of a pull request to build from. If `sha` is not provided, the latest commit of this pull request will be built. Only supported by build services. Build services require either `branch` or `pullRequestId` field, but cannot be provided with both. (string) ID of a pull request to build from. If `sha` is not provided, the latest commit of this pull request will be built. Only supported by build services. Build services require either `branch` or `pullRequestId` field, but cannot be provided with both. (pattern: ^[0-9]+$) | (integer) ID of a pull request to build from. If `sha` is not provided, the latest commit of this pull request will be built. Only supported by build services. Build services require either `branch` or `pullRequestId` field, but cannot be provided with both.
+ - `overrides`: {object} An optional object that may specify several different overrides on the build level.
+   - `buildArguments`: {object} Build arguments that will be set on this build only. In case of conflicts these values take precedence.
+   - `buildFiles`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+   - `dockerSecretMounts`: {object} Docker secret mount contents as JSON object, encrypted at rest. Must be a valid Docker secret mount identifier
+   - `docker`: {object} Overrides for docker build settings.
      - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
      - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
      - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: ^[a-zA-Z0-9-_]+$)
@@ -42,11 +42,11 @@ Required permission: Project > Services > General > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) ID of the build.
   - `branch`: (string) Name of the branch the built commit belongs to.
-  - `pullRequestId`: (multiple options) (string) | (integer)
+  - `pullRequestId`: (multiple options) (nullable) ID of the pull request the commit belongs to. (string) | (integer)
   - `sha`: (string) The sha of the built commit.
   - `registry`: {object}
     - `uri`: (string) URI of that can be used to pull the image from the registry
@@ -69,7 +69,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"bundleUrl":"https://example.com/archive.tar","overrides":{"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"docker":{"dockerFilePath":"/Dockerfile","dockerWorkDir":"/"}}}' \
-  https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build"
 ```
 
 ```javascript
@@ -117,10 +117,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build"
 
-payload = {"bundleUrl":"https://example.com/archive.tar","overrides":{"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"docker":{"dockerFilePath":"/Dockerfile","dockerWorkDir":"/"}}}
+payload = "{\"bundleUrl\":\"https://example.com/archive.tar\",\"overrides\":{\"buildArguments\":{\"ARGUMENT_1\":\"abcdef\",\"ARGUMENT_2\":\"12345\"},\"buildFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"dockerSecretMounts\":{\"example-secret-mount_1\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"docker\":{\"dockerFilePath\":\"/Dockerfile\",\"dockerWorkDir\":\"/\"}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -138,7 +138,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build"
 
-  var jsonStr = []byte(`{"bundleUrl":"https://example.com/archive.tar","overrides":{"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"docker":{"dockerFilePath":"/Dockerfile","dockerWorkDir":"/"}}}`)
+  var jsonStr = []byte("{\"bundleUrl\":\"https://example.com/archive.tar\",\"overrides\":{\"buildArguments\":{\"ARGUMENT_1\":\"abcdef\",\"ARGUMENT_2\":\"12345\"},\"buildFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"dockerSecretMounts\":{\"example-secret-mount_1\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"docker\":{\"dockerFilePath\":\"/Dockerfile\",\"dockerWorkDir\":\"/\"}}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

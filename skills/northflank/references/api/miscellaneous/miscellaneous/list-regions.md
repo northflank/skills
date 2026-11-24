@@ -6,28 +6,47 @@ Lists available project regions
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `regions`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `regions`: [array of] (required) An array of regions {object} A region object
      - `id`: (string) (required) The ID of the region.
      - `name`: (string) (required) The name of the region.
      - `regionName`: (string) (required) The name of the group this region belongs to.
      - `provider`: {object}
        - `id`: (string) (required)
        - `region`: (string) (required)
-     - `gpuDevices`: [array of] {object}
+     - `gpuDevices`: [array of] (required) The list of GPUs available in this region. {object}
          - `id`: (string) (required) The ID of the GPU device.
          - `name`: (string) (required) The name of the GPU device.
          - `manufacturer`: (string) (required) The manufacturer of the GPU.
          - `memoryInfo`: {object}
            - `sizeInMiB`: (number) (required) The size of the GPU memory in MiB. (format: float)
-         - `countOptions`: [array of] (number) (format: float)
-         - `pricing`: {object}
+         - `countOptions`: [array of] (required) The list of available configurations for GPU count. (number) (format: float)
+         - `pricing`: {object} (required)
            - `onDemand`: (number) (required) The price per hour for on-demand usage, in US¢. (format: float)
 
 ### API reference
 
 GET /v1/regions
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/regions"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/regions"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -49,6 +68,12 @@ GET /v1/regions
             "memoryInfo": {
               "sizeInMiB": 81920
             },
+            "countOptions": [
+              1,
+              2,
+              4,
+              8
+            ],
             "pricing": {
               "onDemand": 274
             }
@@ -91,6 +116,12 @@ Options:
           "memoryInfo": {
             "sizeInMiB": 81920
           },
+          "countOptions": [
+            1,
+            2,
+            4,
+            8
+          ],
           "pricing": {
             "onDemand": 274
           }
@@ -129,6 +160,12 @@ await apiClient.list.regions({});
             "memoryInfo": {
               "sizeInMiB": 81920
             },
+            "countOptions": [
+              1,
+              2,
+              4,
+              8
+            ],
             "pricing": {
               "onDemand": 274
             }

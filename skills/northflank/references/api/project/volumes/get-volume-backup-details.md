@@ -15,8 +15,8 @@ Required permission: Project > Volumes > Backups > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) Identifier for the backup
   - `uid`: (string) Stable identifier for using this backup as a volume source (format: uuid)
   - `name`: (string) (required)
@@ -41,6 +41,25 @@ GET /v1/projects/{projectId}/volumes/{volumeId}/backups/{backupId}
 
 GET /v1/teams/{teamId}/projects/{projectId}/volumes/{volumeId}/backups/{backupId}
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}/backups/{backupId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}/backups/{backupId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: Details about the specified volume backup.
@@ -48,7 +67,9 @@ GET /v1/teams/{teamId}/projects/{projectId}/volumes/{volumeId}/backups/{backupId
 ```json
 {
   "data": {
-    "id": "example-backup"
+    "id": "example-backup",
+    "name": "string",
+    "status": "string"
   }
 }
 ```
@@ -77,7 +98,9 @@ Options:
 
 ```json
 {
-  "id": "example-backup"
+  "id": "example-backup",
+  "name": "string",
+  "status": "string"
 }
 ```
 
@@ -104,7 +127,9 @@ await apiClient.get.volume.backup({
 ```json
 {
   "data": {
-    "id": "example-backup"
+    "id": "example-backup",
+    "name": "string",
+    "status": "string"
   },
   "rawResponse": "...",
   "request": "...",

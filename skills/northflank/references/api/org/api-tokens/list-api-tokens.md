@@ -16,25 +16,25 @@ Required permission: Account > Admin > ApiTokens > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `tokens`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `tokens`: [array of] (required) An array of API tokens. {object} An API token.
      - `id`: (string) (required) The ID (slug) of the API token.
      - `name`: (string) (required) The display name of the API token.
      - `description`: (string) The description of the API token.
-     - `role`: {object}
+     - `role`: {object} The role assigned to this token.
        - `name`: (string) The display name of the role.
        - `roleId`: (string) The ID (slug) of the role.
        - `roleType`: (string) The type of the role. (enum: team, org)
        - `entityType`: (string) The entity type of the role. (enum: team, org)
      - `creatorEmail`: (string) The email of the user who created this token. (format: email)
      - `createdAt`: (string) (required) The time the token was created. (format: date-time)
-     - `expiresAt`: (string) The time the token expires, or null if it has no expiry. (format: date-time)
+     - `expiresAt`: (string) (nullable) The time the token expires, or null if it has no expiry. (format: date-time)
      - `revoked`: (boolean) (required) Whether the token has been revoked.
      - `revokedAt`: (string) The time the token was revoked, if it has been. (format: date-time)
      - `lastUsedAt`: (string) The time the token was last used to authenticate. (format: date-time)
      - `active`: (boolean) (required) Whether the token is currently active (not revoked and not expired).
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -44,6 +44,25 @@ Required permission: Account > Admin > ApiTokens > Read
 GET /v1/tokens
 
 GET /v1/teams/{teamId}/tokens
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/tokens?per_page=50&page=1&all=false"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/tokens?per_page=50&page=1&all=false"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

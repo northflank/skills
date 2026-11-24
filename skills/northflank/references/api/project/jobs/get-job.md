@@ -14,13 +14,13 @@ Required permission: Project > Jobs > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) Identifier for the job
   - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
   - `appId`: (string) (required) Full identifier used for job deployment
   - `name`: (string) (required) Job name
-  - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `tags`: [array of] (required) An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `description`: (string) A short description of the job
   - `projectId`: (string) (required) ID of the project that the job belongs to
   - `stageId`: (string) ID of the environment the job belongs to.
@@ -35,10 +35,10 @@ Required permission: Project > Jobs > General > Read
     - `dockerWorkDir`: (string) (required) Working directory used by the dockerfile
     - `dockerFilePath`: (string) (required) File path of the Dockerfile
   - `buildConfiguration`: {object}
-    - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+    - `pathIgnoreRules`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
     - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
     - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
-    - `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+    - `ciIgnoreFlags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
     - `ignoreEmptyCommits`: (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules.
     - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
     - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
@@ -48,82 +48,107 @@ Required permission: Project > Jobs > General > Read
     - `storage`: {object}
       - `ephemeralStorage`: {object}
         - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-  - `buildSettings`: (multiple options) {object}
+  - `buildSettings`: (multiple options) Build engine {object} Build from a Dockerfile
      - `storage`: {object}
        - `ephemeralStorage`: {object}
          - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-     - `dockerfile`: {object}
+     - `dockerfile`: {object} (required)
        - `useCache`: (boolean) DEPRECATED: This field will be removed in the near future and currently has no effect.
        - `buildEngine`: (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko)
        - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
        - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
-       - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+       - `dockerfileContents`: (string) (nullable) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
        - `buildkit`: {object}
          - `useCache`: (boolean) Use persistent storage to cache build layers.
-         - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
+         - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object} Build from a Buildpack
      - `storage`: {object}
        - `ephemeralStorage`: {object}
          - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-     - `buildpack`: {object}
-       - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
-       - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
+     - `buildpack`: {object} (required)
+       - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_26`. (enum: HEROKU_26, HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_RESOLUTE, PAKETO_NOBLE, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
+       - `buildpackLocators`: [array of] Array of custom Buildpacks to use. (string) Url or registry identifier of custom Buildpack.
        - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
        - `useCache`: (boolean) Should build dependencies be cached?
   - `buildEngineConfiguration`: {object}
     - `buildEngine`: (string) The build engine used. (enum: buildpack, buildkit, kaniko)
-    - `buildpack`: {object}
-      - `builder`: (string) The Buildpack stack used. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
-      - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
+    - `buildpack`: {object} Details about Buildpack settings.
+      - `builder`: (string) The Buildpack stack used. (enum: HEROKU_26, HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_RESOLUTE, PAKETO_NOBLE, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
+      - `buildpackLocators`: [array of] Array of custom Buildpacks used. (string) Url or registry identifier of custom Buildpack.
       - `useCache`: (boolean) Should build dependencies be cached?
-    - `buildkit`: {object}
+    - `buildkit`: {object} Details about Buildkit settings.
       - `useCache`: (boolean) Should intermediate image layers be cached?
-    - `kaniko`: {object}
+    - `kaniko`: {object} Details about Kaniko settings.
       - `useCache`: (boolean) Should intermediate image layers be cached?
   - `disabledCI`: (boolean) (required) Whether Continuous Integration is disabled
   - `disabledCD`: (boolean) (required) Whether Continuous Deployment is disabled
   - `deployment`: {object}
-    - `image`: {object}
+    - `image`: {object} The desired image selector.
       - `projectId`: (string) (required) (min length: 24) (max length: 24)
       - `name`: (string) (required)
       - `group`: (string)
       - `tag`: (string) (required)
-    - `importedImage`: {object}
+    - `importedImage`: {object} The concrete imported image selected for deployment.
       - `projectId`: (string) (required) (min length: 24) (max length: 24)
       - `imageId`: (string) (required) (min length: 24) (max length: 24)
     - `region`: (string) Region where this job is deployed and built
-    - `buildpack`: {object}
+    - `buildpack`: {object} Details about the Buildpack overrides for this deployment.
       - `configType`: (string) (required) Type of buildpack run configuration. (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
       - `customProcess`: (string) Custom process which should be run.
       - `customEntrypoint`: (string) Custom entrypoint which should be run.
       - `customCommand`: (string) Custom command which should be run.
-    - `docker`: {object}
+    - `docker`: {object} Details about the Docker overrides for this deployment.
       - `configType`: (string) (required) Override configuration which is used at runtime. (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
       - `customEntrypoint`: (string) The CMD to run instead of the default if entrypoint override is enabled.
       - `customCommand`: (string) The CMD to run instead of the default if CMD override is enabled.
-    - `storage`: {object}
-      - `ephemeralStorage`: {object}
+    - `podDisruptionBudget`: (multiple options) Controls eviction-aware voluntary-disruption protection for all runtime pods owned by the service or job. Available for account-enabled BYOC projects running Kubernetes 1.31 or newer. Service budgets aggregate stable and canary pods without traffic weighting; job budgets aggregate all active runs. Values at or above the healthy pod count can prevent node drains, node-pool upgrades, and autoscaler consolidation. Pods selected by multiple budgets cannot be evicted. Omitting this object from a full PUT disables it. {object}
+        - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+        - `minAvailable`: (integer) (required) The minimum number of healthy runtime pods that must remain available during a voluntary disruption. Zero provides no eviction protection. | {object}
+        - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+    - `storage`: {object} Details about storage settings for this deployment.
+      - `ephemeralStorage`: {object} Details about ephemeral storage settings for this deployment.
         - `storageSize`: (number) (required) Ephemeral storage per container in MB (format: float)
       - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
-  - `billing`: {object}
+  - `billing`: {object} (required)
     - `deploymentPlan`: (string) (required) ID of the billing plan used by this job
   - `suspended`: (boolean) Cron specific. Whether or not the job's automatic scheduling is suspended
-  - `settings`: {object}
-    - `cron`: {object}
+  - `settings`: {object} (required) Job settings
+    - `cron`: {object} Cron job specific settings
       - `schedule`: (string) The cron timer scheduling when to run the job.
+      - `timeZone`: (string) IANA timezone for the schedule, follows daylight saving time rules. (max length: 100)
       - `concurrencyPolicy`: (string) Whether this job should run when another instance of the job is already running. (enum: Allow, Forbid, Replace)
+      - `skipMissedRuns`: (boolean) Skip scheduled runs that are more than 60 seconds late. Manual runs are unaffected.
     - `backoffLimit`: (integer) (required) The number of attempts to rerun a job before it is marked as failed.
     - `activeDeadlineSeconds`: (integer) (required) The maximum amount of time, in seconds, for a job to run before it is marked as failed.
-  - `cluster`: {object}
+  - `cluster`: {object} (required) Cluster information
     - `id`: (string) (required) The id of the cluster associated with this project.
     - `name`: (string) (required) The name of the cluster associated with this project.
     - `namespace`: (string) Namespace this resource is located within on the cluster.
-    - `loadBalancers`: [array of] (string)
+    - `loadBalancers`: [array of] Load balancer DNS for the cluster. (string)
 
 ### API reference
 
 GET /v1/projects/{projectId}/jobs/{jobId}
 
 GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -156,7 +181,13 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}
       ],
       "isAllowList": false,
       "ciIgnoreFlags": [
-        "[skip ci]"
+        "[skip ci]",
+        "[ci skip]",
+        "[no ci]",
+        "[skip nf]",
+        "[nf skip]",
+        "[northflank skip]",
+        "[skip northflank]"
       ],
       "ignoreEmptyCommits": false,
       "dockerCredentials": [
@@ -187,7 +218,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}
     "buildEngineConfiguration": {
       "buildEngine": "buildpack",
       "buildpack": {
-        "builder": "HEROKU_24",
+        "builder": "HEROKU_26",
         "buildpackLocators": [
           "https://buildpack-registry.heroku.com/cnb/mars/create-react-app"
         ]
@@ -217,7 +248,9 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}
     "settings": {
       "cron": {
         "schedule": "30 8 * * *",
-        "concurrencyPolicy": "Allow"
+        "timeZone": "Europe/London",
+        "concurrencyPolicy": "Allow",
+        "skipMissedRuns": true
       },
       "backoffLimit": 0,
       "activeDeadlineSeconds": 600
@@ -229,7 +262,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}
       "loadBalancers": [
         "lb.659200800000000000000000.northflank.com"
       ]
-    }
+    },
+    "tags": []
   }
 }
 ```
@@ -280,7 +314,13 @@ Options:
     ],
     "isAllowList": false,
     "ciIgnoreFlags": [
-      "[skip ci]"
+      "[skip ci]",
+      "[ci skip]",
+      "[no ci]",
+      "[skip nf]",
+      "[nf skip]",
+      "[northflank skip]",
+      "[skip northflank]"
     ],
     "ignoreEmptyCommits": false,
     "dockerCredentials": [
@@ -311,7 +351,7 @@ Options:
   "buildEngineConfiguration": {
     "buildEngine": "buildpack",
     "buildpack": {
-      "builder": "HEROKU_24",
+      "builder": "HEROKU_26",
       "buildpackLocators": [
         "https://buildpack-registry.heroku.com/cnb/mars/create-react-app"
       ]
@@ -341,7 +381,9 @@ Options:
   "settings": {
     "cron": {
       "schedule": "30 8 * * *",
-      "concurrencyPolicy": "Allow"
+      "timeZone": "Europe/London",
+      "concurrencyPolicy": "Allow",
+      "skipMissedRuns": true
     },
     "backoffLimit": 0,
     "activeDeadlineSeconds": 600
@@ -353,7 +395,8 @@ Options:
     "loadBalancers": [
       "lb.659200800000000000000000.northflank.com"
     ]
-  }
+  },
+  "tags": []
 }
 ```
 
@@ -403,7 +446,13 @@ await apiClient.get.job({
       ],
       "isAllowList": false,
       "ciIgnoreFlags": [
-        "[skip ci]"
+        "[skip ci]",
+        "[ci skip]",
+        "[no ci]",
+        "[skip nf]",
+        "[nf skip]",
+        "[northflank skip]",
+        "[skip northflank]"
       ],
       "ignoreEmptyCommits": false,
       "dockerCredentials": [
@@ -434,7 +483,7 @@ await apiClient.get.job({
     "buildEngineConfiguration": {
       "buildEngine": "buildpack",
       "buildpack": {
-        "builder": "HEROKU_24",
+        "builder": "HEROKU_26",
         "buildpackLocators": [
           "https://buildpack-registry.heroku.com/cnb/mars/create-react-app"
         ]
@@ -464,7 +513,9 @@ await apiClient.get.job({
     "settings": {
       "cron": {
         "schedule": "30 8 * * *",
-        "concurrencyPolicy": "Allow"
+        "timeZone": "Europe/London",
+        "concurrencyPolicy": "Allow",
+        "skipMissedRuns": true
       },
       "backoffLimit": 0,
       "activeDeadlineSeconds": 600
@@ -476,7 +527,8 @@ await apiClient.get.job({
       "loadBalancers": [
         "lb.659200800000000000000000.northflank.com"
       ]
-    }
+    },
+    "tags": []
   },
   "rawResponse": "...",
   "request": "...",
@@ -572,7 +624,7 @@ print(response.data)
   "buildEngineConfiguration": {
     "buildEngine": "buildpack",
     "buildpack": {
-      "builder": "HEROKU_24",
+      "builder": "HEROKU_26",
       "buildpackLocators": [
         "https://buildpack-registry.heroku.com/cnb/mars/create-react-app"
       ]
@@ -602,7 +654,9 @@ print(response.data)
   "settings": {
     "cron": {
       "schedule": "30 8 * * *",
-      "concurrencyPolicy": "Allow"
+      "timeZone": "Europe/London",
+      "concurrencyPolicy": "Allow",
+      "skipMissedRuns": true
     },
     "backoffLimit": 0,
     "activeDeadlineSeconds": 600

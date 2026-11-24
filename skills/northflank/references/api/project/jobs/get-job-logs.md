@@ -17,7 +17,7 @@ Required permission: Project > Jobs > Deployment > View Observability
 {object}
 - `runId`: (string) Limits metrics to a specific job run id. (min length: 36) (max length: 36)
 - `type`: (string) Type of log. Multiple log types can be selected by specifying the query parameter repeatedly. (enum: cdn, mesh, ingress, runtime, build, backup, restore)
-- `containerName`: (multiple options) [array of] (string) (min length: 3) (max length: 64) | (string) (min length: 3) (max length: 64)
+- `containerName`: (multiple options) Limits logs to specific container(s). Multiple containers can be selected by specifying the query parameter repeatedly. [array of] (string) (min length: 3) (max length: 64) | (string) (min length: 3) (max length: 64)
 - `queryType`: (string) `range` selects a log range and returns immediately. (enum: range)
 - `startTime`: (string) Fetch logs generated after this timestamp. (format: date-time)
 - `endTime`: (string) Fetch logs generated before this timestamp. (format: date-time)
@@ -31,10 +31,10 @@ Required permission: Project > Jobs > Deployment > View Observability
 
 **Response body:**
 
-{object}
-- `data`: [array of] {object}
+{object} Response object.
+- `data`: [array of] (required) Result data. {object}
    - `containerId`: (string) (required)
-   - `log`: (undefined) (required)
+   - `log`: (required)
    - `ts`: (string) (required) (format: date-time)
 
 ### API reference
@@ -42,6 +42,25 @@ Required permission: Project > Jobs > Deployment > View Observability
 GET /v1/projects/{projectId}/jobs/{jobId}/logs
 
 GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/logs
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/logs?runId=93ec9390-b9bd-47f0-9bd1-b5983c42a6f2&containerName=my-container-67d6d748c5-kgvwh&queryType=range&startTime=2023-02-16T14%3A00%3A00.000Z&endTime=2023-02-16T15%3A00%3A00.000Z&duration=600&lineLimit=250&direction=backward&textIncludes=myvalue&textNotIncludes=myvalue&regexIncludes=my.*value&regexNotIncludes=my.*value"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/logs?runId=93ec9390-b9bd-47f0-9bd1-b5983c42a6f2&containerName=my-container-67d6d748c5-kgvwh&queryType=range&startTime=2023-02-16T14%3A00%3A00.000Z&endTime=2023-02-16T15%3A00%3A00.000Z&duration=600&lineLimit=250&direction=backward&textIncludes=myvalue&textNotIncludes=myvalue&regexIncludes=my.*value&regexNotIncludes=my.*value"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -52,7 +71,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/logs
   "data": [
     {
       "log": "stdout F This is a log line",
-      "ts": "2023-03-21T15:01:17.310Z"
+      "ts": "2023-03-21T15:01:17.310Z",
+      "containerId": "string"
     }
   ]
 }
@@ -108,7 +128,8 @@ Options:
 [
   {
     "log": "stdout F This is a log line",
-    "ts": "2023-03-21T15:01:17.310Z"
+    "ts": "2023-03-21T15:01:17.310Z",
+    "containerId": "string"
   }
 ]
 ```
@@ -127,7 +148,7 @@ await apiClient.get.job.logs({
   },
   options: {
     "runId": "93ec9390-b9bd-47f0-9bd1-b5983c42a6f2",
-    "containerName": [],
+    "containerName": "my-container-67d6d748c5-kgvwh",
     "queryType": "range",
     "startTime": "2023-02-16T14:00:00.000Z",
     "endTime": "2023-02-16T15:00:00.000Z",
@@ -151,7 +172,8 @@ await apiClient.get.job.logs({
   "data": [
     {
       "log": "stdout F This is a log line",
-      "ts": "2023-03-21T15:01:17.310Z"
+      "ts": "2023-03-21T15:01:17.310Z",
+      "containerId": "string"
     }
   ],
   "rawResponse": "...",

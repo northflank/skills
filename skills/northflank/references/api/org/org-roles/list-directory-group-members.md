@@ -20,14 +20,15 @@ Required permission: Organisation > Admin > Members > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `members`: [array of] {object}
-     - `id`: (string) (required) ID (username) of the directory member.
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `members`: [array of] (required) An array of members in the directory group. {object} A directory member object.
+     - `uid`: (string) (required) Permanent UID of the directory member. (min length: 24) (max length: 24)
+     - `id`: (string) (required) (nullable) ID (username) of the directory member.
      - `name`: (string) Display name from the member profile.
-     - `emails`: [array of] (string) (format: email)
+     - `emails`: [array of] Email addresses of the member. (string) (format: email)
      - `lastLoginTime`: (string) The time the member last logged in. (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -35,6 +36,25 @@ Required permission: Organisation > Admin > Members > Read
 ### API reference
 
 GET /v1/directory-groups/{groupId}/members
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/directory-groups/{groupId}/members?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/directory-groups/{groupId}/members?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -45,8 +65,12 @@ GET /v1/directory-groups/{groupId}/members
   "data": {
     "members": [
       {
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
         "id": "john-doe",
         "name": "John Doe",
+        "emails": [
+          "john@example.com"
+        ],
         "lastLoginTime": "2021-01-20T11:19:53.175Z"
       }
     ]
@@ -86,8 +110,12 @@ Options:
 {
   "members": [
     {
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
       "id": "john-doe",
       "name": "John Doe",
+      "emails": [
+        "john@example.com"
+      ],
       "lastLoginTime": "2021-01-20T11:19:53.175Z"
     }
   ]
@@ -119,8 +147,12 @@ await apiClient.list.orgDirectoryGroupMembers({
   "data": {
     "members": [
       {
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
         "id": "john-doe",
         "name": "John Doe",
+        "emails": [
+          "john@example.com"
+        ],
         "lastLoginTime": "2021-01-20T11:19:53.175Z"
       }
     ]
@@ -163,6 +195,7 @@ print(response.data)
 {
   "members": [
     {
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
       "id": "john-doe",
       "name": "John Doe",
       "emails": [

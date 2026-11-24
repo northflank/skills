@@ -17,8 +17,8 @@ Required permission: Project > Services > General > Create
 - `name`: (string) (required) The name of the service. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
 - `description`: (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
 - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `billing`: {object}
+- `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+- `billing`: {object} (required)
   - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `buildPlan`: (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `gpu`: {object}
@@ -29,15 +29,15 @@ Required permission: Project > Services > General > Create
       - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
 - `infrastructure`: {object}
   - `architecture`: (string) (enum: x86, arm)
-- `deployment`: {object}
+- `deployment`: {object} (required)
   - `type`: (string) The way the service should be deployed. Either as a deployment (default), or as a stateful set. (enum: deployment, statefulSet)
   - `instances`: (integer) (required) The number of instances to run the service on.
-  - `buildpack`: {object}
+  - `buildpack`: {object} Allows for customization of buildpack runtime
     - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
     - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
     - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
     - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
-  - `docker`: {object}
+  - `docker`: {object} Allows for customization of docker runtime
     - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
     - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
     - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
@@ -47,11 +47,11 @@ Required permission: Project > Services > General > Create
     - `ephemeralStorage`: {object}
       - `storageSize`: (integer) Ephemeral storage per container in MB
     - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
-  - `strategy`: {object}
+  - `strategy`: {object} Roll out strategy of the service
     - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate)
     - `settings`: {object}
-      - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
-      - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
+      - `maxSurge`: (multiple options) (required) Maximum number or percentage of pods that can be created above the desired count. (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
+      - `maxUnavailable`: (multiple options) (required) Maximum number or percentage of pods that can be unavailable during the update. (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
   - `zonalRedundancy`: {object}
     - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required)
     - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
@@ -62,20 +62,24 @@ Required permission: Project > Services > General > Create
       - `gpuCount`: (integer) The number of GPUs to allocate.
       - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
   - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
-  - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
-  - `ssh`: {object}
+  - `podDisruptionBudget`: (multiple options) Controls eviction-aware voluntary-disruption protection for all runtime pods owned by the service or job. Available for account-enabled BYOC projects running Kubernetes 1.31 or newer. Service budgets aggregate stable and canary pods without traffic weighting; job budgets aggregate all active runs. Values at or above the healthy pod count can prevent node drains, node-pool upgrades, and autoscaler consolidation. Pods selected by multiple budgets cannot be evicted. Omitting this object from a full PUT disables it. {object}
+     - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+     - `minAvailable`: (integer) (required) The minimum number of healthy runtime pods that must remain available during a voluntary disruption. Zero provides no eviction protection. | {object}
+     - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+  - `gradualRolloutStrategyId`: (multiple options) (nullable) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$) The id of the strategy to be attached to service.
+  - `ssh`: {object} Controls related to SSH access within the resource.
     - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
-  - `metadata`: {object}
-    - `labels`: {object}
-    - `annotations`: {object}
-  - `volumes`: [array of] {object}
+  - `metadata`: {object} Allow setting custom labels and annotations for workloads.
+    - `labels`: {object} Specify custom labels for the workload.
+    - `annotations`: {object} Specify custom annotations for the workload as string or object.
+  - `volumes`: (multiple options) Per-replica persistent volumes for a statefulSet service. Each replica receives its own instance of every volume. Only valid when `deployment.type` is `statefulSet`. Per-replica persistent volumes for a statefulSet service. Each replica receives its own instance of every volume. Only valid when `deployment.type` is `statefulSet`. | (multiple options) Per-replica persistent volumes for a statefulSet service. Each replica receives its own instance of every volume. Only valid when `deployment.type` is `statefulSet`. Per-replica persistent volumes for a statefulSet service. Each replica receives its own instance of every volume. Only valid when `deployment.type` is `statefulSet`. {object}
      - `id`: (string) (required) Slug identifying this volume within the service. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
-     - `mounts`: [array of] {object}
+     - `mounts`: [array of] (required) Array of mounts, containerMountPaths must be unique {object}
          - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
          - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
-     - `spec`: {object}
+     - `spec`: {object} (required) Per-replica volume storage schema
        - `accessMode`: (string) Access mode of a per-replica volume. Always `ReadWriteOnce`. (enum: ReadWriteOnce)
-       - `storageClassName`: (string) The type of the storage.
+       - `storageClassName`: (string) The storage class of the volume. Defaults to `nvme`. Available storage classes depend on the region.
        - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
 - `ports`: [array of] {object}
    - `name`: (string) (required) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8)
@@ -83,101 +87,101 @@ Required permission: Project > Services > General > Create
    - `public`: (boolean) If true, the port will be exposed publicly.
    - `vpcAccessible`: (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer.
    - `security`: {object}
-     - `credentials`: [array of] {object}
+     - `credentials`: [array of] An array of credentials to access the service. {object}
          - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
          - `password`: (string) (required) The password to access the service with this username.
          - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-     - `ip`: [array of] {object}
-         - `addresses`: [array of] (string) An IP address used by this rule
+     - `ip`: [array of] An array of IP address policies. {object}
+         - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
          - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-     - `policies`: [array of] {object}
-         - `addresses`: [array of] (string) An IP address used by this rule
+     - `policies`: [array of] An array of IP address policies. {object}
+         - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
          - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-     - `sso`: {object}
+     - `sso`: {object} Configure port authentication via SSO
        - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-       - `directoryGroupIds`: [array of] (string)
+       - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
        - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
        - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
        - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
        - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
        - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-     - `headers`: [array of] (multiple options) {object}
+     - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
            - `regexMode`: (boolean)
            - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-           - `value`: (string) (required) | {object}
+           - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
            - `regexMode`: (boolean)
-           - `name`: (string) (required)
+           - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
            - `value`: (string) (required)
      - `verificationMode`: (string) Mode used to verify multiple security features like ip policies and SSO authentication (enum: or, and)
      - `securePathConfiguration`: {object}
        - `enabled`: (boolean) Enable security policies on a path-level style
        - `skipSecurityPoliciesForInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip all security policies
        - `rules`: [array of] {object}
-           - `paths`: [array of] (multiple options) {object}
+           - `paths`: [array of] (required) Array of path objects which represent the paths and their priority for which the security policies will be enforced (multiple options) Data about how the path should be handled. {object} Route when the path starts with the provided prefix.
                  - `path`: (string) (required) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
                  - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: prefix)
-                 - `priority`: (integer) (required) | {object}
+                 - `priority`: (integer) (required) | {object} Route when the path is an exact match.
                  - `path`: (string) (required) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
                  - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: exact)
-                 - `priority`: (integer) (required) | {object}
+                 - `priority`: (integer) (required) | {object} Route when the path matches the provided regex.
                  - `path`: (string) (required)
                  - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: regex)
                  - `priority`: (integer) (required)
            - `accessMode`: (string) (required) Specify the way the path rule will behave when processing policies. This enables an allow-list/deny-list approach for access control on each path (enum: protected, unprotected)
            - `securityPolicies`: {object}
              - `orPolicies`: {object}
-               - `credentials`: [array of] {object}
+               - `credentials`: [array of] An array of credentials to access the service. {object}
                    - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
                    - `password`: (string) (required) The password to access the service with this username.
                    - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-               - `ip`: [array of] {object}
-                   - `addresses`: [array of] (string) An IP address used by this rule
+               - `ip`: [array of] An array of IP address policies. {object}
+                   - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                    - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-               - `policies`: [array of] {object}
-                   - `addresses`: [array of] (string) An IP address used by this rule
+               - `policies`: [array of] An array of IP address policies. {object}
+                   - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                    - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-               - `sso`: {object}
+               - `sso`: {object} Configure port authentication via SSO
                  - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-                 - `directoryGroupIds`: [array of] (string)
+                 - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
                  - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                  - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                  - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
                  - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                  - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-               - `headers`: [array of] (multiple options) {object}
+               - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
                      - `regexMode`: (boolean)
                      - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-                     - `value`: (string) (required) | {object}
+                     - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
                      - `regexMode`: (boolean)
-                     - `name`: (string) (required)
+                     - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
                      - `value`: (string) (required)
              - `requiredPolicies`: {object}
-               - `credentials`: [array of] {object}
+               - `credentials`: [array of] An array of credentials to access the service. {object}
                    - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
                    - `password`: (string) (required) The password to access the service with this username.
                    - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-               - `ip`: [array of] {object}
-                   - `addresses`: [array of] (string) An IP address used by this rule
+               - `ip`: [array of] An array of IP address policies. {object}
+                   - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                    - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-               - `policies`: [array of] {object}
-                   - `addresses`: [array of] (string) An IP address used by this rule
+               - `policies`: [array of] An array of IP address policies. {object}
+                   - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                    - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-               - `sso`: {object}
+               - `sso`: {object} Configure port authentication via SSO
                  - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-                 - `directoryGroupIds`: [array of] (string)
+                 - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
                  - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                  - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                  - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
                  - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                  - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-               - `headers`: [array of] (multiple options) {object}
+               - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
                      - `regexMode`: (boolean)
                      - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-                     - `value`: (string) (required) | {object}
+                     - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
                      - `regexMode`: (boolean)
-                     - `name`: (string) (required)
+                     - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
                      - `value`: (string) (required)
-   - `domains`: [array of] (string) A domain to redirect to this port.
+   - `domains`: [array of] An array of domains to redirect to this port. Each domain must first be verified and registered to your account. (string) A domain to redirect to this port.
    - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
    - `advancedOptions`: {object}
      - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
@@ -194,36 +198,36 @@ Required permission: Project > Services > General > Create
 - `bundleData`: {object}
   - `bundleUrl`: (string) (required) URL of the bundle to be built
   - `branch`: (string) (required) Branch identifier for the bundle. (pattern: ^[A-Za-z0-9-]+$)
-- `buildSettings`: (multiple options) {object}
+- `buildSettings`: (multiple options) (required) Build engine {object} Build from a Dockerfile
    - `storage`: {object}
      - `ephemeralStorage`: {object}
        - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-   - `dockerfile`: {object}
+   - `dockerfile`: {object} (required)
      - `useCache`: (boolean) DEPRECATED: This field will be removed in the near future and currently has no effect.
      - `buildEngine`: (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko)
      - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
      - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
-     - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+     - `dockerfileContents`: (string) (nullable) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
      - `scan`: {object}
        - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
      - `buildkit`: {object}
        - `useCache`: (boolean) Use persistent storage to cache build layers.
-       - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
+       - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object} Build from a Buildpack
    - `storage`: {object}
      - `ephemeralStorage`: {object}
        - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-   - `buildpack`: {object}
-     - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
-     - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
+   - `buildpack`: {object} (required)
+     - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_26`. (enum: HEROKU_26, HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_RESOLUTE, PAKETO_NOBLE, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
+     - `buildpackLocators`: [array of] Array of custom Buildpacks to use. (string) Url or registry identifier of custom Buildpack.
      - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
      - `useCache`: (boolean) Should build dependencies be cached?
      - `scan`: {object}
        - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
 - `buildConfiguration`: {object}
-  - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+  - `pathIgnoreRules`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
   - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
   - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
-  - `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+  - `ciIgnoreFlags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
   - `ignoreEmptyCommits`: (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules.
   - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
   - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
@@ -233,12 +237,12 @@ Required permission: Project > Services > General > Create
   - `storage`: {object}
     - `ephemeralStorage`: {object}
       - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-- `runtimeEnvironment`: {object}
-- `runtimeFiles`: {object}
-- `buildArguments`: {object}
-- `buildFiles`: {object}
-- `dockerSecretMounts`: {object}
-- `healthChecks`: [array of] {object}
+- `runtimeEnvironment`: {object} An object containing the runtime environment to set for the service. Keys may only contain letters, numbers, hyphens, forward slashes and dots.
+- `runtimeFiles`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+- `buildArguments`: {object} An object containing the build arguments to set for the service. Keys may only contain letters, numbers, hyphens, forward slashes and dots.
+- `buildFiles`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+- `dockerSecretMounts`: {object} Docker secret mount contents as JSON object, encrypted at rest. Must be a valid Docker secret mount identifier
+- `healthChecks`: [array of] An array of health checks. {object} A health check object.
    - `protocol`: (string) (required) The protocol to access the health check with. (enum: HTTP, CMD, TCP)
    - `type`: (string) (required) The type of health check. (enum: livenessProbe, readinessProbe, startupProbe)
    - `path`: (string) The path of the health check endpoint. Required when protocol is HTTP. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]*((\?([a-zA-Z0-9-._]+(=[a-zA-Z0-9-._]+)?)*)(&([a-zA-Z0-9-._]+(=[a-zA-Z0-9-._]+)?)*)*)?$)
@@ -253,11 +257,11 @@ Required permission: Project > Services > General > Create
   - `mode`: (string) (required) (enum: leastConnection, consistentHash, roundRobin, consistentReplicaRouting)
   - `consistentHash`: {object}
     - `mode`: (string) (required) (enum: ip, customHeader)
-    - `header`: (string)
+    - `header`: (string) (nullable)
   - `consistentReplicaRouting`: {object}
     - `mode`: (string) (required) (enum: path, header)
-- `autoscaling`: {object}
-  - `horizontal`: {object}
+- `autoscaling`: {object} Describes all autoscaling configurations
+  - `horizontal`: {object} Describes the horizontal autoscaling configuration
     - `enabled`: (boolean) (required) Whether horizontal autoscaling should be enabled
     - `minReplicas`: (number) (required) Minimum number of replicas which should be running at any time (format: float)
     - `maxReplicas`: (number) (required) Maximum number of replicas which can be running at any time (format: float)
@@ -274,7 +278,7 @@ Required permission: Project > Services > General > Create
       - `enabled`: (boolean) (required) Whether to enable handling for custom metrics in the autoscaling configuration
       - `exposedMetricsPath`: (string) (required) Path on which the metrics will be exposed by the service.. (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
       - `exposedMetricsPort`: (integer) (required) Port on which the metrics will be exposed by the service.
-      - `metrics`: [array of] {object}
+      - `metrics`: [array of] (required) Array of custom metrics exposed by the service that will be used by the autoscaling configuration. At least one metric is required. {object}
           - `metricName`: (string) (required) Name of the custom metric (pattern: [a-zA-Z_:][a-zA-Z0-9_:]*$)
           - `metricType`: (string) (required) Type of metric exposed, this will affect how it'll be queried by the autoscaler component: Gauge will be used as is, Counter will be used with rate() (enum: gauge, counter)
           - `thresholdValue`: (number) (required) Threshold value on which the workload will be scaled. Represents the average value across all running pods. (format: float)
@@ -284,13 +288,13 @@ Required permission: Project > Services > General > Create
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `name`: (string) (required) The name of the service. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54)
   - `description`: (string) A description of the service. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
   - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-  - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-  - `billing`: {object}
+  - `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `billing`: {object} (required)
     - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `buildPlan`: (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `gpu`: {object}
@@ -307,105 +311,105 @@ Required permission: Project > Services > General > Create
      - `public`: (boolean) If true, the port will be exposed publicly.
      - `vpcAccessible`: (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer.
      - `security`: {object}
-       - `credentials`: [array of] {object}
+       - `credentials`: [array of] An array of credentials to access the service. {object}
            - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
            - `password`: (string) (required) The password to access the service with this username.
            - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-       - `ip`: [array of] {object}
-           - `addresses`: [array of] (string) An IP address used by this rule
+       - `ip`: [array of] An array of IP address policies. {object}
+           - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
            - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-       - `policies`: [array of] {object}
-           - `addresses`: [array of] (string) An IP address used by this rule
+       - `policies`: [array of] An array of IP address policies. {object}
+           - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
            - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-       - `sso`: {object}
+       - `sso`: {object} Configure port authentication via SSO
          - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-         - `directoryGroupIds`: [array of] (string)
+         - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
          - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
          - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
          - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
          - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
          - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-       - `headers`: [array of] (multiple options) {object}
+       - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
              - `regexMode`: (boolean)
              - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-             - `value`: (string) (required) | {object}
+             - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
              - `regexMode`: (boolean)
-             - `name`: (string) (required)
+             - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
              - `value`: (string) (required)
        - `verificationMode`: (string) Mode used to verify multiple security features like ip policies and SSO authentication (enum: or, and)
        - `securePathConfiguration`: {object}
          - `enabled`: (boolean) Enable security policies on a path-level style
          - `skipSecurityPoliciesForInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip all security policies
          - `rules`: [array of] {object}
-             - `paths`: [array of] (multiple options) {object}
+             - `paths`: [array of] (required) Array of path objects which represent the paths and their priority for which the security policies will be enforced (multiple options) Data about how the path should be handled. {object} Route when the path starts with the provided prefix.
                    - `path`: (string) (required) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
                    - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: prefix)
-                   - `priority`: (integer) (required) | {object}
+                   - `priority`: (integer) (required) | {object} Route when the path is an exact match.
                    - `path`: (string) (required) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
                    - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: exact)
-                   - `priority`: (integer) (required) | {object}
+                   - `priority`: (integer) (required) | {object} Route when the path matches the provided regex.
                    - `path`: (string) (required)
                    - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: regex)
                    - `priority`: (integer) (required)
              - `accessMode`: (string) (required) Specify the way the path rule will behave when processing policies. This enables an allow-list/deny-list approach for access control on each path (enum: protected, unprotected)
              - `securityPolicies`: {object}
                - `orPolicies`: {object}
-                 - `credentials`: [array of] {object}
+                 - `credentials`: [array of] An array of credentials to access the service. {object}
                      - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
                      - `password`: (string) (required) The password to access the service with this username.
                      - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-                 - `ip`: [array of] {object}
-                     - `addresses`: [array of] (string) An IP address used by this rule
+                 - `ip`: [array of] An array of IP address policies. {object}
+                     - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-                 - `policies`: [array of] {object}
-                     - `addresses`: [array of] (string) An IP address used by this rule
+                 - `policies`: [array of] An array of IP address policies. {object}
+                     - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-                 - `sso`: {object}
+                 - `sso`: {object} Configure port authentication via SSO
                    - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-                   - `directoryGroupIds`: [array of] (string)
+                   - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
                    - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                    - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                    - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
                    - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                    - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-                 - `headers`: [array of] (multiple options) {object}
+                 - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
                        - `regexMode`: (boolean)
                        - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-                       - `value`: (string) (required) | {object}
+                       - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
                        - `regexMode`: (boolean)
-                       - `name`: (string) (required)
+                       - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
                        - `value`: (string) (required)
                - `requiredPolicies`: {object}
-                 - `credentials`: [array of] {object}
+                 - `credentials`: [array of] An array of credentials to access the service. {object}
                      - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
                      - `password`: (string) (required) The password to access the service with this username.
                      - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-                 - `ip`: [array of] {object}
-                     - `addresses`: [array of] (string) An IP address used by this rule
+                 - `ip`: [array of] An array of IP address policies. {object}
+                     - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-                 - `policies`: [array of] {object}
-                     - `addresses`: [array of] (string) An IP address used by this rule
+                 - `policies`: [array of] An array of IP address policies. {object}
+                     - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                      - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-                 - `sso`: {object}
+                 - `sso`: {object} Configure port authentication via SSO
                    - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-                   - `directoryGroupIds`: [array of] (string)
+                   - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
                    - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                    - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                    - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
                    - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                    - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-                 - `headers`: [array of] (multiple options) {object}
+                 - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
                        - `regexMode`: (boolean)
                        - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-                       - `value`: (string) (required) | {object}
+                       - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
                        - `regexMode`: (boolean)
-                       - `name`: (string) (required)
+                       - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
                        - `value`: (string) (required)
-     - `domains`: [array of] (string) A domain to redirect to this port.
+     - `domains`: [array of] An array of domains to redirect to this port. Each domain must first be verified and registered to your account. (string) A domain to redirect to this port.
      - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
      - `advancedOptions`: {object}
        - `enableTlsPassthrough`: (boolean) Whether this port should use pass through mode for TLS
-     - `protocol`: (multiple options) (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
+     - `protocol`: (multiple options) (required) The protocol to use for the port. (string) (enum: HTTP, HTTP/2) | (multiple options) (string) (enum: HTTP, HTTP/2) | (string) (enum: HTTP, HTTP/2, TCP, UDP)
   - `disabledCI`: (boolean) Whether CI (continuous integration) should be disabled.
   - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
   - `vcsData`: {object}
@@ -418,36 +422,36 @@ Required permission: Project > Services > General > Create
   - `bundleData`: {object}
     - `bundleUrl`: (string) (required) URL of the bundle to be built
     - `branch`: (string) (required) Branch identifier for the bundle. (pattern: ^[A-Za-z0-9-]+$)
-  - `buildSettings`: (multiple options) {object}
+  - `buildSettings`: (multiple options) (required) Build engine {object} Build from a Dockerfile
      - `storage`: {object}
        - `ephemeralStorage`: {object}
          - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-     - `dockerfile`: {object}
+     - `dockerfile`: {object} (required)
        - `useCache`: (boolean) DEPRECATED: This field will be removed in the near future and currently has no effect.
        - `buildEngine`: (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko)
        - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
        - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
-       - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+       - `dockerfileContents`: (string) (nullable) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
        - `scan`: {object}
          - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
        - `buildkit`: {object}
          - `useCache`: (boolean) Use persistent storage to cache build layers.
-         - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
+         - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object} Build from a Buildpack
      - `storage`: {object}
        - `ephemeralStorage`: {object}
          - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-     - `buildpack`: {object}
-       - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
-       - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
+     - `buildpack`: {object} (required)
+       - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_26`. (enum: HEROKU_26, HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_RESOLUTE, PAKETO_NOBLE, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
+       - `buildpackLocators`: [array of] Array of custom Buildpacks to use. (string) Url or registry identifier of custom Buildpack.
        - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
        - `useCache`: (boolean) Should build dependencies be cached?
        - `scan`: {object}
          - `enabled`: (boolean) (required) Scan the built image before uploading it to the registry.
   - `buildConfiguration`: {object}
-    - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+    - `pathIgnoreRules`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
     - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
     - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
-    - `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+    - `ciIgnoreFlags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
     - `ignoreEmptyCommits`: (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules.
     - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
     - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
@@ -457,12 +461,12 @@ Required permission: Project > Services > General > Create
     - `storage`: {object}
       - `ephemeralStorage`: {object}
         - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-  - `runtimeEnvironment`: {object}
-  - `runtimeFiles`: {object}
-  - `buildArguments`: {object}
-  - `buildFiles`: {object}
-  - `dockerSecretMounts`: {object}
-  - `healthChecks`: [array of] {object}
+  - `runtimeEnvironment`: {object} An object containing the runtime environment to set for the service. Keys may only contain letters, numbers, hyphens, forward slashes and dots.
+  - `runtimeFiles`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+  - `buildArguments`: {object} An object containing the build arguments to set for the service. Keys may only contain letters, numbers, hyphens, forward slashes and dots.
+  - `buildFiles`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+  - `dockerSecretMounts`: {object} Docker secret mount contents as JSON object, encrypted at rest. Must be a valid Docker secret mount identifier
+  - `healthChecks`: [array of] An array of health checks. {object} A health check object.
      - `protocol`: (string) (required) The protocol to access the health check with. (enum: HTTP, CMD, TCP)
      - `type`: (string) (required) The type of health check. (enum: livenessProbe, readinessProbe, startupProbe)
      - `path`: (string) The path of the health check endpoint. Required when protocol is HTTP. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]*((\?([a-zA-Z0-9-._]+(=[a-zA-Z0-9-._]+)?)*)(&([a-zA-Z0-9-._]+(=[a-zA-Z0-9-._]+)?)*)*)?$)
@@ -477,11 +481,11 @@ Required permission: Project > Services > General > Create
     - `mode`: (string) (required) (enum: leastConnection, consistentHash, roundRobin, consistentReplicaRouting)
     - `consistentHash`: {object}
       - `mode`: (string) (required) (enum: ip, customHeader)
-      - `header`: (string)
+      - `header`: (string) (nullable)
     - `consistentReplicaRouting`: {object}
       - `mode`: (string) (required) (enum: path, header)
-  - `autoscaling`: {object}
-    - `horizontal`: {object}
+  - `autoscaling`: {object} Describes all autoscaling configurations
+    - `horizontal`: {object} Describes the horizontal autoscaling configuration
       - `enabled`: (boolean) (required) Whether horizontal autoscaling should be enabled
       - `minReplicas`: (number) (required) Minimum number of replicas which should be running at any time (format: float)
       - `maxReplicas`: (number) (required) Maximum number of replicas which can be running at any time (format: float)
@@ -498,7 +502,7 @@ Required permission: Project > Services > General > Create
         - `enabled`: (boolean) (required) Whether to enable handling for custom metrics in the autoscaling configuration
         - `exposedMetricsPath`: (string) (required) Path on which the metrics will be exposed by the service.. (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
         - `exposedMetricsPort`: (integer) (required) Port on which the metrics will be exposed by the service.
-        - `metrics`: [array of] {object}
+        - `metrics`: [array of] (required) Array of custom metrics exposed by the service that will be used by the autoscaling configuration. At least one metric is required. {object}
             - `metricName`: (string) (required) Name of the custom metric (pattern: [a-zA-Z_:][a-zA-Z0-9_:]*$)
             - `metricType`: (string) (required) Type of metric exposed, this will affect how it'll be queried by the autoscaler component: Gauge will be used as is, Counter will be used with rate() (enum: gauge, counter)
             - `thresholdValue`: (number) (required) Threshold value on which the workload will be scaled. Represents the average value across all running pods. (format: float)
@@ -506,15 +510,15 @@ Required permission: Project > Services > General > Create
     - `volumesToAttach`: [array of] (string) (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
     - `expiryTime`: (integer) Number of seconds from creation after which the service should automatically expire. Once reached, the service is paused and scheduled for deletion. Must be between 300 (5 minutes) and 604800 (7 days).
   - `serviceType`: (string) (required) Type of the service (combined, build or deployment) (enum: combined)
-  - `deployment`: {object}
+  - `deployment`: {object} (required)
     - `type`: (string) The way the service should be deployed. Either as a deployment (default), or as a stateful set. (enum: deployment, statefulSet)
     - `instances`: (integer) (required) The number of instances to run the service on.
-    - `buildpack`: {object}
+    - `buildpack`: {object} Allows for customization of buildpack runtime
       - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
       - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
       - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
       - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
-    - `docker`: {object}
+    - `docker`: {object} Allows for customization of docker runtime
       - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
       - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
       - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
@@ -524,11 +528,11 @@ Required permission: Project > Services > General > Create
       - `ephemeralStorage`: {object}
         - `storageSize`: (integer) Ephemeral storage per container in MB
       - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
-    - `strategy`: {object}
+    - `strategy`: {object} Roll out strategy of the service
       - `type`: (string) Configures the instance roll out strategy of your service. Currently only available via feature flag. (enum: rollout-steady, rollout-balanced, rollout-fast, custom, recreate)
       - `settings`: {object}
-        - `maxSurge`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
-        - `maxUnavailable`: (multiple options) (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
+        - `maxSurge`: (multiple options) (required) Maximum number or percentage of pods that can be created above the desired count. (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
+        - `maxUnavailable`: (multiple options) (required) Maximum number or percentage of pods that can be unavailable during the update. (integer) A non-negative integer. | (string) A percentage string in the range 0% to 100%, e.g. `25%` (pattern: ^\d+%$)
     - `zonalRedundancy`: {object}
       - `type`: (string) Defines scheduling behaviour across different zones within the same region. (enum: disabled, preferred, required)
       - `minZones`: (integer) Defines how many zones are required and will prevent containers from additional scheduling into existing zones. (Only relevant if type is set to "required")
@@ -539,39 +543,43 @@ Required permission: Project > Services > General > Create
         - `gpuCount`: (integer) The number of GPUs to allocate.
         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
     - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
-    - `gradualRolloutStrategyId`: (multiple options) (undefined) The id of the strategy to be attached to service.
-    - `ssh`: {object}
+    - `podDisruptionBudget`: (multiple options) Controls eviction-aware voluntary-disruption protection for all runtime pods owned by the service or job. Available for account-enabled BYOC projects running Kubernetes 1.31 or newer. Service budgets aggregate stable and canary pods without traffic weighting; job budgets aggregate all active runs. Values at or above the healthy pod count can prevent node drains, node-pool upgrades, and autoscaler consolidation. Pods selected by multiple budgets cannot be evicted. Omitting this object from a full PUT disables it. {object}
+        - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+        - `minAvailable`: (integer) (required) The minimum number of healthy runtime pods that must remain available during a voluntary disruption. Zero provides no eviction protection. | {object}
+        - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+    - `gradualRolloutStrategyId`: (multiple options) (nullable) The id of the strategy to be attached to service. (pattern: ^[A-Za-z0-9-]+$) The id of the strategy to be attached to service.
+    - `ssh`: {object} Controls related to SSH access within the resource.
       - `enabled`: (boolean) (required) Enables SSH access if the resource matches an SSH identity selector.
-    - `metadata`: {object}
-      - `labels`: {object}
-      - `annotations`: {object}
-    - `volumes`: [array of] {object}
+    - `metadata`: {object} Allow setting custom labels and annotations for workloads.
+      - `labels`: {object} Specify custom labels for the workload.
+      - `annotations`: {object} Specify custom annotations for the workload as string or object.
+    - `volumes`: (multiple options) Per-replica persistent volumes for a statefulSet service. Each replica receives its own instance of every volume. Only valid when `deployment.type` is `statefulSet`. Per-replica persistent volumes for a statefulSet service. Each replica receives its own instance of every volume. Only valid when `deployment.type` is `statefulSet`. | (multiple options) Per-replica persistent volumes for a statefulSet service. Each replica receives its own instance of every volume. Only valid when `deployment.type` is `statefulSet`. Per-replica persistent volumes for a statefulSet service. Each replica receives its own instance of every volume. Only valid when `deployment.type` is `statefulSet`. {object}
         - `id`: (string) (required) Slug identifying this volume within the service. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
-        - `mounts`: [array of] {object}
+        - `mounts`: [array of] (required) Array of mounts, containerMountPaths must be unique {object}
             - `volumeMountPath`: (string) Optionally specify the path inside this volume that should be mounted (pattern: ^((?!\.\.).)*$)
             - `containerMountPath`: (string) (required) Specify the path into which the volume should be mounted (pattern: ^((?!:).)*$)
-        - `spec`: {object}
+        - `spec`: {object} (required) Per-replica volume storage schema
           - `accessMode`: (string) Access mode of a per-replica volume. Always `ReadWriteOnce`. (enum: ReadWriteOnce)
-          - `storageClassName`: (string) The type of the storage.
+          - `storageClassName`: (string) The storage class of the volume. Defaults to `nvme`. Available storage classes depend on the region.
           - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
     - `imageUrl`: (string) Image registry url of the deployed image.
   - `id`: (string) (required) Identifier for the service
   - `appId`: (string) (required) Full identifier used for service deployment
-  - `cluster`: {object}
+  - `cluster`: {object} (required) Cluster information
     - `id`: (string) (required) The id of the cluster associated with this project.
     - `name`: (string) (required) The name of the cluster associated with this project.
     - `namespace`: (string) Namespace this resource is located within on the cluster.
-    - `loadBalancers`: [array of] (string)
+    - `loadBalancers`: [array of] Load balancer DNS for the cluster. (string)
   - `createdAt`: (string) time of creation (format: date-time)
   - `updatedAt`: (string) time of update (format: date-time)
   - `expiryTime`: (string) Absolute time at which the service is scheduled to automatically expire. Resolved from createOptions.expiryTime on creation; cleared once the service has expired. (format: date-time)
   - `expiredAt`: (string) Time at which the service expired and was paused. (format: date-time)
   - `scheduledDeletion`: (string) Time at which the expired service is scheduled for deletion. (format: date-time)
-  - `status`: {object}
-    - `build`: {object}
+  - `status`: {object} (required) Details about the current service status.
+    - `build`: {object} Details about the status of the most recent build.
       - `status`: (string) (required) The current status of the build. (enum: QUEUED, PENDING, UNSCHEDULABLE, STARTING, CLONING, BUILDING, UPLOADING, ABORTED, FAILURE, SUBMISSION_FAILURE, SUCCESS, CRASHED, IN_PROGRESS)
       - `lastTransitionTime`: (string) The timestamp of when the build reached this status. (format: date-time)
-    - `deployment`: {object}
+    - `deployment`: {object} Details about the current deployment status.
       - `status`: (string) (required) The current status of the deployment. (enum: PENDING, IN_PROGRESS, COMPLETED, FAILED)
       - `reason`: (string) (required) The reason the current deployment was started. (enum: SCALING, DEPLOYING)
       - `lastTransitionTime`: (string) The timestamp of when the deployment reached this status. (format: date-time)
@@ -591,7 +599,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
   --data '{"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id"},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"buildSource":"git","vcsData":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"bundleData":{"bundleUrl":"https://example.com/archive.tar","branch":"main"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}},"createOptions":{"expiryTime":86400}}' \
-  https://api.northflank.com/v1/projects/{projectId}/services/combined
+  "https://api.northflank.com/v1/projects/{projectId}/services/combined"
 ```
 
 ```javascript
@@ -870,10 +878,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/combined"
 
-payload = {"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id"},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"buildSource":"git","vcsData":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"bundleData":{"bundleUrl":"https://example.com/archive.tar","branch":"main"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}},"createOptions":{"expiryTime":86400}}
+payload = "{\"name\":\"Example Service\",\"description\":\"A service description\",\"billing\":{\"deploymentPlan\":\"nf-compute-20\",\"buildPlan\":\"nf-compute-200-8\"},\"deployment\":{\"instances\":1,\"docker\":{\"configType\":\"default\"},\"storage\":{\"ephemeralStorage\":{\"storageSize\":1024}},\"gradualRolloutStrategyId\":\"strategy-id\"},\"ports\":[{\"name\":\"p01\",\"internalPort\":8080,\"public\":true,\"vpcAccessible\":false,\"security\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}],\"securePathConfiguration\":{\"rules\":[{\"paths\":[{\"routingMode\":\"prefix\",\"priority\":80,\"path\":\"/path\"}],\"accessMode\":\"protected\",\"securityPolicies\":{\"orPolicies\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}]},\"requiredPolicies\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}]}}}]}},\"domains\":[\"app.example.com\"],\"protocol\":\"HTTP\"}],\"buildSource\":\"git\",\"vcsData\":{\"projectUrl\":\"https://github.com/example/project\",\"projectType\":\"github\",\"accountLogin\":\"github-user\",\"projectBranch\":\"master\"},\"bundleData\":{\"bundleUrl\":\"https://example.com/archive.tar\",\"branch\":\"main\"},\"buildSettings\":{\"storage\":{\"ephemeralStorage\":{\"storageSize\":16384}},\"dockerfile\":{\"buildEngine\":\"buildkit\",\"dockerFilePath\":\"/Dockerfile\",\"dockerWorkDir\":\"/\",\"buildkit\":{\"useCache\":true,\"cacheStorageSize\":32768}}},\"buildConfiguration\":{\"pathIgnoreRules\":[\"README.md\"],\"isAllowList\":false,\"ciIgnoreFlags\":[\"[skip ci]\",\"[ci skip]\",\"[no ci]\",\"[skip nf]\",\"[nf skip]\",\"[northflank skip]\",\"[skip northflank]\"],\"ignoreEmptyCommits\":false,\"dockerCredentials\":[\"example-docker-credential\"],\"storage\":{\"ephemeralStorage\":{\"storageSize\":16384}}},\"runtimeEnvironment\":{\"VARIABLE_1\":\"abcdef\",\"VARIABLE_2\":\"12345\"},\"runtimeFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"buildArguments\":{\"ARGUMENT_1\":\"abcdef\",\"ARGUMENT_2\":\"12345\"},\"buildFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"dockerSecretMounts\":{\"example-secret-mount_1\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"healthChecks\":[{\"protocol\":\"HTTP\",\"type\":\"readinessProbe\",\"path\":\"/health-check\",\"port\":8080,\"initialDelaySeconds\":10,\"periodSeconds\":60,\"timeoutSeconds\":1,\"failureThreshold\":3,\"successThreshold\":1}],\"autoscaling\":{\"horizontal\":{\"enabled\":true,\"minReplicas\":1,\"maxReplicas\":3,\"userMetrics\":{\"enabled\":true,\"exposedMetricsPath\":\"/metrics\",\"exposedMetricsPort\":8080,\"metrics\":[{\"metricName\":\"example-metric\",\"metricType\":\"gauge\",\"thresholdValue\":2}]}}},\"createOptions\":{\"expiryTime\":86400}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PUT", url, headers = headers, json = payload)
+response = requests.request("PUT", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -891,7 +899,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/combined"
 
-  var jsonStr = []byte(`{"name":"Example Service","description":"A service description","billing":{"deploymentPlan":"nf-compute-20","buildPlan":"nf-compute-200-8"},"deployment":{"instances":1,"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"gradualRolloutStrategyId":"strategy-id"},"ports":[{"name":"p01","internalPort":8080,"public":true,"vpcAccessible":false,"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}},"domains":["app.example.com"],"protocol":"HTTP"}],"buildSource":"git","vcsData":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"},"bundleData":{"bundleUrl":"https://example.com/archive.tar","branch":"main"},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"buildConfiguration":{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"autoscaling":{"horizontal":{"enabled":true,"minReplicas":1,"maxReplicas":3,"userMetrics":{"enabled":true,"exposedMetricsPath":"/metrics","exposedMetricsPort":8080,"metrics":[{"metricName":"example-metric","metricType":"gauge","thresholdValue":2}]}}},"createOptions":{"expiryTime":86400}}`)
+  var jsonStr = []byte("{\"name\":\"Example Service\",\"description\":\"A service description\",\"billing\":{\"deploymentPlan\":\"nf-compute-20\",\"buildPlan\":\"nf-compute-200-8\"},\"deployment\":{\"instances\":1,\"docker\":{\"configType\":\"default\"},\"storage\":{\"ephemeralStorage\":{\"storageSize\":1024}},\"gradualRolloutStrategyId\":\"strategy-id\"},\"ports\":[{\"name\":\"p01\",\"internalPort\":8080,\"public\":true,\"vpcAccessible\":false,\"security\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}],\"securePathConfiguration\":{\"rules\":[{\"paths\":[{\"routingMode\":\"prefix\",\"priority\":80,\"path\":\"/path\"}],\"accessMode\":\"protected\",\"securityPolicies\":{\"orPolicies\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}]},\"requiredPolicies\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}]}}}]}},\"domains\":[\"app.example.com\"],\"protocol\":\"HTTP\"}],\"buildSource\":\"git\",\"vcsData\":{\"projectUrl\":\"https://github.com/example/project\",\"projectType\":\"github\",\"accountLogin\":\"github-user\",\"projectBranch\":\"master\"},\"bundleData\":{\"bundleUrl\":\"https://example.com/archive.tar\",\"branch\":\"main\"},\"buildSettings\":{\"storage\":{\"ephemeralStorage\":{\"storageSize\":16384}},\"dockerfile\":{\"buildEngine\":\"buildkit\",\"dockerFilePath\":\"/Dockerfile\",\"dockerWorkDir\":\"/\",\"buildkit\":{\"useCache\":true,\"cacheStorageSize\":32768}}},\"buildConfiguration\":{\"pathIgnoreRules\":[\"README.md\"],\"isAllowList\":false,\"ciIgnoreFlags\":[\"[skip ci]\",\"[ci skip]\",\"[no ci]\",\"[skip nf]\",\"[nf skip]\",\"[northflank skip]\",\"[skip northflank]\"],\"ignoreEmptyCommits\":false,\"dockerCredentials\":[\"example-docker-credential\"],\"storage\":{\"ephemeralStorage\":{\"storageSize\":16384}}},\"runtimeEnvironment\":{\"VARIABLE_1\":\"abcdef\",\"VARIABLE_2\":\"12345\"},\"runtimeFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"buildArguments\":{\"ARGUMENT_1\":\"abcdef\",\"ARGUMENT_2\":\"12345\"},\"buildFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"dockerSecretMounts\":{\"example-secret-mount_1\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"healthChecks\":[{\"protocol\":\"HTTP\",\"type\":\"readinessProbe\",\"path\":\"/health-check\",\"port\":8080,\"initialDelaySeconds\":10,\"periodSeconds\":60,\"timeoutSeconds\":1,\"failureThreshold\":3,\"successThreshold\":1}],\"autoscaling\":{\"horizontal\":{\"enabled\":true,\"minReplicas\":1,\"maxReplicas\":3,\"userMetrics\":{\"enabled\":true,\"exposedMetricsPath\":\"/metrics\",\"exposedMetricsPort\":8080,\"metrics\":[{\"metricName\":\"example-metric\",\"metricType\":\"gauge\",\"thresholdValue\":2}]}}},\"createOptions\":{\"expiryTime\":86400}}")
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -966,7 +974,8 @@ func main() {
                 "paths": [
                   {
                     "routingMode": "prefix",
-                    "priority": 80
+                    "priority": 80,
+                    "path": "/path"
                   }
                 ],
                 "accessMode": "protected",
@@ -1042,7 +1051,8 @@ func main() {
         },
         "domains": [
           "app.example.com"
-        ]
+        ],
+        "protocol": "HTTP"
       }
     ],
     "buildSource": "git",
@@ -1078,7 +1088,13 @@ func main() {
       ],
       "isAllowList": false,
       "ciIgnoreFlags": [
-        "[skip ci]"
+        "[skip ci]",
+        "[ci skip]",
+        "[no ci]",
+        "[skip nf]",
+        "[nf skip]",
+        "[northflank skip]",
+        "[skip northflank]"
       ],
       "ignoreEmptyCommits": false,
       "dockerCredentials": [
@@ -1162,22 +1178,7 @@ func main() {
           "storageSize": 1024
         }
       },
-      "gradualRolloutStrategyId": "strategy-id",
-      "volumes": [
-        {
-          "id": "data",
-          "mounts": [
-            {
-              "volumeMountPath": "",
-              "containerMountPath": "/container"
-            }
-          ],
-          "spec": {
-            "storageClassName": "nvme",
-            "storageSize": 6144
-          }
-        }
-      ]
+      "gradualRolloutStrategyId": "strategy-id"
     },
     "id": "example-service",
     "appId": "/example-user/default-project/example-service",
@@ -1539,7 +1540,8 @@ Options:
               "paths": [
                 {
                   "routingMode": "prefix",
-                  "priority": 80
+                  "priority": 80,
+                  "path": "/path"
                 }
               ],
               "accessMode": "protected",
@@ -1615,7 +1617,8 @@ Options:
       },
       "domains": [
         "app.example.com"
-      ]
+      ],
+      "protocol": "HTTP"
     }
   ],
   "buildSource": "git",
@@ -1651,7 +1654,13 @@ Options:
     ],
     "isAllowList": false,
     "ciIgnoreFlags": [
-      "[skip ci]"
+      "[skip ci]",
+      "[ci skip]",
+      "[no ci]",
+      "[skip nf]",
+      "[nf skip]",
+      "[northflank skip]",
+      "[skip northflank]"
     ],
     "ignoreEmptyCommits": false,
     "dockerCredentials": [
@@ -1735,22 +1744,7 @@ Options:
         "storageSize": 1024
       }
     },
-    "gradualRolloutStrategyId": "strategy-id",
-    "volumes": [
-      {
-        "id": "data",
-        "mounts": [
-          {
-            "volumeMountPath": "",
-            "containerMountPath": "/container"
-          }
-        ],
-        "spec": {
-          "storageClassName": "nvme",
-          "storageSize": 6144
-        }
-      }
-    ]
+    "gradualRolloutStrategyId": "strategy-id"
   },
   "id": "example-service",
   "appId": "/example-user/default-project/example-service",
@@ -2105,7 +2099,8 @@ await apiClient.put.service.combined({
                 "paths": [
                   {
                     "routingMode": "prefix",
-                    "priority": 80
+                    "priority": 80,
+                    "path": "/path"
                   }
                 ],
                 "accessMode": "protected",
@@ -2181,7 +2176,8 @@ await apiClient.put.service.combined({
         },
         "domains": [
           "app.example.com"
-        ]
+        ],
+        "protocol": "HTTP"
       }
     ],
     "buildSource": "git",
@@ -2217,7 +2213,13 @@ await apiClient.put.service.combined({
       ],
       "isAllowList": false,
       "ciIgnoreFlags": [
-        "[skip ci]"
+        "[skip ci]",
+        "[ci skip]",
+        "[no ci]",
+        "[skip nf]",
+        "[nf skip]",
+        "[northflank skip]",
+        "[skip northflank]"
       ],
       "ignoreEmptyCommits": false,
       "dockerCredentials": [
@@ -2301,22 +2303,7 @@ await apiClient.put.service.combined({
           "storageSize": 1024
         }
       },
-      "gradualRolloutStrategyId": "strategy-id",
-      "volumes": [
-        {
-          "id": "data",
-          "mounts": [
-            {
-              "volumeMountPath": "",
-              "containerMountPath": "/container"
-            }
-          ],
-          "spec": {
-            "storageClassName": "nvme",
-            "storageSize": 6144
-          }
-        }
-      ]
+      "gradualRolloutStrategyId": "strategy-id"
     },
     "id": "example-service",
     "appId": "/example-user/default-project/example-service",

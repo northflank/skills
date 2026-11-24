@@ -13,8 +13,8 @@ Required permission: Account > Git > General > Manage
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) ID of the link session, used to poll for completion.
   - `authorizeUrl`: (string) (required) URL to open in a browser to authorize the version control link. Carries only a one-time link code — never the API token.
 
@@ -33,7 +33,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"vcsService":"github"}' \
-  https://api.northflank.com/v1/integrations/vcs/link-sessions
+  "https://api.northflank.com/v1/integrations/vcs/link-sessions"
 ```
 
 ```javascript
@@ -59,10 +59,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/vcs/link-sessions"
 
-payload = {"vcsService":"github"}
+payload = "{\"vcsService\":\"github\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -80,7 +80,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/vcs/link-sessions"
 
-  var jsonStr = []byte(`{"vcsService":"github"}`)
+  var jsonStr = []byte("{\"vcsService\":\"github\"}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

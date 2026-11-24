@@ -15,14 +15,14 @@ Required permission: Project > Volumes > General > Update
 **Request body:**
 
 {object}
-- `nfObject`: {object}
+- `nfObject`: {object} (required) The object to detach this volume to.
   - `id`: (string) (required) The id of object to detach this volume to. (pattern: ^[A-Za-z0-9-]+$)
   - `type`: (string) (required) The type of the object to detach this volume to. (enum: service, job)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -39,7 +39,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"nfObject":{"id":"example-service","type":"service"}}' \
-  https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}/detach
+  "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}/detach"
 ```
 
 ```javascript
@@ -68,10 +68,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}/detach"
 
-payload = {"nfObject":{"id":"example-service","type":"service"}}
+payload = "{\"nfObject\":{\"id\":\"example-service\",\"type\":\"service\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -89,7 +89,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}/detach"
 
-  var jsonStr = []byte(`{"nfObject":{"id":"example-service","type":"service"}}`)
+  var jsonStr = []byte("{\"nfObject\":{\"id\":\"example-service\",\"type\":\"service\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

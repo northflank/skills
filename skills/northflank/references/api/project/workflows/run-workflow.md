@@ -17,9 +17,793 @@ Required permission: Project > Workflows > Runs > Start
 {object}
 - `name`: (string) The optional name of the workflow run. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
 - `description`: (string) The optional description of the workflow run. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-- `arguments`: {object}
-- `overrides`: {object}
-- `releaseNodeOverrides`: {object}
+- `arguments`: {object} A set of arguments that can be referenced in a template using '${args.argumentName}'.
+- `overrides`: {object} Overrides for specific reference values. This should be an object where each key corresponds to a ref defined in the template. The values of each of these keys should also be an object, where each key value pair provided will overwrite the value for that key in the given ref. For example, the value `{ 'example-ref': { 'branch': 'devel' } }` would set the `branch` field to `devel` for the node with ref `example-ref`.
+- `releaseNodeOverrides`: {object} Overrides for release nodes. This should be an object where each key is the id of a deployment service used in a release node. The value of each of these keys should be also be an object containing the new spec of the release for that deployment service.
+
+**Response body:**
+
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `name`: (string) Optional name of the run.
+  - `description`: (string) Optional description of the run.
+  - `apiVersion`: (string) Template API version.
+  - `spec`: (multiple options) {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Workflow)
+     - `spec`: {object} (required)
+       - `type`: (string) (required) (enum: parallel, sequential)
+       - `steps`: [array of] (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: LoopWorkflow)
+     - `spec`: {object} (required)
+       - `steps`: [array of] (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Approval)
+     - `spec`: {object} (required)
+       - `amount`: (integer)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: [array of] {object}
+           - `user`: (string) (required) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+       - `kind`: (string) (required) (enum: Service)
+       - `spec`: {object} (required)
+         - `type`: (string) (required) (enum: restart)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `serviceId`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+       - `kind`: (string) (required) (enum: Addon)
+       - `spec`: {object} (required)
+         - `type`: (string) (required) (enum: restart)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `addonId`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+       - `kind`: (string) (required) (enum: AddonBackup)
+       - `spec`: {object} (required)
+         - `type`: (string) (required) (enum: restore)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `addonId`: (string)
+         - `backupId`: (string)
+         - `restoreId`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+       - `kind`: (string) (required) (enum: Domain)
+       - `spec`: {object} (required)
+         - `type`: (string) (required) (enum: verify)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `domain`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+       - `kind`: (string) (required) (enum: VCS)
+       - `spec`: {object} (required)
+         - `type`: (string) (required) (enum: createRepoFromSource)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `trackerId`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+       - `kind`: (string) (required) (enum: Service)
+       - `spec`: {object} (required)
+         - `type`: (string) (required) (enum: execute)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+       - `kind`: (string) (required) (enum: Job)
+       - `spec`: {object} (required)
+         - `type`: (string) (required) (enum: execute)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: CustomPlan, Subdomain, SubdomainPath, ResourceTag, BYOCIntegration, RolloutStrategy, BYOCCluster, BYOCRegistry, CustomDockerCredentials, Project, CombinedService, DeploymentService, PreviewDeploymentService, Harness, LLMModelDeployment, CronJob, ManualJob, Job, Addon, SecretGroup, SSHIdentity, Pipeline, Volume, ReleaseRollback, EgressIp, LoadBalancer, NetworkPolicy, WorkflowTemplate, PreviewBlueprint, ReleaseStage)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `id`: (string)
+         - `name`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Domain)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `name`: (string)
+         - `hostname`: (string)
+         - `status`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: BuildService)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `id`: (string)
+         - `name`: (string)
+         - `image`: {object}
+           - `projectId`: (string)
+           - `name`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: ExternalAddon, Condition, ReleaseFlowRollback, Template, Message, LoopData, SecretInheritance, OpenTofu, OpenTofuDestroy, WorkflowRollback, RunTemplate)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: AddonBackup)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `id`: (string)
+         - `name`: (string)
+         - `addonId`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: AddonImport)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `id`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: WorkloadIdentity)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: (multiple options) {object}
+           - `id`: (string)
+           - `name`: (string) | [array of] {object}
+             - `id`: (string)
+             - `name`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Build, BuildSource)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `id`: (string)
+         - `status`: (string)
+         - `nfObjectId`: (string)
+         - `nfObjectType`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: ContainerScan)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: (multiple options) {object}
+           - `id`: (string)
+           - `status`: (string) | [array of] {object}
+             - `id`: (string)
+             - `status`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: JobRun)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `id`: (string)
+         - `jobId`: (string)
+         - `runName`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Release)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `name`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+  - `project`: {object}
+    - `ref`: (string)
+    - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+    - `detailsHidden`: (boolean) (required)
+    - `kind`: (string) (required)
+    - `spec`: {object} (required)
+    - `response`: {object}
+      - `status`: (string)
+      - `startTime`: (number) (format: float)
+      - `endTime`: (number) (format: float)
+      - `duration`: (number) (format: float)
+      - `attempts`: (number) (format: float)
+      - `data`: {object}
+        - `id`: (string)
+        - `name`: (string)
+        - `_id`: (string)
+    - `_id`: (string)
+    - `id`: (string)
+    - `internalId`: (string)
+    - `type`: (string)
+    - `name`: (string)
+    - `pipelineId`: (string)
+  - `templateId`: (string) Identifier of the template, when available.
+  - `environmentId`: (string) Identifier of the preview environment, when available.
+  - `status`: (string) (required) Status of the template run (enum: pending, running, success, failure, aborted, aborting, queued, unknown, skipped, waiting, retrying, async_wait, approval_wait)
+  - `concluded`: (boolean) (required) Whether execution has concluded.
+  - `startedAt`: (string) When execution started. (format: date-time)
+  - `concludedAt`: (string) When execution concluded. (format: date-time)
+  - `createdAt`: (string) (required) When the run was created. (format: date-time)
+  - `updatedAt`: (string) (required) When the run was last updated. (format: date-time)
+  - `detailsHidden`: (boolean) (required) Run details include available public results. Sensitive inputs and results are omitted.
+  - `_id`: (string)
+  - `internalId`: (string)
+  - `entityId`: (string)
+  - `entityType`: (string)
+  - `projectId`: (string)
+  - `pipelineId`: (string)
+  - `userId`: (string)
+  - `environmentName`: (string)
+  - `expiresAt`: (string) (format: date-time)
+  - `deleted`: (boolean)
+  - `phase`: (string)
+  - `templateVersionSha`: (string)
+  - `commitSHA`: (string)
+  - `hasDiff`: (boolean)
+  - `content`: {object}
+    - `name`: (string)
+    - `description`: (string)
+    - `apiVersion`: (string)
+    - `spec`: (multiple options) {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Workflow)
+     - `spec`: {object} (required)
+       - `type`: (string) (required) (enum: parallel, sequential)
+       - `steps`: [array of] (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: LoopWorkflow)
+     - `spec`: {object} (required)
+       - `steps`: [array of] (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Approval)
+     - `spec`: {object} (required)
+       - `amount`: (integer)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: [array of] {object}
+           - `user`: (string) (required) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+       - `kind`: (string) (required) (enum: Service)
+       - `spec`: {object} (required)
+         - `type`: (string) (required) (enum: restart)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `serviceId`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+       - `kind`: (string) (required) (enum: Addon)
+       - `spec`: {object} (required)
+         - `type`: (string) (required) (enum: restart)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `addonId`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+       - `kind`: (string) (required) (enum: AddonBackup)
+       - `spec`: {object} (required)
+         - `type`: (string) (required) (enum: restore)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `addonId`: (string)
+         - `backupId`: (string)
+         - `restoreId`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+       - `kind`: (string) (required) (enum: Domain)
+       - `spec`: {object} (required)
+         - `type`: (string) (required) (enum: verify)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `domain`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+       - `kind`: (string) (required) (enum: VCS)
+       - `spec`: {object} (required)
+         - `type`: (string) (required) (enum: createRepoFromSource)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `trackerId`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+       - `kind`: (string) (required) (enum: Service)
+       - `spec`: {object} (required)
+         - `type`: (string) (required) (enum: execute)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+       - `kind`: (string) (required) (enum: Job)
+       - `spec`: {object} (required)
+         - `type`: (string) (required) (enum: execute)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Action)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: CustomPlan, Subdomain, SubdomainPath, ResourceTag, BYOCIntegration, RolloutStrategy, BYOCCluster, BYOCRegistry, CustomDockerCredentials, Project, CombinedService, DeploymentService, PreviewDeploymentService, Harness, LLMModelDeployment, CronJob, ManualJob, Job, Addon, SecretGroup, SSHIdentity, Pipeline, Volume, ReleaseRollback, EgressIp, LoadBalancer, NetworkPolicy, WorkflowTemplate, PreviewBlueprint, ReleaseStage)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `id`: (string)
+         - `name`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Domain)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `name`: (string)
+         - `hostname`: (string)
+         - `status`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: BuildService)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `id`: (string)
+         - `name`: (string)
+         - `image`: {object}
+           - `projectId`: (string)
+           - `name`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: ExternalAddon, Condition, ReleaseFlowRollback, Template, Message, LoopData, SecretInheritance, OpenTofu, OpenTofuDestroy, WorkflowRollback, RunTemplate)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: AddonBackup)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `id`: (string)
+         - `name`: (string)
+         - `addonId`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: AddonImport)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `id`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: WorkloadIdentity)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: (multiple options) {object}
+           - `id`: (string)
+           - `name`: (string) | [array of] {object}
+             - `id`: (string)
+             - `name`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Build, BuildSource)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `id`: (string)
+         - `status`: (string)
+         - `nfObjectId`: (string)
+         - `nfObjectType`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: ContainerScan)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: (multiple options) {object}
+           - `id`: (string)
+           - `status`: (string) | [array of] {object}
+             - `id`: (string)
+             - `status`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: JobRun)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `id`: (string)
+         - `jobId`: (string)
+         - `runName`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required) (enum: Release)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+       - `data`: {object}
+         - `name`: (string) | {object}
+     - `ref`: (string)
+     - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+     - `detailsHidden`: (boolean) (required)
+     - `kind`: (string) (required)
+     - `spec`: {object} (required)
+     - `response`: {object}
+       - `status`: (string)
+       - `startTime`: (number) (format: float)
+       - `endTime`: (number) (format: float)
+       - `duration`: (number) (format: float)
+       - `attempts`: (number) (format: float)
+    - `project`: {object}
+      - `ref`: (string)
+      - `skipNodeExecution`: (multiple options) (boolean) | (string) (enum: true, false)
+      - `detailsHidden`: (boolean) (required)
+      - `kind`: (string) (required)
+      - `spec`: {object} (required)
+      - `response`: {object}
+        - `status`: (string)
+        - `startTime`: (number) (format: float)
+        - `endTime`: (number) (format: float)
+        - `duration`: (number) (format: float)
+        - `attempts`: (number) (format: float)
+        - `data`: {object}
+          - `id`: (string)
+          - `name`: (string)
+          - `_id`: (string)
+      - `_id`: (string)
+      - `id`: (string)
+      - `internalId`: (string)
+      - `type`: (string)
+      - `name`: (string)
+      - `pipelineId`: (string)
+  - `template`: {object}
+    - `_id`: (string)
+    - `id`: (string)
+    - `internalId`: (string)
+    - `type`: (string)
+    - `name`: (string)
+    - `pipelineId`: (string)
+  - `pipeline`: {object}
+    - `_id`: (string)
+    - `id`: (string)
+    - `internalId`: (string)
+    - `type`: (string)
+    - `name`: (string)
+    - `pipelineId`: (string)
+    - `stage`: (string)
+  - `run`: {object}
+    - `_id`: (string)
+    - `id`: (string)
+    - `internalId`: (string)
+    - `type`: (string)
+    - `name`: (string)
+    - `pipelineId`: (string)
+  - `auditLog`: {object}
+    - `_id`: (string)
+  - `runContext`: {object}
+    - `origin`: (string)
+    - `userId`: (string)
+    - `user`: {object}
+      - `_id`: (string)
+    - `sha`: (string)
+    - `branch`: (string)
+    - `pullRequestId`: (multiple options) (string) | (integer)
+    - `matchedFile`: (string)
+    - `trigger`: {object}
+      - `globalSecretInternalId`: (string)
+  - `pendingApprovals`: [array of] {object}
+     - `nodePath`: (string) (required)
+     - `user`: (string) (required)
+  - `id`: (string) (required) Identifier of the run.
 
 ### API reference
 
@@ -36,7 +820,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"Example Run","description":"This is a description for the workflow run.","arguments":{"ARG_1":"value"},"overrides":{"example-ref":{"branch":"devel"}},"releaseNodeOverrides":{"example-service":{"type":"registry","origin":{"imagePath":"nginx:latest"}}}}' \
-  https://api.northflank.com/v1/projects/{projectId}/workflows/{workflowId}/runs
+  "https://api.northflank.com/v1/projects/{projectId}/workflows/{workflowId}/runs"
 ```
 
 ```javascript
@@ -79,10 +863,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/workflows/{workflowId}/runs"
 
-payload = {"name":"Example Run","description":"This is a description for the workflow run.","arguments":{"ARG_1":"value"},"overrides":{"example-ref":{"branch":"devel"}},"releaseNodeOverrides":{"example-service":{"type":"registry","origin":{"imagePath":"nginx:latest"}}}}
+payload = "{\"name\":\"Example Run\",\"description\":\"This is a description for the workflow run.\",\"arguments\":{\"ARG_1\":\"value\"},\"overrides\":{\"example-ref\":{\"branch\":\"devel\"}},\"releaseNodeOverrides\":{\"example-service\":{\"type\":\"registry\",\"origin\":{\"imagePath\":\"nginx:latest\"}}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -100,7 +884,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/workflows/{workflowId}/runs"
 
-  var jsonStr = []byte(`{"name":"Example Run","description":"This is a description for the workflow run.","arguments":{"ARG_1":"value"},"overrides":{"example-ref":{"branch":"devel"}},"releaseNodeOverrides":{"example-service":{"type":"registry","origin":{"imagePath":"nginx:latest"}}}}`)
+  var jsonStr = []byte("{\"name\":\"Example Run\",\"description\":\"This is a description for the workflow run.\",\"arguments\":{\"ARG_1\":\"value\"},\"overrides\":{\"example-ref\":{\"branch\":\"devel\"}},\"releaseNodeOverrides\":{\"example-service\":{\"type\":\"registry\",\"origin\":{\"imagePath\":\"nginx:latest\"}}}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -121,7 +905,24 @@ func main() {
 
 #### Example Response
 
-200 OK: success
+200 OK: Details about the workflow run.
+
+```json
+{
+  "data": {
+    "name": "Production deployment",
+    "description": "Deploy the latest release.",
+    "status": "success",
+    "concluded": true,
+    "startedAt": "2026-01-01T12:00:00.000Z",
+    "concludedAt": "2026-01-01T12:01:00.000Z",
+    "createdAt": "2026-01-01T12:00:00.000Z",
+    "updatedAt": "2026-01-01T12:01:00.000Z",
+    "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
+    "detailsHidden": false
+  }
+}
+```
 
 ### CLI reference
 
@@ -166,6 +967,25 @@ Options:
 }
 ```
 
+#### Example Response
+
+ Details about the workflow run.
+
+```json
+{
+  "name": "Production deployment",
+  "description": "Deploy the latest release.",
+  "status": "success",
+  "concluded": true,
+  "startedAt": "2026-01-01T12:00:00.000Z",
+  "concludedAt": "2026-01-01T12:01:00.000Z",
+  "createdAt": "2026-01-01T12:00:00.000Z",
+  "updatedAt": "2026-01-01T12:01:00.000Z",
+  "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
+  "detailsHidden": false
+}
+```
+
 ### JavaScript client reference
 
 #### Example request
@@ -199,6 +1019,30 @@ await apiClient.run.workflow({
     }
   }
 });
+```
+
+#### Example Response
+
+ Details about the workflow run.
+
+```json
+{
+  "data": {
+    "name": "Production deployment",
+    "description": "Deploy the latest release.",
+    "status": "success",
+    "concluded": true,
+    "startedAt": "2026-01-01T12:00:00.000Z",
+    "concludedAt": "2026-01-01T12:01:00.000Z",
+    "createdAt": "2026-01-01T12:00:00.000Z",
+    "updatedAt": "2026-01-01T12:01:00.000Z",
+    "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
+    "detailsHidden": false
+  },
+  "rawResponse": "...",
+  "request": "...",
+  "error": "..."
+}
 ```
 
 ### Python client reference
@@ -240,4 +1084,23 @@ response = client.run.workflow(
     },
 )
 print(response.data)
+```
+
+#### Example Response
+
+ Example value of response.data:
+
+```json
+{
+  "name": "Production deployment",
+  "description": "Deploy the latest release.",
+  "status": "success",
+  "concluded": true,
+  "startedAt": "2026-01-01T12:00:00.000Z",
+  "concludedAt": "2026-01-01T12:01:00.000Z",
+  "createdAt": "2026-01-01T12:00:00.000Z",
+  "updatedAt": "2026-01-01T12:01:00.000Z",
+  "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
+  "detailsHidden": false
+}
 ```

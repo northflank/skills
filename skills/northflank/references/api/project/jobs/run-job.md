@@ -15,17 +15,17 @@ Required permission: Project > Jobs > General > Run Job
 **Request body:**
 
 {object}
-- `runtimeEnvironment`: {object}
-- `runtimeFiles`: {object}
-- `dockerSecretMounts`: (undefined)
+- `runtimeEnvironment`: {object} An object containing the environment variables overrides to use when running the job. Keys may only contain letters, numbers, hyphens, forward slashes and dots.
+- `runtimeFiles`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+- `dockerSecretMounts`:
 - `billing`: {object}
   - `deploymentPlan`: (string) The ID of the deployment plan override to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `deployment`: (multiple options) {object}
-   - `docker`: {object}
+- `deployment`: (multiple options) Override the job run deployment source. {object} Optional: Override the run to use a previously built commit
+   - `docker`: {object} Allows for customization of docker runtime
      - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
      - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
      - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
-   - `buildpack`: {object}
+   - `buildpack`: {object} Allows for customization of buildpack runtime
      - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
      - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
      - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
@@ -36,22 +36,22 @@ Required permission: Project > Jobs > General > Run Job
      - `ephemeralStorage`: {object}
        - `storageSize`: (integer) Ephemeral storage per container in MB
      - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
-   - `gpu`: {object}
+   - `gpu`: {object} GPU configuration overrides to use for this run. Set `enabled` to `false` to run without GPUs.
      - `enabled`: (boolean) Whether GPUs are enabled for this workload.
      - `configuration`: {object}
        - `gpuType`: (string) (required) The type of GPU to use.
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-   - `internal`: {object}
-     - `id`: (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
+   - `internal`: {object} Optional: Specify the commit to run
+     - `id`: (multiple options) ID of the build service to deploy (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
      - `branch`: (string) Branch to deploy
-     - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
-     - `buildId`: (string) ID of the build that should be deployed | {object}
-   - `docker`: {object}
+     - `buildSHA`: (multiple options) Commit SHA to deploy, or 'latest' to deploy the most recent commit (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
+     - `buildId`: (string) ID of the build that should be deployed | {object} Optional: Override the run to use an external image
+   - `docker`: {object} Allows for customization of docker runtime
      - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
      - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
      - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
-   - `buildpack`: {object}
+   - `buildpack`: {object} Allows for customization of buildpack runtime
      - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
      - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
      - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
@@ -62,20 +62,20 @@ Required permission: Project > Jobs > General > Run Job
      - `ephemeralStorage`: {object}
        - `storageSize`: (integer) Ephemeral storage per container in MB
      - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
-   - `gpu`: {object}
+   - `gpu`: {object} GPU configuration overrides to use for this run. Set `enabled` to `false` to run without GPUs.
      - `enabled`: (boolean) Whether GPUs are enabled for this workload.
      - `configuration`: {object}
        - `gpuType`: (string) (required) The type of GPU to use.
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-   - `external`: {object}
+   - `external`: {object} Optional: Specify the external image to run
      - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
-     - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | {object}
-   - `docker`: {object}
+     - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | {object} Optional: Override the run to use an image
+   - `docker`: {object} Allows for customization of docker runtime
      - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
      - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
      - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
-   - `buildpack`: {object}
+   - `buildpack`: {object} Allows for customization of buildpack runtime
      - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
      - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
      - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
@@ -86,7 +86,7 @@ Required permission: Project > Jobs > General > Run Job
      - `ephemeralStorage`: {object}
        - `storageSize`: (integer) Ephemeral storage per container in MB
      - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
-   - `gpu`: {object}
+   - `gpu`: {object} GPU configuration overrides to use for this run. Set `enabled` to `false` to run without GPUs.
      - `enabled`: (boolean) Whether GPUs are enabled for this workload.
      - `configuration`: {object}
        - `gpuType`: (string) (required) The type of GPU to use.
@@ -100,8 +100,8 @@ Required permission: Project > Jobs > General > Run Job
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) The ID of the job run
   - `runName`: (string) (required) The name of the job run
 
@@ -120,7 +120,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}}}' \
-  https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/runs
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/runs"
 ```
 
 ```javascript
@@ -174,10 +174,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/runs"
 
-payload = {"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}}}
+payload = "{\"runtimeEnvironment\":{\"VARIABLE_1\":\"abcdef\",\"VARIABLE_2\":\"12345\"},\"runtimeFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"billing\":{\"deploymentPlan\":\"nf-compute-20\"},\"deployment\":{\"docker\":{\"configType\":\"default\"},\"storage\":{\"ephemeralStorage\":{\"storageSize\":1024}},\"internal\":{\"id\":\"example-build-service\",\"branch\":\"master\",\"buildSHA\":\"latest\",\"buildId\":\"premium-guide-6393\"}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -195,7 +195,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/runs"
 
-  var jsonStr = []byte(`{"runtimeEnvironment":{"VARIABLE_1":"abcdef","VARIABLE_2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"billing":{"deploymentPlan":"nf-compute-20"},"deployment":{"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"internal":{"id":"example-build-service","branch":"master","buildSHA":"latest","buildId":"premium-guide-6393"}}}`)
+  var jsonStr = []byte("{\"runtimeEnvironment\":{\"VARIABLE_1\":\"abcdef\",\"VARIABLE_2\":\"12345\"},\"runtimeFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"billing\":{\"deploymentPlan\":\"nf-compute-20\"},\"deployment\":{\"docker\":{\"configType\":\"default\"},\"storage\":{\"ephemeralStorage\":{\"storageSize\":1024}},\"internal\":{\"id\":\"example-build-service\",\"branch\":\"master\",\"buildSHA\":\"latest\",\"buildId\":\"premium-guide-6393\"}}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

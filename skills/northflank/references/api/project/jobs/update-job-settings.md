@@ -25,12 +25,14 @@ Required permission: Project > Jobs > General > Update
 - `runOnSourceChange`: (string) Configure when the job should be run if the source image changes. (enum: never, cd-promote, always)
 - `activeDeadlineSeconds`: (integer) The maximum amount of time, in seconds, for a job to run before it is marked as failed.
 - `schedule`: (string) The cron timer scheduling when to run the job. Required for cron jobs and unavailable for other job types. (pattern: (@(annually|yearly|monthly|weekly|daily|hourly))|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5}))
+- `timeZone`: (string) IANA timezone for the schedule, follows daylight saving time rules. (max length: 100)
 - `concurrencyPolicy`: (string) Whether this job should run when another instance of the job is already running. Only available for cron jobs. `allow` will enable multiple instances of this job to run. `forbid` will keep the current instance of the job running and stop a new instance from being run. `replace` will terminate any currently running instance of the job and start a new one. (enum: allow, forbid, replace)
+- `skipMissedRuns`: (boolean) Skip scheduled runs that are more than 60 seconds late. Manual runs are unaffected.
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -46,8 +48,8 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"backoffLimit":0,"runOnSourceChange":"never","activeDeadlineSeconds":600,"schedule":"30 8 * * *","concurrencyPolicy":"allow"}' \
-  https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/settings
+  --data '{"backoffLimit":0,"runOnSourceChange":"never","activeDeadlineSeconds":600,"schedule":"30 8 * * *","timeZone":"Europe/London","concurrencyPolicy":"allow","skipMissedRuns":true}' \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/settings"
 ```
 
 ```javascript
@@ -56,7 +58,9 @@ const payload = {
   "runOnSourceChange": "never",
   "activeDeadlineSeconds": 600,
   "schedule": "30 8 * * *",
-  "concurrencyPolicy": "allow"
+  "timeZone": "Europe/London",
+  "concurrencyPolicy": "allow",
+  "skipMissedRuns": true
 }
 
 const response = await fetch('https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/settings', {
@@ -77,10 +81,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/settings"
 
-payload = {"backoffLimit":0,"runOnSourceChange":"never","activeDeadlineSeconds":600,"schedule":"30 8 * * *","concurrencyPolicy":"allow"}
+payload = "{\"backoffLimit\":0,\"runOnSourceChange\":\"never\",\"activeDeadlineSeconds\":600,\"schedule\":\"30 8 * * *\",\"timeZone\":\"Europe/London\",\"concurrencyPolicy\":\"allow\",\"skipMissedRuns\":true}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -98,7 +102,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/settings"
 
-  var jsonStr = []byte(`{"backoffLimit":0,"runOnSourceChange":"never","activeDeadlineSeconds":600,"schedule":"30 8 * * *","concurrencyPolicy":"allow"}`)
+  var jsonStr = []byte("{\"backoffLimit\":0,\"runOnSourceChange\":\"never\",\"activeDeadlineSeconds\":600,\"schedule\":\"30 8 * * *\",\"timeZone\":\"Europe/London\",\"concurrencyPolicy\":\"allow\",\"skipMissedRuns\":true}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -153,7 +157,9 @@ Options:
   "runOnSourceChange": "never",
   "activeDeadlineSeconds": 600,
   "schedule": "30 8 * * *",
-  "concurrencyPolicy": "allow"
+  "timeZone": "Europe/London",
+  "concurrencyPolicy": "allow",
+  "skipMissedRuns": true
 }
 ```
 
@@ -182,7 +188,9 @@ await apiClient.update.job.settings({
     "runOnSourceChange": "never",
     "activeDeadlineSeconds": 600,
     "schedule": "30 8 * * *",
-    "concurrencyPolicy": "allow"
+    "timeZone": "Europe/London",
+    "concurrencyPolicy": "allow",
+    "skipMissedRuns": true
   }
 });
 ```
@@ -222,7 +230,9 @@ response = client.update.job.settings(
         "runOnSourceChange": "never",
         "activeDeadlineSeconds": 600,
         "schedule": "30 8 * * *",
+        "timeZone": "Europe/London",
         "concurrencyPolicy": "allow",
+        "skipMissedRuns": True,
     },
 )
 print(response.data)

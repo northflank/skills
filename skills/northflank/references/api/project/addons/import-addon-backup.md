@@ -14,7 +14,7 @@ Required permission: Project > Addons > General > Update
 
 **Request body:**
 
-{object}
+{object} Import using a connection string. The database will be imported from the live database located at the connection string's location.
 - `name`: (string) The name of the backup. If not provided, a default name will be generated containing the current date. (pattern: ^[a-zA-Z0-9]+((-|\s|\/|:)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 39)
 - `connectionString`: (string) (required) A database connection string.
 - `importAllDatabases`: (boolean) Detect and import all databases. If false, attempts to import only the database specified in the connection string
@@ -23,7 +23,7 @@ Required permission: Project > Addons > General > Update
 
 OR
 
-{object}
+{object} Import using an external archive. The database will be imported from an existing backup.
 - `name`: (string) The name of the backup. If not provided, a default name will be generated containing the current date. (pattern: ^[a-zA-Z0-9]+((-|\s|\/|:)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 39)
 - `importUrl`: (string) (required) A url pointing to an existing backup stored as a GNU zip (.gz) file.
 - `customDestinationId`: (string) Custom destination to store the imported backup in. If not specified, backup is stored in Northflank-managed destination. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
@@ -38,21 +38,20 @@ POST /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}/import
 
 Request body
 
-Import using a connection string. The database will be imported from the live database located at the connection string's location.
+live
 
 ```curl
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
-  --data '{"name":"Example Backup","connectionString":"mongodb://mongodb0.example.com:27017","compressionType":"gz"}' \
-  https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/import
+  --data '{"name":"Example Backup","connectionString":"mongodb://mongodb0.example.com:27017"}' \
+  "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/import"
 ```
 
 ```javascript
 const payload = {
   "name": "Example Backup",
-  "connectionString": "mongodb://mongodb0.example.com:27017",
-  "compressionType": "gz"
+  "connectionString": "mongodb://mongodb0.example.com:27017"
 }
 
 const response = await fetch('https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/import', {
@@ -73,10 +72,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/import"
 
-payload = {"name":"Example Backup","connectionString":"mongodb://mongodb0.example.com:27017","compressionType":"gz"}
+payload = "{\"name\":\"Example Backup\",\"connectionString\":\"mongodb://mongodb0.example.com:27017\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -94,7 +93,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/import"
 
-  var jsonStr = []byte(`{"name":"Example Backup","connectionString":"mongodb://mongodb0.example.com:27017","compressionType":"gz"}`)
+  var jsonStr = []byte("{\"name\":\"Example Backup\",\"connectionString\":\"mongodb://mongodb0.example.com:27017\"}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -115,14 +114,14 @@ func main() {
 
 OR
 
-Import using an external archive. The database will be imported from an existing backup.
+url
 
 ```curl
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"Example Backup","importUrl":"https://example.com/backup.db.gz"}' \
-  https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/import
+  "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/import"
 ```
 
 ```javascript
@@ -149,10 +148,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/import"
 
-payload = {"name":"Example Backup","importUrl":"https://example.com/backup.db.gz"}
+payload = "{\"name\":\"Example Backup\",\"importUrl\":\"https://example.com/backup.db.gz\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -170,7 +169,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/import"
 
-  var jsonStr = []byte(`{"name":"Example Backup","importUrl":"https://example.com/backup.db.gz"}`)
+  var jsonStr = []byte("{\"name\":\"Example Backup\",\"importUrl\":\"https://example.com/backup.db.gz\"}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -213,19 +212,18 @@ Options:
 
 - `-o --output <format>`: Output formatting
 
-Import using a connection string. The database will be imported from the live database located at the connection string's location.
+live
 
 ```json
 {
   "name": "Example Backup",
-  "connectionString": "mongodb://mongodb0.example.com:27017",
-  "compressionType": "gz"
+  "connectionString": "mongodb://mongodb0.example.com:27017"
 }
 ```
 
 OR
 
-Import using an external archive. The database will be imported from an existing backup.
+url
 
 ```json
 {
@@ -240,7 +238,7 @@ Import using an external archive. The database will be imported from an existing
 
 With an organization token, add `parameters.teamId`. [Organization API access](../../use-the-api.md#organization-api-access).
 
-Import using a connection string. The database will be imported from the live database located at the connection string's location.
+live
 
 ```javascript
 await apiClient.import.addon.backup({
@@ -250,15 +248,14 @@ await apiClient.import.addon.backup({
   },
   data: {
     "name": "Example Backup",
-    "connectionString": "mongodb://mongodb0.example.com:27017",
-    "compressionType": "gz"
+    "connectionString": "mongodb://mongodb0.example.com:27017"
   }
 });
 ```
 
 OR
 
-Import using an external archive. The database will be imported from an existing backup.
+url
 
 ```javascript
 await apiClient.import.addon.backup({

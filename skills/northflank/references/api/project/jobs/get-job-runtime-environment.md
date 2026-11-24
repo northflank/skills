@@ -26,16 +26,35 @@ Required permission: Project > Secrets > Jobs > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `runtimeEnvironment`: {object}
-  - `runtimeFiles`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `runtimeEnvironment`: {object} (required) The runtime environment variables, formatted as a JSON object. If the `show` parameter is set to `this`, this will only contain secrets saved to this entity. If the `show` parameter is set to `inherited`, this will only contain secrets inherited from linked secret groups. Otherwise, this will contain both.
+  - `runtimeFiles`: {object} (required) The runtime secret files, formatted as a JSON object. If the `show` parameter is set to `this`, this will only contain files saved to this entity. If the `show` parameter is set to `inherited`, this will only contain files inherited from linked secret groups. Otherwise, this will contain both.
 
 ### API reference
 
 GET /v1/projects/{projectId}/jobs/{jobId}/runtime-environment
 
 GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/runtime-environment
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/runtime-environment?show=all&replaceTemplatedValues=true"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/runtime-environment?show=all&replaceTemplatedValues=true"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

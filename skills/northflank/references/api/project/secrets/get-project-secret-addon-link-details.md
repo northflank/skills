@@ -13,25 +13,44 @@ Get details about a given addon link.
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `secretName`: (string) (required) The name of the secret group
   - `secretId`: (string) (required) Identifier for the secret group
   - `addonName`: (string) (required) The name of the linked addon
   - `addonId`: (string) (required) The ID of the linked addon
   - `addonType`: (string) (required) The addon type of the linked addon
   - `linked`: (boolean) (required) Is this addon currently linked to this secret group?
-  - `linkedKeys`: [array of] {object}
+  - `linkedKeys`: [array of] An array of objects containing details about the keys linked to this secret group. {object} Details about a key linked to this secret group.
      - `keyName`: (string) (required) The name of the key to link. (pattern: [a-zA-Z]+)
-     - `aliases`: [array of] (string) The name of the alias. Keys may only contain letters, numbers, hyphens, forward slashes and dots. (pattern: ^[a-zA-Z0-9_./-]*$)
+     - `aliases`: [array of] An array of aliases for the key. (string) The name of the alias. Keys may only contain letters, numbers, hyphens, forward slashes and dots. (pattern: ^[a-zA-Z0-9_./-]*$)
      - `defaultKey`: (string) (required)
-  - `availableKeys`: [array of] (string)
+  - `availableKeys`: [array of] (required) A list of available keys for the given addon. (string)
 
 ### API reference
 
 GET /v1/projects/{projectId}/secrets/{secretId}/addons/{addonId}
 
 GET /v1/teams/{teamId}/projects/{projectId}/secrets/{secretId}/addons/{addonId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/secrets/{secretId}/addons/{addonId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/secrets/{secretId}/addons/{addonId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

@@ -15,20 +15,20 @@ Required permission: Project > Addons > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) The identifier for the backup.
   - `name`: (string) (required) The name of the backup.
   - `uid`: (string) (required) The unique id of the backup.
   - `status`: (string) (required) The current status of the backup. (enum: scheduled, in-progress, completed, aborting, aborted, failed, not-supported)
   - `createdAt`: (string) (required) The time the backup was initiated.
   - `completedAt`: (string) The time the backup was completed.
-  - `config`: {object}
-    - `source`: {object}
+  - `config`: {object} (required) Data about the backup configuration.
+    - `source`: {object} Data about the source of the backup.
       - `type`: (string) The type of backup. (enum: fileUpload, liveInstance, snapshot, externalDump, sameAddon)
     - `size`: (string) (required) The size of the backup, in bytes
     - `addonVersion`: (string) The version of the addon at the time of the backup. If the backup type is `snapshot`, the addon will be restored to this version when the backup is restored.
-  - `lastRestore`: {object}
+  - `lastRestore`: {object} Details about the most recent restore of this backup.
     - `restoreTimestamp`: (string) (required) The time the backup was initiated. (format: date-time)
     - `status`: (string) (required) The current status of the restore. (enum: scheduled, in-progress, completed, aborting, aborted, failed, not-supported)
     - `completedAt`: (string) The time the restore was completed. (format: date-time)
@@ -38,6 +38,25 @@ Required permission: Project > Addons > General > Read
 GET /v1/projects/{projectId}/addons/{addonId}/backups/{backupId}
 
 GET /v1/teams/{teamId}/projects/{projectId}/addons/{addonId}/backups/{backupId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/backups/{backupId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/backups/{backupId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

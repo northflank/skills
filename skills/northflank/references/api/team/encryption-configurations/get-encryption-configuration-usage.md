@@ -8,9 +8,9 @@ Required permission: Account > Admin > Encryption > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `usage`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `usage`: {object} (required) Wrapped-DEK counts by configuration ID. Non-zero counts require retaining access to the old key; zero is not proof that legacy encrypted data is unused.
 
 ### API reference
 
@@ -18,12 +18,35 @@ GET /v1/encryption/usage
 
 GET /v1/teams/{teamId}/encryption/usage
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/encryption/usage"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/encryption/usage"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: Wrapped-DEK counts by configuration ID.
 
 ```json
-undefined
+{
+  "data": {
+    "usage": {}
+  }
+}
 ```
 
 ### CLI reference
@@ -43,7 +66,9 @@ Options:
  Wrapped-DEK counts by configuration ID.
 
 ```json
-undefined
+{
+  "usage": {}
+}
 ```
 
 ### JavaScript client reference
@@ -62,6 +87,9 @@ await apiClient.get.encryption.configurations.usage({});
 
 ```json
 {
+  "data": {
+    "usage": {}
+  },
   "rawResponse": "...",
   "request": "...",
   "error": "..."

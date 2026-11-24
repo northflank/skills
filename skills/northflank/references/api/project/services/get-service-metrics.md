@@ -26,138 +26,138 @@ Required permission: Project > Services > Deployment > View Observability
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `cpu`: {object}
     - `metricInfo`: {object}
       - `metricId`: (string) (required) Type of metric to fetch (enum: cpu, memory, networkIngress, networkEgress, tcpConnectionsOpen, diskUsage, requests, http4xxResponses, http5xxResponses, bandwidth, bandwidthVolume)
-      - `metricUnit`: (string) (required) (enum: pct, vCPU, mb, kbps, rps, count)
+      - `metricUnit`: (string) (required) Wire unit for every sample field. 1000 millicores equal one CPU core. Memory bytes are not display megabytes. (enum: pct, vCPU, mb, kbps, rps, count)
       - `metricResolution`: (number) (format: float)
-    - `values`: [array of] {object}
+    - `values`: [array of] (required) {object}
         - `metadata`: {object}
-          - `containerId`: (string) (required)
+          - `containerId`: (string) (required) Container identifier.
           - `volumeId`: (string)
-        - `data`: [array of] {object}
+        - `data`: [array of] (required) {object}
             - `value`: (number) (required) (format: float)
             - `ts`: (string) (required) (format: date-time)
   - `memory`: {object}
     - `metricInfo`: {object}
       - `metricId`: (string) (required) Type of metric to fetch (enum: cpu, memory, networkIngress, networkEgress, tcpConnectionsOpen, diskUsage, requests, http4xxResponses, http5xxResponses, bandwidth, bandwidthVolume)
-      - `metricUnit`: (string) (required) (enum: pct, vCPU, mb, kbps, rps, count)
+      - `metricUnit`: (string) (required) Wire unit for every sample field. 1000 millicores equal one CPU core. Memory bytes are not display megabytes. (enum: pct, vCPU, mb, kbps, rps, count)
       - `metricResolution`: (number) (format: float)
-    - `values`: [array of] {object}
+    - `values`: [array of] (required) {object}
         - `metadata`: {object}
-          - `containerId`: (string) (required)
+          - `containerId`: (string) (required) Container identifier.
           - `volumeId`: (string)
-        - `data`: [array of] {object}
+        - `data`: [array of] (required) {object}
             - `value`: (number) (required) (format: float)
             - `ts`: (string) (required) (format: date-time)
   - `networkIngress`: {object}
     - `metricInfo`: {object}
       - `metricId`: (string) (required) Type of metric to fetch (enum: cpu, memory, networkIngress, networkEgress, tcpConnectionsOpen, diskUsage, requests, http4xxResponses, http5xxResponses, bandwidth, bandwidthVolume)
-      - `metricUnit`: (string) (required) (enum: pct, vCPU, mb, kbps, rps, count)
+      - `metricUnit`: (string) (required) Wire unit for every sample field. 1000 millicores equal one CPU core. Memory bytes are not display megabytes. (enum: pct, vCPU, mb, kbps, rps, count)
       - `metricResolution`: (number) (format: float)
-    - `values`: [array of] {object}
+    - `values`: [array of] (required) {object}
         - `metadata`: {object}
-          - `containerId`: (string) (required)
+          - `containerId`: (string) (required) Container identifier.
           - `volumeId`: (string)
-        - `data`: [array of] {object}
+        - `data`: [array of] (required) {object}
             - `value`: (number) (required) (format: float)
             - `ts`: (string) (required) (format: date-time)
   - `networkEgress`: {object}
     - `metricInfo`: {object}
       - `metricId`: (string) (required) Type of metric to fetch (enum: cpu, memory, networkIngress, networkEgress, tcpConnectionsOpen, diskUsage, requests, http4xxResponses, http5xxResponses, bandwidth, bandwidthVolume)
-      - `metricUnit`: (string) (required) (enum: pct, vCPU, mb, kbps, rps, count)
+      - `metricUnit`: (string) (required) Wire unit for every sample field. 1000 millicores equal one CPU core. Memory bytes are not display megabytes. (enum: pct, vCPU, mb, kbps, rps, count)
       - `metricResolution`: (number) (format: float)
-    - `values`: [array of] {object}
+    - `values`: [array of] (required) {object}
         - `metadata`: {object}
-          - `containerId`: (string) (required)
+          - `containerId`: (string) (required) Container identifier.
           - `volumeId`: (string)
-        - `data`: [array of] {object}
+        - `data`: [array of] (required) {object}
             - `value`: (number) (required) (format: float)
             - `ts`: (string) (required) (format: date-time)
   - `tcpConnectionsOpen`: {object}
     - `metricInfo`: {object}
       - `metricId`: (string) (required) Type of metric to fetch (enum: cpu, memory, networkIngress, networkEgress, tcpConnectionsOpen, diskUsage, requests, http4xxResponses, http5xxResponses, bandwidth, bandwidthVolume)
-      - `metricUnit`: (string) (required) (enum: pct, vCPU, mb, kbps, rps, count)
+      - `metricUnit`: (string) (required) Wire unit for every sample field. 1000 millicores equal one CPU core. Memory bytes are not display megabytes. (enum: pct, vCPU, mb, kbps, rps, count)
       - `metricResolution`: (number) (format: float)
-    - `values`: [array of] {object}
+    - `values`: [array of] (required) {object}
         - `metadata`: {object}
-          - `containerId`: (string) (required)
+          - `containerId`: (string) (required) Container identifier.
           - `volumeId`: (string)
-        - `data`: [array of] {object}
+        - `data`: [array of] (required) {object}
             - `value`: (number) (required) (format: float)
             - `ts`: (string) (required) (format: date-time)
   - `diskUsage`: {object}
     - `metricInfo`: {object}
       - `metricId`: (string) (required) Type of metric to fetch (enum: cpu, memory, networkIngress, networkEgress, tcpConnectionsOpen, diskUsage, requests, http4xxResponses, http5xxResponses, bandwidth, bandwidthVolume)
-      - `metricUnit`: (string) (required) (enum: pct, vCPU, mb, kbps, rps, count)
+      - `metricUnit`: (string) (required) Wire unit for every sample field. 1000 millicores equal one CPU core. Memory bytes are not display megabytes. (enum: pct, vCPU, mb, kbps, rps, count)
       - `metricResolution`: (number) (format: float)
-    - `values`: [array of] {object}
+    - `values`: [array of] (required) {object}
         - `metadata`: {object}
-          - `containerId`: (string) (required)
+          - `containerId`: (string) (required) Container identifier.
           - `volumeId`: (string)
-        - `data`: [array of] {object}
+        - `data`: [array of] (required) {object}
             - `value`: (number) (required) (format: float)
             - `ts`: (string) (required) (format: date-time)
   - `requests`: {object}
     - `metricInfo`: {object}
       - `metricId`: (string) (required) Type of metric to fetch (enum: cpu, memory, networkIngress, networkEgress, tcpConnectionsOpen, diskUsage, requests, http4xxResponses, http5xxResponses, bandwidth, bandwidthVolume)
-      - `metricUnit`: (string) (required) (enum: pct, vCPU, mb, kbps, rps, count)
+      - `metricUnit`: (string) (required) Wire unit for every sample field. 1000 millicores equal one CPU core. Memory bytes are not display megabytes. (enum: pct, vCPU, mb, kbps, rps, count)
       - `metricResolution`: (number) (format: float)
-    - `values`: [array of] {object}
+    - `values`: [array of] (required) {object}
         - `metadata`: {object}
-          - `containerId`: (string) (required)
+          - `containerId`: (string) (required) Container identifier.
           - `volumeId`: (string)
-        - `data`: [array of] {object}
+        - `data`: [array of] (required) {object}
             - `value`: (number) (required) (format: float)
             - `ts`: (string) (required) (format: date-time)
   - `http4xxResponses`: {object}
     - `metricInfo`: {object}
       - `metricId`: (string) (required) Type of metric to fetch (enum: cpu, memory, networkIngress, networkEgress, tcpConnectionsOpen, diskUsage, requests, http4xxResponses, http5xxResponses, bandwidth, bandwidthVolume)
-      - `metricUnit`: (string) (required) (enum: pct, vCPU, mb, kbps, rps, count)
+      - `metricUnit`: (string) (required) Wire unit for every sample field. 1000 millicores equal one CPU core. Memory bytes are not display megabytes. (enum: pct, vCPU, mb, kbps, rps, count)
       - `metricResolution`: (number) (format: float)
-    - `values`: [array of] {object}
+    - `values`: [array of] (required) {object}
         - `metadata`: {object}
-          - `containerId`: (string) (required)
+          - `containerId`: (string) (required) Container identifier.
           - `volumeId`: (string)
-        - `data`: [array of] {object}
+        - `data`: [array of] (required) {object}
             - `value`: (number) (required) (format: float)
             - `ts`: (string) (required) (format: date-time)
   - `http5xxResponses`: {object}
     - `metricInfo`: {object}
       - `metricId`: (string) (required) Type of metric to fetch (enum: cpu, memory, networkIngress, networkEgress, tcpConnectionsOpen, diskUsage, requests, http4xxResponses, http5xxResponses, bandwidth, bandwidthVolume)
-      - `metricUnit`: (string) (required) (enum: pct, vCPU, mb, kbps, rps, count)
+      - `metricUnit`: (string) (required) Wire unit for every sample field. 1000 millicores equal one CPU core. Memory bytes are not display megabytes. (enum: pct, vCPU, mb, kbps, rps, count)
       - `metricResolution`: (number) (format: float)
-    - `values`: [array of] {object}
+    - `values`: [array of] (required) {object}
         - `metadata`: {object}
-          - `containerId`: (string) (required)
+          - `containerId`: (string) (required) Container identifier.
           - `volumeId`: (string)
-        - `data`: [array of] {object}
+        - `data`: [array of] (required) {object}
             - `value`: (number) (required) (format: float)
             - `ts`: (string) (required) (format: date-time)
   - `bandwidth`: {object}
     - `metricInfo`: {object}
       - `metricId`: (string) (required) Type of metric to fetch (enum: cpu, memory, networkIngress, networkEgress, tcpConnectionsOpen, diskUsage, requests, http4xxResponses, http5xxResponses, bandwidth, bandwidthVolume)
-      - `metricUnit`: (string) (required) (enum: pct, vCPU, mb, kbps, rps, count)
+      - `metricUnit`: (string) (required) Wire unit for every sample field. 1000 millicores equal one CPU core. Memory bytes are not display megabytes. (enum: pct, vCPU, mb, kbps, rps, count)
       - `metricResolution`: (number) (format: float)
-    - `values`: [array of] {object}
+    - `values`: [array of] (required) {object}
         - `metadata`: {object}
-          - `containerId`: (string) (required)
+          - `containerId`: (string) (required) Container identifier.
           - `volumeId`: (string)
-        - `data`: [array of] {object}
+        - `data`: [array of] (required) {object}
             - `value`: (number) (required) (format: float)
             - `ts`: (string) (required) (format: date-time)
   - `bandwidthVolume`: {object}
     - `metricInfo`: {object}
       - `metricId`: (string) (required) Type of metric to fetch (enum: cpu, memory, networkIngress, networkEgress, tcpConnectionsOpen, diskUsage, requests, http4xxResponses, http5xxResponses, bandwidth, bandwidthVolume)
-      - `metricUnit`: (string) (required) (enum: pct, vCPU, mb, kbps, rps, count)
+      - `metricUnit`: (string) (required) Wire unit for every sample field. 1000 millicores equal one CPU core. Memory bytes are not display megabytes. (enum: pct, vCPU, mb, kbps, rps, count)
       - `metricResolution`: (number) (format: float)
-    - `values`: [array of] {object}
+    - `values`: [array of] (required) {object}
         - `metadata`: {object}
-          - `containerId`: (string) (required)
+          - `containerId`: (string) (required) Container identifier.
           - `volumeId`: (string)
-        - `data`: [array of] {object}
+        - `data`: [array of] (required) {object}
             - `value`: (number) (required) (format: float)
             - `ts`: (string) (required) (format: date-time)
 
@@ -166,6 +166,25 @@ Required permission: Project > Services > Deployment > View Observability
 GET /v1/projects/{projectId}/services/{serviceId}/metrics
 
 GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/metrics
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/metrics?queryType=range&startTime=2023-02-16T14%3A00%3A00.000Z&endTime=2023-02-16T15%3A00%3A00.000Z&duration=600&containerName=my-container-67d6d748c5-kgvwh&deploymentId=latest&time=2023-02-16T14%3A00%3A00.000Z"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/metrics?queryType=range&startTime=2023-02-16T14%3A00%3A00.000Z&endTime=2023-02-16T15%3A00%3A00.000Z&duration=600&containerName=my-container-67d6d748c5-kgvwh&deploymentId=latest&time=2023-02-16T14%3A00%3A00.000Z"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -176,6 +195,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/metrics
   "data": {
     "cpu": {
       "metricInfo": {
+        "metricId": "cpu",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -196,6 +216,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/metrics
     },
     "memory": {
       "metricInfo": {
+        "metricId": "memory",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -216,6 +237,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/metrics
     },
     "networkIngress": {
       "metricInfo": {
+        "metricId": "networkIngress",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -236,6 +258,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/metrics
     },
     "networkEgress": {
       "metricInfo": {
+        "metricId": "networkEgress",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -256,6 +279,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/metrics
     },
     "tcpConnectionsOpen": {
       "metricInfo": {
+        "metricId": "tcpConnectionsOpen",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -276,6 +300,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/metrics
     },
     "diskUsage": {
       "metricInfo": {
+        "metricId": "diskUsage",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -296,6 +321,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/metrics
     },
     "requests": {
       "metricInfo": {
+        "metricId": "requests",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -316,6 +342,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/metrics
     },
     "http4xxResponses": {
       "metricInfo": {
+        "metricId": "http4xxResponses",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -336,6 +363,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/metrics
     },
     "http5xxResponses": {
       "metricInfo": {
+        "metricId": "http5xxResponses",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -356,6 +384,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/metrics
     },
     "bandwidth": {
       "metricInfo": {
+        "metricId": "bandwidth",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -376,6 +405,7 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/metrics
     },
     "bandwidthVolume": {
       "metricInfo": {
+        "metricId": "bandwidthVolume",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -438,6 +468,7 @@ Options:
 {
   "cpu": {
     "metricInfo": {
+      "metricId": "cpu",
       "metricUnit": "pct",
       "metricResolution": 10
     },
@@ -458,6 +489,7 @@ Options:
   },
   "memory": {
     "metricInfo": {
+      "metricId": "memory",
       "metricUnit": "pct",
       "metricResolution": 10
     },
@@ -478,6 +510,7 @@ Options:
   },
   "networkIngress": {
     "metricInfo": {
+      "metricId": "networkIngress",
       "metricUnit": "pct",
       "metricResolution": 10
     },
@@ -498,6 +531,7 @@ Options:
   },
   "networkEgress": {
     "metricInfo": {
+      "metricId": "networkEgress",
       "metricUnit": "pct",
       "metricResolution": 10
     },
@@ -518,6 +552,7 @@ Options:
   },
   "tcpConnectionsOpen": {
     "metricInfo": {
+      "metricId": "tcpConnectionsOpen",
       "metricUnit": "pct",
       "metricResolution": 10
     },
@@ -538,6 +573,7 @@ Options:
   },
   "diskUsage": {
     "metricInfo": {
+      "metricId": "diskUsage",
       "metricUnit": "pct",
       "metricResolution": 10
     },
@@ -558,6 +594,7 @@ Options:
   },
   "requests": {
     "metricInfo": {
+      "metricId": "requests",
       "metricUnit": "pct",
       "metricResolution": 10
     },
@@ -578,6 +615,7 @@ Options:
   },
   "http4xxResponses": {
     "metricInfo": {
+      "metricId": "http4xxResponses",
       "metricUnit": "pct",
       "metricResolution": 10
     },
@@ -598,6 +636,7 @@ Options:
   },
   "http5xxResponses": {
     "metricInfo": {
+      "metricId": "http5xxResponses",
       "metricUnit": "pct",
       "metricResolution": 10
     },
@@ -618,6 +657,7 @@ Options:
   },
   "bandwidth": {
     "metricInfo": {
+      "metricId": "bandwidth",
       "metricUnit": "pct",
       "metricResolution": 10
     },
@@ -638,6 +678,7 @@ Options:
   },
   "bandwidthVolume": {
     "metricInfo": {
+      "metricId": "bandwidthVolume",
       "metricUnit": "pct",
       "metricResolution": 10
     },
@@ -692,6 +733,7 @@ await apiClient.get.service.metrics({
   "data": {
     "cpu": {
       "metricInfo": {
+        "metricId": "cpu",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -712,6 +754,7 @@ await apiClient.get.service.metrics({
     },
     "memory": {
       "metricInfo": {
+        "metricId": "memory",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -732,6 +775,7 @@ await apiClient.get.service.metrics({
     },
     "networkIngress": {
       "metricInfo": {
+        "metricId": "networkIngress",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -752,6 +796,7 @@ await apiClient.get.service.metrics({
     },
     "networkEgress": {
       "metricInfo": {
+        "metricId": "networkEgress",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -772,6 +817,7 @@ await apiClient.get.service.metrics({
     },
     "tcpConnectionsOpen": {
       "metricInfo": {
+        "metricId": "tcpConnectionsOpen",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -792,6 +838,7 @@ await apiClient.get.service.metrics({
     },
     "diskUsage": {
       "metricInfo": {
+        "metricId": "diskUsage",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -812,6 +859,7 @@ await apiClient.get.service.metrics({
     },
     "requests": {
       "metricInfo": {
+        "metricId": "requests",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -832,6 +880,7 @@ await apiClient.get.service.metrics({
     },
     "http4xxResponses": {
       "metricInfo": {
+        "metricId": "http4xxResponses",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -852,6 +901,7 @@ await apiClient.get.service.metrics({
     },
     "http5xxResponses": {
       "metricInfo": {
+        "metricId": "http5xxResponses",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -872,6 +922,7 @@ await apiClient.get.service.metrics({
     },
     "bandwidth": {
       "metricInfo": {
+        "metricId": "bandwidth",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -892,6 +943,7 @@ await apiClient.get.service.metrics({
     },
     "bandwidthVolume": {
       "metricInfo": {
+        "metricId": "bandwidthVolume",
         "metricUnit": "pct",
         "metricResolution": 10
       },
@@ -953,9 +1005,9 @@ print(response.data)
 {
   "cpu": {
     "metricInfo": {
+      "metricId": "cpu",
       "metricUnit": "pct",
-      "metricResolution": 10,
-      "metricId": "cpu"
+      "metricResolution": 10
     },
     "values": [
       {
@@ -974,9 +1026,9 @@ print(response.data)
   },
   "memory": {
     "metricInfo": {
+      "metricId": "memory",
       "metricUnit": "pct",
-      "metricResolution": 10,
-      "metricId": "cpu"
+      "metricResolution": 10
     },
     "values": [
       {
@@ -995,9 +1047,9 @@ print(response.data)
   },
   "networkIngress": {
     "metricInfo": {
+      "metricId": "networkIngress",
       "metricUnit": "pct",
-      "metricResolution": 10,
-      "metricId": "cpu"
+      "metricResolution": 10
     },
     "values": [
       {
@@ -1016,9 +1068,9 @@ print(response.data)
   },
   "networkEgress": {
     "metricInfo": {
+      "metricId": "networkEgress",
       "metricUnit": "pct",
-      "metricResolution": 10,
-      "metricId": "cpu"
+      "metricResolution": 10
     },
     "values": [
       {
@@ -1037,9 +1089,9 @@ print(response.data)
   },
   "tcpConnectionsOpen": {
     "metricInfo": {
+      "metricId": "tcpConnectionsOpen",
       "metricUnit": "pct",
-      "metricResolution": 10,
-      "metricId": "cpu"
+      "metricResolution": 10
     },
     "values": [
       {
@@ -1058,9 +1110,9 @@ print(response.data)
   },
   "diskUsage": {
     "metricInfo": {
+      "metricId": "diskUsage",
       "metricUnit": "pct",
-      "metricResolution": 10,
-      "metricId": "cpu"
+      "metricResolution": 10
     },
     "values": [
       {
@@ -1079,9 +1131,9 @@ print(response.data)
   },
   "requests": {
     "metricInfo": {
+      "metricId": "requests",
       "metricUnit": "pct",
-      "metricResolution": 10,
-      "metricId": "cpu"
+      "metricResolution": 10
     },
     "values": [
       {
@@ -1100,9 +1152,9 @@ print(response.data)
   },
   "http4xxResponses": {
     "metricInfo": {
+      "metricId": "http4xxResponses",
       "metricUnit": "pct",
-      "metricResolution": 10,
-      "metricId": "cpu"
+      "metricResolution": 10
     },
     "values": [
       {
@@ -1121,9 +1173,9 @@ print(response.data)
   },
   "http5xxResponses": {
     "metricInfo": {
+      "metricId": "http5xxResponses",
       "metricUnit": "pct",
-      "metricResolution": 10,
-      "metricId": "cpu"
+      "metricResolution": 10
     },
     "values": [
       {
@@ -1142,9 +1194,9 @@ print(response.data)
   },
   "bandwidth": {
     "metricInfo": {
+      "metricId": "bandwidth",
       "metricUnit": "pct",
-      "metricResolution": 10,
-      "metricId": "cpu"
+      "metricResolution": 10
     },
     "values": [
       {
@@ -1163,9 +1215,9 @@ print(response.data)
   },
   "bandwidthVolume": {
     "metricInfo": {
+      "metricId": "bandwidthVolume",
       "metricUnit": "pct",
-      "metricResolution": 10,
-      "metricId": "cpu"
+      "metricResolution": 10
     },
     "values": [
       {

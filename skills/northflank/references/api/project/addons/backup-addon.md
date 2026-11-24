@@ -19,27 +19,27 @@ Required permission: Project > Addons > General > Update
 - `backupType`: (string) The type of backup to perform. Defaults to `snapshot`. (enum: dump, snapshot)
 - `compressionType`: (string) The compression algorithm of the backup. Only applicable for dump backups. Defaults to `gz`. (enum: gz, zstd)
 - `customDestinationId`: (string) Custom destination to store the backup in. Only applicable for dump backups. If not specified, backup is stored in Northflank-managed destination. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `additionalDestinations`: [array of] {object}
+- `additionalDestinations`: [array of] List of destinations for which a backup should additionally be created. Only applicable for snapshot backups. {object}
    - `destinationId`: (string) (required) Additional custom back up destination that should be used to store the snapshot. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
    - `retentionTime`: (integer) Retention time of the additional back up in days.
    - `type`: (string) (required) The type of backup destination to use (enum: custom)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) The identifier for the backup.
   - `name`: (string) (required) The name of the backup.
   - `uid`: (string) (required) The unique id of the backup.
   - `status`: (string) (required) The current status of the backup. (enum: scheduled, in-progress, completed, aborting, aborted, failed, not-supported)
   - `createdAt`: (string) (required) The time the backup was initiated.
   - `completedAt`: (string) The time the backup was completed.
-  - `config`: {object}
-    - `source`: {object}
+  - `config`: {object} (required) Data about the backup configuration.
+    - `source`: {object} Data about the source of the backup.
       - `type`: (string) The type of backup. (enum: fileUpload, liveInstance, snapshot, externalDump, sameAddon)
     - `size`: (string) (required) The size of the backup, in bytes
     - `addonVersion`: (string) The version of the addon at the time of the backup. If the backup type is `snapshot`, the addon will be restored to this version when the backup is restored.
-  - `lastRestore`: {object}
+  - `lastRestore`: {object} Details about the most recent restore of this backup.
     - `restoreTimestamp`: (string) (required) The time the backup was initiated. (format: date-time)
     - `status`: (string) (required) The current status of the restore. (enum: scheduled, in-progress, completed, aborting, aborted, failed, not-supported)
     - `completedAt`: (string) The time the restore was completed. (format: date-time)
@@ -59,7 +59,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"Example Backup","backupType":"snapshot","compressionType":"gz","additionalDestinations":[{"destinationId":"example-backup-destination","retentionTime":7,"type":"custom"}]}' \
-  https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/backups
+  "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/backups"
 ```
 
 ```javascript
@@ -94,10 +94,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/backups"
 
-payload = {"name":"Example Backup","backupType":"snapshot","compressionType":"gz","additionalDestinations":[{"destinationId":"example-backup-destination","retentionTime":7,"type":"custom"}]}
+payload = "{\"name\":\"Example Backup\",\"backupType\":\"snapshot\",\"compressionType\":\"gz\",\"additionalDestinations\":[{\"destinationId\":\"example-backup-destination\",\"retentionTime\":7,\"type\":\"custom\"}]}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -115,7 +115,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/addons/{addonId}/backups"
 
-  var jsonStr = []byte(`{"name":"Example Backup","backupType":"snapshot","compressionType":"gz","additionalDestinations":[{"destinationId":"example-backup-destination","retentionTime":7,"type":"custom"}]}`)
+  var jsonStr = []byte("{\"name\":\"Example Backup\",\"backupType\":\"snapshot\",\"compressionType\":\"gz\",\"additionalDestinations\":[{\"destinationId\":\"example-backup-destination\",\"retentionTime\":7,\"type\":\"custom\"}]}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

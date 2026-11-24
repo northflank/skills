@@ -23,46 +23,23 @@ Required permission: Account > Templates > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `previewTemplateRuns`: [array of] {object}
-     - `apiVersion`: (string) (required) The version of the Northflank API to run the template against. (enum: v1.2)
-     - `options`: {object}
-       - `concurrencyPolicy`: (string) Defines the concurrency behaviour of the template with respect to parallel runs. (enum: allow, queue, forbid, latest, replace)
-       - `nameFormat`: (string) The format of the automatically generated preview name. This is a parsed ref string.
-       - `prefixName`: (boolean) If true, the preview name will default to the front of the resource name.
-       - `useBranchContents`: (boolean) If true, and gitops is enabled, the preview will run based on the contents of the branch that triggered it, rather than the set branch.
-       - `schedule`: {object}
-         - `mon`: {object}
-           - `startTime`: (integer)
-           - `endTime`: (integer)
-         - `tue`: {object}
-           - `startTime`: (integer)
-           - `endTime`: (integer)
-         - `wed`: {object}
-           - `startTime`: (integer)
-           - `endTime`: (integer)
-         - `thu`: {object}
-           - `startTime`: (integer)
-           - `endTime`: (integer)
-         - `fri`: {object}
-           - `startTime`: (integer)
-           - `endTime`: (integer)
-         - `sat`: {object}
-           - `startTime`: (integer)
-           - `endTime`: (integer)
-         - `sun`: {object}
-           - `startTime`: (integer)
-           - `endTime`: (integer)
-       - `expiry`: {object}
-         - `previewLifetime`: (integer) If set, preview environments will be automatically deleted after this many minutes since their last update.
-         - `resetOnUpdate`: (boolean) If `true`, the expiry time for an existing preview will be reset when it is ran again.
-     - `id`: (string) (required) Identifier for the template run
-     - `templateId`: (string) (required) Identifier for the template
-     - `status`: (string) (required) Status of the template run (enum: pending, running, success, failure)
-     - `createdAt`: (string) time of creation (format: date-time)
-     - `updatedAt`: (string) time of update (format: date-time)
-- `pagination`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `previewTemplateRuns`: [array of] (required) An array of template run objects. {object}
+     - `id`: (string) (required) Identifier of the run.
+     - `name`: (string) Optional name of the run.
+     - `description`: (string) Optional description of the run.
+     - `apiVersion`: (string) Template API version.
+     - `templateId`: (string) Identifier of the template, when available.
+     - `environmentId`: (string) Identifier of the preview environment, when available.
+     - `status`: (string) (required) Status of the template run (enum: pending, running, success, failure, aborted, aborting, queued, unknown, skipped, waiting, retrying, async_wait, approval_wait)
+     - `concluded`: (boolean) (required) Whether execution has concluded.
+     - `startedAt`: (string) When execution started. (format: date-time)
+     - `concludedAt`: (string) When execution concluded. (format: date-time)
+     - `createdAt`: (string) (required) When the run was created. (format: date-time)
+     - `updatedAt`: (string) (required) When the run was last updated. (format: date-time)
+     - `detailsHidden`: (boolean) (required) Run details include available public results. Sensitive inputs and results are omitted.
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -73,6 +50,25 @@ GET /v1/projects/{projectId}/pipelines/{pipelineId}/preview-envs/runs
 
 GET /v1/teams/{teamId}/projects/{projectId}/pipelines/{pipelineId}/preview-envs/runs
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/pipelines/{pipelineId}/preview-envs/runs?per_page=50&page=1&status=success"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/pipelines/{pipelineId}/preview-envs/runs?per_page=50&page=1&status=success"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: A list of preview template runs.
@@ -82,13 +78,16 @@ GET /v1/teams/{teamId}/projects/{projectId}/pipelines/{pipelineId}/preview-envs/
   "data": {
     "previewTemplateRuns": [
       {
-        "apiVersion": "v1.2",
-        "options": {
-          "concurrencyPolicy": "allow"
-        },
-        "id": "3dd592f6-ce63-45ee-acf8-13dc5ec5235c",
-        "templateId": "example-template",
-        "status": "pending"
+        "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
+        "name": "Production deployment",
+        "description": "Deploy the latest release.",
+        "status": "success",
+        "concluded": true,
+        "startedAt": "2026-01-01T12:00:00.000Z",
+        "concludedAt": "2026-01-01T12:01:00.000Z",
+        "createdAt": "2026-01-01T12:00:00.000Z",
+        "updatedAt": "2026-01-01T12:01:00.000Z",
+        "detailsHidden": false
       }
     ]
   },
@@ -133,13 +132,16 @@ Options:
 {
   "previewTemplateRuns": [
     {
-      "apiVersion": "v1.2",
-      "options": {
-        "concurrencyPolicy": "allow"
-      },
-      "id": "3dd592f6-ce63-45ee-acf8-13dc5ec5235c",
-      "templateId": "example-template",
-      "status": "pending"
+      "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
+      "name": "Production deployment",
+      "description": "Deploy the latest release.",
+      "status": "success",
+      "concluded": true,
+      "startedAt": "2026-01-01T12:00:00.000Z",
+      "concludedAt": "2026-01-01T12:01:00.000Z",
+      "createdAt": "2026-01-01T12:00:00.000Z",
+      "updatedAt": "2026-01-01T12:01:00.000Z",
+      "detailsHidden": false
     }
   ]
 }
@@ -174,13 +176,16 @@ await apiClient.list.previewTemplateRuns({
   "data": {
     "previewTemplateRuns": [
       {
-        "apiVersion": "v1.2",
-        "options": {
-          "concurrencyPolicy": "allow"
-        },
-        "id": "3dd592f6-ce63-45ee-acf8-13dc5ec5235c",
-        "templateId": "example-template",
-        "status": "pending"
+        "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
+        "name": "Production deployment",
+        "description": "Deploy the latest release.",
+        "status": "success",
+        "concluded": true,
+        "startedAt": "2026-01-01T12:00:00.000Z",
+        "concludedAt": "2026-01-01T12:01:00.000Z",
+        "createdAt": "2026-01-01T12:00:00.000Z",
+        "updatedAt": "2026-01-01T12:01:00.000Z",
+        "detailsHidden": false
       }
     ]
   },
@@ -226,13 +231,16 @@ print(response.data)
 {
   "previewTemplateRuns": [
     {
-      "apiVersion": "v1.2",
-      "options": {
-        "concurrencyPolicy": "allow"
-      },
-      "id": "3dd592f6-ce63-45ee-acf8-13dc5ec5235c",
-      "templateId": "example-template",
-      "status": "pending"
+      "id": "110ddb52-bdcd-482d-8ac2-05ba580afe2f",
+      "name": "Production deployment",
+      "description": "Deploy the latest release.",
+      "status": "success",
+      "concluded": true,
+      "startedAt": "2026-01-01T12:00:00.000Z",
+      "concludedAt": "2026-01-01T12:01:00.000Z",
+      "createdAt": "2026-01-01T12:00:00.000Z",
+      "updatedAt": "2026-01-01T12:01:00.000Z",
+      "detailsHidden": false
     }
   ]
 }

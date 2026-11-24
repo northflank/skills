@@ -20,20 +20,20 @@ Required permission: Project > Addons > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `addons`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `addons`: [array of] (required) An array of addons. {object} Information about an addon.
      - `id`: (string) (required) Identifier for the addon.
      - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
      - `name`: (string) (required) Addon name.
      - `appId`: (string) (required) Full identifier for the addon.
      - `stageId`: (string) ID of the environment the addon belongs to.
-     - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+     - `tags`: [array of] (required) An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `description`: (string) A short description of the addon.
-     - `spec`: {object}
+     - `spec`: {object} (required) Details about the addon's specifications.
        - `type`: (string) (required) The type of the addon
      - `status`: (string) (required) The current state of the addon. (enum: preDeployment, triggerAllocation, allocating, postDeployment, running, paused, scaling, upgrading, resetting, backup, restore, failed, error, errorAllocating, deleting, deleted)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -43,6 +43,25 @@ Required permission: Project > Addons > General > Read
 GET /v1/projects/{projectId}/addons
 
 GET /v1/teams/{teamId}/projects/{projectId}/addons
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/addons?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/addons?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -62,7 +81,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/addons
         "spec": {
           "type": "mongodb"
         },
-        "status": "running"
+        "status": "running",
+        "tags": []
       }
     ]
   },
@@ -110,7 +130,8 @@ Options:
       "spec": {
         "type": "mongodb"
       },
-      "status": "running"
+      "status": "running",
+      "tags": []
     }
   ]
 }
@@ -152,7 +173,8 @@ await apiClient.list.addons({
         "spec": {
           "type": "mongodb"
         },
-        "status": "running"
+        "status": "running",
+        "tags": []
       }
     ]
   },

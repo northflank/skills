@@ -26,16 +26,35 @@ Required permission: Project > Secrets > Services > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `buildArguments`: {object}
-  - `buildFiles`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `buildArguments`: {object} (required) The build arguments, formatted as a JSON object. If the `show` parameter is set to `this`, this will only contain secrets saved to this entity. If the `show` parameter is set to `inherited`, this will only contain secrets inherited from linked secret groups. Otherwise, this will contain both.
+  - `buildFiles`: {object} (required) The build secret files, formatted as a JSON object. If the `show` parameter is set to `this`, this will only contain files saved to this entity. If the `show` parameter is set to `inherited`, this will only contain files inherited from linked secret groups. Otherwise, this will contain both.
 
 ### API reference
 
 GET /v1/projects/{projectId}/services/{serviceId}/build-arguments
 
 GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/build-arguments
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-arguments?show=all&replaceTemplatedValues=true"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/build-arguments?show=all&replaceTemplatedValues=true"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

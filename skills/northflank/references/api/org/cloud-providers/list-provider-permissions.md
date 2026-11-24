@@ -8,22 +8,41 @@ Lists required cloud provider permissions for the selected integration features
 
 {object}
 - `provider`: (string) Cloud provider to retrieve required permissions for. (enum: aws, aws-eusc, gcp)
-- `features`: [array of] (string) The type of provider integration. (enum: byoc, byoc-static-egress, byoc-custom-launch-templates, byoc-custom-vpc, byoc-logs, cloudfront, route53, registry-pull, registry-push, opentofu, workload-identity, workload-identity-managed)
+- `features`: [array of] Selected integration features to retrieve required permissions for. (string) The type of provider integration. (enum: byoc, byoc-static-egress, byoc-custom-launch-templates, byoc-custom-vpc, byoc-logs, cloudfront, route53, registry-pull, registry-push, opentofu, workload-identity, workload-identity-managed)
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `permissions`: [array of] (string)
-  - `roles`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `permissions`: [array of] (required) Permissions required for the selected integration features. (string)
+  - `roles`: [array of] Cloud provider roles covering the required permissions (GCP only). {object}
      - `id`: (string) (required) Cloud provider role ID.
      - `name`: (string) (required) Cloud provider role name.
      - `description`: (string) (required) Cloud provider role description.
-     - `permissions`: [array of] (string)
+     - `permissions`: [array of] (required) Required permissions covered by this role. (string)
 
 ### API reference
 
 GET /v1/cloud-providers/permissions
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/cloud-providers/permissions?provider=aws&features=byoc"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/cloud-providers/permissions?provider=aws&features=byoc"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -32,11 +51,17 @@ GET /v1/cloud-providers/permissions
 ```json
 {
   "data": {
+    "permissions": [
+      "eks:CreateCluster"
+    ],
     "roles": [
       {
         "id": "roles/container.admin",
         "name": "Kubernetes Engine Admin",
-        "description": "Provides administrative access to Kubernetes clusters."
+        "description": "Provides administrative access to Kubernetes clusters.",
+        "permissions": [
+          "container.clusters.create"
+        ]
       }
     ]
   }
@@ -65,11 +90,17 @@ Options:
 
 ```json
 {
+  "permissions": [
+    "eks:CreateCluster"
+  ],
   "roles": [
     {
       "id": "roles/container.admin",
       "name": "Kubernetes Engine Admin",
-      "description": "Provides administrative access to Kubernetes clusters."
+      "description": "Provides administrative access to Kubernetes clusters.",
+      "permissions": [
+        "container.clusters.create"
+      ]
     }
   ]
 }
@@ -97,11 +128,17 @@ await apiClient.list.cloud.permissions({
 ```json
 {
   "data": {
+    "permissions": [
+      "eks:CreateCluster"
+    ],
     "roles": [
       {
         "id": "roles/container.admin",
         "name": "Kubernetes Engine Admin",
-        "description": "Provides administrative access to Kubernetes clusters."
+        "description": "Provides administrative access to Kubernetes clusters.",
+        "permissions": [
+          "container.clusters.create"
+        ]
       }
     ]
   },

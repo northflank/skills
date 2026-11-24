@@ -11,7 +11,7 @@ Required permission: Account > Cloud > Clusters > Create
 {object}
 - `name`: (string) (required) The name of the cluster. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 20)
 - `description`: (string) The description of the cluster. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-- `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, aws-eusc, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, byok)
+- `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, aws-eusc, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, openai, anthropic, byok)
 - `region`: (string) Region of the cluster. Can only be updated for BYOK clusters.
 - `kubernetesVersion`: (string) Deprecated: This field is no longer used, the version is now set by the platform.
 - `integrationId`: (string) Existing integration to use for this cluster. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
@@ -33,7 +33,7 @@ Required permission: Account > Cloud > Clusters > Create
        - `storageSize`: {object}
          - `minValidSize`: (integer) Enforces a minimum storage size per addon or volume.
          - `maxValidSize`: (integer) Enforces a maximum storage size per addon or volume.
-         - `suggestedOptions`: [array of] (integer)
+         - `suggestedOptions`: [array of] Specific storage size options to suggest in the UI. (integer)
        - `platform`: {object}
          - `supportedResources`: [array of] (string) (enum: addon, volume, build-cache)
   - `snapshotClasses`: [array of] {object}
@@ -41,43 +41,47 @@ Required permission: Account > Cloud > Clusters > Create
      - `name`: (string) (required)
      - `description`: (string)
      - `kubernetesName`: (string) (required)
-- `nodePools`: (multiple options) [array of] {object}
+- `nodePools`: (multiple options) (required) An array of node pools for BYOC or BYOK. [array of] An array of node pools for BYOC. {object} Node pool configuration for BYOC clusters
     - `id`: (string) (required) ID of existing node pool. Must be passed when modifying existing node pools. Not relevant for new node pools (pattern: (^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)|(^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89ABab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$)) (min length: 3) (max length: 63)
     - `nodeType`: (string) (required) Machine type to be used by the node pool.
-    - `oci`: {object}
+    - `oci`: {object} OCI instance specific settings. Must respect ratios as determined by the selected node type.
       - `ocpu`: (integer) (required)
       - `memory`: (integer) (required)
-    - `gcp`: {object}
+    - `gcp`: {object} GCP specific settings.
       - `enablePrivateNodes`: (boolean) Set this flag to disable public IP assignment for nodes in this node pool.
-    - `azure`: {object}
+    - `azure`: {object} Azure specific settings.
       - `systemPool`: (boolean) When 'provider' is 'azure', at least one system node pool is required per cluster.
       - `enablePublicNodeIp`: (boolean) When 'provider' is 'azure', set this flag to use public node IPs.
       - `vnetSubnetId`: (string) ID of the vnet subnet to use.
-    - `aws`: {object}
-      - `launchTemplate`: {object}
+    - `aws`: {object} AWS specific node pool settings.
+      - `launchTemplate`: {object} Specify a launch template to use for this node pool. When using a launch template, the disk size selection on the node pool level will be ignored.
         - `id`: (string) (required) ID of the launch template to use.
         - `version`: (integer) (required) Version of the launch template that should be used.
-    - `nebius`: {object}
+      - `rootVolume`: {object} Custom performance for the gp3 root volume. Requires AWS BYOC policy v3 or later. Omit to use automatic defaults.
+        - `iops`: (integer) Provisioned IOPS for the gp3 root volume. Immutable after creation.
+        - `throughput`: (integer) Provisioned throughput in MiB/s for the gp3 root volume. Immutable after creation.
+      - `useLocalDisks`: (boolean) Use local disks for container images and ephemeral storage of workloads. Omit to enable automatically on eligible new pools. Enabling requires AWS BYOC policy v3 or later. This setting cannot change after creation.
+    - `nebius`: {object} Nebius specific node pool settings.
       - `enablePublicNodeIps`: (boolean) Set this flag to assign public IPs to nodes in this node pool.
       - `osVersion`: (string) OS image version for nodes in this node pool.
       - `gpuDriverVersion`: (string) GPU driver version for nodes in this node pool.
       - `gpuClusterId`: (string) Nebius GPU cluster to attach the node pool to.
     - `nodeCount`: (integer) (required) Number of nodes to the node pool should be provisioned with.
-    - `autoscaling`: {object}
+    - `autoscaling`: {object} (nullable) Auto scaling settings to use for the node pool. Requires that the cloud provider supports this feature.
       - `enabled`: (boolean) Whether autoscaling is enabled for the node pool.
       - `min`: (integer) The minimum number of nodes the node pool can be scaled down to.
       - `max`: (integer) The maximum number of nodes the node pool can be scaled up to.
     - `computeResources`: {object}
       - `gpu`: {object}
-        - `timeslicing`: {object}
+        - `timeslicing`: {object} Time-slicing configuration object.
           - `enabled`: (boolean) Whether or not to enable time-slicing on the GPU.
           - `numSlices`: (number) Sets the amount of slices per GPU, e.g. how many pods may be scheduled concurrently on each GPU. (format: float)
     - `preemptible`: (boolean) Configures node pool with preemptible / spot instances if enabled.
     - `diskType`: (string) The disk type to use.
     - `diskSize`: (integer) (required) Disk size in GB
-    - `availabilityZones`: [array of] (string)
-    - `subnets`: [array of] (string)
-    - `scheduling`: {object}
+    - `availabilityZones`: [array of] Zones in which the node pool should be provisioned. (string)
+    - `subnets`: [array of] Subnets in which the node pool should be provisioned. Required if provider is `oci`. (string)
+    - `scheduling`: {object} Define basic workload scheduling restrictions for this node pool
       - `allowJobs`: (boolean) Allow jobs to schedule to this node pool
       - `onlyGpuJobs`: (boolean) Restrict job scheduling to jobs which have GPU resources configured. Only relevant for GPU node pools.
       - `allowServices`: (boolean) Allow services to schedule to this node pool
@@ -86,7 +90,7 @@ Required permission: Account > Cloud > Clusters > Create
       - `allowBuilds`: (boolean) Allow builds to schedule to this node pool
       - `onlyGpuBuilds`: (boolean) Restrict build scheduling to builds which have GPU resources configured. Only relevant for GPU node pools.
       - `allowCeph`: (boolean) Allow the placement of Ceph pods
-    - `labels`: {object} | [array of] {object}
+    - `labels`: {object} Set of label keys and values that can be used for advanced scheduling in combination with resource tag scheduling rules. | [array of] An array of node pools for BYOK. {object} Node pool configuration for BYOK clusters
     - `id`: (string) (required) ID of the node pool. Must be passed when modifying existing node pools. Not relevant for new node pools (pattern: (^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)|(^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89ABab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$)) (min length: 3) (max length: 63)
     - `providerId`: (string) (required) ID which identifies kubernetes nodes as belonging to this pool. (pattern: (^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)|(^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89ABab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$)) (min length: 3) (max length: 63)
     - `computeResources`: {object}
@@ -96,16 +100,16 @@ Required permission: Account > Cloud > Clusters > Create
         - `resources`: {object}
           - `memoryInfo`: {object}
             - `sizeInGiB`: (number) Memory amount of the GPU in Gib. (format: float)
-        - `mig`: {object}
+        - `mig`: {object} Multi-Instance GPU (MIG). configuration object.
           - `enabled`: (boolean) Whether or not to enable Multi-Instance GPU (MIG).
-          - `partitions`: [array of] (string)
-        - `timeslicing`: {object}
+          - `partitions`: [array of] The partitions to configure on the GPU. (string)
+        - `timeslicing`: {object} Time-slicing configuration object.
           - `enabled`: (boolean) Whether or not to enable time-slicing on the GPU.
           - `numSlices`: (number) Sets the amount of slices per GPU, e.g. how many pods may be scheduled concurrently on each GPU. (format: float)
         - `count`: (integer) Number of GPUs per node.
     - `defaultPool`: (boolean) Fallback pool to which nodes which do not match any defined node pool are assigned. Exactly one default pool is required.
     - `preemptible`: (boolean) Configures node pool with preemptible / spot instances if enabled.
-    - `scheduling`: {object}
+    - `scheduling`: {object} Define basic workload scheduling restrictions for this node pool
       - `allowJobs`: (boolean) Allow jobs to schedule to this node pool
       - `onlyGpuJobs`: (boolean) Restrict job scheduling to jobs which have GPU resources configured. Only relevant for GPU node pools.
       - `allowServices`: (boolean) Allow services to schedule to this node pool
@@ -116,27 +120,27 @@ Required permission: Account > Cloud > Clusters > Create
       - `allowCeph`: (boolean) Allow the placement of Ceph pods
     - `platform`: {object}
       - `architecture`: (string) Platform architecture of the underlying node type. (enum: amd64, arm64)
-    - `labels`: {object}
+    - `labels`: {object} Set of label keys and values that can be used for advanced scheduling in combination with resource tag scheduling rules.
 - `settings`: {object}
   - `builds`: {object}
     - `mode`: (string) Determines where builds are run: on Northflank infrastructure (paas), on this cluster (internal) or on a dedicated build cluster (build-cluster). (enum: paas, internal, build-cluster)
     - `plan`: (string) Plan to use for builds if they are run on the cluster (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
     - `clusterId`: (string) Cluster to use for scheduling builds (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
-    - `caching`: {object}
+    - `caching`: {object} Cache settings for builds
       - `allow`: (boolean) Whether to allow local disk based caching for builds.
       - `storageClassName`: (string) Storage class used by default for local disk based caching.
   - `registry`: {object}
     - `mode`: (string) Determines where built images are stored: in the Northflank registry (paas) or in a self-hosted registry. (enum: paas, self-hosted)
     - `registryId`: (string) Credentials to use for storing of images. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
-  - `logging`: (multiple options) {object}
-     - `mode`: (string) The logging mode. `paas` stores logs on Northflank infrastructure. (enum: paas) | {object}
+  - `logging`: (multiple options) Logging settings {object} Logging via PaaS.
+     - `mode`: (string) The logging mode. `paas` stores logs on Northflank infrastructure. (enum: paas) | {object} Logging via Loki (S3 storage).
      - `mode`: (string) (required) The logging mode. `loki` stores logs in your own storage via Loki. (enum: loki)
      - `loki`: {object}
        - `storageType`: (string) (required) (enum: s3)
        - `s3BucketName`: (string) (required) Name of the S3 bucket used for Loki log storage.
        - `s3AccessKey`: (string) (required) Access key for the S3 bucket used for Loki log storage.
        - `s3SecretKey`: (string) (required) Secret key for the S3 bucket used for Loki log storage.
-       - `s3Region`: (string) (required) Region of the S3 bucket used for Loki log storage. | {object}
+       - `s3Region`: (string) (required) Region of the S3 bucket used for Loki log storage. | {object} Logging via Loki (GCS storage).
      - `mode`: (string) (required) The logging mode. `loki` stores logs in your own storage via Loki. (enum: loki)
      - `loki`: {object}
        - `storageType`: (string) (required) (enum: gcs)
@@ -148,11 +152,11 @@ Required permission: Account > Cloud > Clusters > Create
     - `istio`: {object}
       - `enablePublicLoadBalancer`: (boolean) Whether the cluster runs a public ingress load balancer. Defaults to true.
       - `enablePrivateLoadBalancer`: (boolean) Whether the cluster runs a VPC ingress load balancer. Defaults to false; BYOK exposure is customer-controlled.
-      - `privateLoadBalancerAwsSecurityGroupId`: (string) Customer-managed frontend security group for a private AWS NLB managed by the AWS Load Balancer Controller. (pattern: ^sg-(?:[a-f0-9]{8}|[a-f0-9]{17})$)
-      - `publicLoadBalancer`: {object}
+      - `privateLoadBalancerAwsSecurityGroupId`: (string) (nullable) Customer-managed frontend security group for a private AWS NLB managed by the AWS Load Balancer Controller. (pattern: ^sg-(?:[a-f0-9]{8}|[a-f0-9]{17})$)
+      - `publicLoadBalancer`: {object} Customer configuration for a BYOK ingress Service. Immutable after first assignment; exposure is controlled by the customer.
         - `serviceAnnotations`: {object}
         - `loadBalancerClass`: (string) (pattern: ^(?:(?=[^/]{1,253}\/)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\/)?[a-zA-Z0-9](?:[a-zA-Z0-9_.-]{0,61}[a-zA-Z0-9])?(?![\s\S]))
-      - `privateLoadBalancer`: {object}
+      - `privateLoadBalancer`: {object} Customer configuration for a BYOK ingress Service. Immutable after first assignment; exposure is controlled by the customer.
         - `serviceAnnotations`: {object}
         - `loadBalancerClass`: (string) (pattern: ^(?:(?=[^/]{1,253}\/)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\/)?[a-zA-Z0-9](?:[a-zA-Z0-9_.-]{0,61}[a-zA-Z0-9])?(?![\s\S]))
   - `vanityDomains`: {object}
@@ -166,9 +170,9 @@ Required permission: Account > Cloud > Clusters > Create
       - `zoneName`: (string) (required)
       - `integrationId`: (string) (required)
   - `infrastructure`: {object}
-    - `workloads`: {object}
+    - `workloads`: {object} DEPRECATED: This field will be removed in the near future.
       - `runtimeClass`: (string) Defines which runtime scheduling constraints apply for workloads (enum: none, gvisor, kata-clh, kata-qemu)
-    - `builds`: {object}
+    - `builds`: {object} DEPRECATED: This field will be removed in the near future.
       - `runtimeClass`: (string) Defines which runtime scheduling constraints apply for builds (enum: none, gvisor, kata-clh, kata-qemu)
     - `sandboxing`: {object}
       - `installGvisor`: (boolean)
@@ -192,78 +196,78 @@ Required permission: Account > Cloud > Clusters > Create
       - `enableSingleReadWriteStorage`: (boolean) Configure Ceph to be used as default storage class for single read write storage. This will replace the default storage of the cloud provider.
       - `enableErasureCoding`: (boolean) Configure Ceph to be set up with erasure coding. This will be less fault tolerant but more cost effective.
       - `enableTopologyAwareScheduling`: (boolean) Configure Ceph to be set up with topology aware scheduling, enforcing deployment across multiple zones.
-  - `requestModifiers`: {object}
-    - `services`: {object}
+  - `requestModifiers`: {object} Allows customising request modifier values.
+    - `services`: {object} Request modifiers for services
       - `cpu`: (number) (required) (format: float)
       - `memory`: (number) (required) (format: float)
-    - `jobs`: {object}
+    - `jobs`: {object} Request modifiers for jobs
       - `cpu`: (number) (required) (format: float)
       - `memory`: (number) (required) (format: float)
-    - `builds`: {object}
+    - `builds`: {object} Request modifiers for builds
       - `cpu`: (number) (required) (format: float)
       - `memory`: (number) (required) (format: float)
-    - `addons`: {object}
+    - `addons`: {object} Request modifiers for addons
       - `cpu`: (number) (required) (format: float)
       - `memory`: (number) (required) (format: float)
-- `restrictions`: {object}
+- `restrictions`: {object} BYOC restrictions configuration for controlling team access
   - `enabled`: (boolean) (required) Enable or disable BYOC restrictions for this entity
-  - `teams`: [array of] {object}
+  - `teams`: [array of] List of teams that have access to this BYOC cluster {object}
      - `teamId`: (string) (required) The ID of the team that has access to this BYOC cluster (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 45)
-- `gcp`: {object}
+- `gcp`: {object} GCP specific data. Required when `provider` is `gcp`
   - `networking`: {object}
     - `network`: (string) Name of the GCP network the cluster should be created in. By default a new network will be created.
     - `subnetwork`: (string) Name of the GCP subnetwork the cluster should be created in. By default a new subnetwork will be created.
   - `enableAuthorizedIpRanges`: (boolean) Whether access to the Kubernetes API server should be restricted to authorized IP ranges.
-  - `authorizedIpRanges`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
+  - `authorizedIpRanges`: [array of] IP ranges that are authorized to access the Kubernetes API server. (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
   - `projectId`: (string) GCP Project ID (pattern: ^[a-z][a-z0-9-]{4,28}[a-z0-9]$)
-- `aws`: {object}
+- `aws`: {object} AWS specific data. Required when `provider` is `aws` or `aws-eusc`.
   - `enablePublicAccessCidrs`: (boolean) Whether access to the public Kubernetes API endpoint should be restricted to specific CIDR ranges.
-  - `publicAccessCidrs`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
+  - `publicAccessCidrs`: [array of] CIDR ranges that are allowed to access the public Kubernetes API endpoint. (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
   - `subnetConfiguration`: {object}
     - `mode`: (string) (required) The mode of the AWS subnet configuration (enum: default-subnets-for-azs, explicit-subnets)
     - `vpcId`: (string) Id of the VPC
-    - `subnets`: [array of] (string)
+    - `subnets`: [array of] (required) List of subnets the cluster should be created for. At least 2 must be specified. (string)
   - `vpcEgress`: (boolean) If egress traffic from the cluster should come from a single static egress IP.
-- `oci`: {object}
-  - `vcnConfiguration`: {object}
+- `oci`: {object} OCI specific data. Required when `provider` is `oci`.
+  - `vcnConfiguration`: {object} (required)
     - `vcnId`: (string) (required) ID of the OCI VCN the cluster should be created in.
     - `subnetIdForKubernetesApi`: (string) (required) ID of the subnet to use for the Kubernetes API endpoint.
-    - `subnetIdsForServiceLBs`: [array of] (string)
-- `azure`: {object}
+    - `subnetIdsForServiceLBs`: [array of] (required) IDs of the subnets to use for service load balancers. (string)
+- `azure`: {object} Azure specific data. Required when `provider` is `azure`.
   - `networking`: {object}
     - `vnetConfiguration`: {object}
       - `mode`: (string) (required) The vnet mode to use for this cluster. Use this to switch between creation of a new vnet per cluster or specifying a custom vnet. (enum: create-default, custom-vnet)
       - `vnetId`: (string) Azure vnetId that should be used for this cluster. By default a new vnet will be created.
     - `networkPluginMode`: (string) Optional setting to configure overlay mode on Azure. (enum: overlay)
   - `enableAuthorizedIpRanges`: (boolean) Whether access to the Kubernetes API server should be restricted to authorized IP ranges.
-  - `authorizedIpRanges`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
-- `coreweave`: {object}
+  - `authorizedIpRanges`: [array of] IP ranges that are authorized to access the Kubernetes API server. (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
+- `coreweave`: {object} CoreWeave specific data. Required when `provider` is `coreweave`.
   - `zone`: (string) (required) AZ of the cluster
-  - `network`: {object}
+  - `network`: {object} Network settings
     - `networkMode`: (string) (required) The network mode to use for this cluster. Use this to switch between the default network configuration and a custom VPC. (enum: create-default, custom)
     - `vpcId`: (string) ID of the CoreWeave VPC to use for this cluster.
     - `customPrefixNames`: {object}
       - `podCidrName`: (string) (required) Name of the VPC prefix to use for the pod CIDR.
       - `serviceCidrName`: (string) (required) Name of the VPC prefix to use for the service CIDR.
-      - `internalLbCidrNames`: [array of] (string)
-- `nebius`: {object}
+      - `internalLbCidrNames`: [array of] (required) Names of the VPC prefixes to use for internal load balancer CIDRs. (string)
+- `nebius`: {object} Nebius specific data. Required when `provider` is `nebius`.
   - `projectId`: (string) (required) Nebius project ID to place the cluster in.
   - `subnetId`: (string) (required) Nebius VPC subnet ID for the cluster.
-- `byok`: {object}
+- `byok`: {object} BYOK specific data. Required when `provider` is `byok`.
   - `nodePoolProviderIdLabel`: (string) (required) The node label used to identify which provider node pool a node belongs to.
-- `coordinates`: {object}
+- `coordinates`: {object} Geographic coordinates of the cluster. Optional, used for CDN geo-routing. Only applicable when `provider` is `byok`.
   - `latitude`: (number) (required) (format: float)
   - `longitude`: (number) (required) (format: float)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) The ID of cluster
   - `name`: (string) (required) The name of the cluster. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 20)
   - `entityType`: (string) (enum: org, team)
   - `description`: (string) The description of the cluster. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, aws-eusc, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, byok)
+  - `provider`: (string) (required) Cloud provider to be used for the selected resource (enum: aws, aws-eusc, azure, civo, gcp, oci, cloudflare, coreweave, nebius, aiven, backblaze, akamai, planetscale, openai, anthropic, byok)
   - `region`: (string) Region of the cluster. Can only be updated for BYOK clusters.
   - `status`: {object}
     - `state`: {object}
@@ -290,7 +294,7 @@ Required permission: Account > Cloud > Clusters > Create
           - `storageSize`: {object}
             - `minValidSize`: (integer) Enforces a minimum storage size per addon or volume.
             - `maxValidSize`: (integer) Enforces a maximum storage size per addon or volume.
-            - `suggestedOptions`: [array of] (integer)
+            - `suggestedOptions`: [array of] Specific storage size options to suggest in the UI. (integer)
           - `platform`: {object}
             - `supportedResources`: [array of] (string) (enum: addon, volume, build-cache)
     - `snapshotClasses`: [array of] {object}
@@ -298,48 +302,52 @@ Required permission: Account > Cloud > Clusters > Create
         - `name`: (string) (required)
         - `description`: (string)
         - `kubernetesName`: (string) (required)
-  - `nodePools`: (multiple options) [array of] {object}
+  - `nodePools`: (multiple options) (required) An array of node pools for BYOC or BYOK. [array of] An array of node pools for BYOC. {object} Node pool configuration for BYOC clusters
       - `id`: (string) (required) ID of existing node pool. Must be passed when modifying existing node pools. Not relevant for new node pools (pattern: (^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)|(^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89ABab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$)) (min length: 3) (max length: 63)
       - `nodeType`: (string) (required) Machine type to be used by the node pool.
-      - `oci`: {object}
+      - `oci`: {object} OCI instance specific settings. Must respect ratios as determined by the selected node type.
         - `ocpu`: (integer) (required)
         - `memory`: (integer) (required)
-      - `gcp`: {object}
+      - `gcp`: {object} GCP specific settings.
         - `enablePrivateNodes`: (boolean) Set this flag to disable public IP assignment for nodes in this node pool.
-      - `azure`: {object}
+      - `azure`: {object} Azure specific settings.
         - `systemPool`: (boolean) When 'provider' is 'azure', at least one system node pool is required per cluster.
         - `enablePublicNodeIp`: (boolean) When 'provider' is 'azure', set this flag to use public node IPs.
         - `vnetSubnetId`: (string) ID of the vnet subnet to use.
-      - `aws`: {object}
-        - `launchTemplate`: {object}
+      - `aws`: {object} AWS specific node pool settings.
+        - `launchTemplate`: {object} Specify a launch template to use for this node pool. When using a launch template, the disk size selection on the node pool level will be ignored.
           - `id`: (string) (required) ID of the launch template to use.
           - `version`: (integer) (required) Version of the launch template that should be used.
-      - `nebius`: {object}
+        - `rootVolume`: {object} Custom performance for the gp3 root volume. Requires AWS BYOC policy v3 or later. Omit to use automatic defaults.
+          - `iops`: (integer) Provisioned IOPS for the gp3 root volume. Immutable after creation.
+          - `throughput`: (integer) Provisioned throughput in MiB/s for the gp3 root volume. Immutable after creation.
+        - `useLocalDisks`: (boolean) Use local disks for container images and ephemeral storage of workloads. Omit to enable automatically on eligible new pools. Enabling requires AWS BYOC policy v3 or later. This setting cannot change after creation.
+      - `nebius`: {object} Nebius specific node pool settings.
         - `enablePublicNodeIps`: (boolean) Set this flag to assign public IPs to nodes in this node pool.
         - `osVersion`: (string) OS image version for nodes in this node pool.
         - `gpuDriverVersion`: (string) GPU driver version for nodes in this node pool.
         - `gpuClusterId`: (string) Nebius GPU cluster to attach the node pool to.
       - `nodeCount`: (integer) (required) Number of nodes to the node pool should be provisioned with.
-      - `autoscaling`: {object}
+      - `autoscaling`: {object} (nullable) Auto scaling settings to use for the node pool. Requires that the cloud provider supports this feature.
         - `enabled`: (boolean) Whether autoscaling is enabled for the node pool.
         - `min`: (integer) The minimum number of nodes the node pool can be scaled down to.
         - `max`: (integer) The maximum number of nodes the node pool can be scaled up to.
       - `computeResources`: {object}
         - `gpu`: {object}
           - `type`: (string) (required) GPU type associated with the node pool. (pattern: [a-z0-9])
-          - `resources`: {object}
+          - `resources`: {object} (required)
             - `memoryInfo`: {object}
               - `sizeInGiB`: (number) Memory amount of the GPU in Gib. (format: float)
           - `count`: (integer) (required) Number of GPUs per node.
-          - `timeslicing`: {object}
+          - `timeslicing`: {object} Time-slicing configuration object.
             - `enabled`: (boolean) Whether or not to enable time-slicing on the GPU.
             - `numSlices`: (number) Sets the amount of slices per GPU, e.g. how many pods may be scheduled concurrently on each GPU. (format: float)
       - `preemptible`: (boolean) Configures node pool with preemptible / spot instances if enabled.
       - `diskType`: (string) The disk type to use.
       - `diskSize`: (integer) (required) Disk size in GB
-      - `availabilityZones`: [array of] (string)
-      - `subnets`: [array of] (string)
-      - `scheduling`: {object}
+      - `availabilityZones`: [array of] Zones in which the node pool should be provisioned. (string)
+      - `subnets`: [array of] Subnets in which the node pool should be provisioned. Required if provider is `oci`. (string)
+      - `scheduling`: {object} Define basic workload scheduling restrictions for this node pool
         - `allowJobs`: (boolean) Allow jobs to schedule to this node pool
         - `onlyGpuJobs`: (boolean) Restrict job scheduling to jobs which have GPU resources configured. Only relevant for GPU node pools.
         - `allowServices`: (boolean) Allow services to schedule to this node pool
@@ -348,7 +356,7 @@ Required permission: Account > Cloud > Clusters > Create
         - `allowBuilds`: (boolean) Allow builds to schedule to this node pool
         - `onlyGpuBuilds`: (boolean) Restrict build scheduling to builds which have GPU resources configured. Only relevant for GPU node pools.
         - `allowCeph`: (boolean) Allow the placement of Ceph pods
-      - `labels`: {object} | [array of] {object}
+      - `labels`: {object} Set of label keys and values that can be used for advanced scheduling in combination with resource tag scheduling rules. | [array of] An array of node pools for BYOK. {object} Node pool configuration for BYOK clusters
       - `id`: (string) (required) ID of the node pool. Must be passed when modifying existing node pools. Not relevant for new node pools (pattern: (^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)|(^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89ABab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$)) (min length: 3) (max length: 63)
       - `providerId`: (string) (required) ID which identifies kubernetes nodes as belonging to this pool. (pattern: (^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)|(^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89ABab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$)) (min length: 3) (max length: 63)
       - `computeResources`: {object}
@@ -358,16 +366,16 @@ Required permission: Account > Cloud > Clusters > Create
           - `resources`: {object}
             - `memoryInfo`: {object}
               - `sizeInGiB`: (number) Memory amount of the GPU in Gib. (format: float)
-          - `mig`: {object}
+          - `mig`: {object} Multi-Instance GPU (MIG). configuration object.
             - `enabled`: (boolean) Whether or not to enable Multi-Instance GPU (MIG).
-            - `partitions`: [array of] (string)
-          - `timeslicing`: {object}
+            - `partitions`: [array of] The partitions to configure on the GPU. (string)
+          - `timeslicing`: {object} Time-slicing configuration object.
             - `enabled`: (boolean) Whether or not to enable time-slicing on the GPU.
             - `numSlices`: (number) Sets the amount of slices per GPU, e.g. how many pods may be scheduled concurrently on each GPU. (format: float)
           - `count`: (integer) Number of GPUs per node.
       - `defaultPool`: (boolean) Fallback pool to which nodes which do not match any defined node pool are assigned. Exactly one default pool is required.
       - `preemptible`: (boolean) Configures node pool with preemptible / spot instances if enabled.
-      - `scheduling`: {object}
+      - `scheduling`: {object} Define basic workload scheduling restrictions for this node pool
         - `allowJobs`: (boolean) Allow jobs to schedule to this node pool
         - `onlyGpuJobs`: (boolean) Restrict job scheduling to jobs which have GPU resources configured. Only relevant for GPU node pools.
         - `allowServices`: (boolean) Allow services to schedule to this node pool
@@ -378,27 +386,27 @@ Required permission: Account > Cloud > Clusters > Create
         - `allowCeph`: (boolean) Allow the placement of Ceph pods
       - `platform`: {object}
         - `architecture`: (string) Platform architecture of the underlying node type. (enum: amd64, arm64)
-      - `labels`: {object}
+      - `labels`: {object} Set of label keys and values that can be used for advanced scheduling in combination with resource tag scheduling rules.
   - `settings`: {object}
     - `builds`: {object}
       - `mode`: (string) Determines where builds are run: on Northflank infrastructure (paas), on this cluster (internal) or on a dedicated build cluster (build-cluster). (enum: paas, internal, build-cluster)
       - `plan`: (string) Plan to use for builds if they are run on the cluster (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
       - `clusterId`: (string) Cluster to use for scheduling builds (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
-      - `caching`: {object}
+      - `caching`: {object} Cache settings for builds
         - `allow`: (boolean) Whether to allow local disk based caching for builds.
         - `storageClassName`: (string) Storage class used by default for local disk based caching.
     - `registry`: {object}
       - `mode`: (string) Determines where built images are stored: in the Northflank registry (paas) or in a self-hosted registry. (enum: paas, self-hosted)
       - `registryId`: (string) Credentials to use for storing of images. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
-    - `logging`: (multiple options) {object}
-        - `mode`: (string) The logging mode. `paas` stores logs on Northflank infrastructure. (enum: paas) | {object}
+    - `logging`: (multiple options) Logging settings {object} Logging via PaaS.
+        - `mode`: (string) The logging mode. `paas` stores logs on Northflank infrastructure. (enum: paas) | {object} Logging via Loki (S3 storage).
         - `mode`: (string) (required) The logging mode. `loki` stores logs in your own storage via Loki. (enum: loki)
         - `loki`: {object}
           - `storageType`: (string) (required) (enum: s3)
           - `s3BucketName`: (string) (required) Name of the S3 bucket used for Loki log storage.
           - `s3AccessKey`: (string) (required) Access key for the S3 bucket used for Loki log storage.
           - `s3SecretKey`: (string) (required) Secret key for the S3 bucket used for Loki log storage.
-          - `s3Region`: (string) (required) Region of the S3 bucket used for Loki log storage. | {object}
+          - `s3Region`: (string) (required) Region of the S3 bucket used for Loki log storage. | {object} Logging via Loki (GCS storage).
         - `mode`: (string) (required) The logging mode. `loki` stores logs in your own storage via Loki. (enum: loki)
         - `loki`: {object}
           - `storageType`: (string) (required) (enum: gcs)
@@ -410,11 +418,11 @@ Required permission: Account > Cloud > Clusters > Create
       - `istio`: {object}
         - `enablePublicLoadBalancer`: (boolean) Whether the cluster runs a public ingress load balancer. Defaults to true.
         - `enablePrivateLoadBalancer`: (boolean) Whether the cluster runs a VPC ingress load balancer. Defaults to false; BYOK exposure is customer-controlled.
-        - `privateLoadBalancerAwsSecurityGroupId`: (string) Customer-managed frontend security group for a private AWS NLB managed by the AWS Load Balancer Controller. (pattern: ^sg-(?:[a-f0-9]{8}|[a-f0-9]{17})$)
-        - `publicLoadBalancer`: {object}
+        - `privateLoadBalancerAwsSecurityGroupId`: (string) (nullable) Customer-managed frontend security group for a private AWS NLB managed by the AWS Load Balancer Controller. (pattern: ^sg-(?:[a-f0-9]{8}|[a-f0-9]{17})$)
+        - `publicLoadBalancer`: {object} Customer configuration for a BYOK ingress Service. Immutable after first assignment; exposure is controlled by the customer.
           - `serviceAnnotations`: {object}
           - `loadBalancerClass`: (string) (pattern: ^(?:(?=[^/]{1,253}\/)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\/)?[a-zA-Z0-9](?:[a-zA-Z0-9_.-]{0,61}[a-zA-Z0-9])?(?![\s\S]))
-        - `privateLoadBalancer`: {object}
+        - `privateLoadBalancer`: {object} Customer configuration for a BYOK ingress Service. Immutable after first assignment; exposure is controlled by the customer.
           - `serviceAnnotations`: {object}
           - `loadBalancerClass`: (string) (pattern: ^(?:(?=[^/]{1,253}\/)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\/)?[a-zA-Z0-9](?:[a-zA-Z0-9_.-]{0,61}[a-zA-Z0-9])?(?![\s\S]))
     - `vanityDomains`: {object}
@@ -428,9 +436,9 @@ Required permission: Account > Cloud > Clusters > Create
         - `zoneName`: (string) (required)
         - `integrationId`: (string) (required)
     - `infrastructure`: {object}
-      - `workloads`: {object}
+      - `workloads`: {object} DEPRECATED: This field will be removed in the near future.
         - `runtimeClass`: (string) Defines which runtime scheduling constraints apply for workloads (enum: none, gvisor, kata-clh, kata-qemu)
-      - `builds`: {object}
+      - `builds`: {object} DEPRECATED: This field will be removed in the near future.
         - `runtimeClass`: (string) Defines which runtime scheduling constraints apply for builds (enum: none, gvisor, kata-clh, kata-qemu)
       - `sandboxing`: {object}
         - `installGvisor`: (boolean)
@@ -454,66 +462,66 @@ Required permission: Account > Cloud > Clusters > Create
         - `enableSingleReadWriteStorage`: (boolean) Configure Ceph to be used as default storage class for single read write storage. This will replace the default storage of the cloud provider.
         - `enableErasureCoding`: (boolean) Configure Ceph to be set up with erasure coding. This will be less fault tolerant but more cost effective.
         - `enableTopologyAwareScheduling`: (boolean) Configure Ceph to be set up with topology aware scheduling, enforcing deployment across multiple zones.
-    - `requestModifiers`: {object}
-      - `services`: {object}
+    - `requestModifiers`: {object} Allows customising request modifier values.
+      - `services`: {object} Request modifiers for services
         - `cpu`: (number) (required) (format: float)
         - `memory`: (number) (required) (format: float)
-      - `jobs`: {object}
+      - `jobs`: {object} Request modifiers for jobs
         - `cpu`: (number) (required) (format: float)
         - `memory`: (number) (required) (format: float)
-      - `builds`: {object}
+      - `builds`: {object} Request modifiers for builds
         - `cpu`: (number) (required) (format: float)
         - `memory`: (number) (required) (format: float)
-      - `addons`: {object}
+      - `addons`: {object} Request modifiers for addons
         - `cpu`: (number) (required) (format: float)
         - `memory`: (number) (required) (format: float)
-  - `restrictions`: {object}
+  - `restrictions`: {object} BYOC restrictions configuration for controlling team access
     - `enabled`: (boolean) (required) Enable or disable BYOC restrictions for this entity
-    - `teams`: [array of] {object}
+    - `teams`: [array of] List of teams that have access to this BYOC cluster {object}
         - `teamId`: (string) (required) The ID of the team that has access to this BYOC cluster (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 45)
-  - `gcp`: {object}
+  - `gcp`: {object} GCP specific data. Required when `provider` is `gcp`
     - `networking`: {object}
       - `network`: (string) Name of the GCP network the cluster should be created in. By default a new network will be created.
       - `subnetwork`: (string) Name of the GCP subnetwork the cluster should be created in. By default a new subnetwork will be created.
     - `enableAuthorizedIpRanges`: (boolean) Whether access to the Kubernetes API server should be restricted to authorized IP ranges.
-    - `authorizedIpRanges`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
+    - `authorizedIpRanges`: [array of] IP ranges that are authorized to access the Kubernetes API server. (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
     - `projectId`: (string) GCP Project ID (pattern: ^[a-z][a-z0-9-]{4,28}[a-z0-9]$)
-  - `aws`: {object}
+  - `aws`: {object} AWS specific data. Required when `provider` is `aws` or `aws-eusc`.
     - `enablePublicAccessCidrs`: (boolean) Whether access to the public Kubernetes API endpoint should be restricted to specific CIDR ranges.
-    - `publicAccessCidrs`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
+    - `publicAccessCidrs`: [array of] CIDR ranges that are allowed to access the public Kubernetes API endpoint. (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
     - `subnetConfiguration`: {object}
       - `mode`: (string) (required) The mode of the AWS subnet configuration (enum: default-subnets-for-azs, explicit-subnets)
       - `vpcId`: (string) Id of the VPC
-      - `subnets`: [array of] (string)
+      - `subnets`: [array of] (required) List of subnets the cluster should be created for. At least 2 must be specified. (string)
     - `vpcEgress`: (boolean) If egress traffic from the cluster should come from a single static egress IP.
-  - `oci`: {object}
-    - `vcnConfiguration`: {object}
+  - `oci`: {object} OCI specific data. Required when `provider` is `oci`.
+    - `vcnConfiguration`: {object} (required)
       - `vcnId`: (string) (required) ID of the OCI VCN the cluster should be created in.
       - `subnetIdForKubernetesApi`: (string) (required) ID of the subnet to use for the Kubernetes API endpoint.
-      - `subnetIdsForServiceLBs`: [array of] (string)
-  - `azure`: {object}
+      - `subnetIdsForServiceLBs`: [array of] (required) IDs of the subnets to use for service load balancers. (string)
+  - `azure`: {object} Azure specific data. Required when `provider` is `azure`.
     - `networking`: {object}
       - `vnetConfiguration`: {object}
         - `mode`: (string) (required) The vnet mode to use for this cluster. Use this to switch between creation of a new vnet per cluster or specifying a custom vnet. (enum: create-default, custom-vnet)
         - `vnetId`: (string) Azure vnetId that should be used for this cluster. By default a new vnet will be created.
       - `networkPluginMode`: (string) Optional setting to configure overlay mode on Azure. (enum: overlay)
     - `enableAuthorizedIpRanges`: (boolean) Whether access to the Kubernetes API server should be restricted to authorized IP ranges.
-    - `authorizedIpRanges`: [array of] (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
-  - `coreweave`: {object}
+    - `authorizedIpRanges`: [array of] IP ranges that are authorized to access the Kubernetes API server. (string) (pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$)
+  - `coreweave`: {object} CoreWeave specific data. Required when `provider` is `coreweave`.
     - `zone`: (string) (required) AZ of the cluster
-    - `network`: {object}
+    - `network`: {object} Network settings
       - `networkMode`: (string) (required) The network mode to use for this cluster. Use this to switch between the default network configuration and a custom VPC. (enum: create-default, custom)
       - `vpcId`: (string) ID of the CoreWeave VPC to use for this cluster.
       - `customPrefixNames`: {object}
         - `podCidrName`: (string) (required) Name of the VPC prefix to use for the pod CIDR.
         - `serviceCidrName`: (string) (required) Name of the VPC prefix to use for the service CIDR.
-        - `internalLbCidrNames`: [array of] (string)
-  - `nebius`: {object}
+        - `internalLbCidrNames`: [array of] (required) Names of the VPC prefixes to use for internal load balancer CIDRs. (string)
+  - `nebius`: {object} Nebius specific data. Required when `provider` is `nebius`.
     - `projectId`: (string) (required) Nebius project ID to place the cluster in.
     - `subnetId`: (string) (required) Nebius VPC subnet ID for the cluster.
-  - `byok`: {object}
+  - `byok`: {object} BYOK specific data. Required when `provider` is `byok`.
     - `nodePoolProviderIdLabel`: (string) (required) The node label used to identify which provider node pool a node belongs to.
-  - `coordinates`: {object}
+  - `coordinates`: {object} Geographic coordinates of the cluster. Optional, used for CDN geo-routing. Only applicable when `provider` is `byok`.
     - `latitude`: (number) (required) (format: float)
     - `longitude`: (number) (required) (format: float)
   - `dns`: (string) Auto-generated dns identifier for this cluster.
@@ -536,7 +544,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"GCP Cluster 1","description":"This is a new cluster.","provider":"gcp","region":"europe-west2","kubernetesVersion":"1.30","integrationId":"gcp-integration","nodePools":[{"id":"6aa96121-0345-43ad-bade-af36d540c222","nodeType":"n2-standard-8","nodeCount":3,"autoscaling":{"enabled":true,"min":0,"max":10},"preemptible":false,"diskSize":100}],"settings":{"builds":{"plan":"nf-compute-200"},"registry":{"registryId":"my-registry-credentials"},"requestModifiers":{"services":{"cpu":0.5,"memory":0.8},"jobs":{"cpu":0.5,"memory":0.8},"builds":{"cpu":0.2,"memory":0.5},"addons":{"cpu":0.5,"memory":0.8}}},"aws":{"subnetConfiguration":{"subnets":["eu-west-1a","eu-west-1a"],"mode":"default-subnets-for-azs"}}}' \
-  https://api.northflank.com/v1/cloud-providers/clusters
+  "https://api.northflank.com/v1/cloud-providers/clusters"
 ```
 
 ```javascript
@@ -616,10 +624,10 @@ import requests
 
 url = "https://api.northflank.com/v1/cloud-providers/clusters"
 
-payload = {"name":"GCP Cluster 1","description":"This is a new cluster.","provider":"gcp","region":"europe-west2","kubernetesVersion":"1.30","integrationId":"gcp-integration","nodePools":[{"id":"6aa96121-0345-43ad-bade-af36d540c222","nodeType":"n2-standard-8","nodeCount":3,"autoscaling":{"enabled":true,"min":0,"max":10},"preemptible":false,"diskSize":100}],"settings":{"builds":{"plan":"nf-compute-200"},"registry":{"registryId":"my-registry-credentials"},"requestModifiers":{"services":{"cpu":0.5,"memory":0.8},"jobs":{"cpu":0.5,"memory":0.8},"builds":{"cpu":0.2,"memory":0.5},"addons":{"cpu":0.5,"memory":0.8}}},"aws":{"subnetConfiguration":{"subnets":["eu-west-1a","eu-west-1a"],"mode":"default-subnets-for-azs"}}}
+payload = "{\"name\":\"GCP Cluster 1\",\"description\":\"This is a new cluster.\",\"provider\":\"gcp\",\"region\":\"europe-west2\",\"kubernetesVersion\":\"1.30\",\"integrationId\":\"gcp-integration\",\"nodePools\":[{\"id\":\"6aa96121-0345-43ad-bade-af36d540c222\",\"nodeType\":\"n2-standard-8\",\"nodeCount\":3,\"autoscaling\":{\"enabled\":true,\"min\":0,\"max\":10},\"preemptible\":false,\"diskSize\":100}],\"settings\":{\"builds\":{\"plan\":\"nf-compute-200\"},\"registry\":{\"registryId\":\"my-registry-credentials\"},\"requestModifiers\":{\"services\":{\"cpu\":0.5,\"memory\":0.8},\"jobs\":{\"cpu\":0.5,\"memory\":0.8},\"builds\":{\"cpu\":0.2,\"memory\":0.5},\"addons\":{\"cpu\":0.5,\"memory\":0.8}}},\"aws\":{\"subnetConfiguration\":{\"subnets\":[\"eu-west-1a\",\"eu-west-1a\"],\"mode\":\"default-subnets-for-azs\"}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -637,7 +645,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/cloud-providers/clusters"
 
-  var jsonStr = []byte(`{"name":"GCP Cluster 1","description":"This is a new cluster.","provider":"gcp","region":"europe-west2","kubernetesVersion":"1.30","integrationId":"gcp-integration","nodePools":[{"id":"6aa96121-0345-43ad-bade-af36d540c222","nodeType":"n2-standard-8","nodeCount":3,"autoscaling":{"enabled":true,"min":0,"max":10},"preemptible":false,"diskSize":100}],"settings":{"builds":{"plan":"nf-compute-200"},"registry":{"registryId":"my-registry-credentials"},"requestModifiers":{"services":{"cpu":0.5,"memory":0.8},"jobs":{"cpu":0.5,"memory":0.8},"builds":{"cpu":0.2,"memory":0.5},"addons":{"cpu":0.5,"memory":0.8}}},"aws":{"subnetConfiguration":{"subnets":["eu-west-1a","eu-west-1a"],"mode":"default-subnets-for-azs"}}}`)
+  var jsonStr = []byte("{\"name\":\"GCP Cluster 1\",\"description\":\"This is a new cluster.\",\"provider\":\"gcp\",\"region\":\"europe-west2\",\"kubernetesVersion\":\"1.30\",\"integrationId\":\"gcp-integration\",\"nodePools\":[{\"id\":\"6aa96121-0345-43ad-bade-af36d540c222\",\"nodeType\":\"n2-standard-8\",\"nodeCount\":3,\"autoscaling\":{\"enabled\":true,\"min\":0,\"max\":10},\"preemptible\":false,\"diskSize\":100}],\"settings\":{\"builds\":{\"plan\":\"nf-compute-200\"},\"registry\":{\"registryId\":\"my-registry-credentials\"},\"requestModifiers\":{\"services\":{\"cpu\":0.5,\"memory\":0.8},\"jobs\":{\"cpu\":0.5,\"memory\":0.8},\"builds\":{\"cpu\":0.2,\"memory\":0.5},\"addons\":{\"cpu\":0.5,\"memory\":0.8}}},\"aws\":{\"subnetConfiguration\":{\"subnets\":[\"eu-west-1a\",\"eu-west-1a\"],\"mode\":\"default-subnets-for-azs\"}}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -730,8 +738,10 @@ func main() {
     "aws": {
       "subnetConfiguration": {
         "subnets": [
+          "eu-west-1a",
           "eu-west-1a"
-        ]
+        ],
+        "mode": "default-subnets-for-azs"
       }
     },
     "dns": "xxxxxxxxxx",
@@ -891,8 +901,10 @@ Options:
   "aws": {
     "subnetConfiguration": {
       "subnets": [
+        "eu-west-1a",
         "eu-west-1a"
-      ]
+      ],
+      "mode": "default-subnets-for-azs"
     }
   },
   "dns": "xxxxxxxxxx",
@@ -1044,8 +1056,10 @@ await apiClient.create.cloud.cluster({
     "aws": {
       "subnetConfiguration": {
         "subnets": [
+          "eu-west-1a",
           "eu-west-1a"
-        ]
+        ],
+        "mode": "default-subnets-for-azs"
       }
     },
     "dns": "xxxxxxxxxx",

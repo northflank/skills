@@ -21,8 +21,8 @@ Required permission: Project > Volumes > Backups > Read
 
 **Response body:**
 
-{object}
-- `data`: [array of] {object}
+{object} Response object.
+- `data`: [array of] (required) Result data. {object}
    - `id`: (string) (required) Identifier for the backup
    - `uid`: (string) Stable identifier for using this backup as a volume source (format: uuid)
    - `name`: (string) (required)
@@ -40,7 +40,7 @@ Required permission: Project > Volumes > Backups > Read
          - `storageClassName`: (string)
    - `createdAt`: (string) time of creation (format: date-time)
    - `updatedAt`: (string) time of update (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -51,6 +51,25 @@ GET /v1/projects/{projectId}/volumes/{volumeId}/backups
 
 GET /v1/teams/{teamId}/projects/{projectId}/volumes/{volumeId}/backups
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}/backups?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}/backups?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: The list of volume backups.
@@ -59,7 +78,9 @@ GET /v1/teams/{teamId}/projects/{projectId}/volumes/{volumeId}/backups
 {
   "data": [
     {
-      "id": "example-backup"
+      "id": "example-backup",
+      "name": "string",
+      "status": "string"
     }
   ],
   "pagination": {
@@ -98,7 +119,9 @@ Options:
 ```json
 [
   {
-    "id": "example-backup"
+    "id": "example-backup",
+    "name": "string",
+    "status": "string"
   }
 ]
 ```
@@ -130,7 +153,9 @@ await apiClient.get.volume.backups({
 {
   "data": [
     {
-      "id": "example-backup"
+      "id": "example-backup",
+      "name": "string",
+      "status": "string"
     }
   ],
   "pagination": {

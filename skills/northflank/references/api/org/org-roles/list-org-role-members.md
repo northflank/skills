@@ -18,23 +18,24 @@ Required permission: Organisation > Admin > Roles > Read
 - `page`: (integer) The page number to access.
 - `cursor`: (string) The cursor returned from the previous page of results, used to request the next page. (min length: 24) (max length: 24)
 - `type`: (string) Filter members by how they were added, directly or implicitly via directory group membership. (enum: explicit, implicit)
-- `userIds`: (multiple options) [array of] (string) (pattern: ^[A-Za-z0-9-]+$) | (string) (pattern: ^[A-Za-z0-9-]+$)
+- `userIds`: (multiple options) Filter members by user ID. Specify the parameter multiple times to filter by multiple user IDs. [array of] (string) (pattern: ^[A-Za-z0-9-]+$) | (string) (pattern: ^[A-Za-z0-9-]+$)
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `members`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `members`: [array of] (required) An array of members in the org role. {object} An org role member object.
      - `id`: (string) (required) ID (username) of the org member. For users who are not finalized this ID may change on finalisation. (pattern: ^[A-Za-z0-9-]+$)
      - `name`: (string) Display name from the member profile.
-     - `emails`: [array of] {object}
+     - `emails`: [array of] Email addresses of the member. {object} Email addresses of the member.
          - `address`: (string)
          - `verified`: (boolean)
      - `joinedAt`: (string) The time the member joined the org. (format: date-time)
      - `lastLoginTime`: (string) The time the member last logged in. (format: date-time)
      - `finalized`: (boolean) (required) Whether the account has been fully set up by the user.
+     - `uid`: (string) (required) Permanent UID of the organization member. (min length: 24) (max length: 24)
      - `type`: (string) (required) How the member was added to the role. `explicit` means manually added; `implicit` means provisioned via Directory Sync. (enum: explicit, implicit)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -42,6 +43,25 @@ Required permission: Organisation > Admin > Roles > Read
 ### API reference
 
 GET /v1/org-roles/{roleId}/members
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/org-roles/{roleId}/members?per_page=50&page=1&type=explicit&userIds=john-doe"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/org-roles/{roleId}/members?per_page=50&page=1&type=explicit&userIds=john-doe"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -62,7 +82,9 @@ GET /v1/org-roles/{roleId}/members
         ],
         "joinedAt": "2021-01-20T11:19:53.175Z",
         "lastLoginTime": "2021-01-20T11:19:53.175Z",
-        "type": "explicit"
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
+        "type": "explicit",
+        "finalized": false
       }
     ]
   },
@@ -115,7 +137,9 @@ Options:
       ],
       "joinedAt": "2021-01-20T11:19:53.175Z",
       "lastLoginTime": "2021-01-20T11:19:53.175Z",
-      "type": "explicit"
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
+      "type": "explicit",
+      "finalized": false
     }
   ]
 }
@@ -134,7 +158,7 @@ await apiClient.list.orgRoleMembers({
     "per_page": 50,
     "page": 1,
     "type": "explicit",
-    "userIds": []
+    "userIds": "john-doe"
   }
 });
 ```
@@ -158,7 +182,9 @@ await apiClient.list.orgRoleMembers({
         ],
         "joinedAt": "2021-01-20T11:19:53.175Z",
         "lastLoginTime": "2021-01-20T11:19:53.175Z",
-        "type": "explicit"
+        "uid": "68f0aa1b9c4e2d7f11a3b402",
+        "type": "explicit",
+        "finalized": false
       }
     ]
   },
@@ -189,7 +215,7 @@ response = client.list.org_role_members(
     page=1,
     per_page=50,
     type="explicit",
-    user_ids=[],
+    user_ids=["john-doe"],
 )
 print(response.data)
 ```
@@ -212,6 +238,7 @@ print(response.data)
       ],
       "joinedAt": "2021-01-20T11:19:53.175Z",
       "lastLoginTime": "2021-01-20T11:19:53.175Z",
+      "uid": "68f0aa1b9c4e2d7f11a3b402",
       "type": "explicit",
       "finalized": false
     }

@@ -11,53 +11,53 @@ Required permission: Account > Networking > EgressIps > Create
 {object}
 - `name`: (string) (required) The name of the egress IP. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
 - `description`: (string) The description of the egress IP. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-- `spec`: {object}
+- `spec`: {object} (required) Egress IP specification
   - `provisioningMode`: (string) (required) Provisioning mode for the egress IP: shared (uses pre-provisioned infrastructure) or dedicated (enum: shared, dedicated)
   - `region`: (string) (required) Target region name (pattern: ^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$)
   - `mode`: (string) Mode: 'include' (only these projects/resources use this egress IP), 'exclude' (all except these use it), or 'selector' (network-policy-style selector targeting). The selector/rules distinction is immutable after creation. (enum: include, exclude, selector)
-  - `rules`: [array of] {object}
+  - `rules`: [array of] Egress IP rules - array of projects the rule applies to {object} Egress IP rule
      - `id`: (string) (required) Project internal ID
-     - `restrictions`: {object}
+     - `restrictions`: {object} (required) Rule restrictions
        - `enabled`: (boolean) (required) Whether restrictions scoping the rule to specific resources should be applied.
-       - `resources`: [array of] {object}
+       - `resources`: [array of] Resources the rule should be restricted to  {object}
            - `type`: (string) (required) Resource type (enum: service, job)
            - `id`: (string) (required) Resource internal ID
-  - `selector`: {object}
-    - `projects`: {object}
+  - `selector`: {object} Selector-based targeting. Requires mode: 'selector' and is mutually exclusive with rules (enforced on write).
+    - `projects`: {object} (required) Project scope for the selector
       - `enabled`: (boolean) (required) Whether to scope the selector to specific projects
-      - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+      - `items`: [array of] (required) Project internal IDs to include/exclude (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
       - `restrictionMode`: (string) (required) Whether listed projects are included (in) or excluded (notIn) (enum: in, notIn)
-    - `tags`: {object}
+    - `tags`: {object} (required) Workload (tag) scope for the selector
       - `enabled`: (boolean) (required) Whether to scope to workloads carrying the given tags
-      - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+      - `items`: [array of] (required) Tag internal IDs to match workloads against (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
       - `matchCondition`: (string) (required) Match any (or) or all (and) of the given tags (enum: or, and)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) ID of the egress IP (pattern: ^[A-Za-z0-9-]+$)
   - `name`: (string) (required) The name of the egress IP. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `description`: (string) The description of the egress IP. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-  - `spec`: {object}
+  - `spec`: {object} (required) Egress IP specification
     - `provisioningMode`: (string) (required) Provisioning mode for the egress IP: shared (uses pre-provisioned infrastructure) or dedicated (enum: shared, dedicated)
     - `region`: (string) (required) Target region name (pattern: ^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$)
     - `mode`: (string) Mode: 'include' (only these projects/resources use this egress IP), 'exclude' (all except these use it), or 'selector' (network-policy-style selector targeting). The selector/rules distinction is immutable after creation. (enum: include, exclude, selector)
-    - `rules`: [array of] {object}
+    - `rules`: [array of] Egress IP rules - array of projects the rule applies to {object} Egress IP rule
         - `id`: (string) (required) Project internal ID
-        - `restrictions`: {object}
+        - `restrictions`: {object} (required) Rule restrictions
           - `enabled`: (boolean) (required) Whether restrictions scoping the rule to specific resources should be applied.
-          - `resources`: [array of] {object}
+          - `resources`: [array of] Resources the rule should be restricted to  {object}
               - `type`: (string) (required) Resource type (enum: service, job)
               - `id`: (string) (required) Resource internal ID
-    - `selector`: {object}
-      - `projects`: {object}
+    - `selector`: {object} Selector-based targeting. Requires mode: 'selector' and is mutually exclusive with rules (enforced on write).
+      - `projects`: {object} (required) Project scope for the selector
         - `enabled`: (boolean) (required) Whether to scope the selector to specific projects
-        - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+        - `items`: [array of] (required) Project internal IDs to include/exclude (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
         - `restrictionMode`: (string) (required) Whether listed projects are included (in) or excluded (notIn) (enum: in, notIn)
-      - `tags`: {object}
+      - `tags`: {object} (required) Workload (tag) scope for the selector
         - `enabled`: (boolean) (required) Whether to scope to workloads carrying the given tags
-        - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+        - `items`: [array of] (required) Tag internal IDs to match workloads against (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
         - `matchCondition`: (string) (required) Match any (or) or all (and) of the given tags (enum: or, and)
   - `state`: {object}
     - `ipAddress`: (string) Assigned public IP address
@@ -81,7 +81,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
   --data '{"name":"my-egress-ip","description":"This is a new egress IP.","spec":{"provisioningMode":"shared","region":"europe-west","mode":"include"}}' \
-  https://api.northflank.com/v1/egress-ips
+  "https://api.northflank.com/v1/egress-ips"
 ```
 
 ```javascript
@@ -113,10 +113,10 @@ import requests
 
 url = "https://api.northflank.com/v1/egress-ips"
 
-payload = {"name":"my-egress-ip","description":"This is a new egress IP.","spec":{"provisioningMode":"shared","region":"europe-west","mode":"include"}}
+payload = "{\"name\":\"my-egress-ip\",\"description\":\"This is a new egress IP.\",\"spec\":{\"provisioningMode\":\"shared\",\"region\":\"europe-west\",\"mode\":\"include\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PUT", url, headers = headers, json = payload)
+response = requests.request("PUT", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -134,7 +134,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/egress-ips"
 
-  var jsonStr = []byte(`{"name":"my-egress-ip","description":"This is a new egress IP.","spec":{"provisioningMode":"shared","region":"europe-west","mode":"include"}}`)
+  var jsonStr = []byte("{\"name\":\"my-egress-ip\",\"description\":\"This is a new egress IP.\",\"spec\":{\"provisioningMode\":\"shared\",\"region\":\"europe-west\",\"mode\":\"include\"}}")
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -170,7 +170,8 @@ func main() {
     },
     "state": {
       "ipAddress": "34.105.225.71",
-      "status": "active"
+      "status": "active",
+      "lastTransitionTime": "1970-01-01T00:00:00.000Z"
     },
     "createdAt": "2021-01-20T11:19:53.175Z",
     "updatedAt": "2021-01-20T11:19:53.175Z"
@@ -222,7 +223,8 @@ Options:
   },
   "state": {
     "ipAddress": "34.105.225.71",
-    "status": "active"
+    "status": "active",
+    "lastTransitionTime": "1970-01-01T00:00:00.000Z"
   },
   "createdAt": "2021-01-20T11:19:53.175Z",
   "updatedAt": "2021-01-20T11:19:53.175Z"
@@ -266,7 +268,8 @@ await apiClient.put.egressIp({
     },
     "state": {
       "ipAddress": "34.105.225.71",
-      "status": "active"
+      "status": "active",
+      "lastTransitionTime": "1970-01-01T00:00:00.000Z"
     },
     "createdAt": "2021-01-20T11:19:53.175Z",
     "updatedAt": "2021-01-20T11:19:53.175Z"

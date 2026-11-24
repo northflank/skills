@@ -20,8 +20,8 @@ Required permission: Project > Volumes > Backups > Create
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) Identifier for the backup
   - `uid`: (string) Stable identifier for using this backup as a volume source (format: uuid)
   - `name`: (string) (required)
@@ -55,7 +55,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"Example Backup","description":"Example backup description"}' \
-  https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}/backups
+  "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}/backups"
 ```
 
 ```javascript
@@ -82,10 +82,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}/backups"
 
-payload = {"name":"Example Backup","description":"Example backup description"}
+payload = "{\"name\":\"Example Backup\",\"description\":\"Example backup description\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -103,7 +103,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/volumes/{volumeId}/backups"
 
-  var jsonStr = []byte(`{"name":"Example Backup","description":"Example backup description"}`)
+  var jsonStr = []byte("{\"name\":\"Example Backup\",\"description\":\"Example backup description\"}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -129,7 +129,9 @@ func main() {
 ```json
 {
   "data": {
-    "id": "example-backup"
+    "id": "example-backup",
+    "name": "string",
+    "status": "string"
   }
 }
 ```
@@ -167,7 +169,9 @@ Options:
 
 ```json
 {
-  "id": "example-backup"
+  "id": "example-backup",
+  "name": "string",
+  "status": "string"
 }
 ```
 
@@ -197,7 +201,9 @@ await apiClient.backup.volume({
 ```json
 {
   "data": {
-    "id": "example-backup"
+    "id": "example-backup",
+    "name": "string",
+    "status": "string"
   },
   "rawResponse": "...",
   "request": "...",

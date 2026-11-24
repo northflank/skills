@@ -1,6 +1,6 @@
 # Databases And Persistence
 
-Generated from 29 application pages listed in `llms.txt`.
+Generated from 30 application pages listed in `llms.txt`.
 
 ## Pages
 
@@ -14,6 +14,7 @@ Generated from 29 application pages listed in `llms.txt`.
 - [Create a managed external addon](#create-a-managed-external-addon)
 - [Database observability and monitoring](#database-observability-and-monitoring)
 - [Deploy a database](#deploy-a-database)
+- [Deploy Memcached on Northflank](#deploy-memcached-on-northflank)
 - [Deploy MinIO® on Northflank](#deploy-minio®-on-northflank)
 - [Deploy MongoDB® on Northflank](#deploy-mongodb®-on-northflank)
 - [Deploy MySQL on Northflank](#deploy-mysql-on-northflank)
@@ -226,6 +227,8 @@ Use this mode for:
 
 - Jobs with parallelism that share data
 
+- GPU workloads
+
 **Example:** A web application with 3 replicas sharing uploaded files:
 
 1. Create a volume with Multi Read/Write access mode
@@ -239,6 +242,23 @@ Use this mode for:
 #### Add a persistent volume: Setting the access mode
 
 The access mode is selected when creating a volume. It cannot be changed after the volume is created. To change modes, you must create a new volume and migrate your data.
+
+#### Add a persistent volume: Storage classes
+
+When you create a volume with the API, CLI, or a template, set `spec.accessMode` and optionally `spec.storageClassName`:
+
+| Access mode | `spec.accessMode` | Storage class |
+| --- | --- | --- |
+| Single Read/Write | `ReadWriteOnce` | `nvme` |
+| Multi Read/Write | `ReadWriteMany` | `nf-multi-rw` |
+
+If you omit `storageClassName`, Northflank uses the storage class for the access mode. `nf-multi-rw` volumes must be at least 5 GB (`5120` MB). Available storage classes depend on the region. If a storage class or access mode is not available in a project's region, the API error lists the storage classes you can use there.
+
+#### Add a persistent volume: GPU workloads
+
+On Northflank-managed clusters, GPU workloads can only attach Multi Read/Write volumes. GPU nodes can be scheduled in any zone of a region, and Single Read/Write volumes are tied to a single zone.
+
+To persist data for a GPU workload, create a volume with access mode `ReadWriteMany` and storage class `nf-multi-rw`, then attach it to the GPU service or job. You cannot attach an existing Single Read/Write volume to a GPU workload. To reuse its data, create a Multi Read/Write volume and [transfer the data](databases-and-persistence.md#add-a-persistent-volume-transfer-data-to-and-from-a-volume) to it.
 
 #### Add a persistent volume: Performance considerations
 
@@ -537,6 +557,10 @@ Choose the backup type, and how often to run the backup: hourly, daily, or weekl
 ![Adding scheduled backups for an addon in the Northflank application](https://assets.northflank.com/documentation/v1/application/databases-and-persistence/backup-restore-and-import-data/addon-scheduled-backups.png)
 
 You can configure each schedule by minute, hour, and day. Your schedule will then run the backup at the selected times, per the schedule frequency (hourly, daily, or weekly).
+
+- All schedule times are in UTC.
+
+- In the API and in templates, weekly schedules set days in the `day` field with numbers from `0` to `6`. `0` is Sunday and `6` is Saturday.
 
 - Retention time defines how many days a backup will be stored for.
 
@@ -1265,7 +1289,7 @@ Each backup includes a list of restores from that backup, with the date, current
 
 Source: https://northflank.com/docs/v1/application/databases-and-persistence/deploy-a-database.md
 
-To deploy a new database in your project, create a new addon and select the type and version you require. Please note that while you can increase the storage size or replica count of databases after creation, you cannot decrease them.
+To deploy a new database in your project, create a new addon and select the type and version you require. For addons with persistent storage, you can increase storage after creation, but you cannot decrease it. Some addon types [cannot reduce their replica count](databases-and-persistence.md#scale-a-database-scale-replicas).
 
 After creating your addon it may take a few minutes to provision resources and set up a default configuration, after which its status will change to running.
 
@@ -1281,12 +1305,13 @@ Your database will be accessible by workloads within the same project using the 
 
 | Addon | Versions | Description | Backups | TLS |
 | --- | --- | --- | --- | --- |
-| [MongoDB](https://www.mongodb.com/docs/manual/) | 8.0.32, 8.0.26, 7.0.43, 7.0.37, 6.0.27, 5.0.31, 4.4.15, 4.2.21 | MongoDB® is a document-oriented database program that uses JSON-like documents with schema. | Native or disk | Yes |
+| [MongoDB](https://www.mongodb.com/docs/manual/) | 8.0.37, 8.0.32, 7.0.48, 7.0.43, 6.0.30, 6.0.27, 5.0.35, 5.0.31, 4.4.32, 4.4.15, 4.2.21 | MongoDB® is a document-oriented database program that uses JSON-like documents with schema. | Native or disk | Yes |
 | [Redis](https://redis.io/) | 8.10.1, 8.8.2, 8.8.0, 8.6.4, 8.6.1, 8.4.4, 7.2.16, 7.2.14, 7.2.13, 6.2.21 | Redis® implements a distributed, in-memory key-value database with optional durability. | Disk | Yes |
 | [MySQL](https://www.mysql.com/) | 9.7.2, 9.6.0, 8.4.11, 8.4.9, 8.0.46 | MySQL is a fast, reliable, scalable, and easy to use open-source relational database system. | Native or disk | Yes (cannot be changed after creation) |
 | [PostgreSQL](https://www.postgresql.org/) | 18, 17, 16, 15, 14, 13, 12 | PostgreSQL is a free and open-source relational database management system. High availability with Patroni | Native or disk | Yes |
 | [MinIO](https://min.io/) | 2025.10.15 | MinIO® is a High Performance Object Storage with an Amazon S3 cloud storage service compatible API. | Disk | Yes |
-| [RabbitMQ](https://www.rabbitmq.com/) | 4.3.5, 4.3.2, 4.2.9, 4.2.8, 4.0.9, 3.13.7, 3.12.14 | RabbitMQ is an open source message broker software that implements the Advanced Message Queuing Protocol (AMQP). | Disk | Yes |
+| [RabbitMQ](https://www.rabbitmq.com/) | 4.3.5, 4.2.9, 4.0.9, 3.13.7, 3.12.14 | RabbitMQ is an open source message broker software that implements the Advanced Message Queuing Protocol (AMQP). | Disk | Yes |
+| [Memcached](databases-and-persistence.md#deploy-memcached-on-northflank) | 1.6.45, 1.6.32 | High-performance, distributed memory object caching system. | No | Yes |
 
 ### Deploy a database: Advanced configuration
 
@@ -1301,6 +1326,60 @@ See the [deployment guides](databases-and-persistence.md#deploy-a-database-next-
 - [Deploy MySQL on Northflank: MySQL is a fast, reliable, scalable, and easy to use open-source relational database system.](databases-and-persistence.md#deploy-mysql-on-northflank)
 - [Deploy Redis® on Northflank: Redis implements a distributed, in-memory key-value database with optional durability.](databases-and-persistence.md#deploy-redis®-on-northflank)
 - [Deploy MinIO® on Northflank: MinIO is a High Performance Object Storage with an Amazon S3 cloud storage service compatible API.](databases-and-persistence.md#deploy-minio®-on-northflank)
+
+## Deploy Memcached on Northflank
+
+Source: https://northflank.com/docs/v1/application/databases-and-persistence/deploy-databases-on-northflank/deploy-memcached-on-northflank.md
+
+Memcached stores temporary data in memory to reduce database requests. Deploy it as a managed addon and connect your application with a Memcached client.
+
+> [!warning] Temporary cache data
+>
+> Keep data that you cannot lose in a persistent database. Memcached does not use persistent storage. Restarting, redeploying, pausing, upgrading, or removing an instance loses its cached data. Backups, imports, and forks are not supported.
+
+### Deploy Memcached on Northflank: Deploy Memcached
+
+Authentication is optional for internal connections and disabled by default. Choose whether to enable it before creating the addon. You cannot change this choice later. Public and VPC access require both authentication and TLS.
+
+1. In your project, open Create new and select Addon.
+
+2. Select Memcached, enter a name, and choose an available version.
+
+3. In Resources, select a plan and replica count. Memcached does not require a storage allocation.
+
+4. To require credentials, go to Advanced, below Networking. Expand Memcached authentication and turn on Enable authentication.
+
+5. In Networking, configure Deploy with TLS and Accessibility. Keep Private, or select Public or VPC where available.
+
+6. Select Create addon. Wait for the addon to reach the running state before connecting your application.
+
+If you need to change the authentication choice, create a replacement addon and update your application's connection details.
+
+### Deploy Memcached on Northflank: Connect to Memcached
+
+Open the addon's connection details to get its endpoints. The internal Memcached port is `11211` over TCP. For public or VPC connections, use the endpoint and port shown for that access method.
+
+[Link the connection details to a secret group](databases-and-persistence.md#connect-database-secrets-to-workloads-link-database-secrets-to-a-secret-group) and apply it to your workload. Configure your client with the linked variables:
+
+| Connection detail | Use |
+| --- | --- |
+| `HOST`, `PORT` | Connect to one endpoint. |
+| `HOSTS_LIST` | Comma-separated `host:port` endpoints for multiple instances. |
+| `TLS_ENABLED` | Configure whether your client uses TLS. |
+| `USERNAME`, `PASSWORD` | Authenticate when authentication is enabled. |
+| `SASL_CONNECTION_STRING` | Comma-separated `username:password@host:port` endpoints, when authentication is enabled. |
+
+With authentication enabled, use a client that supports [SASL authentication over the binary protocol](https://docs.memcached.org/protocols/binarysasl/). SASL verifies the username and password. It does not encrypt traffic. If the addon uses TLS, enable TLS in your client as well.
+
+Your client must support the selected connection format. If it does not accept `SASL_CONNECTION_STRING`, configure the hosts, credentials, and TLS separately.
+
+### Deploy Memcached on Northflank: Scale Memcached
+
+You can [change the deployment plan](databases-and-persistence.md#scale-a-database-scale-compute) and increase or decrease the replica count after creation. More memory increases the space available for cached items.
+
+Each instance has its own cache. Memcached does not replicate data between instances. Use `HOSTS_LIST` to give your client every instance. Configure how your client distributes keys across those servers. Refresh that list after changing the replica count.
+
+When an instance restarts or is removed, your application must fetch missing items from the original data source. Scaling can move keys between instances, so expect missing cache items during the change.
 
 ## Deploy MinIO® on Northflank
 
@@ -1444,7 +1523,7 @@ This guide explains how to quickly and easily deploy and use [MongoDB®](https:/
 
 | Available versions | Description | Backups | TLS |
 | --- | --- | --- | --- |
-| 8.0.32, 8.0.26, 7.0.43, 7.0.37, 6.0.27, 5.0.31, 4.4.15, 4.2.21 | MongoDB® is a document-oriented database program that uses JSON-like documents with schema. | Native or disk | Yes |
+| 8.0.37, 8.0.32, 7.0.48, 7.0.43, 6.0.30, 6.0.27, 5.0.35, 5.0.31, 4.4.32, 4.4.15, 4.2.21 | MongoDB® is a document-oriented database program that uses JSON-like documents with schema. | Native or disk | Yes |
 
 ### Deploy MongoDB® on Northflank: Deploy MongoDB
 
@@ -1904,7 +1983,7 @@ This guide explains how to quickly and easily deploy and use [RabbitMQ](https://
 
 | Available versions | Description | Backups | TLS |
 | --- | --- | --- | --- |
-| 4.3.5, 4.3.2, 4.2.9, 4.2.8, 4.0.9, 3.13.7, 3.12.14 | RabbitMQ is an open source message broker software that implements the Advanced Message Queuing Protocol (AMQP). | Disk | Yes |
+| 4.3.5, 4.2.9, 4.0.9, 3.13.7, 3.12.14 | RabbitMQ is an open source message broker software that implements the Advanced Message Queuing Protocol (AMQP). | Disk | Yes |
 
 ### Deploy RabbitMQ on Northflank: Deploy RabbitMQ
 
@@ -3795,9 +3874,11 @@ Saving the disk auto-resize configuration restarts the addon. Subsequent automat
 
 ### Scale a database: Scale replicas
 
-You can increase the number of replica sets your database will use to improve availability, each replica set contains a copy of the database.
+Database replicas can improve availability by keeping copies of data. Replication behavior and supported replica counts depend on the addon type.
 
-Database replicas can be scaled up from the resources page, but cannot be scaled down. Any increase will be permanent.
+Configure the replica count on the addon's resources page. You can reduce the count for PostgreSQL, MongoDB, MySQL, Redis, and Memcached addons. You cannot reduce it for MinIO, RabbitMQ, MySQL HA, or Redis with Sentinel. For these addons, an increase is permanent.
+
+[Memcached instances](databases-and-persistence.md#deploy-memcached-on-northflank-scale-memcached) have independent caches. You can increase or decrease their count.
 
 ### Scale a database: Next steps
 

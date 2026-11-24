@@ -15,35 +15,35 @@ Required permission: Account > Platform > Ssh > Update
 
 {object}
 - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-- `sshPublicKeys`: [array of] {object}
+- `sshPublicKeys`: [array of] A list of SSH public keys. {object}
    - `key`: (string) (required) The SSH public key.
 - `restrictions`: {object}
   - `projects`: {object}
     - `enabled`: (boolean) Whether restriction by project should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined projects. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `tags`: {object}
     - `enabled`: (boolean) Whether restriction by tag should be enabled.
-    - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
 - `updatedAt`: (string) time of update (format: date-time)
 - `createdAt`: (string) time of creation (format: date-time)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) ID of the ssh identity (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-  - `sshPublicKeys`: [array of] {object}
+  - `sshPublicKeys`: [array of] A list of SSH public keys. {object}
      - `key`: (string) (required) The SSH public key.
-  - `restrictions`: {object}
-    - `projects`: {object}
+  - `restrictions`: {object} Configuration of restrictions.
+    - `projects`: {object} Configuration of project restriction settings.
       - `enabled`: (boolean) Whether restriction by project should be enabled.
-      - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-    - `tags`: {object}
+      - `items`: [array of] An array of previously defined projects. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `tags`: {object} Configuration of tag restriction settings.
       - `enabled`: (boolean) Whether restriction by tag should be enabled.
-      - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+      - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
       - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
   - `updatedAt`: (string) time of update (format: date-time)
   - `createdAt`: (string) time of creation (format: date-time)
@@ -63,7 +63,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
   --data '{"sshPublicKeys":[{"key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...","__depth":3}],"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}' \
-  https://api.northflank.com/v1/integrations/ssh-identities/{identityId}
+  "https://api.northflank.com/v1/integrations/ssh-identities/{identityId}"
 ```
 
 ```javascript
@@ -103,10 +103,10 @@ import requests
 
 url = "https://api.northflank.com/v1/integrations/ssh-identities/{identityId}"
 
-payload = {"sshPublicKeys":[{"key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...","__depth":3}],"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}
+payload = "{\"sshPublicKeys\":[{\"key\":\"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...\",\"__depth\":3}],\"restrictions\":{\"projects\":{\"enabled\":false},\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PATCH", url, headers = headers, json = payload)
+response = requests.request("PATCH", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -124,7 +124,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/integrations/ssh-identities/{identityId}"
 
-  var jsonStr = []byte(`{"sshPublicKeys":[{"key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...","__depth":3}],"restrictions":{"projects":{"enabled":false},"tags":{"enabled":false,"matchCondition":"or"}}}`)
+  var jsonStr = []byte("{\"sshPublicKeys\":[{\"key\":\"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...\",\"__depth\":3}],\"restrictions\":{\"projects\":{\"enabled\":false},\"tags\":{\"enabled\":false,\"matchCondition\":\"or\"}}}")
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -154,7 +154,8 @@ func main() {
     "name": "Example SSH Identity",
     "sshPublicKeys": [
       {
-        "key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
+        "key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...",
+        "__depth": 5
       }
     ],
     "restrictions": {
@@ -218,7 +219,8 @@ Options:
   "name": "Example SSH Identity",
   "sshPublicKeys": [
     {
-      "key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
+      "key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...",
+      "__depth": 5
     }
   ],
   "restrictions": {
@@ -275,7 +277,8 @@ await apiClient.update.sshIdentities({
     "name": "Example SSH Identity",
     "sshPublicKeys": [
       {
-        "key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
+        "key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ...",
+        "__depth": 5
       }
     ],
     "restrictions": {

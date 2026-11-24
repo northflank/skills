@@ -19,8 +19,8 @@ Required permission: Project > Jobs > General > Create
 - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `infrastructure`: {object}
   - `architecture`: (string) (enum: x86, arm)
-- `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-- `billing`: {object}
+- `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+- `billing`: {object} (required)
   - `buildPlan`: (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `gpu`: {object}
@@ -29,13 +29,13 @@ Required permission: Project > Jobs > General > Create
       - `gpuType`: (string) (required) The type of GPU to use.
       - `gpuCount`: (integer) The number of GPUs to allocate.
       - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
-- `deployment`: (multiple options) {object}
-   - `buildpack`: {object}
+- `deployment`: (multiple options) Where to deploy the job from. {object} Deploy from version control
+   - `buildpack`: {object} Allows for customization of buildpack runtime
      - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
      - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
      - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
      - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
-   - `docker`: {object}
+   - `docker`: {object} Allows for customization of docker runtime
      - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
      - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
      - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
@@ -52,22 +52,26 @@ Required permission: Project > Jobs > General > Create
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
-   - `metadata`: {object}
-     - `labels`: {object}
-     - `annotations`: {object}
-   - `vcs`: {object}
+   - `podDisruptionBudget`: (multiple options) Controls eviction-aware voluntary-disruption protection for all runtime pods owned by the service or job. Available for account-enabled BYOC projects running Kubernetes 1.31 or newer. Service budgets aggregate stable and canary pods without traffic weighting; job budgets aggregate all active runs. Values at or above the healthy pod count can prevent node drains, node-pool upgrades, and autoscaler consolidation. Pods selected by multiple budgets cannot be evicted. Omitting this object from a full PUT disables it. {object}
+      - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+      - `minAvailable`: (integer) (required) The minimum number of healthy runtime pods that must remain available during a voluntary disruption. Zero provides no eviction protection. | {object}
+      - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+   - `metadata`: {object} Allow setting custom labels and annotations for workloads.
+     - `labels`: {object} Specify custom labels for the workload.
+     - `annotations`: {object} Specify custom annotations for the workload as string or object.
+   - `vcs`: {object} (required)
      - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
      - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
      - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
      - `accountLogin`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `accountLogin` is provided, Northflank will instead use your linked account with that login name.
      - `vcsLinkId`: (string) By default, if you have multiple version control accounts of the same provider linked, Northflank will pick a linked account that has access to the repository. If `vcsLinkId` is provided, Northflank will instead use your linked account with that ID. (min length: 24) (max length: 24)
-     - `projectBranch`: (string) (required) The name of the branch to use. | {object}
-   - `buildpack`: {object}
+     - `projectBranch`: (string) (required) The name of the branch to use. | {object} Deploy from an external image
+   - `buildpack`: {object} Allows for customization of buildpack runtime
      - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
      - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
      - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
      - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
-   - `docker`: {object}
+   - `docker`: {object} Allows for customization of docker runtime
      - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
      - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
      - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
@@ -84,18 +88,22 @@ Required permission: Project > Jobs > General > Create
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
-   - `metadata`: {object}
-     - `labels`: {object}
-     - `annotations`: {object}
-   - `external`: {object}
+   - `podDisruptionBudget`: (multiple options) Controls eviction-aware voluntary-disruption protection for all runtime pods owned by the service or job. Available for account-enabled BYOC projects running Kubernetes 1.31 or newer. Service budgets aggregate stable and canary pods without traffic weighting; job budgets aggregate all active runs. Values at or above the healthy pod count can prevent node drains, node-pool upgrades, and autoscaler consolidation. Pods selected by multiple budgets cannot be evicted. Omitting this object from a full PUT disables it. {object}
+      - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+      - `minAvailable`: (integer) (required) The minimum number of healthy runtime pods that must remain available during a voluntary disruption. Zero provides no eviction protection. | {object}
+      - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+   - `metadata`: {object} Allow setting custom labels and annotations for workloads.
+     - `labels`: {object} Specify custom labels for the workload.
+     - `annotations`: {object} Specify custom annotations for the workload as string or object.
+   - `external`: {object} (required)
      - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
-     - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | {object}
-   - `buildpack`: {object}
+     - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$) | {object} Deploy from a Northflank build service
+   - `buildpack`: {object} Allows for customization of buildpack runtime
      - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
      - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
      - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
      - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
-   - `docker`: {object}
+   - `docker`: {object} Allows for customization of docker runtime
      - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
      - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
      - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
@@ -112,20 +120,24 @@ Required permission: Project > Jobs > General > Create
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
-   - `metadata`: {object}
-     - `labels`: {object}
-     - `annotations`: {object}
-   - `internal`: {object}
-     - `id`: (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
+   - `podDisruptionBudget`: (multiple options) Controls eviction-aware voluntary-disruption protection for all runtime pods owned by the service or job. Available for account-enabled BYOC projects running Kubernetes 1.31 or newer. Service budgets aggregate stable and canary pods without traffic weighting; job budgets aggregate all active runs. Values at or above the healthy pod count can prevent node drains, node-pool upgrades, and autoscaler consolidation. Pods selected by multiple budgets cannot be evicted. Omitting this object from a full PUT disables it. {object}
+      - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+      - `minAvailable`: (integer) (required) The minimum number of healthy runtime pods that must remain available during a voluntary disruption. Zero provides no eviction protection. | {object}
+      - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+   - `metadata`: {object} Allow setting custom labels and annotations for workloads.
+     - `labels`: {object} Specify custom labels for the workload.
+     - `annotations`: {object} Specify custom annotations for the workload as string or object.
+   - `internal`: {object} (required)
+     - `id`: (multiple options) ID of the build service to deploy (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
      - `branch`: (string) Branch to deploy
-     - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
-     - `buildId`: (string) ID of the build that should be deployed | {object}
-   - `buildpack`: {object}
+     - `buildSHA`: (multiple options) Commit SHA to deploy, or 'latest' to deploy the most recent commit (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
+     - `buildId`: (string) ID of the build that should be deployed | {object} Deploy from a project image
+   - `buildpack`: {object} Allows for customization of buildpack runtime
      - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
      - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
      - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
      - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
-   - `docker`: {object}
+   - `docker`: {object} Allows for customization of docker runtime
      - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
      - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
      - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
@@ -142,20 +154,24 @@ Required permission: Project > Jobs > General > Create
        - `gpuCount`: (integer) The number of GPUs to allocate.
        - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
    - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
-   - `metadata`: {object}
-     - `labels`: {object}
-     - `annotations`: {object}
-   - `image`: {object}
+   - `podDisruptionBudget`: (multiple options) Controls eviction-aware voluntary-disruption protection for all runtime pods owned by the service or job. Available for account-enabled BYOC projects running Kubernetes 1.31 or newer. Service budgets aggregate stable and canary pods without traffic weighting; job budgets aggregate all active runs. Values at or above the healthy pod count can prevent node drains, node-pool upgrades, and autoscaler consolidation. Pods selected by multiple budgets cannot be evicted. Omitting this object from a full PUT disables it. {object}
+      - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+      - `minAvailable`: (integer) (required) The minimum number of healthy runtime pods that must remain available during a voluntary disruption. Zero provides no eviction protection. | {object}
+      - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+   - `metadata`: {object} Allow setting custom labels and annotations for workloads.
+     - `labels`: {object} Specify custom labels for the workload.
+     - `annotations`: {object} Specify custom annotations for the workload as string or object.
+   - `image`: {object} (required)
      - `projectId`: (string) (min length: 24) (max length: 24)
      - `name`: (string) (required) (min length: 1)
      - `group`: (string) (min length: 1)
-     - `tag`: (string) (required) (min length: 1) | {object}
+     - `tag`: (string) (required) (min length: 1) | {object} Choose later
 - `disabledCI`: (boolean) Whether CI should be disabled. Only relevant for jobs deploying directly from version control.
 - `buildConfiguration`: {object}
-  - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+  - `pathIgnoreRules`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
   - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
   - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
-  - `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+  - `ciIgnoreFlags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
   - `ignoreEmptyCommits`: (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules.
   - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
   - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
@@ -165,33 +181,33 @@ Required permission: Project > Jobs > General > Create
   - `storage`: {object}
     - `ephemeralStorage`: {object}
       - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-- `buildSettings`: (multiple options) {object}
+- `buildSettings`: (multiple options) Build engine {object} Build from a Dockerfile
    - `storage`: {object}
      - `ephemeralStorage`: {object}
        - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-   - `dockerfile`: {object}
+   - `dockerfile`: {object} (required)
      - `useCache`: (boolean) DEPRECATED: This field will be removed in the near future and currently has no effect.
      - `buildEngine`: (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko)
      - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
      - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
-     - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+     - `dockerfileContents`: (string) (nullable) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
      - `buildkit`: {object}
        - `useCache`: (boolean) Use persistent storage to cache build layers.
-       - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
+       - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object} Build from a Buildpack
    - `storage`: {object}
      - `ephemeralStorage`: {object}
        - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-   - `buildpack`: {object}
-     - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
-     - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
+   - `buildpack`: {object} (required)
+     - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_26`. (enum: HEROKU_26, HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_RESOLUTE, PAKETO_NOBLE, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
+     - `buildpackLocators`: [array of] Array of custom Buildpacks to use. (string) Url or registry identifier of custom Buildpack.
      - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
      - `useCache`: (boolean) Should build dependencies be cached?
-- `runtimeEnvironment`: {object}
-- `runtimeFiles`: {object}
-- `buildArguments`: {object}
-- `buildFiles`: {object}
-- `dockerSecretMounts`: {object}
-- `healthChecks`: [array of] {object}
+- `runtimeEnvironment`: {object} An object containing the runtime environment to set for the job. Keys may only contain letters, numbers, hyphens, forward slashes and dots.
+- `runtimeFiles`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+- `buildArguments`: {object} An object containing the build arguments to set for the job. Keys may only contain letters, numbers, hyphens, forward slashes and dots.
+- `buildFiles`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+- `dockerSecretMounts`: {object} Docker secret mount contents as JSON object, encrypted at rest. Must be a valid Docker secret mount identifier
+- `healthChecks`: [array of] An array of health checks. {object} A health check object.
    - `protocol`: (string) (required) The protocol to access the health check with. (enum: HTTP, CMD, TCP)
    - `type`: (string) (required) The type of health check. (enum: livenessProbe, readinessProbe, startupProbe)
    - `path`: (string) The path of the health check endpoint. Required when protocol is HTTP. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]*((\?([a-zA-Z0-9-._]+(=[a-zA-Z0-9-._]+)?)*)(&([a-zA-Z0-9-._]+(=[a-zA-Z0-9-._]+)?)*)*)?$)
@@ -205,23 +221,25 @@ Required permission: Project > Jobs > General > Create
 - `settings`: {object}
   - `backoffLimit`: (integer) (required) The number of attempts to rerun a job before it is marked as failed.
   - `runOnSourceChange`: (string) Configure when the job should be run if the source image changes. (enum: never, cd-promote, always)
-  - `activeDeadlineSeconds`: (integer) The maximum amount of time, in seconds, for a job to run before it is marked as failed.
+  - `activeDeadlineSeconds`: (integer) (nullable) The maximum amount of time, in seconds, for a job to run before it is marked as failed.
   - `cron`: {object}
-    - `schedule`: (string) The cron timer scheduling when to run the job. (pattern: (@(annually|yearly|monthly|weekly|daily|hourly))|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5}))
+    - `schedule`: (string) (nullable) The cron timer scheduling when to run the job. (pattern: (@(annually|yearly|monthly|weekly|daily|hourly))|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5}))
     - `suspended`: (boolean) Whether the cron's automatic scheduling is suspended
+    - `timeZone`: (string) IANA timezone for the schedule, follows daylight saving time rules. (max length: 100)
     - `concurrencyPolicy`: (string) Whether this job should run when another instance of the job is already running. `allow` will enable multiple instances of this job to run. `forbid` will keep the current instance of the job running and stop a new instance from being run. `replace` will terminate any currently running instance of the job and start a new one. (enum: allow, forbid, replace)
+    - `skipMissedRuns`: (boolean) Skip scheduled runs that are more than 60 seconds late. Manual runs are unaffected.
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `name`: (string) (required) The name of the job. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 52)
   - `description`: (string) A description of the job. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
   - `stageId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `infrastructure`: {object}
     - `architecture`: (string) (enum: x86, arm)
-  - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-  - `billing`: {object}
+  - `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `billing`: {object} (required)
     - `buildPlan`: (string) The ID of the build plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `deploymentPlan`: (string) (required) The ID of the deployment plan to use. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
     - `gpu`: {object}
@@ -232,10 +250,10 @@ Required permission: Project > Jobs > General > Create
         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
   - `disabledCI`: (boolean) Whether CI should be disabled. Only relevant for jobs deploying directly from version control.
   - `buildConfiguration`: {object}
-    - `pathIgnoreRules`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+    - `pathIgnoreRules`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
     - `isAllowList`: (boolean) If `true`, the functionality of `pathIgnoreRules` will be inverted. A commit will only be built if a file has been changed that matches one or more of the rules in `pathIgnoreRules`.
     - `ciIgnoreFlagsEnabled`: (boolean) If `true`, enables commit ignore flags. If a commit message contains one or more of the flags in `ciIgnoreFlags`, that commit will not be built.
-    - `ciIgnoreFlags`: [array of] (string) A commit ignore flag. (max length: 72)
+    - `ciIgnoreFlags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
     - `ignoreEmptyCommits`: (boolean) If `true`, commits that do not modify any files will not trigger a build. Defaults to `false`, meaning empty commits build regardless of other build rules.
     - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here.
     - `dockerCredentials`: [array of] (string) The ID of the docker credentials to use. (pattern: ^[A-Za-z0-9-]+$)
@@ -245,33 +263,33 @@ Required permission: Project > Jobs > General > Create
     - `storage`: {object}
       - `ephemeralStorage`: {object}
         - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-  - `buildSettings`: (multiple options) {object}
+  - `buildSettings`: (multiple options) Build engine {object} Build from a Dockerfile
      - `storage`: {object}
        - `ephemeralStorage`: {object}
          - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-     - `dockerfile`: {object}
+     - `dockerfile`: {object} (required)
        - `useCache`: (boolean) DEPRECATED: This field will be removed in the near future and currently has no effect.
        - `buildEngine`: (string) Build engine to use. Defaults to recommended build engine `buildkit` (enum: buildkit, kaniko)
        - `dockerFilePath`: (string) (required) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
        - `dockerWorkDir`: (string) (required) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
-       - `dockerfileContents`: (string) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
+       - `dockerfileContents`: (string) (nullable) Plain UTF-8 Dockerfile contents. Ordinary API and immediate-build values are literal. In template contexts only `${args.*}` and `${refs.*}` are resolved; native Docker `${...}` syntax is preserved. Sensitive values must use Docker secret mounts rather than template expressions or sensitive arguments or references.
        - `buildkit`: {object}
          - `useCache`: (boolean) Use persistent storage to cache build layers.
-         - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object}
+         - `cacheStorageSize`: (integer) The amount of persistent storage available to each build in MB. | {object} Build from a Buildpack
      - `storage`: {object}
        - `ephemeralStorage`: {object}
          - `storageSize`: (integer) Ephemeral storage per build in MB (enum: 16384, 32768, 65536, 131072, 262144, 524288)
-     - `buildpack`: {object}
-       - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_24`. (enum: HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
-       - `buildpackLocators`: [array of] (string) Url or registry identifier of custom Buildpack.
+     - `buildpack`: {object} (required)
+       - `builder`: (string) Buildpack stack to use. Defaults to recommended stack `HEROKU_26`. (enum: HEROKU_26, HEROKU_24, HEROKU_22, HEROKU_22_CLASSIC, HEROKU_20, HEROKU_18, GOOGLE_22, GOOGLE_V1, CNB_ALPINE, CNB_BIONIC, PAKETO_RESOLUTE, PAKETO_NOBLE, PAKETO_JAMMY_TINY, PAKETO_JAMMY_BASE, PAKETO_JAMMY_FULL, PAKETO_TINY, PAKETO_BASE, PAKETO_FULL)
+       - `buildpackLocators`: [array of] Array of custom Buildpacks to use. (string) Url or registry identifier of custom Buildpack.
        - `buildContext`: (string) The working directory to build in. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
        - `useCache`: (boolean) Should build dependencies be cached?
-  - `runtimeEnvironment`: {object}
-  - `runtimeFiles`: {object}
-  - `buildArguments`: {object}
-  - `buildFiles`: {object}
-  - `dockerSecretMounts`: {object}
-  - `healthChecks`: [array of] {object}
+  - `runtimeEnvironment`: {object} An object containing the runtime environment to set for the job. Keys may only contain letters, numbers, hyphens, forward slashes and dots.
+  - `runtimeFiles`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+  - `buildArguments`: {object} An object containing the build arguments to set for the job. Keys may only contain letters, numbers, hyphens, forward slashes and dots.
+  - `buildFiles`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+  - `dockerSecretMounts`: {object} Docker secret mount contents as JSON object, encrypted at rest. Must be a valid Docker secret mount identifier
+  - `healthChecks`: [array of] An array of health checks. {object} A health check object.
      - `protocol`: (string) (required) The protocol to access the health check with. (enum: HTTP, CMD, TCP)
      - `type`: (string) (required) The type of health check. (enum: livenessProbe, readinessProbe, startupProbe)
      - `path`: (string) The path of the health check endpoint. Required when protocol is HTTP. (pattern: ^\/([a-zA-Z0-9-._]+\/)*[a-zA-Z0-9-._]*((\?([a-zA-Z0-9-._]+(=[a-zA-Z0-9-._]+)?)*)(&([a-zA-Z0-9-._]+(=[a-zA-Z0-9-._]+)?)*)*)?$)
@@ -285,21 +303,23 @@ Required permission: Project > Jobs > General > Create
   - `settings`: {object}
     - `backoffLimit`: (integer) (required) The number of attempts to rerun a job before it is marked as failed.
     - `runOnSourceChange`: (string) Configure when the job should be run if the source image changes. (enum: never, cd-promote, always)
-    - `activeDeadlineSeconds`: (integer) The maximum amount of time, in seconds, for a job to run before it is marked as failed.
+    - `activeDeadlineSeconds`: (integer) (nullable) The maximum amount of time, in seconds, for a job to run before it is marked as failed.
     - `cron`: {object}
-      - `schedule`: (string) The cron timer scheduling when to run the job.
+      - `schedule`: (string) (nullable) The cron timer scheduling when to run the job.
       - `suspended`: (boolean) Whether the cron's automatic scheduling is suspended
+      - `timeZone`: (string) IANA timezone for the schedule, follows daylight saving time rules. (max length: 100)
       - `concurrencyPolicy`: (string) Whether this job should run when another instance of the job is already running. `allow` will enable multiple instances of this job to run. `forbid` will keep the current instance of the job running and stop a new instance from being run. `replace` will terminate any currently running instance of the job and start a new one. (enum: allow, forbid, replace)
+      - `skipMissedRuns`: (boolean) Skip scheduled runs that are more than 60 seconds late. Manual runs are unaffected.
   - `jobType`: (string) (required) Type of the job (manual or cron) (enum: cron)
   - `id`: (string) (required) Identifier for the job
   - `appId`: (string) (required) Full identifier used for job deployment
   - `deployment`: {object}
-    - `buildpack`: {object}
+    - `buildpack`: {object} Allows for customization of buildpack runtime
       - `configType`: (string) (required) Type of buildpack run configuration (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
       - `customProcess`: (string) Custom process which should be run. Required in case where `configType` is `customProcess`
       - `customEntrypoint`: (string) Custom entrypoint which should be run. Required in case where `configType` is `customEntrypointCustomCommand`
       - `customCommand`: (string) Custom command which should be run. Required in case where `configType` is `customCommand`, `customEntrypointCustomCommand` or `originalEntrypointCustomCommand`
-    - `docker`: {object}
+    - `docker`: {object} Allows for customization of docker runtime
       - `configType`: (string) (required) Type of entrypoint & command override configuration (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
       - `customEntrypoint`: (string) Custom entrypoint which should be used. Required in case where `configType` is `customEntrypoint` or `customEntrypointCustomCommand`
       - `customCommand`: (string) Custom command which should be used. Required in case where `configType` is `customCommand` or `customEntrypointCustomCommand`
@@ -316,9 +336,13 @@ Required permission: Project > Jobs > General > Create
         - `gpuCount`: (integer) The number of GPUs to allocate.
         - `timesliced`: (boolean) Whether GPU timeslicing is enabled.
     - `gracePeriodSeconds`: (integer) The maximum amount of time the process has to shut down after receiving a SIGTERM signal before it is forcefully shut down SIGKILL by the system. Maximum 1800 seconds for PaaS projects and 86400 seconds for BYOC projects.
-    - `metadata`: {object}
-      - `labels`: {object}
-      - `annotations`: {object}
+    - `podDisruptionBudget`: (multiple options) Controls eviction-aware voluntary-disruption protection for all runtime pods owned by the service or job. Available for account-enabled BYOC projects running Kubernetes 1.31 or newer. Service budgets aggregate stable and canary pods without traffic weighting; job budgets aggregate all active runs. Values at or above the healthy pod count can prevent node drains, node-pool upgrades, and autoscaler consolidation. Pods selected by multiple budgets cannot be evicted. Omitting this object from a full PUT disables it. {object}
+        - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+        - `minAvailable`: (integer) (required) The minimum number of healthy runtime pods that must remain available during a voluntary disruption. Zero provides no eviction protection. | {object}
+        - `enabled`: (boolean) (required) Whether a Kubernetes PodDisruptionBudget should protect this workload.
+    - `metadata`: {object} Allow setting custom labels and annotations for workloads.
+      - `labels`: {object} Specify custom labels for the workload.
+      - `annotations`: {object} Specify custom annotations for the workload as string or object.
     - `vcs`: {object}
       - `projectUrl`: (string) (required) URL of the Git repo to build. (pattern: ^(https:\/\/)?((www(\.[a-zA-Z0-9-]{2,})+\.)?[a-zA-Z0-9-]{2,})(\.([a-zA-Z0-9-]{2,}))+(\/((?:[a-zA-Z0-9\-._]|%[a-fA-F0-9]{2}){2,}))+?$)
       - `projectType`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
@@ -330,9 +354,9 @@ Required permission: Project > Jobs > General > Create
       - `imagePath`: (string) (required) Image to be deployed. When not deploying from Dockerhub the URL must be specified. (pattern: ^(?:(?:https?:\/\/)?([a-zA-Z0-9-]+\.[a-zA-Z0-9.\-]+))?(?:\/)?([a-zA-Z/-9.\-_]+)(?::([a-zA-Z/-9.\-_:]+)|@([a-zA-Z/-9.\-_:]+))$)
       - `credentials`: (string) ID of the saved credentials to use to access this external image. (pattern: ^[A-Za-z0-9-]+$)
     - `internal`: {object}
-      - `id`: (multiple options) (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
+      - `id`: (multiple options) ID of the build service to deploy (string) The ID of a build service in the same project (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 54) | (string) The ID of a build service in another project, in the format `project-id/build-service-id`
       - `branch`: (string) Branch to deploy
-      - `buildSHA`: (multiple options) (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
+      - `buildSHA`: (multiple options) Commit SHA to deploy, or 'latest' to deploy the most recent commit (string) A commit sha. (min length: 40) (max length: 40) | (string) Latest commit. (enum: latest)
       - `buildId`: (string) ID of the build that should be deployed
     - `image`: {object}
       - `projectId`: (string) (min length: 24) (max length: 24)
@@ -340,15 +364,15 @@ Required permission: Project > Jobs > General > Create
       - `group`: (string) (min length: 1)
       - `tag`: (string) (required) (min length: 1)
     - `imageUrl`: (string) Image registry url of the deployed image.
-  - `status`: {object}
-    - `build`: {object}
+  - `status`: {object} (required) Details about the current job status.
+    - `build`: {object} Details about the status of the most recent build.
       - `status`: (string) (required) The current status of the build. (enum: QUEUED, PENDING, UNSCHEDULABLE, STARTING, CLONING, BUILDING, UPLOADING, ABORTED, FAILURE, SUBMISSION_FAILURE, SUCCESS, CRASHED, IN_PROGRESS)
       - `lastTransitionTime`: (string) The timestamp of when the build reached this status. (format: date-time)
-  - `cluster`: {object}
+  - `cluster`: {object} (required) Cluster information
     - `id`: (string) (required) The id of the cluster associated with this project.
     - `name`: (string) (required) The name of the cluster associated with this project.
     - `namespace`: (string) Namespace this resource is located within on the cluster.
-    - `loadBalancers`: [array of] (string)
+    - `loadBalancers`: [array of] Load balancer DNS for the cluster. (string)
   - `createdAt`: (string) time of creation (format: date-time)
   - `updatedAt`: (string) time of update (format: date-time)
 
@@ -366,8 +390,8 @@ Request body
 curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PUT \
-  --data '{"name":"Example Job","description":"A job description","billing":{"buildPlan":"nf-compute-200-8","deploymentPlan":"nf-compute-20"},"deployment":{"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"vcs":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"}},"buildConfiguration":{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"runtimeEnvironment":{"variable1":"abcdef","variable2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"buildArguments":{"variable1":"abcdef","variable2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"settings":{"backoffLimit":0,"runOnSourceChange":"never","activeDeadlineSeconds":600,"cron":{"schedule":"30 8 * * *","suspended":false,"concurrencyPolicy":"forbid"}}}' \
-  https://api.northflank.com/v1/projects/{projectId}/jobs
+  --data '{"name":"Example Job","description":"A job description","billing":{"buildPlan":"nf-compute-200-8","deploymentPlan":"nf-compute-20"},"deployment":{"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"vcs":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"}},"buildConfiguration":{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"runtimeEnvironment":{"variable1":"abcdef","variable2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"buildArguments":{"variable1":"abcdef","variable2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"settings":{"backoffLimit":0,"runOnSourceChange":"never","activeDeadlineSeconds":600,"cron":{"schedule":"30 8 * * *","suspended":false,"timeZone":"Europe/London","concurrencyPolicy":"forbid","skipMissedRuns":true}}}' \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs"
 ```
 
 ```javascript
@@ -480,7 +504,9 @@ const payload = {
     "cron": {
       "schedule": "30 8 * * *",
       "suspended": false,
-      "concurrencyPolicy": "forbid"
+      "timeZone": "Europe/London",
+      "concurrencyPolicy": "forbid",
+      "skipMissedRuns": true
     }
   }
 }
@@ -503,10 +529,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/jobs"
 
-payload = {"name":"Example Job","description":"A job description","billing":{"buildPlan":"nf-compute-200-8","deploymentPlan":"nf-compute-20"},"deployment":{"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"vcs":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"}},"buildConfiguration":{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"runtimeEnvironment":{"variable1":"abcdef","variable2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"buildArguments":{"variable1":"abcdef","variable2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"settings":{"backoffLimit":0,"runOnSourceChange":"never","activeDeadlineSeconds":600,"cron":{"schedule":"30 8 * * *","suspended":false,"concurrencyPolicy":"forbid"}}}
+payload = "{\"name\":\"Example Job\",\"description\":\"A job description\",\"billing\":{\"buildPlan\":\"nf-compute-200-8\",\"deploymentPlan\":\"nf-compute-20\"},\"deployment\":{\"docker\":{\"configType\":\"default\"},\"storage\":{\"ephemeralStorage\":{\"storageSize\":1024}},\"vcs\":{\"projectUrl\":\"https://github.com/example/project\",\"projectType\":\"github\",\"accountLogin\":\"github-user\",\"projectBranch\":\"master\"}},\"buildConfiguration\":{\"pathIgnoreRules\":[\"README.md\"],\"isAllowList\":false,\"ciIgnoreFlags\":[\"[skip ci]\",\"[ci skip]\",\"[no ci]\",\"[skip nf]\",\"[nf skip]\",\"[northflank skip]\",\"[skip northflank]\"],\"ignoreEmptyCommits\":false,\"dockerCredentials\":[\"example-docker-credential\"],\"storage\":{\"ephemeralStorage\":{\"storageSize\":16384}}},\"buildSettings\":{\"storage\":{\"ephemeralStorage\":{\"storageSize\":16384}},\"dockerfile\":{\"buildEngine\":\"buildkit\",\"dockerFilePath\":\"/Dockerfile\",\"dockerWorkDir\":\"/\",\"buildkit\":{\"useCache\":true,\"cacheStorageSize\":32768}}},\"runtimeEnvironment\":{\"variable1\":\"abcdef\",\"variable2\":\"12345\"},\"runtimeFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"buildArguments\":{\"variable1\":\"abcdef\",\"variable2\":\"12345\"},\"buildFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"dockerSecretMounts\":{\"example-secret-mount_1\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"healthChecks\":[{\"protocol\":\"HTTP\",\"type\":\"readinessProbe\",\"path\":\"/health-check\",\"port\":8080,\"initialDelaySeconds\":10,\"periodSeconds\":60,\"timeoutSeconds\":1,\"failureThreshold\":3,\"successThreshold\":1}],\"settings\":{\"backoffLimit\":0,\"runOnSourceChange\":\"never\",\"activeDeadlineSeconds\":600,\"cron\":{\"schedule\":\"30 8 * * *\",\"suspended\":false,\"timeZone\":\"Europe/London\",\"concurrencyPolicy\":\"forbid\",\"skipMissedRuns\":true}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PUT", url, headers = headers, json = payload)
+response = requests.request("PUT", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -524,7 +550,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/jobs"
 
-  var jsonStr = []byte(`{"name":"Example Job","description":"A job description","billing":{"buildPlan":"nf-compute-200-8","deploymentPlan":"nf-compute-20"},"deployment":{"docker":{"configType":"default"},"storage":{"ephemeralStorage":{"storageSize":1024}},"vcs":{"projectUrl":"https://github.com/example/project","projectType":"github","accountLogin":"github-user","projectBranch":"master"}},"buildConfiguration":{"pathIgnoreRules":["README.md"],"isAllowList":false,"ciIgnoreFlags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"],"ignoreEmptyCommits":false,"dockerCredentials":["example-docker-credential"],"storage":{"ephemeralStorage":{"storageSize":16384}}},"buildSettings":{"storage":{"ephemeralStorage":{"storageSize":16384}},"dockerfile":{"buildEngine":"buildkit","dockerFilePath":"/Dockerfile","dockerWorkDir":"/","buildkit":{"useCache":true,"cacheStorageSize":32768}}},"runtimeEnvironment":{"variable1":"abcdef","variable2":"12345"},"runtimeFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"buildArguments":{"variable1":"abcdef","variable2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"healthChecks":[{"protocol":"HTTP","type":"readinessProbe","path":"/health-check","port":8080,"initialDelaySeconds":10,"periodSeconds":60,"timeoutSeconds":1,"failureThreshold":3,"successThreshold":1}],"settings":{"backoffLimit":0,"runOnSourceChange":"never","activeDeadlineSeconds":600,"cron":{"schedule":"30 8 * * *","suspended":false,"concurrencyPolicy":"forbid"}}}`)
+  var jsonStr = []byte("{\"name\":\"Example Job\",\"description\":\"A job description\",\"billing\":{\"buildPlan\":\"nf-compute-200-8\",\"deploymentPlan\":\"nf-compute-20\"},\"deployment\":{\"docker\":{\"configType\":\"default\"},\"storage\":{\"ephemeralStorage\":{\"storageSize\":1024}},\"vcs\":{\"projectUrl\":\"https://github.com/example/project\",\"projectType\":\"github\",\"accountLogin\":\"github-user\",\"projectBranch\":\"master\"}},\"buildConfiguration\":{\"pathIgnoreRules\":[\"README.md\"],\"isAllowList\":false,\"ciIgnoreFlags\":[\"[skip ci]\",\"[ci skip]\",\"[no ci]\",\"[skip nf]\",\"[nf skip]\",\"[northflank skip]\",\"[skip northflank]\"],\"ignoreEmptyCommits\":false,\"dockerCredentials\":[\"example-docker-credential\"],\"storage\":{\"ephemeralStorage\":{\"storageSize\":16384}}},\"buildSettings\":{\"storage\":{\"ephemeralStorage\":{\"storageSize\":16384}},\"dockerfile\":{\"buildEngine\":\"buildkit\",\"dockerFilePath\":\"/Dockerfile\",\"dockerWorkDir\":\"/\",\"buildkit\":{\"useCache\":true,\"cacheStorageSize\":32768}}},\"runtimeEnvironment\":{\"variable1\":\"abcdef\",\"variable2\":\"12345\"},\"runtimeFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"buildArguments\":{\"variable1\":\"abcdef\",\"variable2\":\"12345\"},\"buildFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"dockerSecretMounts\":{\"example-secret-mount_1\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"healthChecks\":[{\"protocol\":\"HTTP\",\"type\":\"readinessProbe\",\"path\":\"/health-check\",\"port\":8080,\"initialDelaySeconds\":10,\"periodSeconds\":60,\"timeoutSeconds\":1,\"failureThreshold\":3,\"successThreshold\":1}],\"settings\":{\"backoffLimit\":0,\"runOnSourceChange\":\"never\",\"activeDeadlineSeconds\":600,\"cron\":{\"schedule\":\"30 8 * * *\",\"suspended\":false,\"timeZone\":\"Europe/London\",\"concurrencyPolicy\":\"forbid\",\"skipMissedRuns\":true}}}")
   req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -562,7 +588,13 @@ func main() {
       ],
       "isAllowList": false,
       "ciIgnoreFlags": [
-        "[skip ci]"
+        "[skip ci]",
+        "[ci skip]",
+        "[no ci]",
+        "[skip nf]",
+        "[nf skip]",
+        "[northflank skip]",
+        "[skip northflank]"
       ],
       "ignoreEmptyCommits": false,
       "dockerCredentials": [
@@ -636,7 +668,9 @@ func main() {
       "cron": {
         "schedule": "30 8 * * *",
         "suspended": false,
-        "concurrencyPolicy": "forbid"
+        "timeZone": "Europe/London",
+        "concurrencyPolicy": "forbid",
+        "skipMissedRuns": true
       }
     },
     "jobType": "cron",
@@ -664,6 +698,7 @@ func main() {
       "internal": {
         "id": "example-build-service",
         "branch": "master",
+        "buildSHA": "latest",
         "buildId": "premium-guide-6393"
       }
     },
@@ -813,7 +848,9 @@ Options:
     "cron": {
       "schedule": "30 8 * * *",
       "suspended": false,
-      "concurrencyPolicy": "forbid"
+      "timeZone": "Europe/London",
+      "concurrencyPolicy": "forbid",
+      "skipMissedRuns": true
     }
   }
 }
@@ -837,7 +874,13 @@ Options:
     ],
     "isAllowList": false,
     "ciIgnoreFlags": [
-      "[skip ci]"
+      "[skip ci]",
+      "[ci skip]",
+      "[no ci]",
+      "[skip nf]",
+      "[nf skip]",
+      "[northflank skip]",
+      "[skip northflank]"
     ],
     "ignoreEmptyCommits": false,
     "dockerCredentials": [
@@ -911,7 +954,9 @@ Options:
     "cron": {
       "schedule": "30 8 * * *",
       "suspended": false,
-      "concurrencyPolicy": "forbid"
+      "timeZone": "Europe/London",
+      "concurrencyPolicy": "forbid",
+      "skipMissedRuns": true
     }
   },
   "jobType": "cron",
@@ -939,6 +984,7 @@ Options:
     "internal": {
       "id": "example-build-service",
       "branch": "master",
+      "buildSHA": "latest",
       "buildId": "premium-guide-6393"
     }
   },
@@ -1079,7 +1125,9 @@ await apiClient.put.job({
       "cron": {
         "schedule": "30 8 * * *",
         "suspended": false,
-        "concurrencyPolicy": "forbid"
+        "timeZone": "Europe/London",
+        "concurrencyPolicy": "forbid",
+        "skipMissedRuns": true
       }
     }
   }
@@ -1105,7 +1153,13 @@ await apiClient.put.job({
       ],
       "isAllowList": false,
       "ciIgnoreFlags": [
-        "[skip ci]"
+        "[skip ci]",
+        "[ci skip]",
+        "[no ci]",
+        "[skip nf]",
+        "[nf skip]",
+        "[northflank skip]",
+        "[skip northflank]"
       ],
       "ignoreEmptyCommits": false,
       "dockerCredentials": [
@@ -1179,7 +1233,9 @@ await apiClient.put.job({
       "cron": {
         "schedule": "30 8 * * *",
         "suspended": false,
-        "concurrencyPolicy": "forbid"
+        "timeZone": "Europe/London",
+        "concurrencyPolicy": "forbid",
+        "skipMissedRuns": true
       }
     },
     "jobType": "cron",
@@ -1207,6 +1263,7 @@ await apiClient.put.job({
       "internal": {
         "id": "example-build-service",
         "branch": "master",
+        "buildSHA": "latest",
         "buildId": "premium-guide-6393"
       }
     },
@@ -1342,7 +1399,9 @@ response = client.put.job(
             "cron": {
                 "schedule": "30 8 * * *",
                 "suspended": False,
+                "timeZone": "Europe/London",
                 "concurrencyPolicy": "forbid",
+                "skipMissedRuns": True,
             },
         },
     },
@@ -1448,7 +1507,9 @@ print(response.data)
     "cron": {
       "schedule": "30 8 * * *",
       "suspended": false,
-      "concurrencyPolicy": "forbid"
+      "timeZone": "Europe/London",
+      "concurrencyPolicy": "forbid",
+      "skipMissedRuns": true
     }
   },
   "jobType": "cron",

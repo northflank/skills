@@ -22,39 +22,39 @@ Required permission: Project > Services > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `deployments`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `deployments`: [array of] (required) An array of deployments, newest first. {object} A deployment of a service.
      - `id`: (string) (required) Identifier of the deployment. Use this as the rollback target.
-     - `name`: (string) Display name of the deployment. Null until the first pod of the deployment has been observed.
+     - `name`: (string) (nullable) Display name of the deployment. Null until the first pod of the deployment has been observed.
      - `createdAt`: (string) (required) Time the deployment was created. (format: date-time)
      - `active`: (boolean) Whether the deployment is currently serving traffic. During a gradual rollout both the stable and the canary deployment are active.
      - `releaseType`: (string) Current role of the deployment in the gradual rollout. This is mutable: promoting a canary deployment changes its release type to `stable`, so it does not record how the deployment was originally created. Absent for services that do not use a gradual rollout strategy. (enum: stable, canary)
-     - `image`: {object}
+     - `image`: {object} The image this deployment is running.
        - `imagePath`: (string) Full path of the deployed image.
        - `image`: (string) Name of the deployed image.
        - `tag`: (string) Tag of the deployed image.
        - `sha`: (string) Digest of the deployed image.
-     - `imageSelector`: {object}
+     - `imageSelector`: {object} The desired image selector.
        - `projectId`: (string) (required) (min length: 24) (max length: 24)
        - `name`: (string) (required)
        - `group`: (string)
        - `tag`: (string) (required)
-     - `importedImage`: {object}
+     - `importedImage`: {object} The concrete imported image selected for deployment.
        - `projectId`: (string) (required) (min length: 24) (max length: 24)
        - `imageId`: (string) (required) (min length: 24) (max length: 24)
-     - `commit`: {object}
+     - `commit`: {object} The source commit this deployment was built from, for git backed services.
        - `sha`: (string) Commit the deployed image was built from.
        - `message`: (string) Commit message.
        - `author`: (string) Login of the commit author.
-       - `date`: (multiple options) (string) | (string) (format: date-time)
-     - `instances`: (number) Number of instances the deployment was created with. (format: float)
-     - `reason`: {object}
+       - `date`: (multiple options) Time the commit was authored. (string) | (string) (format: date-time)
+     - `instances`: (number) (nullable) Number of instances the deployment was created with. (format: float)
+     - `reason`: {object} What triggered the deployment.
        - `id`: (string) Why the deployment was created.
-       - `user`: {object}
+       - `user`: {object} The user that caused the deployment, when it was user initiated.
          - `name`: (string) Name of the acting user.
          - `email`: (string) Email of the acting user.
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -64,6 +64,25 @@ Required permission: Project > Services > General > Read
 GET /v1/projects/{projectId}/services/{serviceId}/deployments
 
 GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/deployments
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/deployments?per_page=50&page=1&releaseType=canary"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/deployments?per_page=50&page=1&releaseType=canary"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -88,7 +107,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/deployments
         "commit": {
           "sha": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
           "message": "fix: handle empty payload",
-          "author": "octocat"
+          "author": "octocat",
+          "date": "2024-01-15T10:30:00.000Z"
         },
         "instances": 2,
         "reason": {
@@ -154,7 +174,8 @@ Options:
       "commit": {
         "sha": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
         "message": "fix: handle empty payload",
-        "author": "octocat"
+        "author": "octocat",
+        "date": "2024-01-15T10:30:00.000Z"
       },
       "instances": 2,
       "reason": {
@@ -212,7 +233,8 @@ await apiClient.list.service.deployments({
         "commit": {
           "sha": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
           "message": "fix: handle empty payload",
-          "author": "octocat"
+          "author": "octocat",
+          "date": "2024-01-15T10:30:00.000Z"
         },
         "instances": 2,
         "reason": {

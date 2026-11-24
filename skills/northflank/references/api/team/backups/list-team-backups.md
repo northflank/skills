@@ -18,7 +18,7 @@ Required permission: Account > Platform > Backups > Read
 - `addonId`: (string) Addon ID or comma-separated addon IDs. Matches stored IDs across selected projects, or the whole team when projectId is omitted, including IDs reused after deletion. (max length: 10100)
 - `addonType`: (string) Filter by addon type. (max length: 100)
 - `backupType`: (string) Backup type or comma-separated backup types: sameAddon, snapshot, global, externalDump, fileUpload, liveInstance. (max length: 10100)
-- `status`: (multiple options) (string) (max length: 10100)
+- `status`: (multiple options) Status or comma-separated statuses. Addons: scheduled, in-progress, completed, aborting, aborted, failed, not-supported. Volumes: DELETED, PENDING, IN_PROGRESS, FAILED, READY. Deleted backups are excluded. (string) (max length: 10100)
 - `customDestinationId`: (string) Filter by primary custom destination ID. Only current destinations are resolved. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
 - `after`: (string) Include backups created at or after this ISO-8601 timestamp. (format: date-time)
 - `before`: (string) Include backups created at or before this ISO-8601 timestamp. (format: date-time)
@@ -26,9 +26,9 @@ Required permission: Account > Platform > Backups > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `backups`: [array of] (multiple options) {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `backups`: [array of] (required) Backups of the selected resource type, newest first. (multiple options) {object}
       - `resourceType`: (string) (required) (enum: addon)
       - `id`: (string) (required) The backup ID.
       - `uid`: (string) The backup UUID, when available. (format: uuid)
@@ -36,15 +36,15 @@ Required permission: Account > Platform > Backups > Read
       - `status`: (string) (required) (enum: scheduled, in-progress, completed, aborting, aborted, failed, not-supported)
       - `createdAt`: (string) (required) (format: date-time)
       - `completedAt`: (string) (format: date-time)
-      - `project`: {object}
+      - `project`: {object} Project metadata recorded with the backup.
         - `id`: (string) Stored resource ID.
         - `name`: (string) Stored resource name.
-      - `addon`: {object}
+      - `addon`: {object} Addon metadata recorded with the backup.
         - `id`: (string) Stored resource ID.
         - `name`: (string) Stored resource name.
       - `customDestinationId`: (string) Primary custom destination ID, when its public ID is available. (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-      - `config`: {object}
-        - `source`: {object}
+      - `config`: {object} (required)
+        - `source`: {object} Backup source type, when recorded on the backup.
           - `type`: (string) (required) (enum: sameAddon, snapshot, global, externalDump, fileUpload, liveInstance)
         - `addonType`: (string)
         - `addonVersion`: (string)
@@ -73,10 +73,10 @@ Required permission: Account > Platform > Backups > Read
       - `updatedAt`: (string) time of update (format: date-time)
       - `resourceType`: (string) (required) (enum: volume)
       - `status`: (string) (required) (enum: DELETED, PENDING, IN_PROGRESS, FAILED, READY)
-      - `project`: {object}
+      - `project`: {object} Project metadata, when the project still exists.
         - `id`: (string) Stored resource ID.
         - `name`: (string) Stored resource name.
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -86,6 +86,25 @@ Required permission: Account > Platform > Backups > Read
 GET /v1/backups
 
 GET /v1/teams/{teamId}/backups
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/backups?per_page=50&page=1&projectId=production%2Cstaging&addonId=postgres%2Credis&addonType=postgresql&backupType=snapshot%2Cglobal&customDestinationId=example-destination&search=daily"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/backups?per_page=50&page=1&projectId=production%2Cstaging&addonId=postgres%2Credis&addonType=postgresql&backupType=snapshot%2Cglobal&customDestinationId=example-destination&search=daily"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -99,10 +118,17 @@ GET /v1/teams/{teamId}/backups
         "config": {
           "additionalDestinations": [
             {
-              "retentionTime": 7
+              "retentionTime": 7,
+              "type": "custom",
+              "destinationId": "string"
             }
           ]
-        }
+        },
+        "resourceType": "addon",
+        "id": "string",
+        "name": "string",
+        "status": "scheduled",
+        "createdAt": "1970-01-01T00:00:00.000Z"
       }
     ]
   },
@@ -164,10 +190,17 @@ Options:
       "config": {
         "additionalDestinations": [
           {
-            "retentionTime": 7
+            "retentionTime": 7,
+            "type": "custom",
+            "destinationId": "string"
           }
         ]
-      }
+      },
+      "resourceType": "addon",
+      "id": "string",
+      "name": "string",
+      "status": "scheduled",
+      "createdAt": "1970-01-01T00:00:00.000Z"
     }
   ]
 }
@@ -206,10 +239,17 @@ await apiClient.list.backups({
         "config": {
           "additionalDestinations": [
             {
-              "retentionTime": 7
+              "retentionTime": 7,
+              "type": "custom",
+              "destinationId": "string"
             }
           ]
-        }
+        },
+        "resourceType": "addon",
+        "id": "string",
+        "name": "string",
+        "status": "scheduled",
+        "createdAt": "1970-01-01T00:00:00.000Z"
       }
     ]
   },

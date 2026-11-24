@@ -14,18 +14,18 @@ Required permission: Project > Jobs > General > Update
 
 **Request body:**
 
-{object}
+{object} Start a build with the current settings
 - `sha`: (string) Commit sha to build. If not provided, will build the most recent commit of the job's branch. (min length: 40) (max length: 40)
 
 OR
 
-{object}
+{object} Start a build with overrides for the current settings
 - `sha`: (string) Commit sha to build. If not provided, will build the most recent commit of the job's branch. (min length: 40) (max length: 40)
-- `overrides`: {object}
-  - `buildArguments`: {object}
-  - `buildFiles`: {object}
-  - `dockerSecretMounts`: {object}
-  - `docker`: {object}
+- `overrides`: {object} An optional object that may specify several different overrides on the build level.
+  - `buildArguments`: {object} Build arguments that will be set on this build only. In case of conflicts these values take precedence.
+  - `buildFiles`: {object} Secret files as JSON object, encrypted at rest. File path must be absolute
+  - `dockerSecretMounts`: {object} Docker secret mount contents as JSON object, encrypted at rest. Must be a valid Docker secret mount identifier
+  - `docker`: {object} Overrides for docker build settings.
     - `dockerFilePath`: (string) The file path of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
     - `dockerWorkDir`: (string) The working directory of the Dockerfile. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]*$)
     - `dockerfileTarget`: (string) If your Dockerfile contains multiple build stages, you can specify the target stage by entering its name here. (pattern: ^[a-zA-Z0-9-_]+$)
@@ -33,11 +33,11 @@ OR
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) ID of the build.
   - `branch`: (string) Name of the branch the built commit belongs to.
-  - `pullRequestId`: (multiple options) (string) | (integer)
+  - `pullRequestId`: (multiple options) (nullable) ID of the pull request the commit belongs to. (string) | (integer)
   - `sha`: (string) The sha of the built commit.
   - `registry`: {object}
     - `uri`: (string) URI of that can be used to pull the image from the registry
@@ -62,7 +62,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"sha":"262ed9817b3cad5142fbceabe0c9e371e390d616"}' \
-  https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build"
 ```
 
 ```javascript
@@ -88,10 +88,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build"
 
-payload = {"sha":"262ed9817b3cad5142fbceabe0c9e371e390d616"}
+payload = "{\"sha\":\"262ed9817b3cad5142fbceabe0c9e371e390d616\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -109,7 +109,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build"
 
-  var jsonStr = []byte(`{"sha":"262ed9817b3cad5142fbceabe0c9e371e390d616"}`)
+  var jsonStr = []byte("{\"sha\":\"262ed9817b3cad5142fbceabe0c9e371e390d616\"}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -137,7 +137,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"sha":"262ed9817b3cad5142fbceabe0c9e371e390d616","overrides":{"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"docker":{"dockerFilePath":"/Dockerfile","dockerWorkDir":"/"}}}' \
-  https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build"
 ```
 
 ```javascript
@@ -185,10 +185,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build"
 
-payload = {"sha":"262ed9817b3cad5142fbceabe0c9e371e390d616","overrides":{"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"docker":{"dockerFilePath":"/Dockerfile","dockerWorkDir":"/"}}}
+payload = "{\"sha\":\"262ed9817b3cad5142fbceabe0c9e371e390d616\",\"overrides\":{\"buildArguments\":{\"ARGUMENT_1\":\"abcdef\",\"ARGUMENT_2\":\"12345\"},\"buildFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"dockerSecretMounts\":{\"example-secret-mount_1\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"docker\":{\"dockerFilePath\":\"/Dockerfile\",\"dockerWorkDir\":\"/\"}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -206,7 +206,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/build"
 
-  var jsonStr = []byte(`{"sha":"262ed9817b3cad5142fbceabe0c9e371e390d616","overrides":{"buildArguments":{"ARGUMENT_1":"abcdef","ARGUMENT_2":"12345"},"buildFiles":{"/dir/fileName":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"dockerSecretMounts":{"example-secret-mount_1":{"data":"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=","encoding":"utf-8"}},"docker":{"dockerFilePath":"/Dockerfile","dockerWorkDir":"/"}}}`)
+  var jsonStr = []byte("{\"sha\":\"262ed9817b3cad5142fbceabe0c9e371e390d616\",\"overrides\":{\"buildArguments\":{\"ARGUMENT_1\":\"abcdef\",\"ARGUMENT_2\":\"12345\"},\"buildFiles\":{\"/dir/fileName\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"dockerSecretMounts\":{\"example-secret-mount_1\":{\"data\":\"VGhpcyBpcyBhbiBleGFtcGxlIHdpdGggYSB0ZW1wbGF0ZWQgJHtOT0RFX0VOVn0gdmFyaWFibGU=\",\"encoding\":\"utf-8\"}},\"docker\":{\"dockerFilePath\":\"/Dockerfile\",\"dockerWorkDir\":\"/\"}}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

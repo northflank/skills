@@ -22,12 +22,12 @@ Required permission: Project > ExternalAddons > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `data`: {object}
-    - `externalAddons`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `data`: {object} (required)
+    - `externalAddons`: [array of] (required) List of external addons {object} External addon object
         - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-        - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+        - `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
         - `environmentId`: (string)
         - `spec`: {object}
           - `resourceType`: (string) (required) (enum: s3, rds, cloudSql, memorystore)
@@ -47,20 +47,29 @@ Required permission: Project > ExternalAddons > General > Read
             - `backblaze`: {object}
               - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
             - `azure`: {object}
+              - `features`: {object}
+              - `resource_provider_registrations`: (string) (enum: none)
               - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
             - `akamai`: {object}
               - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
             - `planetscale`: {object}
               - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
-          - `config`: {object}
+            - `openai`: {object}
+              - `organization`: (string) OpenAI organization ID.
+              - `project`: (string) OpenAI project ID.
+              - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
+            - `anthropic`: {object}
+              - `workspace_id`: (string) Workspace for an API key not scoped to one workspace. Omit for workspace-scoped keys. (pattern: ^wrkspc_[0-9A-Za-z]+$)
+              - `integrationId`: (string) (required) Integration to use for this job. (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
+          - `config`: {object} (required)
           - `outputs`: {object}
           - `workloadIdentityId`: (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
         - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-    - `pagination`: {object}
+    - `pagination`: {object} (required) Pagination information
       - `page`: (integer) (required) Current page number
       - `perPage`: (integer) (required) Items per page
       - `total`: (integer) (required) Total number of items
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -70,6 +79,25 @@ Required permission: Project > ExternalAddons > General > Read
 GET /v1/projects/{projectId}/external-addons
 
 GET /v1/teams/{teamId}/projects/{projectId}/external-addons
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/external-addons?per_page=50&page=1&resourceType=s3&status=active"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/external-addons?per_page=50&page=1&resourceType=s3&status=active"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -84,16 +112,27 @@ GET /v1/teams/{teamId}/projects/{projectId}/external-addons
           "spec": {
             "provider": {
               "aws": {
-                "region": "eu-west-1"
+                "region": "eu-west-1",
+                "integrationId": "string"
               },
               "google": {
                 "region": "us-central1",
-                "zone": "us-central1-c"
+                "zone": "us-central1-c",
+                "project": "string",
+                "integrationId": "string"
               }
-            }
-          }
+            },
+            "resourceType": "s3",
+            "config": {}
+          },
+          "name": "string"
         }
-      ]
+      ],
+      "pagination": {
+        "page": 1,
+        "perPage": 1,
+        "total": 1
+      }
     }
   },
   "pagination": {
@@ -139,16 +178,27 @@ Options:
         "spec": {
           "provider": {
             "aws": {
-              "region": "eu-west-1"
+              "region": "eu-west-1",
+              "integrationId": "string"
             },
             "google": {
               "region": "us-central1",
-              "zone": "us-central1-c"
+              "zone": "us-central1-c",
+              "project": "string",
+              "integrationId": "string"
             }
-          }
-        }
+          },
+          "resourceType": "s3",
+          "config": {}
+        },
+        "name": "string"
       }
-    ]
+    ],
+    "pagination": {
+      "page": 1,
+      "perPage": 1,
+      "total": 1
+    }
   }
 }
 ```
@@ -186,16 +236,27 @@ await apiClient.list.externalAddons({
           "spec": {
             "provider": {
               "aws": {
-                "region": "eu-west-1"
+                "region": "eu-west-1",
+                "integrationId": "string"
               },
               "google": {
                 "region": "us-central1",
-                "zone": "us-central1-c"
+                "zone": "us-central1-c",
+                "project": "string",
+                "integrationId": "string"
               }
-            }
-          }
+            },
+            "resourceType": "s3",
+            "config": {}
+          },
+          "name": "string"
         }
-      ]
+      ],
+      "pagination": {
+        "page": 1,
+        "perPage": 1,
+        "total": 1
+      }
     }
   },
   "pagination": {

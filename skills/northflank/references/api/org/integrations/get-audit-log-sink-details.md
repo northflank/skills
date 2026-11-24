@@ -13,8 +13,8 @@ Required permission: Account > Admin > AuditLogSinks > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) Identifier for the audit log sink.
   - `name`: (string) (required) Name of the audit log sink.
   - `description`: (string) Description of the audit log sink. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
@@ -23,13 +23,13 @@ Required permission: Account > Admin > AuditLogSinks > Read
   - `status`: (string) (required) Current status of the audit log sink. (enum: paused, running, failing, creating)
   - `createdAt`: (string) (required) Timestamp of when the audit log sink was created. (format: date-time)
   - `updatedAt`: (string) (required) Timestamp of when the audit log sink was last updated. (format: date-time)
-  - `sinkData`: {object}
+  - `sinkData`: {object} (required) Configuration of the destination. Secrets are omitted.
     - `endpoint`: (string) (required)
     - `region`: (string) (required)
     - `bucket`: (string) (required)
     - `pathPrefix`: (string)
     - `compression`: (string) (required) (enum: gzip, none)
-    - `auth`: {object}
+    - `auth`: {object} (required) Authentication object (secret omitted).
       - `accessKeyId`: (string) (required)
 
 ### API reference
@@ -37,6 +37,25 @@ Required permission: Account > Admin > AuditLogSinks > Read
 GET /v1/integrations/audit-log-sinks/{sinkId}
 
 GET /v1/teams/{teamId}/integrations/audit-log-sinks/{sinkId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/integrations/audit-log-sinks/{sinkId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/integrations/audit-log-sinks/{sinkId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -51,7 +70,17 @@ GET /v1/teams/{teamId}/integrations/audit-log-sinks/{sinkId}
     "sinkType": "aws_s3",
     "includeSpec": false,
     "createdAt": "2026-05-11T12:00:00.000Z",
-    "updatedAt": "2026-05-11T12:00:00.000Z"
+    "updatedAt": "2026-05-11T12:00:00.000Z",
+    "status": "paused",
+    "sinkData": {
+      "endpoint": "string",
+      "region": "string",
+      "bucket": "string",
+      "compression": "gzip",
+      "auth": {
+        "accessKeyId": "string"
+      }
+    }
   }
 }
 ```
@@ -82,7 +111,17 @@ Options:
   "sinkType": "aws_s3",
   "includeSpec": false,
   "createdAt": "2026-05-11T12:00:00.000Z",
-  "updatedAt": "2026-05-11T12:00:00.000Z"
+  "updatedAt": "2026-05-11T12:00:00.000Z",
+  "status": "paused",
+  "sinkData": {
+    "endpoint": "string",
+    "region": "string",
+    "bucket": "string",
+    "compression": "gzip",
+    "auth": {
+      "accessKeyId": "string"
+    }
+  }
 }
 ```
 
@@ -113,7 +152,17 @@ await apiClient.get.auditLogSink({
     "sinkType": "aws_s3",
     "includeSpec": false,
     "createdAt": "2026-05-11T12:00:00.000Z",
-    "updatedAt": "2026-05-11T12:00:00.000Z"
+    "updatedAt": "2026-05-11T12:00:00.000Z",
+    "status": "paused",
+    "sinkData": {
+      "endpoint": "string",
+      "region": "string",
+      "bucket": "string",
+      "compression": "gzip",
+      "auth": {
+        "accessKeyId": "string"
+      }
+    }
   },
   "rawResponse": "...",
   "request": "...",

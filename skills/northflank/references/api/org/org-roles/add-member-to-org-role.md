@@ -18,8 +18,8 @@ Required permission: Organisation > Admin > Roles > Manage
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -34,7 +34,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"userId":"john-doe"}' \
-  https://api.northflank.com/v1/org-roles/{roleId}/members
+  "https://api.northflank.com/v1/org-roles/{roleId}/members"
 ```
 
 ```javascript
@@ -60,10 +60,10 @@ import requests
 
 url = "https://api.northflank.com/v1/org-roles/{roleId}/members"
 
-payload = {"userId":"john-doe"}
+payload = "{\"userId\":\"john-doe\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -81,7 +81,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/org-roles/{roleId}/members"
 
-  var jsonStr = []byte(`{"userId":"john-doe"}`)
+  var jsonStr = []byte("{\"userId\":\"john-doe\"}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

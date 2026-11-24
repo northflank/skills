@@ -20,7 +20,7 @@ Get logs for any Northflank resource, selected via query parameters: a service, 
 - `opentofuJobId`: (string) ID of the OpenTofu job to target. Does not support podName, containerName selectors, deploymentId or type filters.
 - `logSource`: (string) Source of the logs to fetch. Defaults to `runtime`, or to the source implied by `backupId`/`restoreId`. `build` is available for services and jobs, `backup` and `restore` for addons. Use `buildId` to select a build; build logs do not support pod or container selectors. (enum: runtime, build, backup, restore)
 - `type`: (string) Type of log. Multiple log types can be selected by specifying the query parameter repeatedly. (enum: cdn, mesh, ingress, runtime, build, backup, restore)
-- `containerName`: (multiple options) [array of] (string) (min length: 3) (max length: 64) | (string) (min length: 3) (max length: 64)
+- `containerName`: (multiple options) Limits logs to specific container(s). Repeat the parameter to select multiple containers. Build logs, OpenTofu jobs and container scans only accept the neutral value `all`. [array of] (string) (min length: 3) (max length: 64) | (string) (min length: 3) (max length: 64)
 - `deploymentId`: (string) Limit runtime logs to a specific deployment of a service or harness. Not supported for build logs, cluster pods, OpenTofu jobs or container scans.
 - `buildId`: (string) Selects logs for specific build.
 - `runId`: (string) Limits metrics to a specific job run id. (min length: 36) (max length: 36)
@@ -37,10 +37,10 @@ Get logs for any Northflank resource, selected via query parameters: a service, 
 
 **Response body:**
 
-{object}
-- `data`: [array of] {object}
+{object} Response object.
+- `data`: [array of] (required) Result data. {object}
    - `containerId`: (string) (required)
-   - `log`: (undefined) (required)
+   - `log`: (required)
    - `ts`: (string) (required) (format: date-time)
 
 ### API reference
@@ -48,6 +48,25 @@ Get logs for any Northflank resource, selected via query parameters: a service, 
 GET /v1/logs
 
 GET /v1/teams/{teamId}/logs
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/logs?projectId=default-project&clusterId=my-cluster&podName=acme-6b97845ff4-cwkj4&serviceId=site-api&jobId=daily-report&harnessId=my-harness&addonId=main-database&containerScanId=my-scan&backupId=backup-123&restoreId=64a7b2f0d1e4c53f9a8b1c2d&opentofuJobId=64a7b2f0d1e4c53f9a8b1c2d&logSource=runtime&containerName=my-container-67d6d748c5-kgvwh&deploymentId=latest&buildId=fantastic-build-2345&runId=93ec9390-b9bd-47f0-9bd1-b5983c42a6f2&queryType=range&startTime=2023-02-16T14%3A00%3A00.000Z&endTime=2023-02-16T15%3A00%3A00.000Z&duration=600&lineLimit=250&direction=backward&textIncludes=myvalue&textNotIncludes=myvalue&regexIncludes=my.*value&regexNotIncludes=my.*value"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/logs?projectId=default-project&clusterId=my-cluster&podName=acme-6b97845ff4-cwkj4&serviceId=site-api&jobId=daily-report&harnessId=my-harness&addonId=main-database&containerScanId=my-scan&backupId=backup-123&restoreId=64a7b2f0d1e4c53f9a8b1c2d&opentofuJobId=64a7b2f0d1e4c53f9a8b1c2d&logSource=runtime&containerName=my-container-67d6d748c5-kgvwh&deploymentId=latest&buildId=fantastic-build-2345&runId=93ec9390-b9bd-47f0-9bd1-b5983c42a6f2&queryType=range&startTime=2023-02-16T14%3A00%3A00.000Z&endTime=2023-02-16T15%3A00%3A00.000Z&duration=600&lineLimit=250&direction=backward&textIncludes=myvalue&textNotIncludes=myvalue&regexIncludes=my.*value&regexNotIncludes=my.*value"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -58,7 +77,8 @@ GET /v1/teams/{teamId}/logs
   "data": [
     {
       "log": "stdout F This is a log line",
-      "ts": "2023-03-21T15:01:17.310Z"
+      "ts": "2023-03-21T15:01:17.310Z",
+      "containerId": "string"
     }
   ]
 }
@@ -138,7 +158,8 @@ Options:
 [
   {
     "log": "stdout F This is a log line",
-    "ts": "2023-03-21T15:01:17.310Z"
+    "ts": "2023-03-21T15:01:17.310Z",
+    "containerId": "string"
   }
 ]
 ```
@@ -164,7 +185,7 @@ await apiClient.get.logs({
     "restoreId": "64a7b2f0d1e4c53f9a8b1c2d",
     "opentofuJobId": "64a7b2f0d1e4c53f9a8b1c2d",
     "logSource": "runtime",
-    "containerName": [],
+    "containerName": "my-container-67d6d748c5-kgvwh",
     "deploymentId": "latest",
     "buildId": "fantastic-build-2345",
     "runId": "93ec9390-b9bd-47f0-9bd1-b5983c42a6f2",
@@ -191,7 +212,8 @@ await apiClient.get.logs({
   "data": [
     {
       "log": "stdout F This is a log line",
-      "ts": "2023-03-21T15:01:17.310Z"
+      "ts": "2023-03-21T15:01:17.310Z",
+      "containerId": "string"
     }
   ],
   "rawResponse": "...",

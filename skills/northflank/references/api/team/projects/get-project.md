@@ -13,8 +13,8 @@ Required permission: Project > Projects > Manage > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `lifecycleStatus`: (string) (required) Status of resource on the platform (enum: pending_initialization, creating, created, creation_failed, upgrading, upgrade_failed, migration_pending, migrating, migration_failed, deleting, deletion_failed, deleted, cluster_deleted, initializing, tearing_down, teardown_failed)
   - `id`: (string) (required) Identifier for the project.
   - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
@@ -23,7 +23,7 @@ Required permission: Project > Projects > Manage > Read
   - `deployment`: {object}
     - `region`: (string) (required) The region where the project's services, jobs and addons are deployed in.
   - `createdAt`: (string) (required) The time the project was created. (format: date-time)
-  - `services`: [array of] {object}
+  - `services`: [array of] (required) An array of services belonging to the project. {object} A service object.
      - `id`: (string) (required) Identifier for the service.
      - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
      - `appId`: (string) (required) Full identifier used for service deployment
@@ -33,10 +33,10 @@ Required permission: Project > Projects > Manage > Read
      - `serviceType`: (string) (required) Type of the service (combined, build or deployment) (enum: combined, build, deployment)
   - `customRegistry`: {object}
     - `enabled`: (boolean) (required) Whether the project has a custom registry.
-    - `configuration`: {object}
+    - `configuration`: {object} The configuration of the custom registry.
       - `credentialId`: (string)
       - `provider`: (string) (enum: acr, ecr, gar, dockerhub, dhi, github, gitlab, custom, legacy)
-  - `jobs`: [array of] {object}
+  - `jobs`: [array of] (required) An array of jobs belonging to the project. {object} A job object.
      - `id`: (string) (required) Identifier for the job.
      - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
      - `appId`: (string) (required) Full identifier used for deployment
@@ -44,26 +44,45 @@ Required permission: Project > Projects > Manage > Read
      - `name`: (string) (required) The name of the job.
      - `description`: (string) A short description of the job.
      - `jobType`: (string) (required) Type of the job (manual or cron) (enum: manual, cron)
-  - `addons`: [array of] {object}
+  - `addons`: [array of] (required) An array of addons belonging to the project. {object} An addon object.
      - `id`: (string) (required) Identifier for the addon.
      - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
      - `appId`: (string) (required) Full identifier used for deployment
      - `stageId`: (string) ID of the environment the resource belongs to.
      - `name`: (string) (required) The name of the addon.
      - `description`: (string) A short description of the addon.
-     - `spec`: {object}
+     - `spec`: {object} (required) Details about the addon's specifications.
        - `type`: (string) (required) The type of the addon
-  - `cluster`: {object}
+  - `cluster`: {object} (required) Cluster information
     - `id`: (string) (required) The id of the cluster associated with this project.
     - `name`: (string) (required) The name of the cluster associated with this project.
     - `namespace`: (string) Namespace this resource is located within on the cluster.
-    - `loadBalancers`: [array of] (string)
+    - `loadBalancers`: [array of] Load balancer DNS for the cluster. (string)
 
 ### API reference
 
 GET /v1/projects/{projectId}
 
 GET /v1/teams/{teamId}/projects/{projectId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

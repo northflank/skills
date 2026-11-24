@@ -20,15 +20,15 @@ Required permission: Project > AiModels > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `llmModelDeployments`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `llmModelDeployments`: [array of] (required) An array of AI models in this project. {object} An AI model.
      - `name`: (string) (required) The name of the AI model. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `description`: (string) A description of the AI model. (pattern: ^[\s\S]*$) (max length: 1024)
-     - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
-     - `spec`: {object}
+     - `tags`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+     - `spec`: {object} (required)
        - `type`: (string) (required) Type of model spec - custom for user-defined configuration (enum: custom)
-       - `configuration`: {object}
+       - `configuration`: {object} (required) LLM model configuration including engine, architecture, and compute settings
          - `name`: (string)
          - `engine`: (string) (enum: vllm)
          - `revision`: (string)
@@ -43,7 +43,7 @@ Required permission: Project > AiModels > General > Read
              - `accessMode`: (string) (enum: ReadWriteMany)
              - `storageClass`: (string) The type of the storage. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
              - `storageSize`: (integer) (required) The size of the storage, in megabytes. Configurable sizes depend on the storage class.
-             - `shmSize`: (integer)
+             - `shmSize`: (integer) (nullable)
          - `architecture`: {object}
            - `type`: (string) (enum: aggregated)
            - `workerConfig`: {object}
@@ -53,7 +53,7 @@ Required permission: Project > AiModels > General > Read
                - `pipelineParallelism`: (integer)
                - `expertParallelism`: (integer)
              - `sequenceLengthConfig`: {object}
-               - `maxModelLength`: (multiple options) (integer) A fixed maximum context length, in tokens | (string) `auto` to derive the maximum context length from the model's config (enum: auto)
+               - `maxModelLength`: (multiple options) The maximum model context length (input and output tokens), or `auto` to derive it from the model's config (integer) A fixed maximum context length, in tokens | (string) `auto` to derive the maximum context length from the model's config (enum: auto)
                - `maxInputLength`: (integer)
                - `maxOutputLength`: (integer)
              - `batchingConfig`: {object}
@@ -73,10 +73,10 @@ Required permission: Project > AiModels > General > Read
      - `entityId`: (string) (required) The entity ID (team) this deployment belongs to.
      - `entityType`: (string) (required) (enum: user, team, org)
      - `creatorId`: (string) (required) The user who created this deployment.
-     - `dns`: {object}
+     - `dns`: {object} (required) DNS configuration for the AI model.
        - `base`: (string) (required) (pattern: ^([a-zA-Z0-9-]{2,}\.){2,}[a-zA-Z]{2,}$)
        - `zone`: (string) (required)
-     - `ports`: [array of] {object}
+     - `ports`: [array of] (required) An array of ports for the AI model. {object}
          - `id`: (string) (required) The id used to identify the port across requests. (pattern: ^[a-z]-?[a-z0-9]+(-[a-z0-9]+)*$)
          - `name`: (string) (required) The name of the port used in the public url and UI. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
          - `internalPort`: (integer) (required) The port number.
@@ -85,12 +85,12 @@ Required permission: Project > AiModels > General > Read
          - `dns`: (string) DNS entry for this port.
          - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
      - `status`: (string) (required) The current status of the AI model. (enum: pending, provisioning, starting, crashed, paused, running, deleting)
-     - `deploymentConfiguration`: {object}
+     - `deploymentConfiguration`: {object} Details of the latest deployment configuration.
        - `id`: (string) (required) The deployment configuration identifier.
        - `createdAt`: (string) time of creation (format: date-time)
      - `createdAt`: (string) time of creation (format: date-time)
      - `updatedAt`: (string) time of update (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -100,6 +100,25 @@ Required permission: Project > AiModels > General > Read
 GET /v1/projects/{projectId}/llm-model-deployments
 
 GET /v1/teams/{teamId}/projects/{projectId}/llm-model-deployments
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/llm-model-deployments?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/llm-model-deployments?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -120,9 +139,20 @@ GET /v1/teams/{teamId}/projects/{projectId}/llm-model-deployments
                 "storageSize": 6144
               }
             }
-          }
+          },
+          "type": "custom"
         },
-        "projectId": "default-project"
+        "projectId": "default-project",
+        "id": "string",
+        "entityId": "string",
+        "entityType": "user",
+        "creatorId": "string",
+        "dns": {
+          "base": "string",
+          "zone": "string"
+        },
+        "ports": [],
+        "status": "pending"
       }
     ]
   },
@@ -171,9 +201,20 @@ Options:
               "storageSize": 6144
             }
           }
-        }
+        },
+        "type": "custom"
       },
-      "projectId": "default-project"
+      "projectId": "default-project",
+      "id": "string",
+      "entityId": "string",
+      "entityType": "user",
+      "creatorId": "string",
+      "dns": {
+        "base": "string",
+        "zone": "string"
+      },
+      "ports": [],
+      "status": "pending"
     }
   ]
 }
@@ -216,9 +257,20 @@ await apiClient.list.llmModelDeployments({
                 "storageSize": 6144
               }
             }
-          }
+          },
+          "type": "custom"
         },
-        "projectId": "default-project"
+        "projectId": "default-project",
+        "id": "string",
+        "entityId": "string",
+        "entityType": "user",
+        "creatorId": "string",
+        "dns": {
+          "base": "string",
+          "zone": "string"
+        },
+        "ports": [],
+        "status": "pending"
       }
     ]
   },

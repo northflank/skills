@@ -20,9 +20,9 @@ Required permission: Project > Projects > Security > View Container Scan Reports
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `containerScans`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `containerScans`: [array of] (required) {object}
      - `id`: (string) (required) (format: uuid)
      - `buildId`: (string) (required)
      - `serviceId`: (string) (required)
@@ -33,7 +33,7 @@ Required permission: Project > Projects > Security > View Container Scan Reports
        - `message`: (string) (required)
        - `at`: (string) (required) (format: date-time)
        - `exitCode`: (integer)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -44,6 +44,25 @@ GET /v1/projects/{projectId}/container-scans
 
 GET /v1/teams/{teamId}/projects/{projectId}/container-scans
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/container-scans?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/container-scans?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: A list of container scans.
@@ -53,6 +72,9 @@ GET /v1/teams/{teamId}/projects/{projectId}/container-scans
   "pagination": {
     "hasNextPage": false,
     "count": 1
+  },
+  "data": {
+    "containerScans": []
   }
 }
 ```
@@ -82,7 +104,9 @@ Options:
  A list of container scans.
 
 ```json
-undefined
+{
+  "containerScans": []
+}
 ```
 
 ### JavaScript client reference
@@ -112,6 +136,9 @@ await apiClient.list.containerScans({
   "pagination": {
     "hasNextPage": false,
     "count": 1
+  },
+  "data": {
+    "containerScans": []
   },
   "rawResponse": "...",
   "request": "...",

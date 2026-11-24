@@ -6,9 +6,9 @@ Lists available billing plans
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `plans`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `plans`: [array of] (required) An array of available plans {object} A plan object
      - `id`: (string) (required) The ID of the plan.
      - `name`: (string) (required) The name of the plan.
      - `currency`: (string) (required) The currency code of the currency used by this plan.
@@ -20,6 +20,25 @@ Lists available billing plans
 ### API reference
 
 GET /v1/plans
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/plans"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/plans"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

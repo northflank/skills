@@ -20,29 +20,29 @@ Required permission: Project > Services > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `services`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `services`: [array of] (required) An array of services. {object} A service object.
      - `id`: (string) (required) Identifier for the service
      - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
      - `appId`: (string) (required) Full identifier used for service deployment
      - `projectId`: (string) (required) ID of the project the service belongs to.
      - `stageId`: (string) ID of the environment the service belongs to.
      - `name`: (string) (required) Service name
-     - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+     - `tags`: [array of] (required) An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `description`: (string) A short description of the service
      - `serviceType`: (string) (required) Type of the service (combined, build or deployment) (enum: combined, build, deployment)
      - `disabledCI`: (boolean) (required) Whether Continuous Integration is disabled
      - `disabledCD`: (boolean) (required) Whether Continuous Deployment is disabled
-     - `status`: {object}
-       - `build`: {object}
+     - `status`: {object} (required) Details about the current service status.
+       - `build`: {object} Details about the status of the most recent build.
          - `status`: (string) (required) The current status of the build. (enum: QUEUED, PENDING, UNSCHEDULABLE, STARTING, CLONING, BUILDING, UPLOADING, ABORTED, FAILURE, SUBMISSION_FAILURE, SUCCESS, CRASHED, IN_PROGRESS)
          - `lastTransitionTime`: (string) The timestamp of when the build reached this status. (format: date-time)
-       - `deployment`: {object}
+       - `deployment`: {object} Details about the current deployment status.
          - `status`: (string) (required) The current status of the deployment. (enum: PENDING, IN_PROGRESS, COMPLETED, FAILED)
          - `reason`: (string) (required) The reason the current deployment was started. (enum: SCALING, DEPLOYING)
          - `lastTransitionTime`: (string) The timestamp of when the deployment reached this status. (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -52,6 +52,25 @@ Required permission: Project > Services > General > Read
 GET /v1/projects/{projectId}/services
 
 GET /v1/teams/{teamId}/projects/{projectId}/services
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/services?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/services?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -82,7 +101,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/services
             "reason": "DEPLOYING",
             "lastTransitionTime": "2021-11-29T11:47:16.624Z"
           }
-        }
+        },
+        "tags": []
       }
     ]
   },
@@ -141,7 +161,8 @@ Options:
           "reason": "DEPLOYING",
           "lastTransitionTime": "2021-11-29T11:47:16.624Z"
         }
-      }
+      },
+      "tags": []
     }
   ]
 }
@@ -194,7 +215,8 @@ await apiClient.list.services({
             "reason": "DEPLOYING",
             "lastTransitionTime": "2021-11-29T11:47:16.624Z"
           }
-        }
+        },
+        "tags": []
       }
     ]
   },

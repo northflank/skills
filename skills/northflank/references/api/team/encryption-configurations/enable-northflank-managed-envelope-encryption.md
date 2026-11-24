@@ -8,8 +8,8 @@ Required permission: Account > Admin > Encryption > Manage
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `encryptionMode`: (string) (required) Encryption used for new writes after opt-in. (enum: northflank-envelope)
   - `changed`: (boolean) (required) False when Northflank-managed envelope encryption was already active.
 
@@ -24,7 +24,12 @@ POST /v1/teams/{teamId}/encryption/northflank-managed/activate
 200 OK: Northflank-managed envelope encryption enabled.
 
 ```json
-undefined
+{
+  "data": {
+    "encryptionMode": "northflank-envelope",
+    "changed": false
+  }
+}
 ```
 
 #### Example Response
@@ -52,7 +57,10 @@ Options:
  Northflank-managed envelope encryption enabled.
 
 ```json
-undefined
+{
+  "encryptionMode": "northflank-envelope",
+  "changed": false
+}
 ```
 
 ### JavaScript client reference
@@ -71,6 +79,10 @@ await apiClient.activate.encryption.northflankManaged({});
 
 ```json
 {
+  "data": {
+    "encryptionMode": "northflank-envelope",
+    "changed": false
+  },
   "rawResponse": "...",
   "request": "...",
   "error": "..."

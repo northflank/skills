@@ -21,8 +21,8 @@ Required permission: Project > Addons > General > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `restoreId`: (string) (required) The ID of the initiated restore.
 
 ### API reference

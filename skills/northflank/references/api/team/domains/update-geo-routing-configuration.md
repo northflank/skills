@@ -15,11 +15,11 @@ Required permission: Account > Networking > Subdomains > Update
 **Request body:**
 
 {object}
-- `geoRouting`: {object}
+- `geoRouting`: {object} (required) The geo routing configuration fields to update.
   - `strategy`: (string) The geo routing strategy. (enum: continent, closest)
   - `rules`: [array of] {object}
-     - `continents`: [array of] (string) (enum: NA, SA, EU, AF, AS, OC, AN)
-     - `backend`: {object}
+     - `continents`: [array of] Continent codes this rule covers (for continent strategy) (string) (enum: NA, SA, EU, AF, AS, OC, AN)
+     - `backend`: {object} (required)
        - `id`: (string) (required) Backend reference in format {projectInternalId}/{serviceInternalId} (pattern: ^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$)
        - `port`: (string) (required) Port name on the backend service
   - `defaultBackend`: {object}
@@ -28,8 +28,8 @@ Required permission: Account > Networking > Subdomains > Update
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -46,7 +46,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request PATCH \
   --data '{"geoRouting":{"rules":[{"backend":{"id":"my-project/my-service","port":"http"}}],"defaultBackend":{"id":"my-project/my-service","port":"http"}}}' \
-  https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/geo-routing
+  "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/geo-routing"
 ```
 
 ```javascript
@@ -85,10 +85,10 @@ import requests
 
 url = "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/geo-routing"
 
-payload = {"geoRouting":{"rules":[{"backend":{"id":"my-project/my-service","port":"http"}}],"defaultBackend":{"id":"my-project/my-service","port":"http"}}}
+payload = "{\"geoRouting\":{\"rules\":[{\"backend\":{\"id\":\"my-project/my-service\",\"port\":\"http\"}}],\"defaultBackend\":{\"id\":\"my-project/my-service\",\"port\":\"http\"}}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("PATCH", url, headers = headers, json = payload)
+response = requests.request("PATCH", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -106,7 +106,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/domains/{domain}/subdomains/{subdomain}/geo-routing"
 
-  var jsonStr = []byte(`{"geoRouting":{"rules":[{"backend":{"id":"my-project/my-service","port":"http"}}],"defaultBackend":{"id":"my-project/my-service","port":"http"}}}`)
+  var jsonStr = []byte("{\"geoRouting\":{\"rules\":[{\"backend\":{\"id\":\"my-project/my-service\",\"port\":\"http\"}}],\"defaultBackend\":{\"id\":\"my-project/my-service\",\"port\":\"http\"}}}")
   req, err := http.NewRequest("PATCH", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

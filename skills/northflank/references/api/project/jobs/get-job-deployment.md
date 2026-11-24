@@ -20,29 +20,29 @@ Required permission: Project > Jobs > General > Read
 
 **Response body:**
 
-{object}
-- `data`: (multiple options) {object}
+{object} Response object.
+- `data`: (multiple options) (required) Result data. {object} Job deploying a Northflank entity
    - `region`: (string) Region where this service is deployed and/or built
    - `instances`: (integer) Number of instances/replicas running
-   - `docker`: {object}
+   - `docker`: {object} Details about the Docker overrides for this deployment.
      - `configType`: (string) (required) Override configuration which is used at runtime. (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
      - `customEntrypoint`: (string) The CMD to run instead of the default if entrypoint override is enabled.
      - `customCommand`: (string) The CMD to run instead of the default if CMD override is enabled.
-   - `buildpack`: {object}
+   - `buildpack`: {object} Details about the Buildpack overrides for this deployment.
      - `configType`: (string) (required) Type of buildpack run configuration. (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
      - `customProcess`: (string) Custom process which should be run.
      - `customEntrypoint`: (string) Custom entrypoint which should be run.
      - `customCommand`: (string) Custom command which should be run.
-   - `storage`: {object}
-     - `ephemeralStorage`: {object}
+   - `storage`: {object} Details about storage settings for this deployment.
+     - `ephemeralStorage`: {object} Details about ephemeral storage settings for this deployment.
        - `storageSize`: (number) (required) Ephemeral storage per container in MB (format: float)
      - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
-   - `image`: {object}
+   - `image`: {object} The desired image selector.
      - `projectId`: (string) (required) (min length: 24) (max length: 24)
      - `name`: (string) (required)
      - `group`: (string)
      - `tag`: (string) (required)
-   - `internal`: {object}
+   - `internal`: {object} (required)
      - `appId`: (string) (required) Full identifier of deployed entity
      - `nfObjectId`: (string) (required) ID of deployed entity
      - `buildSource`: (string) Defines the build source for this resource (enum: git, bundle)
@@ -51,52 +51,52 @@ Required permission: Project > Jobs > General > Read
      - `buildId`: (string) (required) ID of the build currently deployed.
      - `buildSHA`: (string) (required) Revision being deployed. `latest` deploys the latest matching build.
      - `deployedSHA`: (string) Currently deployed commit SHA. If buildSHA is set to `latest`, this will show the SHA of the latest commit.
-     - `nfObjectType`: (string) (required) Type of deployed entity (enum: service, job) | {object}
+     - `nfObjectType`: (string) (required) Type of deployed entity (enum: service, job) | {object} Service deploying an external image
    - `region`: (string) Region where this service is deployed and/or built
    - `instances`: (integer) Number of instances/replicas running
-   - `docker`: {object}
+   - `docker`: {object} Details about the Docker overrides for this deployment.
      - `configType`: (string) (required) Override configuration which is used at runtime. (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
      - `customEntrypoint`: (string) The CMD to run instead of the default if entrypoint override is enabled.
      - `customCommand`: (string) The CMD to run instead of the default if CMD override is enabled.
-   - `buildpack`: {object}
+   - `buildpack`: {object} Details about the Buildpack overrides for this deployment.
      - `configType`: (string) (required) Type of buildpack run configuration. (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
      - `customProcess`: (string) Custom process which should be run.
      - `customEntrypoint`: (string) Custom entrypoint which should be run.
      - `customCommand`: (string) Custom command which should be run.
-   - `storage`: {object}
-     - `ephemeralStorage`: {object}
+   - `storage`: {object} Details about storage settings for this deployment.
+     - `ephemeralStorage`: {object} Details about ephemeral storage settings for this deployment.
        - `storageSize`: (number) (required) Ephemeral storage per container in MB (format: float)
      - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
-   - `image`: {object}
+   - `image`: {object} The desired image selector.
      - `projectId`: (string) (required) (min length: 24) (max length: 24)
      - `name`: (string) (required)
      - `group`: (string)
      - `tag`: (string) (required)
-   - `external`: {object}
+   - `external`: {object} (required)
      - `imagePath`: (string) (required) Path of the external image excluding the hostname
      - `registryProvider`: (string) (required) Registry provider hosting the external image (enum: acr, ecr, gar, dockerhub, dhi, github, gitlab, custom, legacy)
-     - `privateImage`: (boolean) (required) Does the image require authentication | {object}
+     - `privateImage`: (boolean) (required) Does the image require authentication | {object} Deployment from an imported Northflank image.
    - `region`: (string) Region where this service is deployed and/or built
    - `instances`: (integer) Number of instances/replicas running
-   - `docker`: {object}
+   - `docker`: {object} Details about the Docker overrides for this deployment.
      - `configType`: (string) (required) Override configuration which is used at runtime. (enum: default, customEntrypoint, customCommand, customEntrypointCustomCommand)
      - `customEntrypoint`: (string) The CMD to run instead of the default if entrypoint override is enabled.
      - `customCommand`: (string) The CMD to run instead of the default if CMD override is enabled.
-   - `buildpack`: {object}
+   - `buildpack`: {object} Details about the Buildpack overrides for this deployment.
      - `configType`: (string) (required) Type of buildpack run configuration. (enum: default, customProcess, customCommand, customEntrypointCustomCommand, originalEntrypointCustomCommand)
      - `customProcess`: (string) Custom process which should be run.
      - `customEntrypoint`: (string) Custom entrypoint which should be run.
      - `customCommand`: (string) Custom command which should be run.
-   - `storage`: {object}
-     - `ephemeralStorage`: {object}
+   - `storage`: {object} Details about storage settings for this deployment.
+     - `ephemeralStorage`: {object} Details about ephemeral storage settings for this deployment.
        - `storageSize`: (number) (required) Ephemeral storage per container in MB (format: float)
      - `shmSize`: (integer) Configures the amount of available memory-backed disk space available to /dev/shm
-   - `image`: {object}
+   - `image`: {object} (required) The desired image selector.
      - `projectId`: (string) (required) (min length: 24) (max length: 24)
      - `name`: (string) (required)
      - `group`: (string)
      - `tag`: (string) (required)
-   - `importedImage`: {object}
+   - `importedImage`: {object} (required) The concrete imported image selected for deployment.
      - `projectId`: (string) (required) (min length: 24) (max length: 24)
      - `imageId`: (string) (required) (min length: 24) (max length: 24)
 
@@ -105,6 +105,25 @@ Required permission: Project > Jobs > General > Read
 GET /v1/projects/{projectId}/jobs/{jobId}/deployment
 
 GET /v1/teams/{teamId}/projects/{projectId}/jobs/{jobId}/deployment
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/deployment"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/jobs/{jobId}/deployment"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -188,6 +207,15 @@ OR
       "ephemeralStorage": {
         "storageSize": 1024
       }
+    },
+    "image": {
+      "projectId": "stringaaaaaaaaaaaaaaaaaa",
+      "name": "string",
+      "tag": "string"
+    },
+    "importedImage": {
+      "projectId": "stringaaaaaaaaaaaaaaaaaa",
+      "imageId": "stringaaaaaaaaaaaaaaaaaa"
     }
   }
 }
@@ -286,6 +314,15 @@ OR
     "ephemeralStorage": {
       "storageSize": 1024
     }
+  },
+  "image": {
+    "projectId": "stringaaaaaaaaaaaaaaaaaa",
+    "name": "string",
+    "tag": "string"
+  },
+  "importedImage": {
+    "projectId": "stringaaaaaaaaaaaaaaaaaa",
+    "imageId": "stringaaaaaaaaaaaaaaaaaa"
   }
 }
 ```
@@ -393,6 +430,15 @@ OR
       "ephemeralStorage": {
         "storageSize": 1024
       }
+    },
+    "image": {
+      "projectId": "stringaaaaaaaaaaaaaaaaaa",
+      "name": "string",
+      "tag": "string"
+    },
+    "importedImage": {
+      "projectId": "stringaaaaaaaaaaaaaaaaaa",
+      "imageId": "stringaaaaaaaaaaaaaaaaaa"
     }
   },
   "rawResponse": "...",

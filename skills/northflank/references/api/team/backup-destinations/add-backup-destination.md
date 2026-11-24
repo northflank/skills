@@ -14,11 +14,11 @@ Required permission: Account > Platform > BackupDestinations > Create
 - `type`: (string) (required) Type of the backup destination. (enum: s3)
 - `usage`: (string) (required) The backup workload that can use this destination. (enum: globalBackups, containerSnapshots)
 - `prefix`: (string) (required) A prefix path to add to the bucket objects if not writing to / (pattern: ^([a-zA-Z0-9-_]+)\/$)
-- `credentials`: {object}
+- `credentials`: {object} (required) Credentials used for the backup destination.
   - `authMode`: (string) Whether the destination authenticates with static AWS credentials or a workload identity. (enum: staticCreds, workloadIdentity)
-  - `workloadIdentityId`: (multiple options) (string) ID of the workload identity used to authenticate with the S3 destination. | (string) ID of the workload identity used to authenticate with the S3 destination.
-  - `accessKey`: (multiple options) (string) Access key used to authenticate with the S3 destination.
-  - `secretKey`: (multiple options) (string) Secret key used to authenticate with the S3 destination.
+  - `workloadIdentityId`: (multiple options) ID of the workload identity used to authenticate with the S3 destination. (string) ID of the workload identity used to authenticate with the S3 destination. | (string) ID of the workload identity used to authenticate with the S3 destination.
+  - `accessKey`: (multiple options) Access key used to authenticate with the S3 destination. (string) Access key used to authenticate with the S3 destination.
+  - `secretKey`: (multiple options) Secret key used to authenticate with the S3 destination. (string) Secret key used to authenticate with the S3 destination.
   - `bucketName`: (string) (required)
   - `region`: (string) (required)
   - `endpoint`: (string) (required) S3 destination including region, fe s3.us-west-2.amazonaws.com
@@ -27,18 +27,18 @@ Required permission: Account > Platform > BackupDestinations > Create
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `name`: (string) (required) The name of the backup destination. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
   - `type`: (string) (required) Type of the backup destination. (enum: s3)
   - `usage`: (string) (required) The backup workload that can use this destination. (enum: globalBackups, containerSnapshots)
   - `prefix`: (string) (required) A prefix path to add to the bucket objects if not writing to / (pattern: ^([a-zA-Z0-9-_]+)\/$)
-  - `credentials`: {object}
+  - `credentials`: {object} (required) Credentials used for the backup destination.
     - `authMode`: (string) Whether the destination authenticates with static AWS credentials or a workload identity. (enum: staticCreds, workloadIdentity)
-    - `workloadIdentityId`: (multiple options) (string) ID of the workload identity used to authenticate with the S3 destination. | (string) ID of the workload identity used to authenticate with the S3 destination.
-    - `accessKey`: (multiple options) (string) Access key used to authenticate with the S3 destination.
-    - `secretKey`: (multiple options) (string) Secret key used to authenticate with the S3 destination.
+    - `workloadIdentityId`: (multiple options) ID of the workload identity used to authenticate with the S3 destination. (string) ID of the workload identity used to authenticate with the S3 destination. | (string) ID of the workload identity used to authenticate with the S3 destination.
+    - `accessKey`: (multiple options) Access key used to authenticate with the S3 destination. (string) Access key used to authenticate with the S3 destination.
+    - `secretKey`: (multiple options) Secret key used to authenticate with the S3 destination. (string) Secret key used to authenticate with the S3 destination.
     - `bucketName`: (string) (required)
     - `region`: (string) (required)
     - `endpoint`: (string) (required) S3 destination including region, fe s3.us-west-2.amazonaws.com
@@ -63,7 +63,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"name":"Example Backup Destination","type":"s3","usage":"globalBackups","prefix":"example/","credentials":{"bucketName":"string","region":"string","endpoint":"string"}}' \
-  https://api.northflank.com/v1/backup-destinations
+  "https://api.northflank.com/v1/backup-destinations"
 ```
 
 ```javascript
@@ -97,10 +97,10 @@ import requests
 
 url = "https://api.northflank.com/v1/backup-destinations"
 
-payload = {"name":"Example Backup Destination","type":"s3","usage":"globalBackups","prefix":"example/","credentials":{"bucketName":"string","region":"string","endpoint":"string"}}
+payload = "{\"name\":\"Example Backup Destination\",\"type\":\"s3\",\"usage\":\"globalBackups\",\"prefix\":\"example/\",\"credentials\":{\"bucketName\":\"string\",\"region\":\"string\",\"endpoint\":\"string\"}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -118,7 +118,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/backup-destinations"
 
-  var jsonStr = []byte(`{"name":"Example Backup Destination","type":"s3","usage":"globalBackups","prefix":"example/","credentials":{"bucketName":"string","region":"string","endpoint":"string"}}`)
+  var jsonStr = []byte("{\"name\":\"Example Backup Destination\",\"type\":\"s3\",\"usage\":\"globalBackups\",\"prefix\":\"example/\",\"credentials\":{\"bucketName\":\"string\",\"region\":\"string\",\"endpoint\":\"string\"}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")
@@ -145,7 +145,15 @@ func main() {
 {
   "data": {
     "name": "Example Backup Destination",
-    "id": "example-backup-destination"
+    "id": "example-backup-destination",
+    "type": "s3",
+    "usage": "globalBackups",
+    "prefix": "example/",
+    "credentials": {
+      "bucketName": "string",
+      "region": "string",
+      "endpoint": "string"
+    }
   }
 }
 ```
@@ -187,7 +195,15 @@ Options:
 ```json
 {
   "name": "Example Backup Destination",
-  "id": "example-backup-destination"
+  "id": "example-backup-destination",
+  "type": "s3",
+  "usage": "globalBackups",
+  "prefix": "example/",
+  "credentials": {
+    "bucketName": "string",
+    "region": "string",
+    "endpoint": "string"
+  }
 }
 ```
 
@@ -221,7 +237,15 @@ await apiClient.add.backupDestination({
 {
   "data": {
     "name": "Example Backup Destination",
-    "id": "example-backup-destination"
+    "id": "example-backup-destination",
+    "type": "s3",
+    "usage": "globalBackups",
+    "prefix": "example/",
+    "credentials": {
+      "bucketName": "string",
+      "region": "string",
+      "endpoint": "string"
+    }
   },
   "rawResponse": "...",
   "request": "...",

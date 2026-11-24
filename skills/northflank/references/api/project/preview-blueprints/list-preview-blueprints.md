@@ -20,19 +20,19 @@ Required permission: Project > PreviewBlueprints > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `workflows`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `workflows`: [array of] (required) An array of preview blueprints in this project. {object} A preview blueprint.
      - `name`: (string) (required) Name of the template. (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `description`: (string) Description of the template. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
      - `apiVersion`: (string) (required) The version of the Northflank API to run the template against. (enum: v1.2)
-     - `options`: {object}
+     - `options`: {object} Options regarding how the template is run.
        - `autorun`: (boolean) If true, the template will run automatically whenever a change is made to it.
        - `concurrencyPolicy`: (string) Defines the concurrency behaviour of the template with respect to parallel runs. (enum: allow, queue, forbid, latest, replace)
      - `id`: (string) (required) Identifier for the preview blueprint
      - `createdAt`: (string) time of creation (format: date-time)
      - `updatedAt`: (string) time of update (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -42,6 +42,25 @@ Required permission: Project > PreviewBlueprints > General > Read
 GET /v1/projects/{projectId}/preview-blueprints
 
 GET /v1/teams/{teamId}/projects/{projectId}/preview-blueprints
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/preview-blueprints?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/preview-blueprints?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

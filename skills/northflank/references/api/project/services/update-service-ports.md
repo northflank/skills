@@ -21,115 +21,115 @@ Required permission: Project > Services > General > Update
 **Request body:**
 
 {object}
-- `ports`: [array of] {object}
+- `ports`: [array of] (required) An array of ports to replace or update existing ports with. {object}
    - `id`: (string) The id of an existing port. Pass this when changing in order to keep security configurations. (pattern: ^[a-z]-?[a-z0-9]+(-[a-z0-9]+)*$)
    - `protocol`: (string) (required) The protocol to use for the port. Public and VPC-accessible ports only support `HTTP` and `HTTP/2`. (enum: HTTP, HTTP/2, TCP, UDP)
    - `name`: (string) (required) The name used to identify the port. (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 1) (max length: 8)
    - `internalPort`: (integer) (required) The port number.
    - `public`: (boolean) If true, the port will be exposed publicly.
    - `vpcAccessible`: (boolean) If true, the port will be exposed on the cluster's private (VPC) load balancer.
-   - `domains`: [array of] (string) A domain to redirect to this port.
+   - `domains`: [array of] An array of domains to redirect to this port. Each domain must first be verified and registered to your account. (string) A domain to redirect to this port.
    - `security`: {object}
-     - `credentials`: [array of] {object}
+     - `credentials`: [array of] An array of credentials to access the service. {object}
          - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
          - `password`: (string) (required) The password to access the service with this username.
          - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-     - `ip`: [array of] {object}
-         - `addresses`: [array of] (string) An IP address used by this rule
+     - `ip`: [array of] An array of IP address policies. {object}
+         - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
          - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-     - `policies`: [array of] {object}
-         - `addresses`: [array of] (string) An IP address used by this rule
+     - `policies`: [array of] An array of IP address policies. {object}
+         - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
          - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-     - `sso`: {object}
+     - `sso`: {object} Configure port authentication via SSO
        - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-       - `directoryGroupIds`: [array of] (string)
+       - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
        - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
        - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
        - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
        - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
        - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-     - `headers`: [array of] (multiple options) {object}
+     - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
            - `regexMode`: (boolean)
            - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-           - `value`: (string) (required) | {object}
+           - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
            - `regexMode`: (boolean)
-           - `name`: (string) (required)
+           - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
            - `value`: (string) (required)
      - `verificationMode`: (string) Mode used to verify multiple security features like ip policies and SSO authentication (enum: or, and)
      - `securePathConfiguration`: {object}
        - `enabled`: (boolean) Enable security policies on a path-level style
        - `skipSecurityPoliciesForInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip all security policies
        - `rules`: [array of] {object}
-           - `paths`: [array of] (multiple options) {object}
+           - `paths`: [array of] (required) Array of path objects which represent the paths and their priority for which the security policies will be enforced (multiple options) Data about how the path should be handled. {object} Route when the path starts with the provided prefix.
                  - `path`: (string) (required) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
                  - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: prefix)
-                 - `priority`: (integer) (required) | {object}
+                 - `priority`: (integer) (required) | {object} Route when the path is an exact match.
                  - `path`: (string) (required) (pattern: ^\/([_a-zA-Z0-9-&?=.]*)((\/[_a-zA-Z0-9-&?=.]+)*(\/)?)?$)
                  - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: exact)
-                 - `priority`: (integer) (required) | {object}
+                 - `priority`: (integer) (required) | {object} Route when the path matches the provided regex.
                  - `path`: (string) (required)
                  - `routingMode`: (string) (required) Mode of the path, determining how the URI will be interpreted. (enum: regex)
                  - `priority`: (integer) (required)
            - `accessMode`: (string) (required) Specify the way the path rule will behave when processing policies. This enables an allow-list/deny-list approach for access control on each path (enum: protected, unprotected)
            - `securityPolicies`: {object}
              - `orPolicies`: {object}
-               - `credentials`: [array of] {object}
+               - `credentials`: [array of] An array of credentials to access the service. {object}
                    - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
                    - `password`: (string) (required) The password to access the service with this username.
                    - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-               - `ip`: [array of] {object}
-                   - `addresses`: [array of] (string) An IP address used by this rule
+               - `ip`: [array of] An array of IP address policies. {object}
+                   - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                    - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-               - `policies`: [array of] {object}
-                   - `addresses`: [array of] (string) An IP address used by this rule
+               - `policies`: [array of] An array of IP address policies. {object}
+                   - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                    - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-               - `sso`: {object}
+               - `sso`: {object} Configure port authentication via SSO
                  - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-                 - `directoryGroupIds`: [array of] (string)
+                 - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
                  - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                  - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                  - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
                  - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                  - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-               - `headers`: [array of] (multiple options) {object}
+               - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
                      - `regexMode`: (boolean)
                      - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-                     - `value`: (string) (required) | {object}
+                     - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
                      - `regexMode`: (boolean)
-                     - `name`: (string) (required)
+                     - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
                      - `value`: (string) (required)
              - `requiredPolicies`: {object}
-               - `credentials`: [array of] {object}
+               - `credentials`: [array of] An array of credentials to access the service. {object}
                    - `username`: (string) (required) The username to access the service (pattern: ^[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
                    - `password`: (string) (required) The password to access the service with this username.
                    - `type`: (string) (required) The type of authentication used (enum: basic-auth)
-               - `ip`: [array of] {object}
-                   - `addresses`: [array of] (string) An IP address used by this rule
+               - `ip`: [array of] An array of IP address policies. {object}
+                   - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                    - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-               - `policies`: [array of] {object}
-                   - `addresses`: [array of] (string) An IP address used by this rule
+               - `policies`: [array of] An array of IP address policies. {object}
+                   - `addresses`: [array of] (required) An array of IP addresses used for this rule (string) An IP address used by this rule
                    - `action`: (string) (required) The action for this rule. (enum: ALLOW, DENY)
-               - `sso`: {object}
+               - `sso`: {object} Configure port authentication via SSO
                  - `organizationId`: (string) ID of the SSO organization that the user will have to be a member of
-                 - `directoryGroupIds`: [array of] (string)
+                 - `directoryGroupIds`: [array of] Array of directory groups that will have access (string)
                  - `allowAnyOrgUsers`: (boolean) Allow entire organization to access this service
                  - `validateInternalTraffic`: (boolean) Enforce internal traffic through SSO authentication flow
                  - `setCookieOnRootDomain`: (boolean) Set SSO authentication cookie on root domain
                  - `noindexRedirect`: (boolean) Add an X-Robots-Tag: noindex response header to the SSO authentication redirect
                  - `allowInternalTrafficViaPublicDns`: (boolean) Allow internal traffic from same or shared projects via public DNS to skip SSO authentication flow
-               - `headers`: [array of] (multiple options) {object}
+               - `headers`: [array of] List of header authentication settings. Every header must be present and match the expected value, either exactly or as a regular expression when regexMode is set. (multiple options) {object} Matches the header value as an exact string.
                      - `regexMode`: (boolean)
                      - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
-                     - `value`: (string) (required) | {object}
+                     - `value`: (string) (required) | {object} Matches the header value as a regular expression. Only available when enabled for your account.
                      - `regexMode`: (boolean)
-                     - `name`: (string) (required)
+                     - `name`: (string) (required) (pattern: ^[a-zA-Z0-9_\-%$+]+$)
                      - `value`: (string) (required)
    - `disableNfDomain`: (boolean) Disable routing on the default code.run domain for public HTTP ports with custom domains.
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -146,7 +146,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"ports":[{"id":"p01","protocol":"HTTP","name":"p01","internalPort":12345,"public":true,"vpcAccessible":false,"domains":["app.example.com"],"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}}}]}' \
-  https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/ports
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/ports"
 ```
 
 ```javascript
@@ -296,10 +296,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/ports"
 
-payload = {"ports":[{"id":"p01","protocol":"HTTP","name":"p01","internalPort":12345,"public":true,"vpcAccessible":false,"domains":["app.example.com"],"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}}}]}
+payload = "{\"ports\":[{\"id\":\"p01\",\"protocol\":\"HTTP\",\"name\":\"p01\",\"internalPort\":12345,\"public\":true,\"vpcAccessible\":false,\"domains\":[\"app.example.com\"],\"security\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}],\"securePathConfiguration\":{\"rules\":[{\"paths\":[{\"routingMode\":\"prefix\",\"priority\":80,\"path\":\"/path\"}],\"accessMode\":\"protected\",\"securityPolicies\":{\"orPolicies\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}]},\"requiredPolicies\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}]}}}]}}}]}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -317,7 +317,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/ports"
 
-  var jsonStr = []byte(`{"ports":[{"id":"p01","protocol":"HTTP","name":"p01","internalPort":12345,"public":true,"vpcAccessible":false,"domains":["app.example.com"],"security":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}],"securePathConfiguration":{"rules":[{"paths":[{"routingMode":"prefix","priority":80,"path":"/path"}],"accessMode":"protected","securityPolicies":{"orPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]},"requiredPolicies":{"credentials":[{"username":"admin","password":"password123","type":"basic-auth"}],"ip":[{"addresses":["127.0.0.1"],"action":"DENY"}],"policies":[{"addresses":["127.0.0.1"],"action":"DENY"}],"headers":[{"regexMode":false,"name":"headerName","value":"headerValue"}]}}}]}}}]}`)
+  var jsonStr = []byte("{\"ports\":[{\"id\":\"p01\",\"protocol\":\"HTTP\",\"name\":\"p01\",\"internalPort\":12345,\"public\":true,\"vpcAccessible\":false,\"domains\":[\"app.example.com\"],\"security\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}],\"securePathConfiguration\":{\"rules\":[{\"paths\":[{\"routingMode\":\"prefix\",\"priority\":80,\"path\":\"/path\"}],\"accessMode\":\"protected\",\"securityPolicies\":{\"orPolicies\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}]},\"requiredPolicies\":{\"credentials\":[{\"username\":\"admin\",\"password\":\"password123\",\"type\":\"basic-auth\"}],\"ip\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"policies\":[{\"addresses\":[\"127.0.0.1\"],\"action\":\"DENY\"}],\"headers\":[{\"regexMode\":false,\"name\":\"headerName\",\"value\":\"headerValue\"}]}}}]}}}]}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

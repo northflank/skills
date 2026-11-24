@@ -19,19 +19,19 @@ Required permission: Account > Git > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `repos`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `repos`: [array of] A list of accessible repositories. {object} Details about an accessible repository.
      - `vcsService`: (string) (required) Version control provider of the repository. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
      - `selfHostedVcsId`: (string) If `vcsService` is `self-hosted`, the ID of the self-hosted provider.
      - `id`: (string) (required) The repository identifier assigned by the version control provider. Northflank always returns it as a string.
      - `name`: (string) (required) The name of the repository.
      - `full_name`: (string) (required) The full name of the repository.
      - `url`: (string) (required) The url of the repository.
-     - `owner`: {object}
+     - `owner`: {object} (required) Details about the repository owner.
        - `login`: (string) (required) The login of the repository owner.
      - `accountLogin`: (string) (required) The login of the linked version control account that can access this repository.
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -41,6 +41,25 @@ Required permission: Account > Git > General > Read
 GET /v1/integrations/vcs/repos
 
 GET /v1/teams/{teamId}/integrations/vcs/repos
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/integrations/vcs/repos?per_page=50&page=1&vcs_service=github&account_login=example-user"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/integrations/vcs/repos?per_page=50&page=1&vcs_service=github&account_login=example-user"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

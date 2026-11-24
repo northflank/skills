@@ -15,35 +15,35 @@ Required permission: Account > Networking > EgressIps > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `egressIps`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `egressIps`: [array of] (required) An array of egress IPs. {object} An egress IP object.
      - `name`: (string) (required) The name of the egress IP. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
      - `description`: (string) The description of the egress IP. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-     - `spec`: {object}
+     - `spec`: {object} (required) Egress IP specification
        - `provisioningMode`: (string) (required) Provisioning mode for the egress IP: shared (uses pre-provisioned infrastructure) or dedicated (enum: shared, dedicated)
        - `region`: (string) (required) Target region name (pattern: ^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$)
        - `mode`: (string) Mode: 'include' (only these projects/resources use this egress IP), 'exclude' (all except these use it), or 'selector' (network-policy-style selector targeting). The selector/rules distinction is immutable after creation. (enum: include, exclude, selector)
-       - `rules`: [array of] {object}
+       - `rules`: [array of] Egress IP rules - array of projects the rule applies to {object} Egress IP rule
            - `id`: (string) (required) Project internal ID
-           - `restrictions`: {object}
+           - `restrictions`: {object} (required) Rule restrictions
              - `enabled`: (boolean) (required) Whether restrictions scoping the rule to specific resources should be applied.
-             - `resources`: [array of] {object}
+             - `resources`: [array of] Resources the rule should be restricted to  {object}
                  - `type`: (string) (required) Resource type (enum: service, job)
                  - `id`: (string) (required) Resource internal ID
-       - `selector`: {object}
-         - `projects`: {object}
+       - `selector`: {object} Selector-based targeting. Requires mode: 'selector' and is mutually exclusive with rules (enforced on write).
+         - `projects`: {object} (required) Project scope for the selector
            - `enabled`: (boolean) (required) Whether to scope the selector to specific projects
-           - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+           - `items`: [array of] (required) Project internal IDs to include/exclude (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
            - `restrictionMode`: (string) (required) Whether listed projects are included (in) or excluded (notIn) (enum: in, notIn)
-         - `tags`: {object}
+         - `tags`: {object} (required) Workload (tag) scope for the selector
            - `enabled`: (boolean) (required) Whether to scope to workloads carrying the given tags
-           - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+           - `items`: [array of] (required) Tag internal IDs to match workloads against (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
            - `matchCondition`: (string) (required) Match any (or) or all (and) of the given tags (enum: or, and)
      - `id`: (string) (required) ID of the egress IP (pattern: ^[A-Za-z0-9-]+$)
      - `createdAt`: (string) (required) The time the egress IP was created. (format: date-time)
      - `updatedAt`: (string) (required) The time the egress IP was last updated. (format: date-time)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -53,6 +53,25 @@ Required permission: Account > Networking > EgressIps > Read
 GET /v1/egress-ips
 
 GET /v1/teams/{teamId}/egress-ips
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/egress-ips?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/egress-ips?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

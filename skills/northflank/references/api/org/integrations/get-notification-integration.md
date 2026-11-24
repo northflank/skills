@@ -13,11 +13,11 @@ Required permission: Account > Observability > Notifications > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `name`: (string) (required) The name of the notification integration. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `id`: (string) (required) The ID of the notification integration.
-  - `type`: (string) (required) The provider to send webhooks to. `RAW_WEBHOOK` allows you to send webhooks to a url of your choice, or you can choose a specific provider. (enum: RAW_WEBHOOK, SLACK, DISCORD, TEAMS, TEAMS_WORKFLOWS)
+  - `type`: (string) (required) The provider to send webhooks to. `RAW_WEBHOOK` allows you to send webhooks to a url of your choice, or you can choose a specific provider. (enum: RAW_WEBHOOK, SLACK, DISCORD, TEAMS, GOOGLE_CHAT, TEAMS_WORKFLOWS)
   - `webhook`: (string) (required) The URL where webhooks will be sent.
   - `createdAt`: (string) (required) Creation date (format: date-time)
   - `updatedAt`: (string) (required) Last update date (format: date-time)
@@ -26,9 +26,24 @@ Required permission: Account > Observability > Notifications > Read
     - `reason`: (boolean) Why the webhook was disabled.
     - `timeOfFirstFailedRequest`: (string) The timestamp of the first failed webhook request. (format: date-time)
     - `numberOfFailedRequests`: (number) The number of failed webhook requests. (format: float)
-  - `restricted`: (boolean) (required) Should notifications be sent only for specific projects?
-  - `projects`: [array of] (string) (pattern: ^[A-Za-z0-9-]+$)
-  - `events`: {object}
+  - `restrictions`: {object} Configuration of restrictions.
+    - `tags`: {object} Configuration of tag restriction settings.
+      - `enabled`: (boolean) Whether restriction by tag should be enabled.
+      - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+      - `matchCondition`: (string) If all or any of the tags must be present on the target for it to match the condition. (enum: and, or)
+    - `projects`: {object}
+      - `enabled`: (boolean)
+      - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+    - `clusters`: {object}
+      - `enabled`: (boolean)
+      - `items`: [array of] {object}
+          - `scope`: (string) (required) (enum: team, org)
+          - `id`: (string) (required) (max length: 255)
+          - `unavailable`: (boolean)
+    - `excludedTags`: {object}
+      - `enabled`: (boolean)
+      - `items`: [array of] An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+  - `events`: {object} (required) Which events should notifications be sent for?
     - `trigger:service:autoscaling:event`: (boolean)
     - `trigger:service:deployment:status-update`: (boolean)
     - `trigger:harness:autoscaling:event`: (boolean)
@@ -52,6 +67,7 @@ Required permission: Account > Observability > Notifications > Read
     - `trigger:release-flow-template-run:success`: (boolean)
     - `trigger:release-flow-template-run:failure`: (boolean)
     - `trigger:release-flow-template-run:aborted`: (boolean)
+    - `trigger:preview-environment:destroyed`: (boolean)
     - `trigger:preview-blueprint-run:queued`: (boolean)
     - `trigger:preview-blueprint-run:start`: (boolean)
     - `trigger:preview-blueprint-run:success`: (boolean)
@@ -112,6 +128,25 @@ GET /v1/integrations/notifications/{notificationId}
 
 GET /v1/teams/{teamId}/integrations/notifications/{notificationId}
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/integrations/notifications/{notificationId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/integrations/notifications/{notificationId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: Details of a notification integration
@@ -128,10 +163,12 @@ GET /v1/teams/{teamId}/integrations/notifications/{notificationId}
     "status": {
       "disabled": false
     },
-    "restricted": true,
-    "projects": [
-      "default-project"
-    ],
+    "restrictions": {
+      "tags": {
+        "enabled": false,
+        "matchCondition": "or"
+      }
+    },
     "events": {
       "trigger:service:autoscaling:event": true,
       "trigger:service:deployment:status-update": true,
@@ -156,6 +193,7 @@ GET /v1/teams/{teamId}/integrations/notifications/{notificationId}
       "trigger:release-flow-template-run:success": true,
       "trigger:release-flow-template-run:failure": true,
       "trigger:release-flow-template-run:aborted": true,
+      "trigger:preview-environment:destroyed": true,
       "trigger:preview-blueprint-run:queued": true,
       "trigger:preview-blueprint-run:start": true,
       "trigger:preview-blueprint-run:success": true,
@@ -243,10 +281,12 @@ Options:
   "status": {
     "disabled": false
   },
-  "restricted": true,
-  "projects": [
-    "default-project"
-  ],
+  "restrictions": {
+    "tags": {
+      "enabled": false,
+      "matchCondition": "or"
+    }
+  },
   "events": {
     "trigger:service:autoscaling:event": true,
     "trigger:service:deployment:status-update": true,
@@ -271,6 +311,7 @@ Options:
     "trigger:release-flow-template-run:success": true,
     "trigger:release-flow-template-run:failure": true,
     "trigger:release-flow-template-run:aborted": true,
+    "trigger:preview-environment:destroyed": true,
     "trigger:preview-blueprint-run:queued": true,
     "trigger:preview-blueprint-run:start": true,
     "trigger:preview-blueprint-run:success": true,
@@ -358,10 +399,12 @@ await apiClient.get.notification({
     "status": {
       "disabled": false
     },
-    "restricted": true,
-    "projects": [
-      "default-project"
-    ],
+    "restrictions": {
+      "tags": {
+        "enabled": false,
+        "matchCondition": "or"
+      }
+    },
     "events": {
       "trigger:service:autoscaling:event": true,
       "trigger:service:deployment:status-update": true,
@@ -386,6 +429,7 @@ await apiClient.get.notification({
       "trigger:release-flow-template-run:success": true,
       "trigger:release-flow-template-run:failure": true,
       "trigger:release-flow-template-run:aborted": true,
+      "trigger:preview-environment:destroyed": true,
       "trigger:preview-blueprint-run:queued": true,
       "trigger:preview-blueprint-run:start": true,
       "trigger:preview-blueprint-run:success": true,
@@ -482,10 +526,12 @@ print(response.data)
   "status": {
     "disabled": false
   },
-  "restricted": true,
-  "projects": [
-    "default-project"
-  ],
+  "restrictions": {
+    "tags": {
+      "enabled": false,
+      "matchCondition": "or"
+    }
+  },
   "events": {
     "trigger:service:autoscaling:event": true,
     "trigger:service:deployment:status-update": true,
@@ -510,6 +556,7 @@ print(response.data)
     "trigger:release-flow-template-run:success": true,
     "trigger:release-flow-template-run:failure": true,
     "trigger:release-flow-template-run:aborted": true,
+    "trigger:preview-environment:destroyed": true,
     "trigger:preview-blueprint-run:queued": true,
     "trigger:preview-blueprint-run:start": true,
     "trigger:preview-blueprint-run:success": true,

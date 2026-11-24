@@ -15,12 +15,12 @@ Required permission: Account > Admin > Members > Manage
 
 {object}
 - `email`: (string) (required) Email of the user to invite. (pattern: ^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$)
-- `roles`: [array of] (string) (pattern: ^[A-Za-z0-9-]+$)
+- `roles`: [array of] Role IDs to assign to the invited member. (string) (pattern: ^[A-Za-z0-9-]+$)
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
 
 ### API reference
 
@@ -35,7 +35,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"email":"user@example.com"}' \
-  https://api.northflank.com/v1/teams/{teamId}/members
+  "https://api.northflank.com/v1/teams/{teamId}/members"
 ```
 
 ```javascript
@@ -61,10 +61,10 @@ import requests
 
 url = "https://api.northflank.com/v1/teams/{teamId}/members"
 
-payload = {"email":"user@example.com"}
+payload = "{\"email\":\"user@example.com\"}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -82,7 +82,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/teams/{teamId}/members"
 
-  var jsonStr = []byte(`{"email":"user@example.com"}`)
+  var jsonStr = []byte("{\"email\":\"user@example.com\"}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

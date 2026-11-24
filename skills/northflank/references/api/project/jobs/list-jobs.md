@@ -20,22 +20,22 @@ Required permission: Project > Jobs > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `jobs`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `jobs`: [array of] (required) An array of job objects. {object}
      - `id`: (string) (required) Identifier for the job
      - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
      - `projectId`: (string) (required) ID of the project that the job belongs to
      - `stageId`: (string) ID of the environment the job belongs to.
      - `appId`: (string) (required) Full identifier used for job deployment
      - `name`: (string) (required) Job name
-     - `tags`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+     - `tags`: [array of] (required) An array of previously defined tags to help identify and group the resource. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
      - `description`: (string) A short description of the job
      - `jobType`: (string) (required) Type of the job (manual or cron) (enum: manual, cron)
      - `disabledCI`: (boolean) (required) Whether Continuous Integration is disabled
      - `disabledCD`: (boolean) (required) Whether Continuous Deployment is disabled
      - `suspended`: (boolean) Cron specific. Whether or not the job's automatic scheduling is suspended
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -45,6 +45,25 @@ Required permission: Project > Jobs > General > Read
 GET /v1/projects/{projectId}/jobs
 
 GET /v1/teams/{teamId}/projects/{projectId}/jobs
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/jobs?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/jobs?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -65,7 +84,8 @@ GET /v1/teams/{teamId}/projects/{projectId}/jobs
         "jobType": "cron",
         "disabledCI": false,
         "disabledCD": false,
-        "suspended": false
+        "suspended": false,
+        "tags": []
       }
     ]
   },
@@ -114,7 +134,8 @@ Options:
       "jobType": "cron",
       "disabledCI": false,
       "disabledCD": false,
-      "suspended": false
+      "suspended": false,
+      "tags": []
     }
   ]
 }
@@ -157,7 +178,8 @@ await apiClient.list.jobs({
         "jobType": "cron",
         "disabledCI": false,
         "disabledCD": false,
-        "suspended": false
+        "suspended": false,
+        "tags": []
       }
     ]
   },

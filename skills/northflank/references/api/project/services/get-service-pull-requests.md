@@ -21,10 +21,10 @@ Required permission: Project > Services > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `pullRequests`: [array of] {object}
-     - `id`: (multiple options) (integer) | (string)
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `pullRequests`: [array of] A list of pull requests for this repository. {object} Details about a pull request.
+     - `id`: (multiple options) (required) Provider identifier of the pull request. (integer) | (string)
      - `state`: (string) (required) Status of the pull request.
      - `title`: (string) (required) Title of the pull request.
      - `source`: (string) (required) Name of the branch the pull request is merging from.
@@ -33,7 +33,7 @@ Required permission: Project > Services > General > Read
      - `created_at`: (string) (required) The timestamp the pull request was opened. (format: date-time)
      - `updated_at`: (string) (required) The timestamp the pull request was last updated at. (format: date-time)
      - `html_url`: (string) (required)
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -44,6 +44,25 @@ GET /v1/projects/{projectId}/services/{serviceId}/pull-requests
 
 GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/pull-requests
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/pull-requests?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/pull-requests?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: Data about the service's available pull requests.
@@ -53,13 +72,15 @@ GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/pull-requests
   "data": {
     "pullRequests": [
       {
+        "id": 1,
         "state": "OPEN",
         "title": "Add new feature handling",
         "source": "feature/new-feature",
         "destination": "main",
         "sha": "4f101d8821aeb3e4f81f95f3e886a2759ba7b9db",
         "created_at": "2021-03-22T11:05:52.000Z",
-        "updated_at": "2021-05-11T16:05:43.000Z"
+        "updated_at": "2021-05-11T16:05:43.000Z",
+        "html_url": "string"
       }
     ]
   },
@@ -100,13 +121,15 @@ Options:
 {
   "pullRequests": [
     {
+      "id": 1,
       "state": "OPEN",
       "title": "Add new feature handling",
       "source": "feature/new-feature",
       "destination": "main",
       "sha": "4f101d8821aeb3e4f81f95f3e886a2759ba7b9db",
       "created_at": "2021-03-22T11:05:52.000Z",
-      "updated_at": "2021-05-11T16:05:43.000Z"
+      "updated_at": "2021-05-11T16:05:43.000Z",
+      "html_url": "string"
     }
   ]
 }
@@ -140,13 +163,15 @@ await apiClient.get.service.pullRequests({
   "data": {
     "pullRequests": [
       {
+        "id": 1,
         "state": "OPEN",
         "title": "Add new feature handling",
         "source": "feature/new-feature",
         "destination": "main",
         "sha": "4f101d8821aeb3e4f81f95f3e886a2759ba7b9db",
         "created_at": "2021-03-22T11:05:52.000Z",
-        "updated_at": "2021-05-11T16:05:43.000Z"
+        "updated_at": "2021-05-11T16:05:43.000Z",
+        "html_url": "string"
       }
     ]
   },

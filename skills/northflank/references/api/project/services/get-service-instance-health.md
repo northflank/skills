@@ -20,12 +20,12 @@ Required permission: Project > Services > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `observedAt`: (string) (format: date-time)
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `observedAt`: (string) (nullable) (format: date-time)
   - `window`: {object}
-    - `start`: (string) (format: date-time)
-    - `end`: (string) (format: date-time)
+    - `start`: (string) (nullable) (format: date-time)
+    - `end`: (string) (nullable) (format: date-time)
   - `byoc`: (boolean)
   - `current`: {object}
     - `containers`: [array of] {object}
@@ -33,40 +33,40 @@ Required permission: Project > Services > General > Read
         - `status`: (string)
         - `terminated`: (boolean)
         - `deploymentId`: (string)
-        - `buildId`: (string)
-        - `runId`: (string)
-        - `nodeName`: (string)
-        - `nodePool`: (string)
-        - `nodePoolUserId`: (string)
-        - `nodePoolProviderId`: (string)
+        - `buildId`: (string) (nullable)
+        - `runId`: (string) (nullable)
+        - `nodeName`: (string) (nullable)
+        - `nodePool`: (string) (nullable)
+        - `nodePoolUserId`: (string) (nullable)
+        - `nodePoolProviderId`: (string) (nullable)
         - `createdAt`: (number) (format: float)
         - `updatedAt`: (number) (format: float)
         - `restartCount`: (number) (format: float)
-        - `lastFailure`: (string) (format: date-time)
-        - `lastExitCode`: (number) (format: float)
-        - `lastFailureReason`: (string)
+        - `lastFailure`: (string) (nullable) (format: date-time)
+        - `lastExitCode`: (number) (nullable) (format: float)
+        - `lastFailureReason`: (string) (nullable)
         - `eviction`: {object}
-          - `message`: (string)
-          - `lastFailure`: (string) (format: date-time)
-        - `containerReason`: (string)
+          - `message`: (string) (nullable)
+          - `lastFailure`: (string) (nullable) (format: date-time)
+        - `containerReason`: (string) (nullable)
         - `conditions`: [array of] {object}
-            - `type`: (string)
-            - `status`: (string)
-            - `reason`: (string)
-            - `message`: (string)
-            - `lastTransitionTime`: (string) (format: date-time)
-            - `lastProbeTime`: (string) (format: date-time)
+            - `type`: (string) (nullable)
+            - `status`: (string) (nullable)
+            - `reason`: (string) (nullable)
+            - `message`: (string) (nullable)
+            - `lastTransitionTime`: (string) (nullable) (format: date-time)
+            - `lastProbeTime`: (string) (nullable) (format: date-time)
         - `probes`: [array of] {object}
             - `kind`: (string)
-            - `state`: (string)
-            - `timestamp`: (string) (format: date-time)
-            - `type`: (string)
-            - `latency`: (number) (format: float)
+            - `state`: (string) (nullable)
+            - `timestamp`: (string) (nullable) (format: date-time)
+            - `type`: (string) (nullable)
+            - `latency`: (number) (nullable) (format: float)
             - `httpStatus`: (number) (format: float)
-            - `exitCode`: (number) (format: float)
+            - `exitCode`: (number) (nullable) (format: float)
         - `history`: [array of] {object}
-            - `status`: (string)
-            - `timestamp`: (string) (format: date-time)
+            - `status`: (string) (nullable)
+            - `timestamp`: (string) (nullable) (format: date-time)
     - `hasMore`: (boolean)
   - `recent`: {object}
     - `containers`: [array of] {object}
@@ -74,40 +74,40 @@ Required permission: Project > Services > General > Read
         - `status`: (string)
         - `terminated`: (boolean)
         - `deploymentId`: (string)
-        - `buildId`: (string)
-        - `runId`: (string)
-        - `nodeName`: (string)
-        - `nodePool`: (string)
-        - `nodePoolUserId`: (string)
-        - `nodePoolProviderId`: (string)
+        - `buildId`: (string) (nullable)
+        - `runId`: (string) (nullable)
+        - `nodeName`: (string) (nullable)
+        - `nodePool`: (string) (nullable)
+        - `nodePoolUserId`: (string) (nullable)
+        - `nodePoolProviderId`: (string) (nullable)
         - `createdAt`: (number) (format: float)
         - `updatedAt`: (number) (format: float)
         - `restartCount`: (number) (format: float)
-        - `lastFailure`: (string) (format: date-time)
-        - `lastExitCode`: (number) (format: float)
-        - `lastFailureReason`: (string)
+        - `lastFailure`: (string) (nullable) (format: date-time)
+        - `lastExitCode`: (number) (nullable) (format: float)
+        - `lastFailureReason`: (string) (nullable)
         - `eviction`: {object}
-          - `message`: (string)
-          - `lastFailure`: (string) (format: date-time)
-        - `containerReason`: (string)
+          - `message`: (string) (nullable)
+          - `lastFailure`: (string) (nullable) (format: date-time)
+        - `containerReason`: (string) (nullable)
         - `conditions`: [array of] {object}
-            - `type`: (string)
-            - `status`: (string)
-            - `reason`: (string)
-            - `message`: (string)
-            - `lastTransitionTime`: (string) (format: date-time)
-            - `lastProbeTime`: (string) (format: date-time)
+            - `type`: (string) (nullable)
+            - `status`: (string) (nullable)
+            - `reason`: (string) (nullable)
+            - `message`: (string) (nullable)
+            - `lastTransitionTime`: (string) (nullable) (format: date-time)
+            - `lastProbeTime`: (string) (nullable) (format: date-time)
         - `probes`: [array of] {object}
             - `kind`: (string)
-            - `state`: (string)
-            - `timestamp`: (string) (format: date-time)
-            - `type`: (string)
-            - `latency`: (number) (format: float)
+            - `state`: (string) (nullable)
+            - `timestamp`: (string) (nullable) (format: date-time)
+            - `type`: (string) (nullable)
+            - `latency`: (number) (nullable) (format: float)
             - `httpStatus`: (number) (format: float)
-            - `exitCode`: (number) (format: float)
+            - `exitCode`: (number) (nullable) (format: float)
         - `history`: [array of] {object}
-            - `status`: (string)
-            - `timestamp`: (string) (format: date-time)
+            - `status`: (string) (nullable)
+            - `timestamp`: (string) (nullable) (format: date-time)
     - `hasMore`: (boolean)
 
 ### API reference
@@ -116,12 +116,33 @@ GET /v1/projects/{projectId}/services/{serviceId}/health
 
 GET /v1/teams/{teamId}/projects/{projectId}/services/{serviceId}/health
 
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/health"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/services/{serviceId}/health"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
+
 #### Example Response
 
 200 OK: Bounded current and historical instance evidence.
 
 ```json
-undefined
+{
+  "data": {}
+}
 ```
 
 ### CLI reference
@@ -149,7 +170,7 @@ Options:
  Bounded current and historical instance evidence.
 
 ```json
-undefined
+{}
 ```
 
 ### JavaScript client reference
@@ -173,6 +194,7 @@ await apiClient.get.service.health({
 
 ```json
 {
+  "data": {},
   "rawResponse": "...",
   "request": "...",
   "error": "..."

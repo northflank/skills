@@ -13,31 +13,31 @@ Required permission: Account > Networking > LoadBalancers > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `id`: (string) (required) ID of the load balancer (pattern: ^[A-Za-z0-9-]+$)
   - `name`: (string) (required) The name of the load balancer. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39)
   - `description`: (string) The description of the load balancer. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
-  - `spec`: {object}
+  - `spec`: {object} (required) Load balancer specification
     - `type`: (string) (required) Protocol type for the load balancer (enum: tcp, udp)
     - `visibility`: (string) Network visibility of the load balancer; defaults to public on creation (enum: public, private)
-    - `target`: {object}
+    - `target`: {object} (required) Load balancer target. The target cannot be changed after creation.
       - `type`: (string) (required) Target type for the load balancer (enum: region, cluster)
-      - `targetId`: (multiple options) (string) Target region name (pattern: ^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$) | (string) Target cluster internal ID (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
-    - `ports`: [array of] {object}
+      - `targetId`: (multiple options) Id of the loadbalancer target (string) Target region name (pattern: ^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$) | (string) Target cluster internal ID (pattern: ^((org|team)\/)?[a-zA-Z](-?[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*)?$)
+    - `ports`: [array of] (required) Port configurations for the load balancer {object}
         - `id`: (string) (required) Unique port identifier (pattern: ^port-\d+$)
         - `port`: (string) (required) Port number or range (single port, multiple comma-separated, or range with dash)
         - `customSettings`: {object}
           - `bridgeTlsMode`: (boolean)
           - `proxyProtocol`: (string) PROXY protocol version sent to backends for this port; omit to disable (enum: v2)
           - `subdomainId`: (string) Full name of the load balancer subdomain linked to this port (TLS bridge mode)
-        - `backends`: [array of] {object}
+        - `backends`: [array of] (required) Backend services or addons for this port {object}
             - `id`: (string) (required) Backend reference in format {projectId}/{nfObjectId} (pattern: ^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$)
             - `type`: (string) (required) Backend type (service or addon) (enum: service, addon)
             - `port`: (integer) (required) Backend port number
             - `weight`: (integer) Traffic weight for this backend
   - `state`: {object}
-    - `endpoints`: [array of] (multiple options) (string)
+    - `endpoints`: [array of] Network addresses assigned to the load balancer (multiple options) Network address assigned to the load balancer (string)
     - `status`: (string) (required) Current status of the load balancer (enum: staging, loading, created, error, deleting, deleted)
     - `lastTransitionTime`: (string) (required) Time of the last status transition (format: date-time)
   - `createdAt`: (string) (required) The time the load balancer was created. (format: date-time)
@@ -48,6 +48,25 @@ Required permission: Account > Networking > LoadBalancers > Read
 GET /v1/load-balancers/{loadBalancerId}
 
 GET /v1/teams/{teamId}/load-balancers/{loadBalancerId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/load-balancers/{loadBalancerId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/load-balancers/{loadBalancerId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -85,7 +104,12 @@ GET /v1/teams/{teamId}/load-balancers/{loadBalancerId}
       ]
     },
     "state": {
-      "status": "created"
+      "endpoints": [
+        "203.0.113.1",
+        "internal-example.elb.amazonaws.com"
+      ],
+      "status": "created",
+      "lastTransitionTime": "1970-01-01T00:00:00.000Z"
     },
     "createdAt": "2021-01-20T11:19:53.175Z",
     "updatedAt": "2021-01-20T11:19:53.175Z"
@@ -142,7 +166,12 @@ Options:
     ]
   },
   "state": {
-    "status": "created"
+    "endpoints": [
+      "203.0.113.1",
+      "internal-example.elb.amazonaws.com"
+    ],
+    "status": "created",
+    "lastTransitionTime": "1970-01-01T00:00:00.000Z"
   },
   "createdAt": "2021-01-20T11:19:53.175Z",
   "updatedAt": "2021-01-20T11:19:53.175Z"
@@ -199,7 +228,12 @@ await apiClient.get.loadBalancer({
       ]
     },
     "state": {
-      "status": "created"
+      "endpoints": [
+        "203.0.113.1",
+        "internal-example.elb.amazonaws.com"
+      ],
+      "status": "created",
+      "lastTransitionTime": "1970-01-01T00:00:00.000Z"
     },
     "createdAt": "2021-01-20T11:19:53.175Z",
     "updatedAt": "2021-01-20T11:19:53.175Z"

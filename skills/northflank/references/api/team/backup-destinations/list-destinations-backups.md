@@ -20,8 +20,8 @@ Required permission: Account > Platform > Backups > Read
 
 **Response body:**
 
-{object}
-- `data`: [array of] {object}
+{object} Response object.
+- `data`: [array of] (required) Result data. {object} Data about a backup.
    - `id`: (string) (required) The identifier for the backup.
    - `name`: (string) (required) The name of the backup.
    - `status`: (string) (required) The current status of the backup. (enum: scheduled, in-progress, completed, aborting, aborted, failed, not-supported)
@@ -31,21 +31,21 @@ Required permission: Account > Platform > Backups > Read
    - `addon`: {object}
      - `id`: (string) ID of the addon this backup was taken for
      - `name`: (string) Name of the addon this backup was taken for
-   - `config`: {object}
+   - `config`: {object} (required) Data about the backup configuration.
      - `addonVersion`: (string) The version of the addon at the time of the backup. The addon will be restored to this version when the backup is restored.
      - `addonType`: (string) The type of the addon this backup was taken for.
-     - `source`: {object}
+     - `source`: {object} Data about the source of the backup.
        - `type`: (string) The type of backup. (enum: global)
      - `size`: (string) (required) The size of the backup, in bytes
-   - `schedules`: [array of] {object}
+   - `schedules`: [array of] The schedules this backup was taken for. {object}
       - `interval`: (string) (required) The interval between backups. Each addon can only have one backup schedule of each interval for each backup type. (enum: hourly, daily, weekly)
-      - `minute`: [array of] (integer) A minute when the backup should be performed.
-      - `hour`: [array of] (integer) An hour when the backup should be performed, in 24 hour format.
-      - `day`: [array of] (integer) A day of the week when the backup should be performed, where `0` represents Monday and `6` represents Sunday.
+      - `minute`: [array of] (required) An array of minutes when the backup should be performed. (integer) A minute when the backup should be performed.
+      - `hour`: [array of] An array of hours in 24 hour format when the backup should be performed. At these hours, a backup will be performed at each of the minutes provided in the `minute` field. Required for `daily` and `weekly` intervals and unavailable for `hourly` intervals. (integer) An hour when the backup should be performed, in 24 hour format.
+      - `day`: [array of] An array of days of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday. On these days, a backup will be performed at each of the minutes provided in the `minute` field whenever it is an hour from the `hour` field. Required for `weekly` intervals and unavailable for `hourly` and `daily` intervals. (integer) A day of the week when the backup should be performed, where `0` represents Sunday and `6` represents Saturday.
    - `expiredBy`: (number) (required) The time the backup will expiry. (format: float)
    - `createdAt`: (string) (required) The time the backup was initiated.
    - `completedAt`: (string) (required) The time the backup was completed.
-- `pagination`: {object}
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -55,6 +55,25 @@ Required permission: Account > Platform > Backups > Read
 GET /v1/backup-destinations/{backupDestinationId}/backups
 
 GET /v1/teams/{teamId}/backup-destinations/{backupDestinationId}/backups
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/backup-destinations/{backupDestinationId}/backups?per_page=50&page=1"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/backup-destinations/{backupDestinationId}/backups?per_page=50&page=1"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

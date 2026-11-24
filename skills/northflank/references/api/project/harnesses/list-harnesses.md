@@ -23,9 +23,9 @@ Required permission: Project > Harnesses > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `harnesses`: [array of] {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `harnesses`: [array of] (required) An array of harnesses. {object} Information about a harness.
      - `id`: (string) (required) Identifier for the harness.
      - `uid`: (string) (required) Permanent identifier for the resource. Unlike `id`, it never changes and is never reused. (min length: 24) (max length: 24)
      - `name`: (string) (required) Harness name.
@@ -33,14 +33,14 @@ Required permission: Project > Harnesses > General > Read
      - `tags`: [array of] (string)
      - `private`: (boolean) Whether runtime access is restricted to the creator.
      - `description`: (string) A short description of the harness.
-     - `harness`: {object}
+     - `harness`: {object} Details about the harness's specifications.
        - `type`: (string) (required) The harness environment type. (enum: codex, claude, pi, omp, devin, opencode, cursor, none)
-     - `source`: {object}
+     - `source`: {object} The git source linked to the harness.
        - `projectUrl`: (string) URL of the git repository pre-pulled into the harness environment.
        - `projectType`: (string) The VCS provider of the harness source.
        - `projectBranch`: (string) The branch of the harness source.
-     - `status`: {object}
-- `pagination`: {object}
+     - `status`: {object} The current status of the harness.
+- `pagination`: {object} (required) Data about the endpoint pagination.
   - `hasNextPage`: (boolean) (required) Is there another page of results available?
   - `cursor`: (string) The cursor to access the next page of results.
   - `count`: (number) (required) The number of results returned by this request. (format: float)
@@ -50,6 +50,25 @@ Required permission: Project > Harnesses > General > Read
 GET /v1/projects/{projectId}/harnesses
 
 GET /v1/teams/{teamId}/projects/{projectId}/harnesses
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/harnesses?per_page=50&page=1&projectUrl=https%3A%2F%2Fgithub.com%2Fnorthflank-examples%2Fnext-js-example&projectType=github&projectBranch=main"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/harnesses?per_page=50&page=1&projectUrl=https%3A%2F%2Fgithub.com%2Fnorthflank-examples%2Fnext-js-example&projectType=github&projectBranch=main"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 

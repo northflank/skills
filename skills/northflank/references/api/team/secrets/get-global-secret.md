@@ -11,12 +11,12 @@ Get a global secret including its contents
 
 **Response body:**
 
-{object}
-- `data`: {object}
+{object} Response object.
+- `data`: {object} (required) Result data.
   - `name`: (string) (required) (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `description`: (string) (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200)
   - `secrets`: {object}
-    - `values`: {object}
+    - `values`: {object} (required)
     - `files`: {object}
   - `type`: (string) (required) The permission type of the global secret. (enum: secret, config)
   - `gitops`: {object}
@@ -29,7 +29,7 @@ Get a global secret including its contents
     - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
   - `dependents`: {object}
     - `templates`: {object}
-      - `items`: [array of] (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
+      - `items`: [array of] Templates to run, referenced by internalId. (string) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `id`: (string) (required) (pattern: ^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100)
   - `createdAt`: (string) time of creation (format: date-time)
   - `updatedAt`: (string) time of update (format: date-time)
@@ -39,6 +39,25 @@ Get a global secret including its contents
 GET /v1/secrets/{secretId}
 
 GET /v1/teams/{teamId}/secrets/{secretId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/secrets/{secretId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/secrets/{secretId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
@@ -54,7 +73,9 @@ GET /v1/teams/{teamId}/secrets/{secretId}
       "repoUrl": "https://github.com/northflank-examples/remix-postgres-redis-demo",
       "branch": "main",
       "filePath": "/Dockerfile"
-    }
+    },
+    "name": "string",
+    "id": "string"
   }
 }
 ```
@@ -86,7 +107,9 @@ Options:
     "repoUrl": "https://github.com/northflank-examples/remix-postgres-redis-demo",
     "branch": "main",
     "filePath": "/Dockerfile"
-  }
+  },
+  "name": "string",
+  "id": "string"
 }
 ```
 
@@ -118,7 +141,9 @@ await apiClient.get.globalSecret({
       "repoUrl": "https://github.com/northflank-examples/remix-postgres-redis-demo",
       "branch": "main",
       "filePath": "/Dockerfile"
-    }
+    },
+    "name": "string",
+    "id": "string"
   },
   "rawResponse": "...",
   "request": "...",

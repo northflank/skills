@@ -14,7 +14,7 @@ Required permission: Project > PreviewBlueprints > General > Create
 **Request body:**
 
 {object}
-- `arguments`: {object}
+- `arguments`: {object} A set of arguments that can be referenced in a template using '${args.argumentName}'.
 - `gitops`: {object}
   - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
   - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
@@ -24,14 +24,14 @@ Required permission: Project > PreviewBlueprints > General > Create
   - `branch`: (string) (required) The name of the branch to use.
   - `filePath`: (string) (required) The file path in the repository. If using an existing file, it should be in JSON format. (pattern: ^\/((?!\.\.?\/)[a-zA-Z0-9-._]+\/)*(?!\.\.?$)[a-zA-Z0-9-._]+$)
 - `$schema`: (string)
-- `name`: (multiple options) (string) The name of the preview blueprint (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the name of the preview blueprint (pattern: .*\${.*}.*)
-- `description`: (multiple options) (string) A description of the preview blueprint (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the preview blueprint (pattern: .*\${.*}.*)
-- `options`: {object}
+- `name`: (multiple options) (required) The name of the preview blueprint (string) The name of the preview blueprint (pattern: ^[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*$) (min length: 3) (max length: 100) | (string) A string containing one or more references that resolve to the name of the preview blueprint (pattern: .*\${.*}.*)
+- `description`: (multiple options) A description of the preview blueprint (string) A description of the preview blueprint (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the preview blueprint (pattern: .*\${.*}.*)
+- `options`: {object} Options regarding how the template is run.
   - `concurrencyPolicy`: (string) Defines the concurrency behaviour of the template with respect to parallel runs. (enum: allow, queue, forbid, latest, replace)
   - `nameFormat`: (string) The format of the automatically generated preview name. This is a parsed ref string.
   - `prefixName`: (boolean) If true, the preview name will default to the front of the resource name.
   - `useBranchContents`: (boolean) If true, and gitops is enabled, the preview will run based on the contents of the branch that triggered it, rather than the set branch.
-  - `schedule`: {object}
+  - `schedule`: {object} Options regarding which hours preview environments should be active. Only available for BYOC projects.
     - `mon`: {object}
       - `startTime`: (integer)
       - `endTime`: (integer)
@@ -53,17 +53,17 @@ Required permission: Project > PreviewBlueprints > General > Create
     - `sun`: {object}
       - `startTime`: (integer)
       - `endTime`: (integer)
-  - `expiry`: {object}
+  - `expiry`: {object} Settings regarding the automatic deletion of previews.
     - `previewLifetime`: (integer) If set, preview environments will be automatically deleted after this many minutes since their last update.
     - `resetOnUpdate`: (boolean) If `true`, the expiry time for an existing preview will be reset when it is ran again.
   - `autorun`: (boolean) If true, the template will run automatically whenever a change is made to it.
-- `argumentOverrides`: {object}
-- `teardownSpec`: {object}
-  - `spec`: (undefined) (required) The root node of the teardown workflow.
+- `argumentOverrides`: {object} A set of arguments that can be referenced in a template using '${args.argumentName}'.
+- `teardownSpec`: {object} (nullable) Optional spec to run when the template is deleted.
+  - `spec`: (required) The root node of the teardown workflow.
   - `failurePolicy`: (string) Controls what happens if the teardown spec fails or times out. `ignore` (default) — proceed with resource deletion regardless. `block` — halt deletion and set the environment to `teardown_failed` (enum: ignore, block)
 - `triggers`: [array of] (multiple options) {object}
     - `kind`: (string) (required) (enum: vcs-push)
-    - `spec`: {object}
+    - `spec`: {object} (required)
       - `vcs`: {object}
         - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
         - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
@@ -73,16 +73,16 @@ Required permission: Project > PreviewBlueprints > General > Create
       - `branchNamePatterns`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
       - `commitMessageFlags`: {object}
         - `enabled`: (boolean)
-        - `flags`: [array of] (string) A commit ignore flag. (max length: 72)
+        - `flags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
       - `filePaths`: {object}
         - `enabled`: (boolean)
         - `allowList`: (boolean)
-        - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+        - `paths`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
     - `id`: (string)
     - `paused`: (boolean) | {object}
     - `kind`: (string) (required) (enum: vcs-pr)
-    - `spec`: {object}
+    - `spec`: {object} (required)
       - `vcs`: {object}
         - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
         - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
@@ -92,23 +92,23 @@ Required permission: Project > PreviewBlueprints > General > Create
       - `branchNamePatterns`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
       - `commitMessageFlags`: {object}
         - `enabled`: (boolean)
-        - `flags`: [array of] (string) A commit ignore flag. (max length: 72)
+        - `flags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
       - `filePaths`: {object}
         - `enabled`: (boolean)
         - `allowList`: (boolean)
-        - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+        - `paths`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
       - `ignoreDrafts`: (boolean) If `true`, draft pull requests from this repo will not trigger the template.
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
     - `id`: (string)
     - `paused`: (boolean) | {object}
     - `kind`: (string) (required) (enum: webhook)
-    - `spec`: {object}
+    - `spec`: {object} (required)
       - `token`: (string) (required)
     - `ref`: (string) (required) A reference that can be used to access the output of this trigger in the template.
     - `id`: (string)
     - `paused`: (boolean) | {object}
     - `kind`: (string) (required) (enum: vcs-release)
-    - `spec`: {object}
+    - `spec`: {object} (required)
       - `vcs`: {object}
         - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
         - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
@@ -119,7 +119,7 @@ Required permission: Project > PreviewBlueprints > General > Create
     - `id`: (string)
     - `paused`: (boolean) | {object}
     - `kind`: (string) (required) (enum: vcs-pr-label)
-    - `spec`: {object}
+    - `spec`: {object} (required)
       - `vcs`: {object}
         - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
         - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
@@ -132,17 +132,17 @@ Required permission: Project > PreviewBlueprints > General > Create
         - `names`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
       - `commitMessageFlags`: {object}
         - `enabled`: (boolean)
-        - `flags`: [array of] (string) A commit ignore flag. (max length: 72)
+        - `flags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
       - `filePaths`: {object}
         - `enabled`: (boolean)
         - `allowList`: (boolean)
-        - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+        - `paths`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
       - `ignoreDrafts`: (boolean) If `true`, draft pull requests from this repo will not trigger the template.
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
     - `id`: (string)
     - `paused`: (boolean) | {object}
     - `kind`: (string) (required) (enum: vcs-check-suite)
-    - `spec`: {object}
+    - `spec`: {object} (required)
       - `vcs`: {object}
         - `vcsService`: (string) (required) The VCS provider to use. (enum: bitbucket, gitlab, github, self-hosted, azure, origin)
         - `selfHostedVcsId`: (string) If projectType is self-hosted, the ID of the self-hosted vcs to use. (pattern: ^([A-Za-z0-9-]+)|([0-9a-f]{24})$)
@@ -152,23 +152,23 @@ Required permission: Project > PreviewBlueprints > General > Create
       - `branchNamePatterns`: [array of] (string) (pattern: ^[a-zA-Z/*0-9%\-.#_!'();,&=+]*$)
       - `commitMessageFlags`: {object}
         - `enabled`: (boolean)
-        - `flags`: [array of] (string) A commit ignore flag. (max length: 72)
+        - `flags`: [array of] An array of commit ignore flags. If a commit message contains one or more of these flags, that commit will not be built. Defaults to `["[skip ci]", "[ci skip]", "[no ci]", "[skip nf]", "[nf skip]", "[northflank skip]", "[skip northflank]"]` (string) A commit ignore flag. (max length: 72)
       - `filePaths`: {object}
         - `enabled`: (boolean)
         - `allowList`: (boolean)
-        - `paths`: [array of] (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
+        - `paths`: [array of] An array of path ignore rules. A commit will only be built if a file has been changed that does not match any of the ignore rules. Path ignore rules follow `.gitignore` syntax. (string) A path ignore rule, following `.gitignore` syntax. For example, `*.md` will ignore all files ending with `.md`. (max length: 260)
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
     - `id`: (string)
     - `paused`: (boolean) | {object}
     - `kind`: (string) (required) (enum: cron)
-    - `spec`: {object}
+    - `spec`: {object} (required)
       - `cron`: (string) (required) A cron expression that defines the schedule on which the template will be executed.
     - `ref`: (string) A reference that can be used to access the output of this trigger in the template.
     - `id`: (string)
     - `paused`: (boolean)
 - `apiVersion`: (string) (required)
 - `project`: {object}
-- `spec`: {object}
+- `spec`: {object} (required)
 
 ### API reference
 
@@ -185,7 +185,7 @@ curl --header "Content-Type: application/json" \
   --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
   --request POST \
   --data '{"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"options":{"concurrencyPolicy":"allow","autorun":false},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"]},"filePaths":{"paths":["README.md"]}},"kind":"vcs-push"}],"name":"string","apiVersion":"string","spec":{}}' \
-  https://api.northflank.com/v1/projects/{projectId}/preview-blueprints
+  "https://api.northflank.com/v1/projects/{projectId}/preview-blueprints"
 ```
 
 ```javascript
@@ -252,10 +252,10 @@ import requests
 
 url = "https://api.northflank.com/v1/projects/{projectId}/preview-blueprints"
 
-payload = {"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"options":{"concurrencyPolicy":"allow","autorun":false},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"]},"filePaths":{"paths":["README.md"]}},"kind":"vcs-push"}],"name":"string","apiVersion":"string","spec":{}}
+payload = "{\"gitops\":{\"vcsService\":\"github\",\"accountLogin\":\"github-user\",\"repoUrl\":\"https://github.com/northflank-examples/remix-postgres-redis-demo\",\"branch\":\"main\",\"filePath\":\"/Dockerfile\"},\"options\":{\"concurrencyPolicy\":\"allow\",\"autorun\":false},\"triggers\":[{\"spec\":{\"vcs\":{\"vcsService\":\"github\",\"accountLogin\":\"github-user\",\"repoUrl\":\"https://github.com/northflank-examples/remix-postgres-redis-demo\"},\"commitMessageFlags\":{\"flags\":[\"[skip ci]\",\"[ci skip]\",\"[no ci]\",\"[skip nf]\",\"[nf skip]\",\"[northflank skip]\",\"[skip northflank]\"]},\"filePaths\":{\"paths\":[\"README.md\"]}},\"kind\":\"vcs-push\"}],\"name\":\"string\",\"apiVersion\":\"string\",\"spec\":{}}".encode("utf-8")
 headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
 
-response = requests.request("POST", url, headers = headers, json = payload)
+response = requests.request("POST", url, headers = headers, data = payload)
 
 print(response.json())
 ```
@@ -273,7 +273,7 @@ import (
 func main() {
   url := "https://api.northflank.com/v1/projects/{projectId}/preview-blueprints"
 
-  var jsonStr = []byte(`{"gitops":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo","branch":"main","filePath":"/Dockerfile"},"options":{"concurrencyPolicy":"allow","autorun":false},"triggers":[{"spec":{"vcs":{"vcsService":"github","accountLogin":"github-user","repoUrl":"https://github.com/northflank-examples/remix-postgres-redis-demo"},"commitMessageFlags":{"flags":["[skip ci]","[ci skip]","[no ci]","[skip nf]","[nf skip]","[northflank skip]","[skip northflank]"]},"filePaths":{"paths":["README.md"]}},"kind":"vcs-push"}],"name":"string","apiVersion":"string","spec":{}}`)
+  var jsonStr = []byte("{\"gitops\":{\"vcsService\":\"github\",\"accountLogin\":\"github-user\",\"repoUrl\":\"https://github.com/northflank-examples/remix-postgres-redis-demo\",\"branch\":\"main\",\"filePath\":\"/Dockerfile\"},\"options\":{\"concurrencyPolicy\":\"allow\",\"autorun\":false},\"triggers\":[{\"spec\":{\"vcs\":{\"vcsService\":\"github\",\"accountLogin\":\"github-user\",\"repoUrl\":\"https://github.com/northflank-examples/remix-postgres-redis-demo\"},\"commitMessageFlags\":{\"flags\":[\"[skip ci]\",\"[ci skip]\",\"[no ci]\",\"[skip nf]\",\"[nf skip]\",\"[northflank skip]\",\"[skip northflank]\"]},\"filePaths\":{\"paths\":[\"README.md\"]}},\"kind\":\"vcs-push\"}],\"name\":\"string\",\"apiVersion\":\"string\",\"spec\":{}}")
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
   req.Header.Set("Content-Type", "application/json")
   req.Header.Set("Authorization", "Bearer NORTHFLANK_API_TOKEN")

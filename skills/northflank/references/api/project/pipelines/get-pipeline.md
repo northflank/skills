@@ -14,14 +14,14 @@ Required permission: Project > Pipelines > General > Read
 
 **Response body:**
 
-{object}
-- `data`: {object}
-  - `name`: (multiple options) (string) The name of the pipeline. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the name of the pipeline. (pattern: .*\${.*}.*)
-  - `description`: (multiple options) (string) A description of the pipeline. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the pipeline. (pattern: .*\${.*}.*)
+{object} Response object.
+- `data`: {object} (required) Result data.
+  - `name`: (multiple options) (required) The name of the pipeline. (string) The name of the pipeline. (pattern: ^[a-zA-Z]((-|\s)?[a-zA-Z0-9]+((-|\s)[a-zA-Z0-9]+)*)?$) (min length: 3) (max length: 39) | (string) A string containing one or more references that resolve to the name of the pipeline. (pattern: .*\${.*}.*)
+  - `description`: (multiple options) A description of the pipeline. (string) A description of the pipeline. (pattern: ^[a-zA-Z0-9.,?\s\\/'"()[\];`%^&*\-_:!]+$) (max length: 200) | (string) A string containing one or more references that resolve to a description of the pipeline. (pattern: .*\${.*}.*)
   - `preview`: {object}
-  - `stages`: [array of] (undefined)
-  - `nfObjects`: [array of] {object}
-     - `id`: (multiple options) (string) The ID of the service, job or addon to include in the pipeline. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the service, job or addon to include in the pipeline. (pattern: .*\${.*}.*)
+  - `stages`: [array of]
+  - `nfObjects`: [array of] A list of services, jobs and addons to include in the pipeline. {object}
+     - `id`: (multiple options) (required) The ID of the service, job or addon to include in the pipeline. (string) The ID of the service, job or addon to include in the pipeline. (pattern: ^[A-Za-z0-9-]+$) | (string) A string containing one or more references that resolve to the ID of the service, job or addon to include in the pipeline. (pattern: .*\${.*}.*)
      - `type`: (string) (required) The type of the resource to include in the pipeline. (enum: service, job, addon)
      - `stage`: (string) (required) The stage in the pipeline to include the resource. (enum: Development, Staging, Production)
 
@@ -30,6 +30,25 @@ Required permission: Project > Pipelines > General > Read
 GET /v1/projects/{projectId}/pipelines/{pipelineId}
 
 GET /v1/teams/{teamId}/projects/{projectId}/pipelines/{pipelineId}
+
+```curl
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer NORTHFLANK_API_TOKEN" \
+  --request GET \
+  "https://api.northflank.com/v1/projects/{projectId}/pipelines/{pipelineId}"
+```
+
+```python
+import requests
+
+url = "https://api.northflank.com/v1/projects/{projectId}/pipelines/{pipelineId}"
+
+headers = {"Content-Type": "application/json", "Authorization": "Bearer NORTHFLANK_API_TOKEN"}
+
+response = requests.request("GET", url, headers = headers)
+
+print(response.json())
+```
 
 #### Example Response
 
